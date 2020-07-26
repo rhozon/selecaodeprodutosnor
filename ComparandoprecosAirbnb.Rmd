@@ -1,0 +1,905 @@
+---
+title: Comparando preços de estadias no Airbnb com o R
+author: "_por Rodrigo Hermont Ozon_"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+__O objetivo de traduzir esse tutorial consiste em facilitar o aprendizado e utilização da linguagem estatística \faRProject para os profissionais de marketing e demais áreas de negócio que precisam se adequar a uma realidade mutante e movida por um fluxo significativo de informações por todos os lados. Trabalhar e interpretar bem os dados é um desafio computacional para muitos profissionais dessa área; e esta tradução visa cobrir (ainda que superficialmente) tal lacuna.
+  Este e-book foi escrito no [overleaf](http://www.overleaf.com) com o pacote knitr [para a página interativa de autoria de KU Leven Marketing Department.](https://bookdown.org/content/1340/)__
+  
+***
+
+### Sobre esse tutorial
+
+Neste tutorial, exploraremos o R como uma ferramenta para analisar e visualizar dados. O R é uma linguagem de programação estatística que rapidamente ganhou popularidade em muitos campos científicos. A principal diferença entre o R e outro software estatístico como o SPSS é que o R não possui interface gráfica com o usuário. Não há botões para clicar. R é executado inteiramente digitando comandos em uma interface de texto. Isso pode parecer assustador, mas, esperançosamente, no final deste tutorial, você verá como o R pode ajudá-lo a fazer uma melhor análise estatística.
+
+Então, por que estamos usando R e não um dos muitos outros pacotes estatísticos como SPSS, Eviews, Stata, SAS ou Microsoft Excel? Algumas das razões mais importantes:
+
+Ao contrário de outros softwares, o R é gratuito e de código aberto, e sempre será!
+R é uma linguagem de programação e não uma interface gráfica como o SPSS. Ele realiza análises ou visualizações executando algumas linhas de código. Essas linhas de código podem ser salvas como scripts para repetição futura das análises ou visualizações. Também facilita o compartilhamento de seu trabalho com outras pessoas, que podem aprender ou corrigi-lo se houver algum erro.
+
+O R tem uma comunidade online muito ativa e útil. Quando você se depara com um problema, muitas vezes basta uma rápida pesquisa no Google para encontrar uma solução de origem coletiva.
+
+Todas as principais empresas de pesquisa de marketing indicam que estão experimentando o R e que o R é o software do futuro.
+
+Este tutorial se concentra em análises estatísticas relevantes para estudantes de marketing. Se você quiser uma introdução mais extensa, porém acessível, ao R, confira o excelente e gratuito livro "[R for Data Science](http://r4ds.had.co.nz/index.html)". Este capítulo introdutório e o próximo são baseados na introdução ao R, encontrada nos tutoriais do [Coding Club](https://ourcodingclub.github.io/), que também possui muitos outros ótimos tutoriais de R.
+
+
+## Introdução ao R
+
+Nesta seção introdutória, você aprenderá:
+
++ como manipular um conjunto de dados com o _pipe_
+
++ como resumir um conjunto de dados e comparar estatisticamente
+
++ como fazer gráficos de dispersão e histogramas
+
+### Importando os dados
+
+Nesta etapa, exploraremos um conjunto de dados publicamente disponível dos dados do Airbnb. Encontramos esses dados [aqui.](http://tomslee.net/airbnb-data-collection-get-the-data) (Estes são dados reais “raspados” do airbnb.com em julho de 2017. Isso significa que o proprietário do site criou um script para coletar automaticamente esses dados no site airbnb.com. Essa é uma das muitas coisas que você também pode fazer no R. Mas primeiro vamos aprender o básico.) Você pode baixar o conjunto de dados clicando com o botão direito do mouse [neste link](http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.csv), selecionando “Salvar link como…” (ou algo semelhante) e salvando o arquivo .csv em um diretório no disco rígido. Como mencionado na [introdução](https://bookdown.org/content/1340/getting-familiar-with-rstudio.html#console_script), é uma boa ideia salvar seu trabalho em um diretório que é automaticamente copiado pelo software de compartilhamento de arquivos. Mais tarde, salvaremos nosso script no mesmo diretório.
+
+### Atribuindo dados a objetos
+
+Observe a seta $<-$ no meio da linha que importou o arquivo .csv:
+
+```{r}
+library(tidyverse)
+library(readxl)
+url<-'http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.xlsx'
+airbnbtemp <- tempfile()
+download.file(url, airbnbtemp, mode="wb")
+airbnb<-read_excel(path = airbnbtemp, sheet = 1)
+
+glimpse(airbnb)
+```
+
+
+$<-$ é o operador de atribuição. Nesse caso, atribuímos o conjunto de dados (ou seja, os dados que lemos do arquivo .csv) a um objeto chamado airbnb. Um objeto é uma estrutura de dados. Todos os objetos que você criar serão exibidos no painel Ambiente (a janela superior direita). O R Studio fornece um atalho para escrever $<-$: Alt + - (no Windows). É uma boa ideia aprender esse atalho de cor.
+
+Quando você importa dados para o R, ele se torna um objeto chamado _dataframe_. Um _dataframe_ é como uma tabela ou uma planilha do Excel. Tem duas dimensões: linhas e colunas. Geralmente, as linhas representam suas observações, as colunas representam as diferentes variáveis. Quando seus dados consistem em apenas uma dimensão (por exemplo, uma sequência de números ou palavras), eles são armazenados em um segundo tipo de objeto chamado vetor. Mais tarde, aprenderemos como criar vetores.
+
+### Lendo os dados do Airbnb
+
+Nosso conjunto de dados contém informações sobre quartos na Bélgica listados no airbnb.com. 
+
++ Sabemos para cada quarto (identificado por *room\_id*);
+
++ quem é o hóspede (*host\_id*);
+
++ que tipo de quarto é (*room\_type*);
+
++ onde está localizada (*country* e *city*);
+
++ a circunvinzinhança *neighborhood* 
+
++ *latitude* e *longitude* exata)
+
++ como muitas críticas que recebeu (*reviews*);
+
++ como as pessoas estavam satisfeitas (*overall\_satisfaction*);
+
++ preço (*price*)
+
++ e características dos quartos (*accommodates*, *bedrooms*, *bathrooms*, *minstay*).
+
+
+Uma etapa realmente importante é verificar se seus dados foram importados corretamente. É uma boa prática sempre inspecionar seus dados. Você vê algum valor ausente, os números e os nomes fazem sentido? Se você começar imediatamente com a análise, corre o risco de ter que refazê-la porque os dados não foram lidos corretamente, ou pior, analisando dados errados sem perceber.
+
+```{r}
+airbnb[1:10,] # Visualiza o conteudo do conjunto de dados da Airbnb
+```
+
+O R nos diz que estamos lidando com uma _tibble_ (essa é apenas outra palavra para _dataframe_) com 17651 linhas ou observações e 20 colunas ou variáveis. Para cada coluna, é fornecido o tipo da variável: int (inteiro), chr (caractere), dbl (duplo), dttm (data e hora). Variáveis inteiras e duplas armazenam números (inteiro para números redondos, duplicam para números com decimais), variáveis de caracteres armazenam letras, variáveis de data e hora armazenam datas e / ou horas.
+
+
+O R imprime apenas os dados das dez primeiras linhas e o número máximo de colunas que cabem na tela. Se, no entanto, você deseja inspecionar todo o conjunto de dados, clique duas vezes no objeto airbnb no painel Ambiente (a janela superior direita) para abrir uma aba Visualizador ou executar a Visualização (airbnb). Observe o V maiúsculo no comando Visualizar. O R sempre diferencia maiúsculas de minúsculas!
+
+Você também pode usar o comando *print* para solicitar mais (ou menos) linhas e colunas na janela do console:
+
+```{r}
+print(airbnb, n = 25, width = 100)
+```
+
+# Manipulando *dataframes*
+
+## Transformação dos tipos de variáveis
+
+Vamos observar nosso dataset novamente:
+
+```{r}
+airbnb[1:10,]
+```
+
+Vimos que *room\_id* e *host\_id* são "identificadores" ou rótulos que identificam as observações. São nomes (neste caso, apenas números) para as salas(quartos) e hóspedes específicos. No entanto, vemos que o Ros trata como números inteiros, ou seja, como números. Isso significa que poderíamos adicionar os *room\_id‘s* de duas salas diferentes e obter um novo número. No entanto, isso não faria muito sentido, porque os *room\_id* são apenas rótulos.
+
+Certifique-se de que R trate os identificadores como rótulos, em vez de números, fatorando-os. Observe o operador $. Este operador muito importante nos permite selecionar variáveis específicas de um *dataframe*, neste caso *room\_id* e *host\_id*.
+
+```{r}
+airbnb$room_id_F <- factor(airbnb$room_id)
+airbnb$host_id_F <- factor(airbnb$host_id)
+```
+
+Uma variável de fator é semelhante a uma variável de caractere, pois armazena letras. Os fatores são mais úteis para variáveis que podem assumir apenas um número de categorias pré-determinadas. Eles devem, por exemplo, ser usados para variáveis dependentes categóricas - por exemplo, se uma venda foi feita ou não: venda versus não venda. Você pode pensar em fatores como variáveis que armazenam rótulos. Os rótulos reais não são tão importantes (não nos importamos se uma venda é chamada de venda ou sucesso ou algo mais), apenas os usamos para fazer uma distinção entre categorias diferentes. É muito importante fatorar variáveis inteiras que representam variáveis independentes ou dependentes categóricas, porque, se não fatorarmos essas variáveis, elas serão tratadas como contínuas em vez de variáveis categóricas nas análises. 
+
+Por exemplo, uma variável pode representar uma venda como 1 e uma não-venda como 0. Nesse caso, é importante informar ao R que essa variável deve ser tratada como uma variável categórica em vez de contínua.
+
+As variáveis de caractere são diferentes das variáveis de fator, pois não são apenas rótulos para categorias. Um exemplo de variável de caractere seria uma variável que armazena as respostas dos entrevistados para uma pergunta em aberto. Aqui, o conteúdo real é importante (nós nos importamos se alguém descreve sua estadia no Airbnb como muito boa ou excelente ou outra coisa).
+
+No conjunto de dados do airbnb, os *room\_id* não são rigorosamente determinados de antemão, mas definitivamente são rótulos e não devem ser tratados como números. Por isso, pedimos para o R convertê-los em fatores. Vamos dar uma olhada no conjunto de dados do airbnb novamente para verificar se o tipo dessas variáveis mudou após fatorar:
+
+```{r}
+glimpse(airbnb)
+```
+
+Vemos que o tipo de *room\_id* e *host\_id* agora é $<$*fct*$>$ (fator).
+
+## Transformações numéricas
+
+Vamos dar uma olhada nas classificações das acomodações:
+
+```{r}
+# Uso a funcao head para garantir que o 
+#R mostre apenas as primeiras classificacoes.
+
+# Caso contrario, teremos uma lista muito 
+#longa de classificacoes..
+head(airbnb$overall_satisfaction)
+```
+
+Vemos que as classificações estão em uma escala de 0 a 5. Se preferirmos ter classificações em uma escala de 0 a 100, poderíamos simplesmente multiplicar as classificações por 20:
+
+```{r}
+airbnb$overall_satisfaction_100 <- airbnb$overall_satisfaction * 20 
+# Perceba que criamos uma nova variavel overall_satisfaction_100.
+# A variavel original overall_satisfaction continua inalterada.
+
+# Você tambem pode inspecionar todo o 
+#conjunto de dados com o Visualizador
+# e veja se ha uma nova coluna a direita.
+head(airbnb$overall_satisfaction_100) 
+```
+
+## Transformando variáveis com a função mutate
+
+Também podemos transformar variáveis com a função *mutate*:
+
+```{r}
+airbnb <- mutate(airbnb, 
+                 room_id_F = factor(room_id), 
+                 host_id_F = factor(host_id),
+                 overall_satisfaction_100 = overall_satisfaction * 20)
+```
+
+Isso instrui o R a pegar o conjunto de dados do airbnb, criar uma nova variável *room\_id\_F* que deve ser do tipo fator de *room\_id*, uma nova variável *host\_id\_F* que deve ser um fator de *host\_id* e uma nova variável *overall\_satisfaction\_100* que deve ser a satisfação geral vezes 20. O conjunto de dados com esses alterações (transformações) devem ser atribuídas ao objeto airbnb.
+
+Observe que não precisamos usar o operador \$ aqui, porque a função *mutate* sabe desde seu primeiro argumento (airbnb) onde procurar determinadas variáveis e, portanto, não precisamos especificá-lo posteriormente com airbnb $. Uma vantagem do uso da função *mutate* é que ela mantém bem todas as transformações desejadas dentro de um comando. 
+
+### Incluindo ou excluindo e renomeando variáveis (colunas)
+
+Se olharmos para os dados, também podemos ver que *country é NA, o que significa que não está disponível ou está ausente. *city é sempre a Bélgica (o que está errado porque a Bélgica é um país, não uma cidade) e o *borought contém as informações da cidade. Vamos corrigir esses erros removendo a variável *country de nosso conjunto de dados e renomeando *city e *borought. Também excluiremos o *survey\_id porque essa variável é constante nas observações e não a usaremos no restante da análise:
+
+```{r}
+airbnb <- select(airbnb, -country, -survey_id) 
+
+# Diga ao R para remover country e survey_id 
+#do \textit{dataframe} do airbnb incluindo 
+#um sinal de menos antes dessas variáveis.
+
+# Atribua novamente esse novo quadro 
+#de dados ao objeto airbnb.
+
+colnames(airbnb) # Agora você verá que o country e o survey_id se foram.
+
+colnames(airbnb)[5]<-"city"
+# Diga ao R para renomear algumas 
+#variaveis do \textit{dataframe} do airbnb e
+#reatribuir esse novo \textit{dataframe} ao objeto do airbnb.
+
+airbnb[1:10,] # country = Belgica agora e cidade se refere a cidades
+```
+
+### Incluindo ou excluindo observações (linhas)
+
+[Mais adiante](https://bookdown.org/content/1340/graphs.html#graphs), faremos um gráfico dos preços do Airbnb nas dez maiores cidades da Bélgica (em termos de população): Bruxelas, Antuérpia, Gent, Charleroi, Liège, Bruges, Namur, Lovaina, Mons e Aalst.
+
+Para isso, precisamos criar um objeto de dados que tenha apenas dados para as dez maiores cidades. Para fazer isso, primeiro precisamos de um vetor com os nomes das dez maiores cidades, para que, na próxima seção, possamos dizer ao R para incluir apenas os dados dessas cidades:
+
+```{r}
+colnames(airbnb)[4]<-"country"
+# Cria um vetor com as 10 maiores cidades
+topten <- c("Brussel","Antwerpen","Gent",
+            "Charleroi","Liege","Brugge",
+            "Namur","Leuven","Mons","Aalst") 
+topten # Mostra esse vetor.
+```
+
+[Lembre-se](https://bookdown.org/content/1340/airbnbdata.html#assignment) de que um vetor é uma estrutura de dados unidimensional (diferente de um _dataframe_ que possui duas dimensões, isto é, colunas e linhas). Usamos o operador *c()* para criar um vetor que chamamos de topten. *c()* é uma abreviação de concatenar, que significa juntar as coisas. O vetor *topten* é um vetor de strings (palavras). Deve haver aspas entre as strings. Um vetor de números, no entanto, não requer aspas.
+
+Qualquer vetor que você criará aparecerá como um objeto no painel Ambiente (janela superior direita).
+
+### Incluindo ou excluindo observações com a função *filter*
+
+Para armazenar apenas os dados das dez maiores cidades, precisamos do operador *\%in\%* do pacote *Hmisc*:
+
+```{r}
+#install.packages("Hmisc")
+library(Hmisc)
+```
+
+Agora podemos usar a função de filtro para instruir o R a reter os dados apenas das dez maiores cidades:
+
+```{r}
+airbnb.topten <- airbnb%>%
+  filter(city %in% topten)
+# Filtre o \textit{dataframe} do airbnb para manter
+#apenas as cidades no vetor topten.
+# Armazene o conjunto de dados filtrado em 
+#um objeto chamado airbnb.topten.
+
+# Entao, estamos criando um novo conjunto de 
+#dados airbnb.topten, que eh um subconjunto do 
+#conjunto de dados airbnb.
+# Verifique o painel Ambiente para ver se o
+#conjunto de dados airbnb.topten tem menos 
+#observacoes que o conjunto de dados airbnb,
+#porque soh possui dados para as dez maiores cidades.
+```
+
+### Resumindo: Tabelas de frequência
+
+Cada observação em nosso conjunto de dados é uma sala ou quarto; portanto, sabemos que nossos dados contêm informações sobre 17651 quartos. Digamos que queremos saber quantos quartos existem por cidade:
+
+```{r}
+airbnb%>%
+group_by(city)%>% # Use a funcao group_by 
+  #para agrupar o \textit{dataframe} do airbnb 
+  #(fornecido pelo pipe na linha anterior) por cidade
+summarise(nr_per_city = n(),.groups="drop") # Resuma este objeto agrupado
+#(fornecido pelo pipe na linha anterior): peca ao R para 
+#criar uma nova variavel nr_per_city que possua o numero
+#de observacoes em cada grupo (cidade)
+```
+
+Dizemos ao R para pegar o objeto airbnb, agrupá-lo por cidade e resumi-lo (*summarise*). O resumo que queremos é o número de observações por grupo. Nesse caso, as cidades formam os grupos. Os grupos sempre serão a primeira coluna em nossa saída. Obtemos o número de observações por grupo com a função *n()*. Esses números são armazenados em uma nova coluna denominada *nr\_per\_city*.
+
+Como você pode ver, essas frequências são classificadas em ordem alfabética por cidade. Em vez disso, podemos classificá-los pelo número de quartos por cidade:
+
+```{r}
+airbnb %>% 
+  group_by(city) %>%
+  summarise(nr_per_city = n(),.groups="drop") %>%
+  arrange(nr_per_city) # Usa a funcao arrange para classificar em uma coluna selecionada
+```
+
+Só vamos visualizar melhor mudando a ordem, ou seja, mostrando a cidade com o menor número de quartos no topo. Para exibir a cidade com mais quartos no topo, classifique em ordem decrescente usando *arrange(desc())*:
+
+```{r}
+airbnb %>% 
+  group_by(city) %>%
+  summarise(nr_per_city = n(),.groups="drop") %>%
+  arrange(desc(nr_per_city)) # Classifica por ordem descendente
+```
+
+Você verá que a capital Bruxelas tem mais quartos em oferta, seguidos por Antuérpia e Gent. 
+
+Observe que isso é muito parecido com trabalhar com a Tabela Dinâmica no Excel. Você poderia ter feito tudo isso no Excel, mas isso tem várias desvantagens, especialmente ao trabalhar com grandes conjuntos de dados como o nosso: você não tem registro do que clicou, de como classificou os dados e do que pode ter copiado ou excluído. No Excel, é mais fácil cometer erros acidentais sem perceber do que no R. No R, você tem seu script, para poder voltar e verificar todas as etapas de sua análise.
+
+Nota: você também poderia ter feito isso sem o operador *pipe* (%$>$%):
+
+```{r}
+airbnb.grouped <- group_by(airbnb, city)
+airbnb.grouped.summary <- summarise(airbnb.grouped, nr_per_city = n(),.groups = "drop")
+arrange(airbnb.grouped.summary, desc(nr_per_city))
+```
+
+
+Mas espero que você concorde que o código que usa o operador de *pipe* é mais fácil de ler. Além disso, sem o operador *pipe*, você acabará criando muitos objetos desnecessários, como *airbnb.grouped* e *airbnb.grouped.summary*.
+
+## Estatísticas Descritivas
+
+Digamos que, além das frequências por cidade, também desejemos o preço médio por cidade.
+
+Queremos que isso seja classificado em ordem decrescente pelo preço médio. Além disso, agora queremos armazenar as frequências e médias em um objeto (na seção anterior, não armazenamos a tabela de frequências em um objeto):
+
+```{r}
+airbnb.summary <- airbnb %>% # Armazena este resumo em um 
+#objeto chamado airbnb.summary.
+  group_by(city) %>%
+  summarise(nr_per_city = n(), 
+            average_price = mean(price),
+            .groups="drop")  # Aqui informamos ao R para criar 
+#outra variavel chamada average_price que nos fornece a media
+#dos precos por grupo (city)
+airbnb.summary%>%  
+arrange(desc(average_price)) # Agora organiza por average_price
+#e mostra o maior preco praticado dentre os demais
+
+# Veja o painel de Ambiente para visualizar se ha
+#agora um novo objeto chamado airbnb.summary.
+
+# Ao inves de apenas rodar airbnb.summary, 
+# eu o envolvi em um comando de print e 
+#defini n como Inf para ver todas as linhas.
+
+#print(airbnb.summary, n = Inf) 
+```
+
+Talvez surpreendentemente, as três principais cidades mais caras são Bastogne, Philippeville e Verviers. Talvez o preço médio dessas cidades seja alto por causa de discrepâncias (\textit{outliers}). 
+
+Vamos calcular algumas estatísticas mais descritivas para ver se nosso palpite está correto:
+
+```{r}
+airbnb %>%
+  group_by(city) %>%
+  summarise(nr_per_city = n(), 
+            average_price = mean(price),
+            median_price = median(price), # calcula a mediana dos
+#precos por grupo (city). 
+            max_price = max(price),.groups="drop") %>% # calcula o preco maximo 
+#por grupo (city).
+  arrange(desc(max_price),
+          desc(median_price)) # ordena em descendente pela
+#mediana de preco entao pelo preco maximo.
+```
+
+Vemos que duas das três cidades com o preço médio mais alto (Verviers e Bastogne) também estão entre as cinco principais cidades com as medianas de preços; portanto, o seu preço médio alto não se deve apenas a alguns quartos com preços extremamente altos (embora tenham o preço mais alto, quartos nessas cidades são muito caros).
+
+## Exportando (summaries) dos dados
+
+Às vezes, você pode querer exportar dados ou um resumo dos dados. Vamos salvar nossos dados ou resumo em um arquivo Excel (podemos convertê-lo em um arquivo do .csv, se quisermos, pois o R lida melhor com esse formato):
+
+```{r}
+# o primeiro argumento eh o objeto que voce deseja armazenar, o segundo eh o nome que voce deseja atribuir ao arquivo (nao esqueca a extensao .csv)
+# use write_csv2 quando voce tiver um computador belga (AZERTY), caso contrário, os números decimais não serão armazenados como números
+
+# armazenamento de dados
+# write_excel_csv(airbnb, "airbnb.csv") #retire o comentario # para rodar o comando
+# write_excel_csv2(airbnb, "airbnb.csv")
+
+# armazenamento de summary
+# write_excel_csv(airbnb.summary, "airbnb_summary.csv")
+# write_excel_csv2(airbnb.summary, "airbnb_summary.csv")
+```
+
+O arquivo será salvo no seu diretório de trabalho.
+
+## Gráficos
+
+
+Faremos gráficos dos dados das dez cidades mais populosas da Bélgica. Se você possui o conjunto de dados completo do Airbnb em sua memória (verifique o painel Ambiente), basta filtrá-lo:
+
+```{r fig.height = 4, fig.width = 8}
+airbnb.topten <- airbnb %>% 
+  filter(city %in% c("Brussel","Antwerpen","Gent",
+                     "Charleroi","Liege","Brugge",
+                     "Namur","Leuven","Mons","Aalst")) # lembre-se
+#de que voce tera que carregar o pacote Hmisc para usar o operador %in%.
+
+```
+
+Se você acabou de iniciar uma nova sessão R, também pode reler o arquivo .csv executando o código na seção da seção anterior.
+
+## Diagrama de dispersão (scatterplot)
+
+Vamos criar um scatterplot dos preços por cidade:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_point()
+```
+
+Se tudo correr bem, uma plotagem deve aparecer no canto inferior direito da tela. As figuras são feitas com o comando *ggplot*. Na primeira linha, você diz ao *ggplot* quais dados devem ser usados para criar um gráfico e quais variáveis devem aparecer no eixo X e no eixo Y. Dizemos para colocar cidade no eixo X e preço no eixo Y. A especificação do eixo X e do eixo Y sempre deve vir como argumentos para uma função aes, que por sua vez é fornecida como um argumento para a função *mapping* (mapeamento). Na segunda linha, você diz ao *ggplot* para desenhar pontos (*geom\_point*).
+
+Ao criar um gráfico, lembre-se de sempre adicionar um *$+$* no final de cada linha de código que compõe o gráfico, exceto o último (adicionar o *$+$* no início de uma linha não funcionará).
+
+O gráfico não é muito informativo porque muitos pontos são desenhados um sobre o outro.
+
+## Jitter
+
+Vamos adicionar *jitter* aos nossos pontos:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_jitter() # O mesmo codigo de antes mas agora mudamos geom_point para geom_jitter.
+
+
+```
+
+
+Em vez de solicitar pontos com *geom\_point()*, agora solicitamos pontos com *jitter* adicionado com *geom\_jitter()*. Jitter é um valor aleatório que é adicionado a cada coordenada X e Y, de modo que os pontos de dados não sejam desenhados um sobre o outro. Observe que fazemos isso apenas para tornar o gráfico mais informativo (compare-o com o gráfico de dispersão anterior, onde muitos pontos de dados são desenhados um sobre o outro); não altera os valores reais em nosso conjunto de dados.
+
+## Histograma
+
+Ainda não está claro. Parece que a distribuição do preço está correta. Isso significa que a distribuição do preço não é normal. Uma distribuição normal tem dois recursos principais.
+
+Uma primeira característica é que existem mais valores próximos à média do que valores distantes da média.
+
+Em outras palavras, valores extremos não ocorrem com muita frequência.
+
+Uma segunda característica é que a distribuição é simétrica. Em outras palavras, o número de valores abaixo da média é igual ao número de valores acima da média. Em uma distribuição distorcida, existem valores extremos em apenas um lado da distribuição. No caso de inclinação à direita, isso significa que existem valores extremos no lado direito da distribuição.
+
+No nosso caso, isso significa que existem algumas listagens do Airbnb com preços muito altos. Isso aumenta a média da distribuição, de modo que as listagens não sejam mais normalmente distribuídas em torno da média.
+
+Vamos desenhar um histograma dos preços:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = price)) + # Observe que nao
+  #temos mais uma cidade x =. O preco deve estar no eixo X 
+  #e as frequencias dos precos devem estar no eixo Y
+  geom_histogram() # Eixo Y = frequencia dos valores no eixo X
+```
+
+De fato, existem alguns preços extremamente altos (em comparação com a maioria dos preços), portanto, os preços estão inclinados à direita. Nota: o *stat\_bin()* usando compartimentos = 30. Escolha um valor melhor com o aviso de largura de caixa no console que possa ser ignorado com segurança.
+
+## Transformação logarítmica
+
+Como a variável *price* está inclinada à direita, podemos transformá-la em log para torná-la mais normal:
+
+```{r fig.height = 4, fig.width = 8}
+# No eixo y agora temos log(price, base=exp(1)) ao inves de price.
+#log(price, base=exp(1)) = assuma o log natural, 
+#i.e., o log com base = exp(1) = e.
+#(e=constante de Euller = 2,718...)
+
+ggplot(data = airbnb.topten,
+       mapping = aes(x = city, 
+                     y = log(price, base=exp(1)))) + 
+  geom_jitter()
+```
+
+## Plotando a mediana
+
+Vamos ter uma idéia melhor da mediana de preço por cidade:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour="tomato3", size = 4, geom="point")
+```
+
+A linha de código para obter a mediana pode ser lida da seguinte forma: *stat\_summary* solicitará um resumo estatístico. A estatística que queremos é a mediana em uma cor chamada *tomato3*, com tamanho 4. Ela deve ser representada como um "ponto". Vemos que Bruges é a cidade com o preço mediano mais alto. É muito mais fácil ver isso quando transformamos o preço por log:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = city, y = log(price, base = exp(1)))) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour="tomato3", size = 4, geom="point")
+```
+
+## Plota a média
+
+Vamos adicionar a média também, mas com uma cor e forma diferentes da média:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb.topten, mapping = aes(x = city, y = log(price, base = exp(1)))) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour="tomato3", size = 4, geom="point") +
+  stat_summary(fun=mean,
+               colour="green",
+               size = 4, 
+               geom="point",
+               shape = 23,
+               fill = "green")
+```
+
+O código para obter a média é muito semelhante ao usado para obter a mediana. Simplesmente alteramos a estatística, a cor e adicionamos a forma = 23 para obter diamantes em vez de círculos e preencher = *green* para preencher os diamantes (pontos do gráfico). Vemos que os meios e medianas são bastante semelhantes.
+
+## Salvando imagens
+
+Podemos salvar esse gráfico em nosso disco rígido. Para fazer isso, clique em Exportar / Salvar como imagem. Se você não alterar o diretório, o arquivo será salvo no seu diretório de trabalho. Você pode redimensionar a plotagem e também fornecer um nome de arquivo significativo - Rplot01.png não será útil quando você tentar encontrar o arquivo posteriormente.
+
+Uma maneira diferente (reproduzível) de salvar seu arquivo é agrupar o código nas funções *png()* e *dev.off()*:
+
+```{r}
+#png("price_per_city.png", width=800, height=600) 
+# Isso ira preparar o R para salvar o grafico a seguir. 
+# Fornece um nome de arquivo e dimensoes para largura e altura da figura em pixels
+
+#ggplot(data = airbnb.topten, mapping = aes(x = city, log(price, base = exp(1)))) + 
+ # geom_jitter() +
+ # stat_summary(fun.y=mean, colour="green", size = 4, geom="point", shape = 23, fill = "green") # Somente mantivemos a media aqui
+
+#dev.off() # Isso dira ao R que terminamos a plotagem e que ela deve salvar a plotagem no disco rigido.
+```
+
+Embora o R tenha uma interface não gráfica, ele pode criar gráficos muito bons.
+
+Praticamente todos os pequenos detalhes no gráfico podem ser ajustados. Muitos dos gráficos que você vê em "jornalismo de dados" (por exemplo, em [https://www.nytimes.com/](https://www.nytimes.com/) ou em [http://fivethirtyeight.com/](http://fivethirtyeight.com/) são feitos em R.
+
+# Análise básica de dados: analisando dados secundários
+
+Nesta seção, analisaremos os dados do Airbnb.com com a finalidade de traçarmos comparações significativas dos preços médios dos quartos por diferentes características.
+
+## Importação dos dados
+
+Você pode baixar o conjunto de dados clicando com o botão direito do mouse (nesse link)[http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.csv], selecionando “Salvar link como…” (ou algo semelhante) e salvando o arquivo .csv em um diretório no disco rígido. Como mencionado na introdução, é uma boa ideia salvar seu trabalho em um diretório que é automaticamente copiado pelo software de compartilhamento de arquivos. Vamos selecionar os dados:
+
+```{r}
+airbnb <- airbnb %>% 
+  mutate(room_id = factor(room_id), host_id = factor(host_id)) %>% 
+  select(-country) # dropa country, 
+  #veja a introdução de por que fazemos isso
+  
+colnames(airbnb)
+```
+
+Não se esqueça de salvar seu script no diretório de trabalho.
+
+## Manipulação
+
+Se você abrir o *dataframe* do airbnb em uma guia do Visualizador, verá que os *bathrooms* e o *minstay* são colunas vazias e que o *local* e *last\_modified* não são muito informativos. Vamos remover estas variáveis:
+
+```{r}
+airbnb <- airbnb %>% 
+  select (-bathrooms, -minstay, -location, -last_modified)
+```
+
+Agora, dê uma olhada na variável *overall\_satisfaction:*
+
+```{r}
+# use head() para imprimir apenas os primeiros 
+#valores de um vetor, para evitar uma lista muito longa
+# tail() imprime apenas os últimos valores de um vetor
+head(airbnb$overall_satisfaction)
+```
+
+A segunda classificação é zero. Provavelmente, isso significa que a classificação está faltando, em vez de ser realmente zero. Vamos substituir os valores zero na *overall\_satisfaction* por NA:
+
+```{r}
+airbnb <- airbnb %>% 
+  mutate(overall_satisfaction = replace(overall_satisfaction, overall_satisfaction == 0, NA)) 
+  
+# crie uma variavel "nova" overall_satisfaction 
+#que seja igual a overall_satisfaction com valores 
+#de NA em que overall_satisfaction seja igual a zero.
+
+# Digamos que desejassemos substituir NA por 0, 
+#entao o comando se tornaria: 
+#substitute(overall_satisfaction, is.na(overall_satisfaction), 0)
+# overall_satisfaction == NA nao funciona
+
+head(airbnb$overall_satisfaction)
+```
+
+## Mesclando datasets
+
+Posteriormente, testaremos se o preço está relacionado a determinadas características dos tipos de quartos. As características potencialmente interessantes são: *room\_type*, *city*, *reviews*, *overall\_satisfaction*, etc. Para torná-lo ainda mais interessante, podemos aumentar os dados, por exemplo, com dados disponíveis publicamente nas cidades. Reuni os tamanhos de população das cidades belgas mais populosas [deste site](https://population.mongabay.com/population/belgium/). Faça o download desses dados [aqui](http://users.telenet.be/samuelfranssens/tutorial_data/population.xlsx) e importe-os para o R:
+
+```{r}
+url<-'http://users.telenet.be/samuelfranssens/tutorial_data/population.xlsx'
+poptemp <- tempfile()
+download.file(url, poptemp, mode="wb")
+population<-read_excel(path = poptemp, sheet = 1)
+
+population[1:10,]
+```
+
+Agora, queremos vincular esses dados ao nosso _dataframe_ do airbnb. Isso é muito fácil no R (mas é muito difícil, por exemplo, no Excel):
+
+```{r}
+airbnb.merged <- left_join(airbnb, population, by = c("city" = "place"))
+# o primeiro argumento eh o conjunto de dados que queremos aumentar
+# o segundo argumento eh onde encontramos os dados para aumentar
+#o primeiro conjunto de dados com
+# o terceiro argumento sao as variaveis que usamos para vincular 
+#um conjunto de dados ao outro (cidade eh uma variavel no airbnb,
+#local eh uma variavel na populacao)
+```
+
+Confira as colunas mais relevantes do _dataframe_ airbnb.merged:
+
+```{r}
+airbnb.merged %>% 
+  select(room_id, city, price, population)
+```
+
+Vemos que há uma *population* de colunas em nosso conjunto de dados *airbnb.merged*. Você também pode ver isso no painel Ambiente: *airbnb.merged} tem uma variável a mais que *airbnb* (mas o mesmo número de observações).
+
+Faltam dados para Bruxelas, no entanto. Isso ocorre porque Bruxelas está escrito em holandês no conjunto de dados airbnb, mas em inglês no conjunto de dados da *population}. 
+
+Vamos substituir Brussels por Brussel (nome da cidade de Bruxelas) no conjunto de dados da *population} (e também alterar a ortografia de duas outras cidades) e vincular os dados novamente:
+
+```{r}
+population <- population %>% 
+  mutate(place = replace(place, place == "Brussels", "Brussel"),
+         place = replace(place, place == "Ostend", "Oostende"),
+         place = replace(place, place == "Mouscron", "Moeskroen"))
+
+airbnb.merged <- left_join(airbnb, population, by = c("city" = "place"))
+
+airbnb.merged %>% 
+  select(room_id, city, price, population)
+
+airbnb.merged
+```
+
+## Amostras independentes: teste t
+
+Digamos que queremos testar se os preços diferem entre cidades grandes e pequenas. Para fazer isso, precisamos de uma variável que indique se um Airbnb está em uma cidade grande ou pequena. Na Bélgica, consideramos cidades com uma população de pelo menos cem mil como grande:
+
+```{r}
+airbnb <- airbnb %>% 
+ mutate(population=airbnb.merged$population,
+        size = factor(airbnb.merged$population > 100000, labels = c("small","large")))
+
+# observando a variavel populacao
+
+head(airbnb$population)
+
+# e o tamanho da variavel
+head(airbnb$size)
+
+airbnb[1:10,]
+```
+
+No script acima, primeiro criamos uma variável lógica (esse é outro tipo de variável; discutimos outras aqui). Chamamos essa variável de grande e é *TRUE* quando a população é maior que 100000 e *FALSE*, se não. Depois, criamos um novo tamanho de variável que é a fatoração de grande porte. Observe que adicionamos outro argumento à função *factor*, ou seja, *labels*, para fornecer os valores *large* de nomes mais intuitivos. *FALSE* vem em primeiro lugar no alfabeto e obtém o primeiro rótulo pequeno, *TRUE} fica em segundo lugar no alfabeto e obtém o segundo rótulo grande.
+
+Para saber quais cidades são grandes e quais são pequenas, podemos solicitar frequências de combinações de tamanho (grande versus pequeno) e *city* (a própria cidade). Aprendemos como fazer isso no início desse tutorial (consulte as tabelas de frequência e as estatísticas descritivas):
+
+```{r}
+airbnb %>% 
+  group_by(size, city) %>% 
+  summarise(count = n(), population = mean(population), .groups="drop") %>% # Cidades 
+  #formam os grupos. Portanto, a populacao media de um grupo = a media
+  #de observacoes com a mesma populacao, porque elas vem da mesma
+  #cidade = a populacao da cidade
+  arrange(desc(size), 
+          desc(population)) # maior cidade no topo
+ # print (n = Inf) # mostra a distribuicao completa das frequencias
+
+```
+
+Vemos que algumas cidades têm um valor de NA para tamanho. Isso ocorre porque não temos população para essas cidades (e, portanto, também não sabemos se é uma cidade grande ou pequena). Vamos filtrar essas observações e verificar as médias e os desvios padrão de preço, dependendo do tamanho da cidade:
+
+```{r}
+airbnb.cities <- airbnb %>% 
+  filter(!is.na(population)) 
+# Filtre as observacoes para as quais nao temos a populacao.
+# O ponto de exclamacao deve ser lido como NAO. Entao, 
+#queremos manter as observacoes para as quais a populacao NAO eh NA.
+# Visite https://r4ds.had.co.nz/transform.html#filter-rows-with-filter 
+#para conhecer mais sobre operadores logicos (veja secao 5.2.2).
+
+airbnb.cities %>% 
+  group_by(size) %>% 
+  summarise(mean_price = mean(price),
+            sd_price = sd(price),
+            count = n(), .groups="drop")
+```
+
+Vemos que os preços são altos tanto nas pequenas quanto nas grandes cidades, mas queremos saber se essa diferença é significativa. Um teste $t$ de amostras independentes pode fornecer a resposta (as listagens nas grandes cidades e as listagens nas pequenas cidades são as amostras independentes), mas precisamos verificar primeiro uma suposição: as variâncias das duas amostras independentes são iguais?
+
+```{r}
+#install.packages("car") # Para o teste de igualdade
+#de variancias precisaremos do pacote car.
+library(car)
+
+# Teste de Levene para variancias iguais 
+# Baixo valor p significa que as variancias nao sao iguais. 
+# Primeiro argumento = variavel dependente continua,
+#segundo argumento = variavel independente categorica.
+
+leveneTest(airbnb.cities$price, airbnb.cities$size) 
+```
+
+A hipótese nula de variâncias iguais é rejeitada ($p <0,001$), portanto, devemos continuar com um teste $t$ que pressupõe variâncias desiguais:
+
+```{r}
+# Teste se os preços médios das cidades grandes e pequenas são diferentes.
+# Indique se o teste deve assumir variancias 
+#iguais ou nao (defina var.equal = TRUE para um teste que 
+#assume varancias iguais).
+
+t.test(airbnb.cities$price ~ airbnb.cities$size, var.equal = FALSE)
+```
+
+Você pode relatar o seguinte: “As cidades grandes (M = 85,42, DP = 82,46) tinham um preço mais baixo ($t$ (5762,79) = 12,376, $p <0,001$, variância desigual assumida) do que as cidades pequenas (M = 110,31, DP = 121,63). ”
+
+## ANOVA univariada
+
+Quando sua variável independente (categórica) possui apenas dois grupos, é possível testar se as médias da variável dependente (contínua) são significativamente diferentes ou não com um teste $t$. Quando sua variável independente possui mais de dois grupos, você pode testar se as médias são diferentes com uma ANOVA.
+
+Por exemplo, digamos que queremos testar se há uma diferença significativa entre os preços médios de casas e apartamentos inteiros, quartos privativos e quartos compartilhados. Vamos dar uma olhada nas médias por tipo de quarto:
+
+```{r}
+airbnb.summary <- airbnb %>% 
+  group_by(room_type) %>% 
+  summarise(count = n(), # obtenha as frequencias dos diferentes tipos de quartos 
+            mean_price = mean(price), # o preco medio por tipo de quarto
+            sd_price = sd(price), .groups="drop") # e o desvio padrao do preco 
+#por tipo de quarto
+
+airbnb.summary
+```
+
+Também podemos traçar essas médias em um gráfico de barras:
+
+```{r fig.height = 4, fig.width = 8}
+# Ao criar um grafico de barras, o conjunto de dados
+#que serve como entrada para o ggplot eh o resumo com 
+#os meios, nao o conjunto de dados completo.
+# (Eh por isso que salvamos o resumo acima em um objeto airbnb.summary)
+
+ggplot(data = airbnb.summary, mapping = aes(x = room_type, y = mean_price)) + 
+  geom_bar(stat = "identity", position = "dodge")
+```
+
+Não é de surpreender que casas ou apartamentos inteiros tenham preços mais altos do que quartos privativos, que, por sua vez, têm preços mais altos que quartos compartilhados. Também vemos que há quase o dobro de casas e apartamentos inteiros do que quartos privativos disponíveis e quase não há quartos compartilhados disponíveis. Além disso, o desvio padrão é muito mais alto na categoria de casas ou apartamentos inteiros do que nas categorias de quarto particular ou compartilhado.
+
+Uma ANOVA pode testar se há diferenças significativas nos preços médios por tipo de quarto. Porém, antes de executar uma ANOVA, precisamos verificar se as premissas da ANOVA são atendidas.
+
+## Suposição: normalidade de resíduos
+
+A primeira suposição é que a variável dependente (*price*) é normalmente distribuída em cada nível da variável independente (*room\_type*). Primeiro, vamos inspecionar visualmente se essa suposição será válida:
+
+```{r}
+# Ao criar um histograma, o conjunto de 
+#dados que serve como entrada para o ggplot
+#eh o conjunto de dados completo, nao o resumo com as médias
+
+ggplot(data = airbnb, mapping = aes(x = price)) + # Queremos price no eixo x.
+  facet_wrap(~ room_type) + # Queremos que isso seja dividido por room_type.
+  #facet_wrap garantira que o ggplot crie paineis diferentes no seu gráfico.
+  geom_histogram() # geom_histogram garante que as 
+#frequencias dos valores no eixo X sejam plotadas.
+```
+
+Vemos que há inclinação correta para cada tipo de sala. Também podemos testar formalmente, dentro de cada tipo de sala, se as distribuições são normais com o teste Shapiro-Wilk. Por exemplo, para as salas compartilhados:
+
+```{r}
+airbnb.shared <- airbnb %>% 
+  filter(room_type == "Shared room") # reter dados apenas quartos compartilhadas
+
+shapiro.test(airbnb.shared$price)
+```
+
+O valor-$p$ deste teste é extremamente pequeno, portanto a hipótese nula de que a amostra provém de uma distribuição normal deve ser rejeitada. Se tentarmos o teste Shapiro-Wilk para as salas privadas:
+
+```{r}
+airbnb.private <- airbnb %>% 
+  filter(room_type == "Private room") # armazenar dados apenas dos quartos compartilhadas
+  
+#shapiro.test(airbnb.private$price)
+```
+
+Ocorreu um erro ao dizer que o tamanho da amostra é muito grande (6416 obs filtrada). Para contornar esse problema, podemos tentar o teste Anderson-Darling do pacote *nortest*:
+
+```{r}
+#install.packages("nortest")
+library(nortest)
+ad.test(airbnb.private$price)
+```
+
+Mais uma vez, rejeitamos a hipótese nula de normalidade. Deixo como exercício para testar a normalidade dos preços de casas e apartamentos inteiros.
+
+```{r}
+airbnb.entire<-airbnb%>%
+  filter(room_type=="Entire home/apt")
+
+ad.test(airbnb.entire$price)
+```
+
+Agora que sabemos que a suposição de normalidade é violada, o que podemos fazer? Podemos considerar transformar nossa variável dependente com uma transformação de log:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data=airbnb, mapping=aes(x=log(price, base = exp (1)))) + # Queremos o preco
+  #transformado em log no eixo X.
+facet_wrap(~ room_type) + # Queremos que isso seja dividido
+  #por room_type. Facet_wrap garantira que o ggplot
+  #crie paineis diferentes no seu grafico.
+geom_histogram() # geom_histogram garante que 
+#as frequencias dos valores no eixo X sejam plotadas.
+```
+
+Como você pode ver, uma transformação de log normaliza uma distribuição inclinada à direita. Poderíamos então executar a ANOVA na variável dependente transformada em log. No entanto, na realidade, muitas vezes é seguro ignorar violações da suposição de normalidade (a menos que você esteja lidando com pequenas amostras, o que não é o caso aqui). Vamos simplesmente continuar com o preço não transformado como variável dependente.
+
+## Suposição: homogeneidade de variâncias
+
+Uma segunda suposição que precisamos verificar é se as variações de nosso preço variável dependente são iguais nas categorias de nossa variável independente *room\_type*. Normalmente, um gráfico boxplot é informativo:
+
+```{r fig.height = 4, fig.width = 8}
+ggplot(data = airbnb, mapping = aes(x = room_type, y = price)) + 
+  geom_boxplot()
+```
+
+Mas, neste caso, os intervalos interquartis (as alturas das caixas), que normalmente nos dariam uma idéia da variância dentro de cada tipo de quarto, são muito estreitos. Isso ocorre porque o intervalo de valores Y a ser plotado é muito amplo devido a alguns valores extremos. Se observarmos os desvios padrão, porém, veremos que estes são muito maiores para todos as salas e apartamentos do que para os quartos privativo e compartilhado:
+
+```{r}
+airbnb %>% 
+  group_by(room_type) %>% 
+  summarise(count = n(), # obtenha as frequencias dos diferentes tipos de quartos
+            mean_price = mean(price), # o preco medio por tipo de quarto
+            sd_price = sd(price),.groups="drop") # e o desvio padrao 
+#do preco por tipo de quarto
+```
+
+Também podemos realizar um teste formal de homogeneidade de variâncias. Para isso, precisamos da função *leveneTest* do pacote *car*:
+
+```{r}
+#install.packages("car") # Para o teste 
+#de variancias iguais, precisamos de um pacote
+#chamado car. Instalamos isso antes, portanto, 
+#nao eh necessario reinstala-lo se voce ja o tiver feito.
+
+library(car)
+
+#Teste de Levene de variancias iguais.
+# Valor baixo de p significa que as variancias nao sao iguais.
+# Primeiro argumento = variavel dependente continua,
+#segundo argumento = variavel independente categorica.
+
+leveneTest(airbnb$price, airbnb$room_type) 
+```
+
+Como o valor $p$ é extremamente pequeno, rejeitamos a hipótese nula de variâncias iguais. Assim como no pressuposto da normalidade, as violações do pressuposto de variâncias iguais podem, no entanto, ser frequentemente ignoradas e o faremos neste caso.
+
+## ANOVA
+
+Para realizar uma ANOVA, precisamos instalar alguns pacotes:
+
+```{r}
+#install.packages("remotes") #O pacote de controles 
+#remotos nos permite instalar pacotes armazenados no 
+#GitHub, um site para desenvolvedores de pacotes. 
+#install.packages("car") #Também precisaremos 
+#do pacote do carro para executar a ANOVA
+#(não é necessário reinstalá-lo se você já tiver feito isso).
+
+library(remotes)
+#install_github('samuelfranssens/type3anova') # Instala o pacote type3anova. 
+#Esta e as etapas anteriores precisam ser executadas apenas uma vez.
+
+library(type3anova) # Carregue o pacote type3anova.
+
+```
+
+Agora podemos prosseguir com a ANOVA verdadeira:
+
+```{r}
+# Primeiro cria um modelo linear
+# A formula lm() toma os argumentos de dados 
+# A fórmula tem a seguinte sintaxe: variável dependente ~ variável (s) independente
+
+linearmodel <- lm(price ~ room_type, data=airbnb) 
+
+# Em seguida, peça a saída no formato ANOVA.
+#Isso fornece a soma dos quadrados do Tipo III. 
+# Observe que isso é diferente da anova (modelo linear),
+#que fornece a soma dos quadrados do tipo I.
+
+type3anova(linearmodel) 
+```
+
+Nesse caso, o valor-$p$ associado ao efeito de *room\_type* é praticamente 0, o que significa que rejeitamos a hipótese nula de que o preço médio é igual para cada *room\_type*. Você pode relatar o seguinte: “Houve diferenças significativas entre os preços médios das diferentes tipos de salas ($F (2, 17648) = 533,57, p <0,001$).”
+
+## Teste de *Tuckey* de diferença significativa verdadeira
+
+Observe que a ANOVA testa a hipótese nula de que as médias em todos os nossos grupos são iguais. A rejeição desta hipótese nula significa que há uma diferença significativa em pelo menos um dos possíveis pares de médias (ou seja, em casa / apartamento inteiro $vs$. privado e / ou em casa / apartamento inteiro $vs$. compartilhado e / ou privado $vs.$ compartilhado). Para ter uma idéia de qual par de médias contém uma diferença significativa, podemos acompanhar o teste de Tukey, que nos dará todas as comparações pareadas.
+
+O teste de Tukey corrige os valores de $p$ para cima - portanto, é mais conservador decidir que algo é significativo - porque as comparações são post-hoc ou exploratórias:
+
+```{r}
+TukeyHSD(aov(price ~ room_type, data=airbnb),"room_type") # O primeiro argumento eh um
+# objeto "aov", o segundo eh a nossa variavel independente.
+```
+
+Isso nos mostra que não há diferença significativa no preço médio de quartos compartilhados e privados, mas que quartos compartilhados e quartos particulares diferem significativamente de casas e apartamentos inteiros.
+
+# Referências
+
++ _R for Marketing Students._ Disponível em: [https://bookdown.org/content/1340/](https://bookdown.org/content/1340/) 
+
++ \textbf{Overleaf, online $\LaTeX~$ editor}. Disponível em [Overleaf.com](http://www.overleaf.com) 
+
++ Xie, Y. _Dynamic Documents with R and knitr_ 2nd edition, 2015.
+
++ _Reproducible Research using R and Overleaf._ Disponível em [Reproducible Research using RMarkdown and Overleaf](https://static1.squarespace.com/static/5757268f7da24f26ca7b21d2/t/5c7587114192021796d7cc84/1551206162093/R_Overleaf_Integration.pdf)

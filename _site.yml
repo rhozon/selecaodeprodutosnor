@@ -1,12 +1,27 @@
 name: "RhOzon"
 output_dir: "."
 navbar:
-  title: "RhOzon Website"
+  title: "Tutoriais"
+  type: default
   left:
     - text: "Home"
-      href: index.html
-    - text: "Selecao de Produtos no R"
-      href: EscolhadeProdutoseAnaliseConjuntanoR.html
+      icon: fa-home
+      href: https://rhozon.github.io/
+    - text: "About"
+      icon: fa-info
+      href: https://rhozon.github.io/site/about.html
+    - text: "More"
+      icon: fa-gear
+      menu:
+        - text: "ENSINO"
+        - text: "---------"
+        - text: "Guia de Tutoriais"
+          href: index.html
+        - text: "---------"
+        - text: "Mix de produtos com Analise Conjunta no R"
+          href: EscolhadeProdutoseAnaliseConjuntanoR.html
+        - text: "Comparando precos de estadias no Airbnb com R"
+          href: ComparandoprecosAirbnb.html
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

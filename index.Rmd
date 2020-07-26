@@ -6,8 +6,19 @@ title: "_Tutoriais_"
 
 Tutoriais disponíveis:
 
-+ Seleção de produtos com Análise Conjunta no R (baixar o pdf ($\LaTeX$) no repositório)
+### *Seleção de produtos com Análise Conjunta no R* 
 
-+ Análise básica de dados com dataset do Airbnb
+<small>(baixar o pdf ($\LaTeX$) no repositório)</small>
+
++ Aqui aprenderemos com dados de uma pesquisa de mercado compilada, como escolhemos os melhores perfis (_mix_) de produtos para oferecer aos nossos clientes de acordo com seus gostos e preferências.
+
+### *Avaliando as melhores estadias do Airbnb no R* 
+
+<small>(ler o pdf (feito em $\LaTeX$) no repositório)</small>
+
++ Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.
+
 
 ***
+
+![](C:/Users/rodri/Downloads/econnerd.png)

@@ -346,15 +346,46 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">RhOzon Website</a>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
 </li>
 <li>
-  <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Selecao de Produtos no R</a>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -442,8 +473,16 @@ str(sorvetesxls)</code></pre>
 ##  $ Individuo 14: num [1:10] 10 1 9 6 5 4 7 3 8 2
 ##  $ Individuo 15: num [1:10] 5 7 3 10 9 4 2 1 6 8</code></pre>
 <p>Este dataset está organizado de forma que as avaliações que cada respondente fez foi inserida nas colunas. Vamos corrigir isso:</p>
-<pre class="r"><code>library(dplyr)
-library(tidyr)
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyr)
 sorvetesxls &lt;- sorvetesxls %&gt;% 
   gather(Respondente, Nota, starts_with(&quot;Individuo&quot;)) %&gt;% 
   
@@ -462,18 +501,18 @@ sorvetesxls &lt;- sorvetesxls %&gt;%
 
 sorvetesxls</code></pre>
 <pre><code>## # A tibble: 150 x 7
-##    Perfil    Sabor     Embalagem      Calorias      Procedencia  Respondente  Nota
-##    &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;          &lt;fct&gt;         &lt;fct&gt;        &lt;fct&gt;       &lt;dbl&gt;
-##  1 Perfil 1  Framboesa Waffle caseiro Convencional  Nao Organico Individuo 1     1
-##  2 Perfil 2  Chocolate Cone           Convencional  Organico     Individuo 1     4
-##  3 Perfil 3  Framboesa Tamanho        Baixa caloria Organico     Individuo 1     2
-##  4 Perfil 4  Morango   Tamanho        Convencional  Organico     Individuo 1     7
-##  5 Perfil 5  Morango   Cone           Baixa caloria Nao Organico Individuo 1     9
-##  6 Perfil 6  Chocolate Waffle caseiro Convencional  Nao Organico Individuo 1     3
-##  7 Perfil 7  Baunilha  Tamanho        Baixa caloria Nao Organico Individuo 1     5
-##  8 Perfil 8  Manga     Waffle caseiro Baixa caloria Organico     Individuo 1    10
-##  9 Perfil 9  Manga     Tamanho        Convencional  Nao Organico Individuo 1     6
-## 10 Perfil 10 Baunilha  Waffle caseiro Convencional  Organico     Individuo 1     8
+##    Perfil    Sabor     Embalagem      Calorias     Procedencia Respondente  Nota
+##    &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;          &lt;fct&gt;        &lt;fct&gt;       &lt;fct&gt;       &lt;dbl&gt;
+##  1 Perfil 1  Framboesa Waffle caseiro Convencional Nao Organi~ Individuo 1     1
+##  2 Perfil 2  Chocolate Cone           Convencional Organico    Individuo 1     4
+##  3 Perfil 3  Framboesa Tamanho        Baixa calor~ Organico    Individuo 1     2
+##  4 Perfil 4  Morango   Tamanho        Convencional Organico    Individuo 1     7
+##  5 Perfil 5  Morango   Cone           Baixa calor~ Nao Organi~ Individuo 1     9
+##  6 Perfil 6  Chocolate Waffle caseiro Convencional Nao Organi~ Individuo 1     3
+##  7 Perfil 7  Baunilha  Tamanho        Baixa calor~ Nao Organi~ Individuo 1     5
+##  8 Perfil 8  Manga     Waffle caseiro Baixa calor~ Organico    Individuo 1    10
+##  9 Perfil 9  Manga     Tamanho        Convencional Nao Organi~ Individuo 1     6
+## 10 Perfil 10 Baunilha  Waffle caseiro Convencional Organico    Individuo 1     8
 ## # ... with 140 more rows</code></pre>
 <p>Como vimos acima, temos as seguintes variáveis em nosso dataset:</p>
 <ul>
@@ -491,6 +530,36 @@ sorvetesxls</code></pre>
 <p>A discussão a seguir da função doe é baseada na discussão da Radiant sobre essa função.</p>
 <pre class="r"><code>#install.packages(&quot;radiant&quot;)
 library(radiant)</code></pre>
+<pre><code>## Loading required package: radiant.data</code></pre>
+<pre><code>## Loading required package: magrittr</code></pre>
+<pre><code>## 
+## Attaching package: &#39;magrittr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: lubridate</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre><code>## 
+## Attaching package: &#39;radiant.data&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:lubridate&#39;:
+## 
+##     month, wday</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     diamonds</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     date</code></pre>
+<pre><code>## Loading required package: radiant.design</code></pre>
+<pre><code>## Loading required package: mvtnorm</code></pre>
+<pre><code>## Loading required package: radiant.basics</code></pre>
+<pre><code>## Loading required package: radiant.model</code></pre>
+<pre><code>## Loading required package: radiant.multivariate</code></pre>
 <p>Para usar a doe, precisamos inserir as informações sobre nossos atributos e seus níveis de uma maneira específica:</p>
 <pre class="r"><code># atributo1, atributo2, etc. sao vetores com um elemento no qual fornecemos 
 #primeiro o nome do atributo seguido por um ponto e virgula e depois fornecemos
@@ -1414,18 +1483,18 @@ maior_nota %&gt;%
   arrange(Respondente, ranking)</code></pre>
 <pre><code>## # A tibble: 60 x 7
 ## # Groups:   Respondente [15]
-##    Respondente  Sabor     Embalagem Calorias      Procedencia  Prediction ranking
-##    &lt;chr&gt;        &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;         &lt;fct&gt;             &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Individuo 1  Framboesa Tamanho   Convencional  Nao Organico     -0.700       1
-##  2 Individuo 1  Framboesa Tamanho   Baixa caloria Organico          1.70        2
-##  3 Individuo 1  Baunilha  Cone      Convencional  Nao Organico      6.3         3
-##  4 Individuo 1  Manga     Cone      Baixa caloria Nao Organico      8.8         4
-##  5 Individuo 10 Manga     Cone      Baixa caloria Nao Organico      3.70        1
-##  6 Individuo 10 Baunilha  Cone      Convencional  Nao Organico      6.78        2
-##  7 Individuo 10 Framboesa Tamanho   Baixa caloria Organico          9.05        3
-##  8 Individuo 10 Framboesa Tamanho   Convencional  Nao Organico     10.0         4
-##  9 Individuo 11 Manga     Cone      Baixa caloria Nao Organico      0.8         1
-## 10 Individuo 11 Framboesa Tamanho   Convencional  Nao Organico      1.8         2
+##    Respondente  Sabor     Embalagem Calorias      Procedencia Prediction ranking
+##    &lt;chr&gt;        &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;         &lt;fct&gt;            &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Individuo 1  Framboesa Tamanho   Convencional  Nao Organi~     -0.700       1
+##  2 Individuo 1  Framboesa Tamanho   Baixa caloria Organico         1.70        2
+##  3 Individuo 1  Baunilha  Cone      Convencional  Nao Organi~      6.3         3
+##  4 Individuo 1  Manga     Cone      Baixa caloria Nao Organi~      8.8         4
+##  5 Individuo 10 Manga     Cone      Baixa caloria Nao Organi~      3.70        1
+##  6 Individuo 10 Baunilha  Cone      Convencional  Nao Organi~      6.78        2
+##  7 Individuo 10 Framboesa Tamanho   Baixa caloria Organico         9.05        3
+##  8 Individuo 10 Framboesa Tamanho   Convencional  Nao Organi~     10.0         4
+##  9 Individuo 11 Manga     Cone      Baixa caloria Nao Organi~      0.8         1
+## 10 Individuo 11 Framboesa Tamanho   Convencional  Nao Organi~      1.8         2
 ## # ... with 50 more rows</code></pre>
 <pre class="r"><code># precisamos reter apenas o sorvete mais bem classificado
 
@@ -1436,23 +1505,23 @@ filter(ranking == 4)
 maior_nota</code></pre>
 <pre><code>## # A tibble: 15 x 7
 ## # Groups:   Respondente [15]
-##    Respondente  Sabor     Embalagem Calorias      Procedencia  Prediction ranking
-##    &lt;chr&gt;        &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;         &lt;fct&gt;             &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Individuo 1  Manga     Cone      Baixa caloria Nao Organico       8.8        4
-##  2 Individuo 10 Framboesa Tamanho   Convencional  Nao Organico      10.0        4
-##  3 Individuo 11 Framboesa Tamanho   Baixa caloria Organico           4.2        4
-##  4 Individuo 12 Framboesa Tamanho   Convencional  Nao Organico      11.3        4
-##  5 Individuo 13 Baunilha  Cone      Convencional  Nao Organico       9.05       4
-##  6 Individuo 14 Framboesa Tamanho   Convencional  Nao Organico      12.1        4
-##  7 Individuo 15 Baunilha  Cone      Convencional  Nao Organico      10.0        4
-##  8 Individuo 2  Manga     Cone      Baixa caloria Nao Organico      11.3        4
-##  9 Individuo 3  Manga     Cone      Baixa caloria Nao Organico       7.9        4
-## 10 Individuo 4  Framboesa Tamanho   Baixa caloria Organico           3.95       4
-## 11 Individuo 5  Manga     Cone      Baixa caloria Nao Organico       8.60       4
-## 12 Individuo 6  Baunilha  Cone      Convencional  Nao Organico       7.6        4
-## 13 Individuo 7  Framboesa Tamanho   Convencional  Nao Organico       9.67       4
-## 14 Individuo 8  Baunilha  Cone      Convencional  Nao Organico       8.77       4
-## 15 Individuo 9  Baunilha  Cone      Convencional  Nao Organico       6.87       4</code></pre>
+##    Respondente  Sabor     Embalagem Calorias      Procedencia Prediction ranking
+##    &lt;chr&gt;        &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;         &lt;fct&gt;            &lt;dbl&gt;   &lt;dbl&gt;
+##  1 Individuo 1  Manga     Cone      Baixa caloria Nao Organi~       8.8        4
+##  2 Individuo 10 Framboesa Tamanho   Convencional  Nao Organi~      10.0        4
+##  3 Individuo 11 Framboesa Tamanho   Baixa caloria Organico          4.2        4
+##  4 Individuo 12 Framboesa Tamanho   Convencional  Nao Organi~      11.3        4
+##  5 Individuo 13 Baunilha  Cone      Convencional  Nao Organi~       9.05       4
+##  6 Individuo 14 Framboesa Tamanho   Convencional  Nao Organi~      12.1        4
+##  7 Individuo 15 Baunilha  Cone      Convencional  Nao Organi~      10.0        4
+##  8 Individuo 2  Manga     Cone      Baixa caloria Nao Organi~      11.3        4
+##  9 Individuo 3  Manga     Cone      Baixa caloria Nao Organi~       7.9        4
+## 10 Individuo 4  Framboesa Tamanho   Baixa caloria Organico          3.95       4
+## 11 Individuo 5  Manga     Cone      Baixa caloria Nao Organi~       8.60       4
+## 12 Individuo 6  Baunilha  Cone      Convencional  Nao Organi~       7.6        4
+## 13 Individuo 7  Framboesa Tamanho   Convencional  Nao Organi~       9.67       4
+## 14 Individuo 8  Baunilha  Cone      Convencional  Nao Organi~       8.77       4
+## 15 Individuo 9  Baunilha  Cone      Convencional  Nao Organi~       6.87       4</code></pre>
 <p>Agora podemos estimar a participação de mercado:</p>
 <pre class="r"><code>market_share &lt;- maior_nota %&gt;% 
   group_by(Sabor, Embalagem, Calorias, Procedencia) %&gt;% 

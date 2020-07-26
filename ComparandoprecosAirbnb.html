@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="por Rodrigo Hermont Ozon" />
+
+
+<title>Comparando preços de estadias no Airbnb com o R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Comparando preços de estadias no Airbnb com o R</h1>
+<h4 class="author"><em>por Rodrigo Hermont Ozon</em></h4>
+
+</div>
+
+
+<hr />
+<p><strong>O objetivo de traduzir esse tutorial consiste em facilitar o aprendizado e utilização da linguagem estatística para os profissionais de marketing e demais áreas de negócio que precisam se adequar a uma realidade mutante e movida por um fluxo significativo de informações por todos os lados. Trabalhar e interpretar bem os dados é um desafio computacional para muitos profissionais dessa área; e esta tradução visa cobrir (ainda que superficialmente) tal lacuna. Este e-book foi escrito no <a href="http://www.overleaf.com">overleaf</a> com o pacote knitr <a href="https://bookdown.org/content/1340/">para a página interativa de autoria de KU Leven Marketing Department.</a></strong></p>
+<hr />
+<div id="sobre-esse-tutorial" class="section level3">
+<h3>Sobre esse tutorial</h3>
+<p>Neste tutorial, exploraremos o R como uma ferramenta para analisar e visualizar dados. O R é uma linguagem de programação estatística que rapidamente ganhou popularidade em muitos campos científicos. A principal diferença entre o R e outro software estatístico como o SPSS é que o R não possui interface gráfica com o usuário. Não há botões para clicar. R é executado inteiramente digitando comandos em uma interface de texto. Isso pode parecer assustador, mas, esperançosamente, no final deste tutorial, você verá como o R pode ajudá-lo a fazer uma melhor análise estatística.</p>
+<p>Então, por que estamos usando R e não um dos muitos outros pacotes estatísticos como SPSS, Eviews, Stata, SAS ou Microsoft Excel? Algumas das razões mais importantes:</p>
+<p>Ao contrário de outros softwares, o R é gratuito e de código aberto, e sempre será! R é uma linguagem de programação e não uma interface gráfica como o SPSS. Ele realiza análises ou visualizações executando algumas linhas de código. Essas linhas de código podem ser salvas como scripts para repetição futura das análises ou visualizações. Também facilita o compartilhamento de seu trabalho com outras pessoas, que podem aprender ou corrigi-lo se houver algum erro.</p>
+<p>O R tem uma comunidade online muito ativa e útil. Quando você se depara com um problema, muitas vezes basta uma rápida pesquisa no Google para encontrar uma solução de origem coletiva.</p>
+<p>Todas as principais empresas de pesquisa de marketing indicam que estão experimentando o R e que o R é o software do futuro.</p>
+<p>Este tutorial se concentra em análises estatísticas relevantes para estudantes de marketing. Se você quiser uma introdução mais extensa, porém acessível, ao R, confira o excelente e gratuito livro “<a href="http://r4ds.had.co.nz/index.html">R for Data Science</a>”. Este capítulo introdutório e o próximo são baseados na introdução ao R, encontrada nos tutoriais do <a href="https://ourcodingclub.github.io/">Coding Club</a>, que também possui muitos outros ótimos tutoriais de R.</p>
+</div>
+<div id="introdução-ao-r" class="section level2">
+<h2>Introdução ao R</h2>
+<p>Nesta seção introdutória, você aprenderá:</p>
+<ul>
+<li><p>como manipular um conjunto de dados com o <em>pipe</em></p></li>
+<li><p>como resumir um conjunto de dados e comparar estatisticamente</p></li>
+<li><p>como fazer gráficos de dispersão e histogramas</p></li>
+</ul>
+<div id="importando-os-dados" class="section level3">
+<h3>Importando os dados</h3>
+<p>Nesta etapa, exploraremos um conjunto de dados publicamente disponível dos dados do Airbnb. Encontramos esses dados <a href="http://tomslee.net/airbnb-data-collection-get-the-data">aqui.</a> (Estes são dados reais “raspados” do airbnb.com em julho de 2017. Isso significa que o proprietário do site criou um script para coletar automaticamente esses dados no site airbnb.com. Essa é uma das muitas coisas que você também pode fazer no R. Mas primeiro vamos aprender o básico.) Você pode baixar o conjunto de dados clicando com o botão direito do mouse <a href="http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.csv">neste link</a>, selecionando “Salvar link como…” (ou algo semelhante) e salvando o arquivo .csv em um diretório no disco rígido. Como mencionado na <a href="https://bookdown.org/content/1340/getting-familiar-with-rstudio.html#console_script">introdução</a>, é uma boa ideia salvar seu trabalho em um diretório que é automaticamente copiado pelo software de compartilhamento de arquivos. Mais tarde, salvaremos nosso script no mesmo diretório.</p>
+</div>
+<div id="atribuindo-dados-a-objetos" class="section level3">
+<h3>Atribuindo dados a objetos</h3>
+<p>Observe a seta <span class="math inline">\(&lt;-\)</span> no meio da linha que importou o arquivo .csv:</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v tibble  3.0.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+## v purrr   0.3.4</code></pre>
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
+## x lubridate::as.difftime() masks base::as.difftime()
+## x forcats::as_factor()     masks radiant.data::as_factor()
+## x radiant.data::date()     masks lubridate::date(), base::date()
+## x magrittr::extract()      masks tidyr::extract()
+## x dplyr::filter()          masks stats::filter()
+## x lubridate::intersect()   masks base::intersect()
+## x purrr::is_double()       masks radiant.data::is_double()
+## x purrr::is_empty()        masks radiant.data::is_empty()
+## x purrr::is_numeric()      masks radiant.data::is_numeric()
+## x dplyr::lag()             masks stats::lag()
+## x radiant.data::month()    masks lubridate::month()
+## x purrr::set_names()       masks magrittr::set_names()
+## x lubridate::setdiff()     masks base::setdiff()
+## x lubridate::union()       masks base::union()
+## x radiant.data::wday()     masks lubridate::wday()</code></pre>
+<pre class="r"><code>library(readxl)
+url&lt;-&#39;http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.xlsx&#39;
+airbnbtemp &lt;- tempfile()
+download.file(url, airbnbtemp, mode=&quot;wb&quot;)
+airbnb&lt;-read_excel(path = airbnbtemp, sheet = 1)
+
+glimpse(airbnb)</code></pre>
+<pre><code>## Rows: 17,651
+## Columns: 21
+## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 145...
+## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...
+## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room...
+## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
+## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Brussel&quot;, &quot;Bru...
+## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;, &quot;Anderlech...
+## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, 0, 1, 3, 0,...
+## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4.5, 0.0, 0....
+## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2, 2, 2, 2, ...
+## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37, 28, 177, ...
+## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartement cosy&quot;, ...
+## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 2017-07-17 03:...
+## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.83971, 50.8591...
+## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.333850, 4.33696...
+## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A9160844940&quot;, &quot;01...
+## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2, 11, 11, 5...</code></pre>
+<p><span class="math inline">\(&lt;-\)</span> é o operador de atribuição. Nesse caso, atribuímos o conjunto de dados (ou seja, os dados que lemos do arquivo .csv) a um objeto chamado airbnb. Um objeto é uma estrutura de dados. Todos os objetos que você criar serão exibidos no painel Ambiente (a janela superior direita). O R Studio fornece um atalho para escrever <span class="math inline">\(&lt;-\)</span>: Alt + - (no Windows). É uma boa ideia aprender esse atalho de cor.</p>
+<p>Quando você importa dados para o R, ele se torna um objeto chamado <em>dataframe</em>. Um <em>dataframe</em> é como uma tabela ou uma planilha do Excel. Tem duas dimensões: linhas e colunas. Geralmente, as linhas representam suas observações, as colunas representam as diferentes variáveis. Quando seus dados consistem em apenas uma dimensão (por exemplo, uma sequência de números ou palavras), eles são armazenados em um segundo tipo de objeto chamado vetor. Mais tarde, aprenderemos como criar vetores.</p>
+</div>
+<div id="lendo-os-dados-do-airbnb" class="section level3">
+<h3>Lendo os dados do Airbnb</h3>
+<p>Nosso conjunto de dados contém informações sobre quartos na Bélgica listados no airbnb.com.</p>
+<ul>
+<li><p>Sabemos para cada quarto (identificado por <em>room_id</em>);</p></li>
+<li><p>quem é o hóspede (<em>host_id</em>);</p></li>
+<li><p>que tipo de quarto é (<em>room_type</em>);</p></li>
+<li><p>onde está localizada (<em>country</em> e <em>city</em>);</p></li>
+<li><p>a circunvinzinhança <em>neighborhood</em></p></li>
+<li><p><em>latitude</em> e <em>longitude</em> exata)</p></li>
+<li><p>como muitas críticas que recebeu (<em>reviews</em>);</p></li>
+<li><p>como as pessoas estavam satisfeitas (<em>overall_satisfaction</em>);</p></li>
+<li><p>preço (<em>price</em>)</p></li>
+<li><p>e características dos quartos (<em>accommodates</em>, <em>bedrooms</em>, <em>bathrooms</em>, <em>minstay</em>).</p></li>
+</ul>
+<p>Uma etapa realmente importante é verificar se seus dados foram importados corretamente. É uma boa prática sempre inspecionar seus dados. Você vê algum valor ausente, os números e os nomes fazem sentido? Se você começar imediatamente com a análise, corre o risco de ter que refazê-la porque os dados não foram lidos corretamente, ou pior, analisando dados errados sem perceber.</p>
+<pre class="r"><code>airbnb[1:10,] # Visualiza o conteudo do conjunto de dados da Airbnb</code></pre>
+<pre><code>## # A tibble: 10 x 21
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## # ... with 12 more variables: overall_satisfaction &lt;dbl&gt;, accommodates &lt;dbl&gt;,
+## #   bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;, name &lt;chr&gt;,
+## #   last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;</code></pre>
+<p>O R nos diz que estamos lidando com uma <em>tibble</em> (essa é apenas outra palavra para <em>dataframe</em>) com 17651 linhas ou observações e 20 colunas ou variáveis. Para cada coluna, é fornecido o tipo da variável: int (inteiro), chr (caractere), dbl (duplo), dttm (data e hora). Variáveis inteiras e duplas armazenam números (inteiro para números redondos, duplicam para números com decimais), variáveis de caracteres armazenam letras, variáveis de data e hora armazenam datas e / ou horas.</p>
+<p>O R imprime apenas os dados das dez primeiras linhas e o número máximo de colunas que cabem na tela. Se, no entanto, você deseja inspecionar todo o conjunto de dados, clique duas vezes no objeto airbnb no painel Ambiente (a janela superior direita) para abrir uma aba Visualizador ou executar a Visualização (airbnb). Observe o V maiúsculo no comando Visualizar. O R sempre diferencia maiúsculas de minúsculas!</p>
+<p>Você também pode usar o comando <em>print</em> para solicitar mais (ou menos) linhas e colunas na janela do console:</p>
+<pre class="r"><code>print(airbnb, n = 25, width = 100)</code></pre>
+<pre><code>## # A tibble: 17,651 x 21
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## 11  1.94e7      1454  1.87e7 Shared r~ NA      Belg~ Tournai Brunehaut          1
+## 12  1.99e7      1454  1.29e8 Shared r~ NA      Belg~ Brussel Etterbeek          0
+## 13  6.77e6      1454  3.50e7 Shared r~ NA      Belg~ Gent    Gent             143
+## 14  1.39e7      1454  8.18e7 Shared r~ NA      Belg~ Arlon   Arlon              0
+## 15  1.16e7      1454  5.00e7 Shared r~ NA      Belg~ Kortri~ Waregem            1
+## 16  3.65e6      1454  1.84e7 Shared r~ NA      Belg~ Antwer~ Boom               3
+## 17  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen          0
+## 18  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen          0
+## 19  4.28e5      1454  1.33e6 Shared r~ NA      Belg~ Gent    Gent               9
+## 20  1.42e7      1454  8.61e7 Shared r~ NA      Belg~ Brussel Sint-Jans-M~       0
+## 21  1.93e7      1454  1.07e8 Shared r~ NA      Belg~ Leuven  Rotselaar          1
+## 22  1.21e7      1454  6.21e7 Shared r~ NA      Belg~ Brugge  Jabbeke            0
+## 23  4.42e6      1454  2.29e7 Shared r~ NA      Belg~ Ath     Ath                0
+## 24  1.56e7      1454  2.05e7 Shared r~ NA      Belg~ Leuven  Leuven             3
+## 25  1.33e6      1454  3.51e6 Shared r~ NA      Belg~ Tonger~ Voeren            13
+##    overall_satisfa~ accommodates bedrooms bathrooms price minstay name  last_modified      
+##               &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;lgl&gt;   &lt;chr&gt; &lt;dttm&gt;             
+##  1              4.5            2        1 NA           59 NA      &quot;Spa~ 2017-07-17 03:49:10
+##  2              0              2        1 NA           53 NA      &quot;app~ 2017-07-17 03:49:09
+##  3              4              2        1 NA           46 NA      &quot;YOU~ 2017-07-17 03:49:09
+##  4              4.5            4        1 NA           56 NA      &quot;stu~ 2017-07-17 03:49:07
+##  5              5              2        1 NA           47 NA      &quot;NIC~ 2017-07-17 03:49:07
+##  6              5              4        1 NA           60 NA      &quot;Che~ 2017-07-17 03:49:06
+##  7              0              2        1 NA           41 NA      &quot;a d~ 2017-07-17 03:49:04
+##  8              4              2        1 NA           36 NA      &quot;Cal~ 2017-07-17 03:49:02
+##  9              0              8        1 NA           18 NA      &quot;Ecu~ 2017-07-17 03:49:02
+## 10              4.5            3        1 NA           38 NA      &quot;Bel~ 2017-07-17 03:49:01
+## 11              0              4        1 NA           14 NA      &quot;Cha~ 2017-07-17 03:49:01
+## 12              0              2        1 NA           37 NA      &quot;Cos~ 2017-07-17 03:49:01
+## 13              5              2        1 NA           28 NA      &quot;Cou~ 2017-07-17 03:49:01
+## 14              0              1        1 NA          177 NA      &quot;Log~ 2017-07-17 03:48:56
+## 15              0              4        1 NA          147 NA      &quot;Ter~ 2017-07-17 03:48:56
+## 16              4.5            2        1 NA          177 NA      &quot;PRI~ 2017-07-17 03:48:56
+## 17              0              2        1 NA          129 NA      &quot;Spa~ 2017-07-17 03:48:55
+## 18              0              2        1 NA          140 NA      &quot;Spa~ 2017-07-17 03:48:55
+## 19              5              2        1 NA          141 NA      &quot;pen~ 2017-07-17 03:48:55
+## 20              0              5        1 NA          136 NA      &quot;App~ 2017-07-17 03:48:55
+## 21              0              2        1 NA          132 NA      &quot;Hou~ 2017-07-17 03:48:55
+## 22              0              1        1 NA          117 NA      &quot;Oud~ 2017-07-17 03:48:53
+## 23              0              6        1 NA          106 NA      &quot;Cha~ 2017-07-17 03:48:53
+## 24              5              1        1 NA          116 NA      &quot;The~ 2017-07-17 03:48:53
+## 25              4.5            2        1 NA          106 NA      &quot;Voe~ 2017-07-17 03:48:53
+## # ... with 17,626 more rows, and 4 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
+## #   location &lt;chr&gt;, rooms_per_host &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div id="manipulando-dataframes" class="section level1">
+<h1>Manipulando <em>dataframes</em></h1>
+<div id="transformação-dos-tipos-de-variáveis" class="section level2">
+<h2>Transformação dos tipos de variáveis</h2>
+<p>Vamos observar nosso dataset novamente:</p>
+<pre class="r"><code>airbnb[1:10,]</code></pre>
+<pre><code>## # A tibble: 10 x 21
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## # ... with 12 more variables: overall_satisfaction &lt;dbl&gt;, accommodates &lt;dbl&gt;,
+## #   bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;, name &lt;chr&gt;,
+## #   last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;</code></pre>
+<p>Vimos que <em>room_id</em> e <em>host_id</em> são “identificadores” ou rótulos que identificam as observações. São nomes (neste caso, apenas números) para as salas(quartos) e hóspedes específicos. No entanto, vemos que o Ros trata como números inteiros, ou seja, como números. Isso significa que poderíamos adicionar os <em>room_id‘s</em> de duas salas diferentes e obter um novo número. No entanto, isso não faria muito sentido, porque os <em>room_id</em> são apenas rótulos.</p>
+<p>Certifique-se de que R trate os identificadores como rótulos, em vez de números, fatorando-os. Observe o operador $. Este operador muito importante nos permite selecionar variáveis específicas de um <em>dataframe</em>, neste caso <em>room_id</em> e <em>host_id</em>.</p>
+<pre class="r"><code>airbnb$room_id_F &lt;- factor(airbnb$room_id)
+airbnb$host_id_F &lt;- factor(airbnb$host_id)</code></pre>
+<p>Uma variável de fator é semelhante a uma variável de caractere, pois armazena letras. Os fatores são mais úteis para variáveis que podem assumir apenas um número de categorias pré-determinadas. Eles devem, por exemplo, ser usados para variáveis dependentes categóricas - por exemplo, se uma venda foi feita ou não: venda versus não venda. Você pode pensar em fatores como variáveis que armazenam rótulos. Os rótulos reais não são tão importantes (não nos importamos se uma venda é chamada de venda ou sucesso ou algo mais), apenas os usamos para fazer uma distinção entre categorias diferentes. É muito importante fatorar variáveis inteiras que representam variáveis independentes ou dependentes categóricas, porque, se não fatorarmos essas variáveis, elas serão tratadas como contínuas em vez de variáveis categóricas nas análises.</p>
+<p>Por exemplo, uma variável pode representar uma venda como 1 e uma não-venda como 0. Nesse caso, é importante informar ao R que essa variável deve ser tratada como uma variável categórica em vez de contínua.</p>
+<p>As variáveis de caractere são diferentes das variáveis de fator, pois não são apenas rótulos para categorias. Um exemplo de variável de caractere seria uma variável que armazena as respostas dos entrevistados para uma pergunta em aberto. Aqui, o conteúdo real é importante (nós nos importamos se alguém descreve sua estadia no Airbnb como muito boa ou excelente ou outra coisa).</p>
+<p>No conjunto de dados do airbnb, os <em>room_id</em> não são rigorosamente determinados de antemão, mas definitivamente são rótulos e não devem ser tratados como números. Por isso, pedimos para o R convertê-los em fatores. Vamos dar uma olhada no conjunto de dados do airbnb novamente para verificar se o tipo dessas variáveis mudou após fatorar:</p>
+<pre class="r"><code>glimpse(airbnb)</code></pre>
+<pre><code>## Rows: 17,651
+## Columns: 23
+## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 145...
+## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...
+## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room...
+## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
+## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Brussel&quot;, &quot;Bru...
+## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;, &quot;Anderlech...
+## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, 0, 1, 3, 0,...
+## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4.5, 0.0, 0....
+## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2, 2, 2, 2, ...
+## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37, 28, 177, ...
+## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartement cosy&quot;, ...
+## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 2017-07-17 03:...
+## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.83971, 50.8591...
+## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.333850, 4.33696...
+## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A9160844940&quot;, &quot;01...
+## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2, 11, 11, 5...
+## $ room_id_F            &lt;fct&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ host_id_F            &lt;fct&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...</code></pre>
+<p>Vemos que o tipo de <em>room_id</em> e <em>host_id</em> agora é <span class="math inline">\(&lt;\)</span><em>fct</em><span class="math inline">\(&gt;\)</span> (fator).</p>
+</div>
+<div id="transformações-numéricas" class="section level2">
+<h2>Transformações numéricas</h2>
+<p>Vamos dar uma olhada nas classificações das acomodações:</p>
+<pre class="r"><code># Uso a funcao head para garantir que o 
+#R mostre apenas as primeiras classificacoes.
+
+# Caso contrario, teremos uma lista muito 
+#longa de classificacoes..
+head(airbnb$overall_satisfaction)</code></pre>
+<pre><code>## [1] 4.5 0.0 4.0 4.5 5.0 5.0</code></pre>
+<p>Vemos que as classificações estão em uma escala de 0 a 5. Se preferirmos ter classificações em uma escala de 0 a 100, poderíamos simplesmente multiplicar as classificações por 20:</p>
+<pre class="r"><code>airbnb$overall_satisfaction_100 &lt;- airbnb$overall_satisfaction * 20 
+# Perceba que criamos uma nova variavel overall_satisfaction_100.
+# A variavel original overall_satisfaction continua inalterada.
+
+# Você tambem pode inspecionar todo o 
+#conjunto de dados com o Visualizador
+# e veja se ha uma nova coluna a direita.
+head(airbnb$overall_satisfaction_100) </code></pre>
+<pre><code>## [1]  90   0  80  90 100 100</code></pre>
+</div>
+<div id="transformando-variáveis-com-a-função-mutate" class="section level2">
+<h2>Transformando variáveis com a função mutate</h2>
+<p>Também podemos transformar variáveis com a função <em>mutate</em>:</p>
+<pre class="r"><code>airbnb &lt;- mutate(airbnb, 
+                 room_id_F = factor(room_id), 
+                 host_id_F = factor(host_id),
+                 overall_satisfaction_100 = overall_satisfaction * 20)</code></pre>
+<p>Isso instrui o R a pegar o conjunto de dados do airbnb, criar uma nova variável <em>room_id_F</em> que deve ser do tipo fator de <em>room_id</em>, uma nova variável <em>host_id_F</em> que deve ser um fator de <em>host_id</em> e uma nova variável <em>overall_satisfaction_100</em> que deve ser a satisfação geral vezes 20. O conjunto de dados com esses alterações (transformações) devem ser atribuídas ao objeto airbnb.</p>
+<p>Observe que não precisamos usar o operador $ aqui, porque a função <em>mutate</em> sabe desde seu primeiro argumento (airbnb) onde procurar determinadas variáveis e, portanto, não precisamos especificá-lo posteriormente com airbnb $. Uma vantagem do uso da função <em>mutate</em> é que ela mantém bem todas as transformações desejadas dentro de um comando.</p>
+<div id="incluindo-ou-excluindo-e-renomeando-variáveis-colunas" class="section level3">
+<h3>Incluindo ou excluindo e renomeando variáveis (colunas)</h3>
+<p>Se olharmos para os dados, também podemos ver que <em>country é NA, o que significa que não está disponível ou está ausente. </em>city é sempre a Bélgica (o que está errado porque a Bélgica é um país, não uma cidade) e o <em>borought contém as informações da cidade. Vamos corrigir esses erros removendo a variável </em>country de nosso conjunto de dados e renomeando <em>city e </em>borought. Também excluiremos o *survey_id porque essa variável é constante nas observações e não a usaremos no restante da análise:</p>
+<pre class="r"><code>airbnb &lt;- select(airbnb, -country, -survey_id) 
+
+# Diga ao R para remover country e survey_id 
+#do \textit{dataframe} do airbnb incluindo 
+#um sinal de menos antes dessas variáveis.
+
+# Atribua novamente esse novo quadro 
+#de dados ao objeto airbnb.
+
+colnames(airbnb) # Agora você verá que o country e o survey_id se foram.</code></pre>
+<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                  &quot;room_type&quot;               
+##  [4] &quot;city&quot;                     &quot;borough&quot;                  &quot;neighborhood&quot;            
+##  [7] &quot;reviews&quot;                  &quot;overall_satisfaction&quot;     &quot;accommodates&quot;            
+## [10] &quot;bedrooms&quot;                 &quot;bathrooms&quot;                &quot;price&quot;                   
+## [13] &quot;minstay&quot;                  &quot;name&quot;                     &quot;last_modified&quot;           
+## [16] &quot;latitude&quot;                 &quot;longitude&quot;                &quot;location&quot;                
+## [19] &quot;rooms_per_host&quot;           &quot;room_id_F&quot;                &quot;host_id_F&quot;               
+## [22] &quot;overall_satisfaction_100&quot;</code></pre>
+<pre class="r"><code>colnames(airbnb)[5]&lt;-&quot;city&quot;
+# Diga ao R para renomear algumas 
+#variaveis do \textit{dataframe} do airbnb e
+#reatribuir esse novo \textit{dataframe} ao objeto do airbnb.
+
+airbnb[1:10,] # country = Belgica agora e cidade se refere a cidades</code></pre>
+<pre><code>## # A tibble: 10 x 22
+##    room_id host_id room_type city  city  neighborhood reviews overall_satisfa~ accommodates
+##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1  5.14e6  2.07e7 Shared r~ Belg~ Gent  Gent               9              4.5            2
+##  2  1.31e7  4.61e7 Shared r~ Belg~ Brus~ Schaarbeek         2              0              2
+##  3  8.30e6  3.09e7 Shared r~ Belg~ Brus~ Elsene            12              4              2
+##  4  1.38e7  8.14e7 Shared r~ Belg~ Oost~ Middelkerke       19              4.5            4
+##  5  1.83e7  1.43e7 Shared r~ Belg~ Brus~ Anderlecht         5              5              2
+##  6  1.27e7  6.88e7 Shared r~ Belg~ Brus~ Koekelberg        28              5              4
+##  7  1.55e7  9.91e7 Shared r~ Belg~ Gent  Gent               2              0              2
+##  8  3.91e6  3.69e6 Shared r~ Belg~ Brus~ Elsene            13              4              2
+##  9  1.49e7  3.06e7 Shared r~ Belg~ Verv~ Baelen             2              0              8
+## 10  8.50e6  4.05e7 Shared r~ Belg~ Brus~ Etterbeek         57              4.5            3
+## # ... with 13 more variables: bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;,
+## #   name &lt;chr&gt;, last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;, overall_satisfaction_100 &lt;dbl&gt;</code></pre>
+</div>
+<div id="incluindo-ou-excluindo-observações-linhas" class="section level3">
+<h3>Incluindo ou excluindo observações (linhas)</h3>
+<p><a href="https://bookdown.org/content/1340/graphs.html#graphs">Mais adiante</a>, faremos um gráfico dos preços do Airbnb nas dez maiores cidades da Bélgica (em termos de população): Bruxelas, Antuérpia, Gent, Charleroi, Liège, Bruges, Namur, Lovaina, Mons e Aalst.</p>
+<p>Para isso, precisamos criar um objeto de dados que tenha apenas dados para as dez maiores cidades. Para fazer isso, primeiro precisamos de um vetor com os nomes das dez maiores cidades, para que, na próxima seção, possamos dizer ao R para incluir apenas os dados dessas cidades:</p>
+<pre class="r"><code>colnames(airbnb)[4]&lt;-&quot;country&quot;
+# Cria um vetor com as 10 maiores cidades
+topten &lt;- c(&quot;Brussel&quot;,&quot;Antwerpen&quot;,&quot;Gent&quot;,
+            &quot;Charleroi&quot;,&quot;Liege&quot;,&quot;Brugge&quot;,
+            &quot;Namur&quot;,&quot;Leuven&quot;,&quot;Mons&quot;,&quot;Aalst&quot;) 
+topten # Mostra esse vetor.</code></pre>
+<pre><code>##  [1] &quot;Brussel&quot;   &quot;Antwerpen&quot; &quot;Gent&quot;      &quot;Charleroi&quot; &quot;Liege&quot;     &quot;Brugge&quot;    &quot;Namur&quot;    
+##  [8] &quot;Leuven&quot;    &quot;Mons&quot;      &quot;Aalst&quot;</code></pre>
+<p><a href="https://bookdown.org/content/1340/airbnbdata.html#assignment">Lembre-se</a> de que um vetor é uma estrutura de dados unidimensional (diferente de um <em>dataframe</em> que possui duas dimensões, isto é, colunas e linhas). Usamos o operador <em>c()</em> para criar um vetor que chamamos de topten. <em>c()</em> é uma abreviação de concatenar, que significa juntar as coisas. O vetor <em>topten</em> é um vetor de strings (palavras). Deve haver aspas entre as strings. Um vetor de números, no entanto, não requer aspas.</p>
+<p>Qualquer vetor que você criará aparecerá como um objeto no painel Ambiente (janela superior direita).</p>
+</div>
+<div id="incluindo-ou-excluindo-observações-com-a-função-filter" class="section level3">
+<h3>Incluindo ou excluindo observações com a função <em>filter</em></h3>
+<p>Para armazenar apenas os dados das dez maiores cidades, precisamos do operador <em>%in%</em> do pacote <em>Hmisc</em>:</p>
+<pre class="r"><code>#install.packages(&quot;Hmisc&quot;)
+library(Hmisc)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## Loading required package: survival</code></pre>
+<pre><code>## Loading required package: Formula</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;Hmisc&#39;:
+##   method      from          
+##   print.rcorr radiant.basics</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Hmisc&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:radiant.data&#39;:
+## 
+##     describe, subplot</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     src, summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     format.pval, units</code></pre>
+<p>Agora podemos usar a função de filtro para instruir o R a reter os dados apenas das dez maiores cidades:</p>
+<pre class="r"><code>airbnb.topten &lt;- airbnb%&gt;%
+  filter(city %in% topten)
+# Filtre o \textit{dataframe} do airbnb para manter
+#apenas as cidades no vetor topten.
+# Armazene o conjunto de dados filtrado em 
+#um objeto chamado airbnb.topten.
+
+# Entao, estamos criando um novo conjunto de 
+#dados airbnb.topten, que eh um subconjunto do 
+#conjunto de dados airbnb.
+# Verifique o painel Ambiente para ver se o
+#conjunto de dados airbnb.topten tem menos 
+#observacoes que o conjunto de dados airbnb,
+#porque soh possui dados para as dez maiores cidades.</code></pre>
+</div>
+<div id="resumindo-tabelas-de-frequência" class="section level3">
+<h3>Resumindo: Tabelas de frequência</h3>
+<p>Cada observação em nosso conjunto de dados é uma sala ou quarto; portanto, sabemos que nossos dados contêm informações sobre 17651 quartos. Digamos que queremos saber quantos quartos existem por cidade:</p>
+<pre class="r"><code>airbnb%&gt;%
+group_by(city)%&gt;% # Use a funcao group_by 
+  #para agrupar o \textit{dataframe} do airbnb 
+  #(fornecido pelo pipe na linha anterior) por cidade
+summarise(nr_per_city = n(),.groups=&quot;drop&quot;) # Resuma este objeto agrupado</code></pre>
+<pre><code>## # A tibble: 43 x 2
+##    city        nr_per_city
+##    &lt;chr&gt;             &lt;int&gt;
+##  1 Aalst                74
+##  2 Antwerpen          1610
+##  3 Arlon                46
+##  4 Ath                  47
+##  5 Bastogne            145
+##  6 Brugge             1094
+##  7 Brussel            6715
+##  8 Charleroi           118
+##  9 Dendermonde          45
+## 10 Diksmuide            27
+## # ... with 33 more rows</code></pre>
+<pre class="r"><code>#(fornecido pelo pipe na linha anterior): peca ao R para 
+#criar uma nova variavel nr_per_city que possua o numero
+#de observacoes em cada grupo (cidade)</code></pre>
+<p>Dizemos ao R para pegar o objeto airbnb, agrupá-lo por cidade e resumi-lo (<em>summarise</em>). O resumo que queremos é o número de observações por grupo. Nesse caso, as cidades formam os grupos. Os grupos sempre serão a primeira coluna em nossa saída. Obtemos o número de observações por grupo com a função <em>n()</em>. Esses números são armazenados em uma nova coluna denominada <em>nr_per_city</em>.</p>
+<p>Como você pode ver, essas frequências são classificadas em ordem alfabética por cidade. Em vez disso, podemos classificá-los pelo número de quartos por cidade:</p>
+<pre class="r"><code>airbnb %&gt;% 
+  group_by(city) %&gt;%
+  summarise(nr_per_city = n(),.groups=&quot;drop&quot;) %&gt;%
+  arrange(nr_per_city) # Usa a funcao arrange para classificar em uma coluna selecionada</code></pre>
+<pre><code>## # A tibble: 43 x 2
+##    city         nr_per_city
+##    &lt;chr&gt;              &lt;int&gt;
+##  1 Tielt                 24
+##  2 Diksmuide             27
+##  3 Moeskroen             28
+##  4 Roeselare             41
+##  5 Eeklo                 43
+##  6 Dendermonde           45
+##  7 Arlon                 46
+##  8 Ath                   47
+##  9 Waremme               51
+## 10 Sint-Niklaas          52
+## # ... with 33 more rows</code></pre>
+<p>Só vamos visualizar melhor mudando a ordem, ou seja, mostrando a cidade com o menor número de quartos no topo. Para exibir a cidade com mais quartos no topo, classifique em ordem decrescente usando <em>arrange(desc())</em>:</p>
+<pre class="r"><code>airbnb %&gt;% 
+  group_by(city) %&gt;%
+  summarise(nr_per_city = n(),.groups=&quot;drop&quot;) %&gt;%
+  arrange(desc(nr_per_city)) # Classifica por ordem descendente</code></pre>
+<pre><code>## # A tibble: 43 x 2
+##    city            nr_per_city
+##    &lt;chr&gt;                 &lt;int&gt;
+##  1 Brussel                6715
+##  2 Antwerpen              1610
+##  3 Gent                   1206
+##  4 Brugge                 1094
+##  5 Liège                   667
+##  6 Verviers                631
+##  7 Oostende                527
+##  8 Nivelles                505
+##  9 Halle-Vilvoorde         471
+## 10 Leuven                  434
+## # ... with 33 more rows</code></pre>
+<p>Você verá que a capital Bruxelas tem mais quartos em oferta, seguidos por Antuérpia e Gent.</p>
+<p>Observe que isso é muito parecido com trabalhar com a Tabela Dinâmica no Excel. Você poderia ter feito tudo isso no Excel, mas isso tem várias desvantagens, especialmente ao trabalhar com grandes conjuntos de dados como o nosso: você não tem registro do que clicou, de como classificou os dados e do que pode ter copiado ou excluído. No Excel, é mais fácil cometer erros acidentais sem perceber do que no R. No R, você tem seu script, para poder voltar e verificar todas as etapas de sua análise.</p>
+<p>Nota: você também poderia ter feito isso sem o operador <em>pipe</em> (%<span class="math inline">\(&gt;\)</span>%):</p>
+<pre class="r"><code>airbnb.grouped &lt;- group_by(airbnb, city)
+airbnb.grouped.summary &lt;- summarise(airbnb.grouped, nr_per_city = n(),.groups = &quot;drop&quot;)
+arrange(airbnb.grouped.summary, desc(nr_per_city))</code></pre>
+<pre><code>## # A tibble: 43 x 2
+##    city            nr_per_city
+##    &lt;chr&gt;                 &lt;int&gt;
+##  1 Brussel                6715
+##  2 Antwerpen              1610
+##  3 Gent                   1206
+##  4 Brugge                 1094
+##  5 Liège                   667
+##  6 Verviers                631
+##  7 Oostende                527
+##  8 Nivelles                505
+##  9 Halle-Vilvoorde         471
+## 10 Leuven                  434
+## # ... with 33 more rows</code></pre>
+<p>Mas espero que você concorde que o código que usa o operador de <em>pipe</em> é mais fácil de ler. Além disso, sem o operador <em>pipe</em>, você acabará criando muitos objetos desnecessários, como <em>airbnb.grouped</em> e <em>airbnb.grouped.summary</em>.</p>
+</div>
+</div>
+<div id="estatísticas-descritivas" class="section level2">
+<h2>Estatísticas Descritivas</h2>
+<p>Digamos que, além das frequências por cidade, também desejemos o preço médio por cidade.</p>
+<p>Queremos que isso seja classificado em ordem decrescente pelo preço médio. Além disso, agora queremos armazenar as frequências e médias em um objeto (na seção anterior, não armazenamos a tabela de frequências em um objeto):</p>
+<pre class="r"><code>airbnb.summary &lt;- airbnb %&gt;% # Armazena este resumo em um 
+#objeto chamado airbnb.summary.
+  group_by(city) %&gt;%
+  summarise(nr_per_city = n(), 
+            average_price = mean(price),
+            .groups=&quot;drop&quot;)  # Aqui informamos ao R para criar 
+#outra variavel chamada average_price que nos fornece a media
+#dos precos por grupo (city)
+airbnb.summary%&gt;%  
+arrange(desc(average_price)) # Agora organiza por average_price</code></pre>
+<pre><code>## # A tibble: 43 x 3
+##    city          nr_per_city average_price
+##    &lt;chr&gt;               &lt;int&gt;         &lt;dbl&gt;
+##  1 Bastogne              145          181.
+##  2 Philippeville          85          162.
+##  3 Verviers              631          159.
+##  4 Ieper                 143          151.
+##  5 Waremme                51          150.
+##  6 Dinant                286          144.
+##  7 Oudenaarde            110          142.
+##  8 Neufchâteau           160          141.
+##  9 Ath                    47          134.
+## 10 Tielt                  24          129.
+## # ... with 33 more rows</code></pre>
+<pre class="r"><code>#e mostra o maior preco praticado dentre os demais
+
+# Veja o painel de Ambiente para visualizar se ha
+#agora um novo objeto chamado airbnb.summary.
+
+# Ao inves de apenas rodar airbnb.summary, 
+# eu o envolvi em um comando de print e 
+#defini n como Inf para ver todas as linhas.
+
+#print(airbnb.summary, n = Inf) </code></pre>
+<p>Talvez surpreendentemente, as três principais cidades mais caras são Bastogne, Philippeville e Verviers. Talvez o preço médio dessas cidades seja alto por causa de discrepâncias ().</p>
+<p>Vamos calcular algumas estatísticas mais descritivas para ver se nosso palpite está correto:</p>
+<pre class="r"><code>airbnb %&gt;%
+  group_by(city) %&gt;%
+  summarise(nr_per_city = n(), 
+            average_price = mean(price),
+            median_price = median(price), # calcula a mediana dos
+#precos por grupo (city). 
+            max_price = max(price),.groups=&quot;drop&quot;) %&gt;% # calcula o preco maximo 
+#por grupo (city).
+  arrange(desc(max_price),
+          desc(median_price)) # ordena em descendente pela</code></pre>
+<pre><code>## # A tibble: 43 x 5
+##    city          nr_per_city average_price median_price max_price
+##    &lt;chr&gt;               &lt;int&gt;         &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+##  1 Brussel              6715          75.1           59      3536
+##  2 Namur                 286         111.            65      2239
+##  3 Huy                    99         125.            82      1982
+##  4 Verviers              631         159.           105      1769
+##  5 Oostende              527         102.            82      1769
+##  6 Nivelles              505          94.1           71      1769
+##  7 Philippeville          85         162.            89      1709
+##  8 Bastogne              145         181.           100      1650
+##  9 Oudenaarde            110         142.            89      1473
+## 10 Antwerpen            1610          95.7           76      1473
+## # ... with 33 more rows</code></pre>
+<pre class="r"><code>#mediana de preco entao pelo preco maximo.</code></pre>
+<p>Vemos que duas das três cidades com o preço médio mais alto (Verviers e Bastogne) também estão entre as cinco principais cidades com as medianas de preços; portanto, o seu preço médio alto não se deve apenas a alguns quartos com preços extremamente altos (embora tenham o preço mais alto, quartos nessas cidades são muito caros).</p>
+</div>
+<div id="exportando-summaries-dos-dados" class="section level2">
+<h2>Exportando (summaries) dos dados</h2>
+<p>Às vezes, você pode querer exportar dados ou um resumo dos dados. Vamos salvar nossos dados ou resumo em um arquivo Excel (podemos convertê-lo em um arquivo do .csv, se quisermos, pois o R lida melhor com esse formato):</p>
+<pre class="r"><code># o primeiro argumento eh o objeto que voce deseja armazenar, o segundo eh o nome que voce deseja atribuir ao arquivo (nao esqueca a extensao .csv)
+# use write_csv2 quando voce tiver um computador belga (AZERTY), caso contrário, os números decimais não serão armazenados como números
+
+# armazenamento de dados
+# write_excel_csv(airbnb, &quot;airbnb.csv&quot;) #retire o comentario # para rodar o comando
+# write_excel_csv2(airbnb, &quot;airbnb.csv&quot;)
+
+# armazenamento de summary
+# write_excel_csv(airbnb.summary, &quot;airbnb_summary.csv&quot;)
+# write_excel_csv2(airbnb.summary, &quot;airbnb_summary.csv&quot;)</code></pre>
+<p>O arquivo será salvo no seu diretório de trabalho.</p>
+</div>
+<div id="gráficos" class="section level2">
+<h2>Gráficos</h2>
+<p>Faremos gráficos dos dados das dez cidades mais populosas da Bélgica. Se você possui o conjunto de dados completo do Airbnb em sua memória (verifique o painel Ambiente), basta filtrá-lo:</p>
+<pre class="r"><code>airbnb.topten &lt;- airbnb %&gt;% 
+  filter(city %in% c(&quot;Brussel&quot;,&quot;Antwerpen&quot;,&quot;Gent&quot;,
+                     &quot;Charleroi&quot;,&quot;Liege&quot;,&quot;Brugge&quot;,
+                     &quot;Namur&quot;,&quot;Leuven&quot;,&quot;Mons&quot;,&quot;Aalst&quot;)) # lembre-se
+#de que voce tera que carregar o pacote Hmisc para usar o operador %in%.</code></pre>
+<p>Se você acabou de iniciar uma nova sessão R, também pode reler o arquivo .csv executando o código na seção da seção anterior.</p>
+</div>
+<div id="diagrama-de-dispersão-scatterplot" class="section level2">
+<h2>Diagrama de dispersão (scatterplot)</h2>
+<p>Vamos criar um scatterplot dos preços por cidade:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_point()</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-22-1.png" width="768" /></p>
+<p>Se tudo correr bem, uma plotagem deve aparecer no canto inferior direito da tela. As figuras são feitas com o comando <em>ggplot</em>. Na primeira linha, você diz ao <em>ggplot</em> quais dados devem ser usados para criar um gráfico e quais variáveis devem aparecer no eixo X e no eixo Y. Dizemos para colocar cidade no eixo X e preço no eixo Y. A especificação do eixo X e do eixo Y sempre deve vir como argumentos para uma função aes, que por sua vez é fornecida como um argumento para a função <em>mapping</em> (mapeamento). Na segunda linha, você diz ao <em>ggplot</em> para desenhar pontos (<em>geom_point</em>).</p>
+<p>Ao criar um gráfico, lembre-se de sempre adicionar um <em><span class="math inline">\(+\)</span></em> no final de cada linha de código que compõe o gráfico, exceto o último (adicionar o <em><span class="math inline">\(+\)</span></em> no início de uma linha não funcionará).</p>
+<p>O gráfico não é muito informativo porque muitos pontos são desenhados um sobre o outro.</p>
+</div>
+<div id="jitter" class="section level2">
+<h2>Jitter</h2>
+<p>Vamos adicionar <em>jitter</em> aos nossos pontos:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_jitter() # O mesmo codigo de antes mas agora mudamos geom_point para geom_jitter.</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-23-1.png" width="768" /></p>
+<p>Em vez de solicitar pontos com <em>geom_point()</em>, agora solicitamos pontos com <em>jitter</em> adicionado com <em>geom_jitter()</em>. Jitter é um valor aleatório que é adicionado a cada coordenada X e Y, de modo que os pontos de dados não sejam desenhados um sobre o outro. Observe que fazemos isso apenas para tornar o gráfico mais informativo (compare-o com o gráfico de dispersão anterior, onde muitos pontos de dados são desenhados um sobre o outro); não altera os valores reais em nosso conjunto de dados.</p>
+</div>
+<div id="histograma" class="section level2">
+<h2>Histograma</h2>
+<p>Ainda não está claro. Parece que a distribuição do preço está correta. Isso significa que a distribuição do preço não é normal. Uma distribuição normal tem dois recursos principais.</p>
+<p>Uma primeira característica é que existem mais valores próximos à média do que valores distantes da média.</p>
+<p>Em outras palavras, valores extremos não ocorrem com muita frequência.</p>
+<p>Uma segunda característica é que a distribuição é simétrica. Em outras palavras, o número de valores abaixo da média é igual ao número de valores acima da média. Em uma distribuição distorcida, existem valores extremos em apenas um lado da distribuição. No caso de inclinação à direita, isso significa que existem valores extremos no lado direito da distribuição.</p>
+<p>No nosso caso, isso significa que existem algumas listagens do Airbnb com preços muito altos. Isso aumenta a média da distribuição, de modo que as listagens não sejam mais normalmente distribuídas em torno da média.</p>
+<p>Vamos desenhar um histograma dos preços:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = price)) + # Observe que nao
+  #temos mais uma cidade x =. O preco deve estar no eixo X 
+  #e as frequencias dos precos devem estar no eixo Y
+  geom_histogram() # Eixo Y = frequencia dos valores no eixo X</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-24-1.png" width="768" /></p>
+<p>De fato, existem alguns preços extremamente altos (em comparação com a maioria dos preços), portanto, os preços estão inclinados à direita. Nota: o <em>stat_bin()</em> usando compartimentos = 30. Escolha um valor melhor com o aviso de largura de caixa no console que possa ser ignorado com segurança.</p>
+</div>
+<div id="transformação-logarítmica" class="section level2">
+<h2>Transformação logarítmica</h2>
+<p>Como a variável <em>price</em> está inclinada à direita, podemos transformá-la em log para torná-la mais normal:</p>
+<pre class="r"><code># No eixo y agora temos log(price, base=exp(1)) ao inves de price.
+#log(price, base=exp(1)) = assuma o log natural, 
+#i.e., o log com base = exp(1) = e.
+#(e=constante de Euller = 2,718...)
+
+ggplot(data = airbnb.topten,
+       mapping = aes(x = city, 
+                     y = log(price, base=exp(1)))) + 
+  geom_jitter()</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-25-1.png" width="768" /></p>
+</div>
+<div id="plotando-a-mediana" class="section level2">
+<h2>Plotando a mediana</h2>
+<p>Vamos ter uma idéia melhor da mediana de preço por cidade:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = city, y = price)) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour=&quot;tomato3&quot;, size = 4, geom=&quot;point&quot;)</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-26-1.png" width="768" /></p>
+<p>A linha de código para obter a mediana pode ser lida da seguinte forma: <em>stat_summary</em> solicitará um resumo estatístico. A estatística que queremos é a mediana em uma cor chamada <em>tomato3</em>, com tamanho 4. Ela deve ser representada como um “ponto”. Vemos que Bruges é a cidade com o preço mediano mais alto. É muito mais fácil ver isso quando transformamos o preço por log:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = city, y = log(price, base = exp(1)))) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour=&quot;tomato3&quot;, size = 4, geom=&quot;point&quot;)</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-27-1.png" width="768" /></p>
+</div>
+<div id="plota-a-média" class="section level2">
+<h2>Plota a média</h2>
+<p>Vamos adicionar a média também, mas com uma cor e forma diferentes da média:</p>
+<pre class="r"><code>ggplot(data = airbnb.topten, mapping = aes(x = city, y = log(price, base = exp(1)))) + 
+  geom_jitter() +
+  stat_summary(fun=median, colour=&quot;tomato3&quot;, size = 4, geom=&quot;point&quot;) +
+  stat_summary(fun=mean,
+               colour=&quot;green&quot;,
+               size = 4, 
+               geom=&quot;point&quot;,
+               shape = 23,
+               fill = &quot;green&quot;)</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-28-1.png" width="768" /></p>
+<p>O código para obter a média é muito semelhante ao usado para obter a mediana. Simplesmente alteramos a estatística, a cor e adicionamos a forma = 23 para obter diamantes em vez de círculos e preencher = <em>green</em> para preencher os diamantes (pontos do gráfico). Vemos que os meios e medianas são bastante semelhantes.</p>
+</div>
+<div id="salvando-imagens" class="section level2">
+<h2>Salvando imagens</h2>
+<p>Podemos salvar esse gráfico em nosso disco rígido. Para fazer isso, clique em Exportar / Salvar como imagem. Se você não alterar o diretório, o arquivo será salvo no seu diretório de trabalho. Você pode redimensionar a plotagem e também fornecer um nome de arquivo significativo - Rplot01.png não será útil quando você tentar encontrar o arquivo posteriormente.</p>
+<p>Uma maneira diferente (reproduzível) de salvar seu arquivo é agrupar o código nas funções <em>png()</em> e <em>dev.off()</em>:</p>
+<pre class="r"><code>#png(&quot;price_per_city.png&quot;, width=800, height=600) 
+# Isso ira preparar o R para salvar o grafico a seguir. 
+# Fornece um nome de arquivo e dimensoes para largura e altura da figura em pixels
+
+#ggplot(data = airbnb.topten, mapping = aes(x = city, log(price, base = exp(1)))) + 
+ # geom_jitter() +
+ # stat_summary(fun.y=mean, colour=&quot;green&quot;, size = 4, geom=&quot;point&quot;, shape = 23, fill = &quot;green&quot;) # Somente mantivemos a media aqui
+
+#dev.off() # Isso dira ao R que terminamos a plotagem e que ela deve salvar a plotagem no disco rigido.</code></pre>
+<p>Embora o R tenha uma interface não gráfica, ele pode criar gráficos muito bons.</p>
+<p>Praticamente todos os pequenos detalhes no gráfico podem ser ajustados. Muitos dos gráficos que você vê em “jornalismo de dados” (por exemplo, em <a href="https://www.nytimes.com/">https://www.nytimes.com/</a> ou em <a href="http://fivethirtyeight.com/">http://fivethirtyeight.com/</a> são feitos em R.</p>
+</div>
+</div>
+<div id="análise-básica-de-dados-analisando-dados-secundários" class="section level1">
+<h1>Análise básica de dados: analisando dados secundários</h1>
+<p>Nesta seção, analisaremos os dados do Airbnb.com com a finalidade de traçarmos comparações significativas dos preços médios dos quartos por diferentes características.</p>
+<div id="importação-dos-dados" class="section level2">
+<h2>Importação dos dados</h2>
+<p>Você pode baixar o conjunto de dados clicando com o botão direito do mouse (nesse link)[<a href="http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.csv" class="uri">http://users.telenet.be/samuelfranssens/tutorial_data/tomslee_airbnb_belgium_1454_2017-07-14.csv</a>], selecionando “Salvar link como…” (ou algo semelhante) e salvando o arquivo .csv em um diretório no disco rígido. Como mencionado na introdução, é uma boa ideia salvar seu trabalho em um diretório que é automaticamente copiado pelo software de compartilhamento de arquivos. Vamos selecionar os dados:</p>
+<pre class="r"><code>airbnb &lt;- airbnb %&gt;% 
+  mutate(room_id = factor(room_id), host_id = factor(host_id)) %&gt;% 
+  select(-country) # dropa country, 
+  #veja a introdução de por que fazemos isso
+  
+colnames(airbnb)</code></pre>
+<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                  &quot;room_type&quot;               
+##  [4] &quot;city&quot;                     &quot;neighborhood&quot;             &quot;reviews&quot;                 
+##  [7] &quot;overall_satisfaction&quot;     &quot;accommodates&quot;             &quot;bedrooms&quot;                
+## [10] &quot;bathrooms&quot;                &quot;price&quot;                    &quot;minstay&quot;                 
+## [13] &quot;name&quot;                     &quot;last_modified&quot;            &quot;latitude&quot;                
+## [16] &quot;longitude&quot;                &quot;location&quot;                 &quot;rooms_per_host&quot;          
+## [19] &quot;room_id_F&quot;                &quot;host_id_F&quot;                &quot;overall_satisfaction_100&quot;</code></pre>
+<p>Não se esqueça de salvar seu script no diretório de trabalho.</p>
+</div>
+<div id="manipulação" class="section level2">
+<h2>Manipulação</h2>
+<p>Se você abrir o <em>dataframe</em> do airbnb em uma guia do Visualizador, verá que os <em>bathrooms</em> e o <em>minstay</em> são colunas vazias e que o <em>local</em> e <em>last_modified</em> não são muito informativos. Vamos remover estas variáveis:</p>
+<pre class="r"><code>airbnb &lt;- airbnb %&gt;% 
+  select (-bathrooms, -minstay, -location, -last_modified)</code></pre>
+<p>Agora, dê uma olhada na variável <em>overall_satisfaction:</em></p>
+<pre class="r"><code># use head() para imprimir apenas os primeiros 
+#valores de um vetor, para evitar uma lista muito longa
+# tail() imprime apenas os últimos valores de um vetor
+head(airbnb$overall_satisfaction)</code></pre>
+<pre><code>## [1] 4.5 0.0 4.0 4.5 5.0 5.0</code></pre>
+<p>A segunda classificação é zero. Provavelmente, isso significa que a classificação está faltando, em vez de ser realmente zero. Vamos substituir os valores zero na <em>overall_satisfaction</em> por NA:</p>
+<pre class="r"><code>airbnb &lt;- airbnb %&gt;% 
+  mutate(overall_satisfaction = replace(overall_satisfaction, overall_satisfaction == 0, NA)) 
+  
+# crie uma variavel &quot;nova&quot; overall_satisfaction 
+#que seja igual a overall_satisfaction com valores 
+#de NA em que overall_satisfaction seja igual a zero.
+
+# Digamos que desejassemos substituir NA por 0, 
+#entao o comando se tornaria: 
+#substitute(overall_satisfaction, is.na(overall_satisfaction), 0)
+# overall_satisfaction == NA nao funciona
+
+head(airbnb$overall_satisfaction)</code></pre>
+<pre><code>## [1] 4.5  NA 4.0 4.5 5.0 5.0</code></pre>
+</div>
+<div id="mesclando-datasets" class="section level2">
+<h2>Mesclando datasets</h2>
+<p>Posteriormente, testaremos se o preço está relacionado a determinadas características dos tipos de quartos. As características potencialmente interessantes são: <em>room_type</em>, <em>city</em>, <em>reviews</em>, <em>overall_satisfaction</em>, etc. Para torná-lo ainda mais interessante, podemos aumentar os dados, por exemplo, com dados disponíveis publicamente nas cidades. Reuni os tamanhos de população das cidades belgas mais populosas <a href="https://population.mongabay.com/population/belgium/">deste site</a>. Faça o download desses dados <a href="http://users.telenet.be/samuelfranssens/tutorial_data/population.xlsx">aqui</a> e importe-os para o R:</p>
+<pre class="r"><code>url&lt;-&#39;http://users.telenet.be/samuelfranssens/tutorial_data/population.xlsx&#39;
+poptemp &lt;- tempfile()
+download.file(url, poptemp, mode=&quot;wb&quot;)
+population&lt;-read_excel(path = poptemp, sheet = 1)
+
+population[1:10,]</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    place     population
+##    &lt;chr&gt;          &lt;dbl&gt;
+##  1 Brussels     1019022
+##  2 Antwerpen     459805
+##  3 Gent          231493
+##  4 Charleroi     200132
+##  5 Liège         182597
+##  6 Brugge        116709
+##  7 Namur         106284
+##  8 Leuven         92892
+##  9 Mons           91277
+## 10 Aalst          77534</code></pre>
+<p>Agora, queremos vincular esses dados ao nosso <em>dataframe</em> do airbnb. Isso é muito fácil no R (mas é muito difícil, por exemplo, no Excel):</p>
+<pre class="r"><code>airbnb.merged &lt;- left_join(airbnb, population, by = c(&quot;city&quot; = &quot;place&quot;))
+# o primeiro argumento eh o conjunto de dados que queremos aumentar
+# o segundo argumento eh onde encontramos os dados para aumentar
+#o primeiro conjunto de dados com
+# o terceiro argumento sao as variaveis que usamos para vincular 
+#um conjunto de dados ao outro (cidade eh uma variavel no airbnb,
+#local eh uma variavel na populacao)</code></pre>
+<p>Confira as colunas mais relevantes do <em>dataframe</em> airbnb.merged:</p>
+<pre class="r"><code>airbnb.merged %&gt;% 
+  select(room_id, city, price, population)</code></pre>
+<pre><code>## # A tibble: 17,651 x 4
+##    room_id  city     price population
+##    &lt;fct&gt;    &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;
+##  1 5141135  Gent        59     231493
+##  2 13128333 Brussel     53         NA
+##  3 8298885  Brussel     46         NA
+##  4 13822088 Oostende    56         NA
+##  5 18324301 Brussel     47         NA
+##  6 12664969 Brussel     60         NA
+##  7 15452889 Gent        41     231493
+##  8 3911778  Brussel     36         NA
+##  9 14929414 Verviers    18      52824
+## 10 8497852  Brussel     38         NA
+## # ... with 17,641 more rows</code></pre>
+<p>Vemos que há uma <em>population</em> de colunas em nosso conjunto de dados <em>airbnb.merged</em>. Você também pode ver isso no painel Ambiente: <em>airbnb.merged} tem uma variável a mais que </em>airbnb* (mas o mesmo número de observações).</p>
+<p>Faltam dados para Bruxelas, no entanto. Isso ocorre porque Bruxelas está escrito em holandês no conjunto de dados airbnb, mas em inglês no conjunto de dados da *population}.</p>
+<p>Vamos substituir Brussels por Brussel (nome da cidade de Bruxelas) no conjunto de dados da *population} (e também alterar a ortografia de duas outras cidades) e vincular os dados novamente:</p>
+<pre class="r"><code>population &lt;- population %&gt;% 
+  mutate(place = replace(place, place == &quot;Brussels&quot;, &quot;Brussel&quot;),
+         place = replace(place, place == &quot;Ostend&quot;, &quot;Oostende&quot;),
+         place = replace(place, place == &quot;Mouscron&quot;, &quot;Moeskroen&quot;))
+
+airbnb.merged &lt;- left_join(airbnb, population, by = c(&quot;city&quot; = &quot;place&quot;))
+
+airbnb.merged %&gt;% 
+  select(room_id, city, price, population)</code></pre>
+<pre><code>## # A tibble: 17,651 x 4
+##    room_id  city     price population
+##    &lt;fct&gt;    &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt;
+##  1 5141135  Gent        59     231493
+##  2 13128333 Brussel     53    1019022
+##  3 8298885  Brussel     46    1019022
+##  4 13822088 Oostende    56      69011
+##  5 18324301 Brussel     47    1019022
+##  6 12664969 Brussel     60    1019022
+##  7 15452889 Gent        41     231493
+##  8 3911778  Brussel     36    1019022
+##  9 14929414 Verviers    18      52824
+## 10 8497852  Brussel     38    1019022
+## # ... with 17,641 more rows</code></pre>
+<pre class="r"><code>airbnb.merged</code></pre>
+<pre><code>## # A tibble: 17,651 x 18
+##    room_id host_id room_type city  neighborhood reviews overall_satisfa~ accommodates
+##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5            2
+##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA              2
+##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4              2
+##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5            4
+##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5              2
+##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5              4
+##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA              2
+##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4              2
+##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA              8
+## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5            3
+## # ... with 17,641 more rows, and 10 more variables: bedrooms &lt;dbl&gt;, price &lt;dbl&gt;,
+## #   name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;,
+## #   host_id_F &lt;fct&gt;, overall_satisfaction_100 &lt;dbl&gt;, population &lt;dbl&gt;</code></pre>
+</div>
+<div id="amostras-independentes-teste-t" class="section level2">
+<h2>Amostras independentes: teste t</h2>
+<p>Digamos que queremos testar se os preços diferem entre cidades grandes e pequenas. Para fazer isso, precisamos de uma variável que indique se um Airbnb está em uma cidade grande ou pequena. Na Bélgica, consideramos cidades com uma população de pelo menos cem mil como grande:</p>
+<pre class="r"><code>airbnb &lt;- airbnb %&gt;% 
+ mutate(population=airbnb.merged$population,
+        size = factor(airbnb.merged$population &gt; 100000, labels = c(&quot;small&quot;,&quot;large&quot;)))
+
+# observando a variavel populacao
+
+head(airbnb$population)</code></pre>
+<pre><code>## [1]  231493 1019022 1019022   69011 1019022 1019022</code></pre>
+<pre class="r"><code># e o tamanho da variavel
+head(airbnb$size)</code></pre>
+<pre><code>## [1] large large large small large large
+## Levels: small large</code></pre>
+<pre class="r"><code>airbnb[1:10,]</code></pre>
+<pre><code>## # A tibble: 10 x 19
+##    room_id host_id room_type city  neighborhood reviews overall_satisfa~ accommodates
+##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5            2
+##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA              2
+##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4              2
+##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5            4
+##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5              2
+##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5              4
+##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA              2
+##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4              2
+##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA              8
+## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5            3
+## # ... with 11 more variables: bedrooms &lt;dbl&gt;, price &lt;dbl&gt;, name &lt;chr&gt;, latitude &lt;dbl&gt;,
+## #   longitude &lt;dbl&gt;, rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;,
+## #   overall_satisfaction_100 &lt;dbl&gt;, population &lt;dbl&gt;, size &lt;fct&gt;</code></pre>
+<p>No script acima, primeiro criamos uma variável lógica (esse é outro tipo de variável; discutimos outras aqui). Chamamos essa variável de grande e é <em>TRUE</em> quando a população é maior que 100000 e <em>FALSE</em>, se não. Depois, criamos um novo tamanho de variável que é a fatoração de grande porte. Observe que adicionamos outro argumento à função <em>factor</em>, ou seja, <em>labels</em>, para fornecer os valores <em>large</em> de nomes mais intuitivos. <em>FALSE</em> vem em primeiro lugar no alfabeto e obtém o primeiro rótulo pequeno, *TRUE} fica em segundo lugar no alfabeto e obtém o segundo rótulo grande.</p>
+<p>Para saber quais cidades são grandes e quais são pequenas, podemos solicitar frequências de combinações de tamanho (grande versus pequeno) e <em>city</em> (a própria cidade). Aprendemos como fazer isso no início desse tutorial (consulte as tabelas de frequência e as estatísticas descritivas):</p>
+<pre class="r"><code>airbnb %&gt;% 
+  group_by(size, city) %&gt;% 
+  summarise(count = n(), population = mean(population), .groups=&quot;drop&quot;) %&gt;% # Cidades 
+  #formam os grupos. Portanto, a populacao media de um grupo = a media
+  #de observacoes com a mesma populacao, porque elas vem da mesma
+  #cidade = a populacao da cidade
+  arrange(desc(size), 
+          desc(population)) # maior cidade no topo</code></pre>
+<pre><code>## # A tibble: 43 x 4
+##    size  city      count population
+##    &lt;fct&gt; &lt;chr&gt;     &lt;int&gt;      &lt;dbl&gt;
+##  1 large Brussel    6715    1019022
+##  2 large Antwerpen  1610     459805
+##  3 large Gent       1206     231493
+##  4 large Charleroi   118     200132
+##  5 large Liège       667     182597
+##  6 large Brugge     1094     116709
+##  7 large Namur       286     106284
+##  8 small Leuven      434      92892
+##  9 small Mons        129      91277
+## 10 small Aalst        74      77534
+## # ... with 33 more rows</code></pre>
+<pre class="r"><code> # print (n = Inf) # mostra a distribuicao completa das frequencias</code></pre>
+<p>Vemos que algumas cidades têm um valor de NA para tamanho. Isso ocorre porque não temos população para essas cidades (e, portanto, também não sabemos se é uma cidade grande ou pequena). Vamos filtrar essas observações e verificar as médias e os desvios padrão de preço, dependendo do tamanho da cidade:</p>
+<pre class="r"><code>airbnb.cities &lt;- airbnb %&gt;% 
+  filter(!is.na(population)) 
+# Filtre as observacoes para as quais nao temos a populacao.
+# O ponto de exclamacao deve ser lido como NAO. Entao, 
+#queremos manter as observacoes para as quais a populacao NAO eh NA.
+# Visite https://r4ds.had.co.nz/transform.html#filter-rows-with-filter 
+#para conhecer mais sobre operadores logicos (veja secao 5.2.2).
+
+airbnb.cities %&gt;% 
+  group_by(size) %&gt;% 
+  summarise(mean_price = mean(price),
+            sd_price = sd(price),
+            count = n(), .groups=&quot;drop&quot;)</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   size  mean_price sd_price count
+##   &lt;fct&gt;      &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+## 1 small      110.     122.   4270
+## 2 large       85.4     82.5 11696</code></pre>
+<p>Vemos que os preços são altos tanto nas pequenas quanto nas grandes cidades, mas queremos saber se essa diferença é significativa. Um teste <span class="math inline">\(t\)</span> de amostras independentes pode fornecer a resposta (as listagens nas grandes cidades e as listagens nas pequenas cidades são as amostras independentes), mas precisamos verificar primeiro uma suposição: as variâncias das duas amostras independentes são iguais?</p>
+<pre class="r"><code>#install.packages(&quot;car&quot;) # Para o teste de igualdade
+#de variancias precisaremos do pacote car.
+library(car)</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     some</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     recode</code></pre>
+<pre class="r"><code># Teste de Levene para variancias iguais 
+# Baixo valor p significa que as variancias nao sao iguais. 
+# Primeiro argumento = variavel dependente continua,
+#segundo argumento = variavel independente categorica.
+
+leveneTest(airbnb.cities$price, airbnb.cities$size) </code></pre>
+<pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##          Df F value    Pr(&gt;F)    
+## group     1  139.76 &lt; 2.2e-16 ***
+##       15964                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>A hipótese nula de variâncias iguais é rejeitada (<span class="math inline">\(p &lt;0,001\)</span>), portanto, devemos continuar com um teste <span class="math inline">\(t\)</span> que pressupõe variâncias desiguais:</p>
+<pre class="r"><code># Teste se os preços médios das cidades grandes e pequenas são diferentes.
+# Indique se o teste deve assumir variancias 
+#iguais ou nao (defina var.equal = TRUE para um teste que 
+#assume varancias iguais).
+
+t.test(airbnb.cities$price ~ airbnb.cities$size, var.equal = FALSE)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  airbnb.cities$price by airbnb.cities$size
+## t = 12.376, df = 5762.8, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  20.95129 28.83782
+## sample estimates:
+## mean in group small mean in group large 
+##           110.31265            85.41809</code></pre>
+<p>Você pode relatar o seguinte: “As cidades grandes (M = 85,42, DP = 82,46) tinham um preço mais baixo (<span class="math inline">\(t\)</span> (5762,79) = 12,376, <span class="math inline">\(p &lt;0,001\)</span>, variância desigual assumida) do que as cidades pequenas (M = 110,31, DP = 121,63).”</p>
+</div>
+<div id="anova-univariada" class="section level2">
+<h2>ANOVA univariada</h2>
+<p>Quando sua variável independente (categórica) possui apenas dois grupos, é possível testar se as médias da variável dependente (contínua) são significativamente diferentes ou não com um teste <span class="math inline">\(t\)</span>. Quando sua variável independente possui mais de dois grupos, você pode testar se as médias são diferentes com uma ANOVA.</p>
+<p>Por exemplo, digamos que queremos testar se há uma diferença significativa entre os preços médios de casas e apartamentos inteiros, quartos privativos e quartos compartilhados. Vamos dar uma olhada nas médias por tipo de quarto:</p>
+<pre class="r"><code>airbnb.summary &lt;- airbnb %&gt;% 
+  group_by(room_type) %&gt;% 
+  summarise(count = n(), # obtenha as frequencias dos diferentes tipos de quartos 
+            mean_price = mean(price), # o preco medio por tipo de quarto
+            sd_price = sd(price), .groups=&quot;drop&quot;) # e o desvio padrao do preco 
+#por tipo de quarto
+
+airbnb.summary</code></pre>
+<pre><code>## # A tibble: 3 x 4
+##   room_type       count mean_price sd_price
+##   &lt;chr&gt;           &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Entire home/apt 11082      113.     118. 
+## 2 Private room     6416       64.3     46.5
+## 3 Shared room       153       49.6     33.9</code></pre>
+<p>Também podemos traçar essas médias em um gráfico de barras:</p>
+<pre class="r"><code># Ao criar um grafico de barras, o conjunto de dados
+#que serve como entrada para o ggplot eh o resumo com 
+#os meios, nao o conjunto de dados completo.
+# (Eh por isso que salvamos o resumo acima em um objeto airbnb.summary)
+
+ggplot(data = airbnb.summary, mapping = aes(x = room_type, y = mean_price)) + 
+  geom_bar(stat = &quot;identity&quot;, position = &quot;dodge&quot;)</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-44-1.png" width="768" /></p>
+<p>Não é de surpreender que casas ou apartamentos inteiros tenham preços mais altos do que quartos privativos, que, por sua vez, têm preços mais altos que quartos compartilhados. Também vemos que há quase o dobro de casas e apartamentos inteiros do que quartos privativos disponíveis e quase não há quartos compartilhados disponíveis. Além disso, o desvio padrão é muito mais alto na categoria de casas ou apartamentos inteiros do que nas categorias de quarto particular ou compartilhado.</p>
+<p>Uma ANOVA pode testar se há diferenças significativas nos preços médios por tipo de quarto. Porém, antes de executar uma ANOVA, precisamos verificar se as premissas da ANOVA são atendidas.</p>
+</div>
+<div id="suposição-normalidade-de-resíduos" class="section level2">
+<h2>Suposição: normalidade de resíduos</h2>
+<p>A primeira suposição é que a variável dependente (<em>price</em>) é normalmente distribuída em cada nível da variável independente (<em>room_type</em>). Primeiro, vamos inspecionar visualmente se essa suposição será válida:</p>
+<pre class="r"><code># Ao criar um histograma, o conjunto de 
+#dados que serve como entrada para o ggplot
+#eh o conjunto de dados completo, nao o resumo com as médias
+
+ggplot(data = airbnb, mapping = aes(x = price)) + # Queremos price no eixo x.
+  facet_wrap(~ room_type) + # Queremos que isso seja dividido por room_type.
+  #facet_wrap garantira que o ggplot crie paineis diferentes no seu gráfico.
+  geom_histogram() # geom_histogram garante que as </code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
+<pre class="r"><code>#frequencias dos valores no eixo X sejam plotadas.</code></pre>
+<p>Vemos que há inclinação correta para cada tipo de sala. Também podemos testar formalmente, dentro de cada tipo de sala, se as distribuições são normais com o teste Shapiro-Wilk. Por exemplo, para as salas compartilhados:</p>
+<pre class="r"><code>airbnb.shared &lt;- airbnb %&gt;% 
+  filter(room_type == &quot;Shared room&quot;) # reter dados apenas quartos compartilhadas
+
+shapiro.test(airbnb.shared$price)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  airbnb.shared$price
+## W = 0.83948, p-value = 1.181e-11</code></pre>
+<p>O valor-<span class="math inline">\(p\)</span> deste teste é extremamente pequeno, portanto a hipótese nula de que a amostra provém de uma distribuição normal deve ser rejeitada. Se tentarmos o teste Shapiro-Wilk para as salas privadas:</p>
+<pre class="r"><code>airbnb.private &lt;- airbnb %&gt;% 
+  filter(room_type == &quot;Private room&quot;) # armazenar dados apenas dos quartos compartilhadas
+  
+#shapiro.test(airbnb.private$price)</code></pre>
+<p>Ocorreu um erro ao dizer que o tamanho da amostra é muito grande (6416 obs filtrada). Para contornar esse problema, podemos tentar o teste Anderson-Darling do pacote <em>nortest</em>:</p>
+<pre class="r"><code>#install.packages(&quot;nortest&quot;)
+library(nortest)
+ad.test(airbnb.private$price)</code></pre>
+<pre><code>## 
+##  Anderson-Darling normality test
+## 
+## data:  airbnb.private$price
+## A = 372.05, p-value &lt; 2.2e-16</code></pre>
+<p>Mais uma vez, rejeitamos a hipótese nula de normalidade. Deixo como exercício para testar a normalidade dos preços de casas e apartamentos inteiros.</p>
+<pre class="r"><code>airbnb.entire&lt;-airbnb%&gt;%
+  filter(room_type==&quot;Entire home/apt&quot;)
+
+ad.test(airbnb.entire$price)</code></pre>
+<pre><code>## 
+##  Anderson-Darling normality test
+## 
+## data:  airbnb.entire$price
+## A = 1368.8, p-value &lt; 2.2e-16</code></pre>
+<p>Agora que sabemos que a suposição de normalidade é violada, o que podemos fazer? Podemos considerar transformar nossa variável dependente com uma transformação de log:</p>
+<pre class="r"><code>ggplot(data=airbnb, mapping=aes(x=log(price, base = exp (1)))) + # Queremos o preco
+  #transformado em log no eixo X.
+facet_wrap(~ room_type) + # Queremos que isso seja dividido
+  #por room_type. Facet_wrap garantira que o ggplot
+  #crie paineis diferentes no seu grafico.
+geom_histogram() # geom_histogram garante que </code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-50-1.png" width="768" /></p>
+<pre class="r"><code>#as frequencias dos valores no eixo X sejam plotadas.</code></pre>
+<p>Como você pode ver, uma transformação de log normaliza uma distribuição inclinada à direita. Poderíamos então executar a ANOVA na variável dependente transformada em log. No entanto, na realidade, muitas vezes é seguro ignorar violações da suposição de normalidade (a menos que você esteja lidando com pequenas amostras, o que não é o caso aqui). Vamos simplesmente continuar com o preço não transformado como variável dependente.</p>
+</div>
+<div id="suposição-homogeneidade-de-variâncias" class="section level2">
+<h2>Suposição: homogeneidade de variâncias</h2>
+<p>Uma segunda suposição que precisamos verificar é se as variações de nosso preço variável dependente são iguais nas categorias de nossa variável independente <em>room_type</em>. Normalmente, um gráfico boxplot é informativo:</p>
+<pre class="r"><code>ggplot(data = airbnb, mapping = aes(x = room_type, y = price)) + 
+  geom_boxplot()</code></pre>
+<p><img src="ComparandoprecosAirbnb_files/figure-html/unnamed-chunk-51-1.png" width="768" /></p>
+<p>Mas, neste caso, os intervalos interquartis (as alturas das caixas), que normalmente nos dariam uma idéia da variância dentro de cada tipo de quarto, são muito estreitos. Isso ocorre porque o intervalo de valores Y a ser plotado é muito amplo devido a alguns valores extremos. Se observarmos os desvios padrão, porém, veremos que estes são muito maiores para todos as salas e apartamentos do que para os quartos privativo e compartilhado:</p>
+<pre class="r"><code>airbnb %&gt;% 
+  group_by(room_type) %&gt;% 
+  summarise(count = n(), # obtenha as frequencias dos diferentes tipos de quartos
+            mean_price = mean(price), # o preco medio por tipo de quarto
+            sd_price = sd(price),.groups=&quot;drop&quot;) # e o desvio padrao </code></pre>
+<pre><code>## # A tibble: 3 x 4
+##   room_type       count mean_price sd_price
+##   &lt;chr&gt;           &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Entire home/apt 11082      113.     118. 
+## 2 Private room     6416       64.3     46.5
+## 3 Shared room       153       49.6     33.9</code></pre>
+<pre class="r"><code>#do preco por tipo de quarto</code></pre>
+<p>Também podemos realizar um teste formal de homogeneidade de variâncias. Para isso, precisamos da função <em>leveneTest</em> do pacote <em>car</em>:</p>
+<pre class="r"><code>#install.packages(&quot;car&quot;) # Para o teste 
+#de variancias iguais, precisamos de um pacote
+#chamado car. Instalamos isso antes, portanto, 
+#nao eh necessario reinstala-lo se voce ja o tiver feito.
+
+library(car)
+
+#Teste de Levene de variancias iguais.
+# Valor baixo de p significa que as variancias nao sao iguais.
+# Primeiro argumento = variavel dependente continua,
+#segundo argumento = variavel independente categorica.
+
+leveneTest(airbnb$price, airbnb$room_type) </code></pre>
+<pre><code>## Warning in leveneTest.default(airbnb$price, airbnb$room_type): airbnb$room_type coerced to
+## factor.</code></pre>
+<pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##          Df F value    Pr(&gt;F)    
+## group     2  140.07 &lt; 2.2e-16 ***
+##       17648                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Como o valor <span class="math inline">\(p\)</span> é extremamente pequeno, rejeitamos a hipótese nula de variâncias iguais. Assim como no pressuposto da normalidade, as violações do pressuposto de variâncias iguais podem, no entanto, ser frequentemente ignoradas e o faremos neste caso.</p>
+</div>
+<div id="anova" class="section level2">
+<h2>ANOVA</h2>
+<p>Para realizar uma ANOVA, precisamos instalar alguns pacotes:</p>
+<pre class="r"><code>#install.packages(&quot;remotes&quot;) #O pacote de controles 
+#remotos nos permite instalar pacotes armazenados no 
+#GitHub, um site para desenvolvedores de pacotes. 
+#install.packages(&quot;car&quot;) #Também precisaremos 
+#do pacote do carro para executar a ANOVA
+#(não é necessário reinstalá-lo se você já tiver feito isso).
+
+library(remotes)
+#install_github(&#39;samuelfranssens/type3anova&#39;) # Instala o pacote type3anova. 
+#Esta e as etapas anteriores precisam ser executadas apenas uma vez.
+
+library(type3anova) # Carregue o pacote type3anova.</code></pre>
+<p>Agora podemos prosseguir com a ANOVA verdadeira:</p>
+<pre class="r"><code># Primeiro cria um modelo linear
+# A formula lm() toma os argumentos de dados 
+# A fórmula tem a seguinte sintaxe: variável dependente ~ variável (s) independente
+
+linearmodel &lt;- lm(price ~ room_type, data=airbnb) 
+
+# Em seguida, peça a saída no formato ANOVA.
+#Isso fornece a soma dos quadrados do Tipo III. 
+# Observe que isso é diferente da anova (modelo linear),
+#que fornece a soma dos quadrados do tipo I.
+
+type3anova(linearmodel) </code></pre>
+<pre><code>## # A tibble: 3 x 6
+##   term                ss   df1   df2     f pvalue
+##   &lt;chr&gt;            &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 (Intercept)   7618725.     1 17648  803.      0
+## 2 room_type    10120155.     2 17648  534.      0
+## 3 Residuals   167364763. 17648 17648   NA      NA</code></pre>
+<p>Nesse caso, o valor-<span class="math inline">\(p\)</span> associado ao efeito de <em>room_type</em> é praticamente 0, o que significa que rejeitamos a hipótese nula de que o preço médio é igual para cada <em>room_type</em>. Você pode relatar o seguinte: “Houve diferenças significativas entre os preços médios das diferentes tipos de salas (<span class="math inline">\(F (2, 17648) = 533,57, p &lt;0,001\)</span>).”</p>
+</div>
+<div id="teste-de-tuckey-de-diferença-significativa-verdadeira" class="section level2">
+<h2>Teste de <em>Tuckey</em> de diferença significativa verdadeira</h2>
+<p>Observe que a ANOVA testa a hipótese nula de que as médias em todos os nossos grupos são iguais. A rejeição desta hipótese nula significa que há uma diferença significativa em pelo menos um dos possíveis pares de médias (ou seja, em casa / apartamento inteiro <span class="math inline">\(vs\)</span>. privado e / ou em casa / apartamento inteiro <span class="math inline">\(vs\)</span>. compartilhado e / ou privado <span class="math inline">\(vs.\)</span> compartilhado). Para ter uma idéia de qual par de médias contém uma diferença significativa, podemos acompanhar o teste de Tukey, que nos dará todas as comparações pareadas.</p>
+<p>O teste de Tukey corrige os valores de <span class="math inline">\(p\)</span> para cima - portanto, é mais conservador decidir que algo é significativo - porque as comparações são post-hoc ou exploratórias:</p>
+<pre class="r"><code>TukeyHSD(aov(price ~ room_type, data=airbnb),&quot;room_type&quot;) # O primeiro argumento eh um</code></pre>
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = price ~ room_type, data = airbnb)
+## 
+## $room_type
+##                                   diff       lwr        upr    p adj
+## Private room-Entire home/apt -49.11516 -52.69593 -45.534395 0.000000
+## Shared room-Entire home/apt  -63.79178 -82.37217 -45.211381 0.000000
+## Shared room-Private room     -14.67661 -33.34879   3.995562 0.155939</code></pre>
+<pre class="r"><code># objeto &quot;aov&quot;, o segundo eh a nossa variavel independente.</code></pre>
+<p>Isso nos mostra que não há diferença significativa no preço médio de quartos compartilhados e privados, mas que quartos compartilhados e quartos particulares diferem significativamente de casas e apartamentos inteiros.</p>
+</div>
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<ul>
+<li><p><em>R for Marketing Students.</em> Disponível em: <a href="https://bookdown.org/content/1340/">https://bookdown.org/content/1340/</a></p></li>
+<li><p>. Disponível em <a href="http://www.overleaf.com">Overleaf.com</a></p></li>
+<li><p>Xie, Y. <em>Dynamic Documents with R and knitr</em> 2nd edition, 2015.</p></li>
+<li><p><em>Reproducible Research using R and Overleaf.</em> Disponível em <a href="https://static1.squarespace.com/static/5757268f7da24f26ca7b21d2/t/5c7587114192021796d7cc84/1551206162093/R_Overleaf_Integration.pdf">Reproducible Research using RMarkdown and Overleaf</a></p></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
