@@ -1,0 +1,9 @@
+name: "RhOzon"
+output_dir: "."
+navbar:
+  title: "RhOzon Website"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Selecao de Produtos no R"
+      href: EscolhadeProdutoseAnaliseConjuntanoR.html
