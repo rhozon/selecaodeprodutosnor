@@ -1,0 +1,170 @@
+---
+title: Teste AB no R para campanhas de marketing
+author: "_por Rodrigo Hermont Ozon_"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+
+Neste artigo, aprenderemos os conceitos e a implementação do teste AB usando R. As campanhas de marketing devem influenciar um público-alvo e incentivá-lo a comprar um produto. Nesse processo, muitas perguntas surgem nas mentes de um varejista. Por ex. qual anúncio leva a mais vendas? Um bom percentual de desconto realmente atrai mais clientes? Quais _slogans_ seriam melhores?
+
+Até os *ecommerces* no Brasil, como Amazon e Flipkart, têm muitas perguntas sobre seus sites, designs de aplicativos e estratégias de marketing. Essas perguntas podem ser respondidas através da realização de um teste A / B.
+
+***
+
+## Usando um teste A/B
+
+Ao comparar duas versões de produtos (como A e B) para clientes semelhantes, são testados para ver qual grupo deve vender mais no mercado ou, às vezes, dois grupos de clientes A e B para produtos similares, para ver qual grupo devemos almejar. produtos, usamos testes A / B.
+
+Por exemplo, para um site:
+
+Produto     | Views           | Cliks,Conversões/Vendas
+:---------: | :-------------: | :-------------:
+A           | 3450            | 225
+B           | 3000            | 250
+
+_Hipótese nula_: suposição de que não há diferença entre as taxas de conversão dos produtos A e B
+
+_Hipótese alternativa_: há uma diferença entre as taxas de conversão dos produtos A e B
+
+Para rejeitar a hipótese nula, precisamos de um valor-$p$ menor que o nível de significância, ou seja, p$ <0,05$
+
+
+```{r}
+#install.packages("pwr")
+library(pwr)
+ 
+######## Teste para igualdade de proporcoes para 2 amostras ############
+ 
+prop.test(c (225, 250), c (3450, 3000))
+```
+
+O valor $p$ é menor que 0,05, portanto, podemos rejeitar a hipótese de que as taxas de conversão são iguais.
+
+Mas não se pode concluir diretamente que A e B tenham taxas de conversão diferentes ou vice-versa. Aqui, o verdadeiro comportamento subjacente não é conhecido, pois estamos tentando testar a hipótese realizando o experimento em uma amostra.
+
+#### As desvantagens do uso do teste A/B:
+
+1. O teste A / B considera uma amostra de dados de toda a população em um determinado momento. Portanto, o teste é limitado a um ponto no tempo. Em segundo lugar, os dados da amostra podem não nos dizer a verdadeira taxa de conversação da população original.
+2. Além disso, o teste A / B simplesmente trabalha com a hipótese calculando o valor-$p$. Isso significa que ele não responde a perguntas como "qual a probabilidade de B ser semelhante ou melhor que A e em quanto?"
+
+## Teste A/B Bayesiano
+
+As estatísticas bayesianas nos testes A/B são baseadas principalmente em conhecimentos anteriores ou prévios de experimentos semelhantes e nos dados atuais. O conhecimento passado é conhecido como distribuição de probabilidade _a priori_ e a _posteriori_, combinada com os dados atuais do experimento para concluir o teste em questão.
+
+Nesse método, modelamos a métrica para cada variante. Temos conhecimento prévio sobre a taxa de conversão para A, que possui um certo intervalo de valores com base nos dados históricos. Após observar os dados de ambas as variantes, estimamos os valores mais prováveis ou as novas evidências para cada variante.
+
+_Agora precisamos saber:_
+
+O que é distribuição de probabilidade *posteriori* ?
+
+Probabilidade *posteriori* é a probabilidade de um evento ocorrer depois que todas as informações básicas sobre o evento foram levadas em consideração. Essa probabilidade *posteriori* atua como um ajuste na probabilidade anterior:
+
+$$
+posteriori=\frac{\mbox{verossimilhança (nova evidência)}\times\mbox{prop. prob. a priori}}{\mbox{evidência da prob. a priori}}
+$$
+Ao calcular essa distribuição posterior para cada variante, podemos expressar a incerteza sobre nossas expectativas por meio de declarações de probabilidade.
+
+```{r}
+#install.packages(“bayesAB”)
+library(bayesAB)
+```
+
+[Este link contém todas as informações para explicar os parâmetros e funções no pacote bayesAB no CRAN.](https://rdrr.io/cran/bayesAB/man/bayesTest.html)
+
+Usando o exemplo anterior:
+
+```{r}
+library (bayesAB)
+A_binom <- rbinom (3450, 1, 0.065)
+B_binom <- rbinom (3000, 1, 0.083)
+
+```
+
+Sobre a função rbinom rbinom (n, tamanho, p) onde:
++ $n =$ número de observações
+
++ tamanho = número de tentativas
+
++ $p =$ vetor de probabilidade
+
+Escolhemos o nível alfa e beta do conhecimento prévio que tínhamos sobre parâmetros. Aqui eu mostrei o teste com dois níveis dos valores. Geralmente, usamos o método de tentativa e erro para fazer com que a distribuição se pareça com a nossa distribuição anterior imaginada. O pico deve ser centrado sobre nossa média esperada, com base em experiências anteriores.
+
+```{r fig.height = 4, fig.width = 8}
+
+plotBeta (1, 1)  
+plotBeta (100, 200) ## um range mais especifico para p
+AB1 <- bayesTest (A_binom, B_binom,
+                 priors = c ('alpha' = 1, 'beta' = 1),
+                 distribution = 'bernoulli')
+```
+
+Salvando os outputs em teste AB2:
+
+```{r}
+
+AB2 <- bayesTest (A_binom, B_binom,
+                 priors = c ('alpha' = 100,'beta' = 200),
+                 distribution = 'bernoulli')
+
+AB2 <- bayesTest (A_binom, B_binom,
+                 priors = c ('alpha' = 100,'beta' = 200),
+                 distribution = 'bernoulli')
+```
+
+Aqui eu verifiquei o teste AB2 com um valor alfa e beta de 100 e 200, respectivamente. Você também pode verificar os gráficos e resultados para AB1.
+
+Vamos imprimir as entradas que fizemos e as estatísticas resumidas dos dados.
+
+```{r}
+print(AB2)
+```
+
+```{r}
+summary (AB2)
+```
+
+O resumo fornece o intervalo crível. Os intervalos bayesianos tratam seus limites como fixos e o Parâmetro estimado como uma variável aleatória, enquanto os intervalos de confiança freqüentistas tratam seus limites como variáveis aleatórias e parâmetros como o valor fixo.
+
+Também mostra que  $p(A> B)$ é de 0,00068%. Portanto, B é muito melhor que A. E a perda posterior esperada para escolher B sobre A é baixa.
+
+```{r}
+plot (AB2)
+```
+
+As médias são bastante separadas, mas há uma sobreposição mínima entre distribuições.
+
+O intervalo crível destaca essa região de sobreposição. Para quantificar as descobertas, calculamos a probabilidade de uma variação superar a outra, ou seja, se tirarmos aleatoriamente uma amostra do Produto A e do Produto B, quais são as chances de que a amostra do B tenha taxas de conversão mais altas que a do A.
+
+Assim, a partir dos diagramas e do resumo do teste, podemos resolver facilmente os problemas que enfrentamos anteriormente, ao fazer um teste simples.
+
+Da mesma forma, também podemos tentar o teste para outras distribuições específicas como Poisson, normal, exponencial e etc e verificar os resultados para elas. Em seguida, podemos combinar os resultados dos testes e descobrir um intervalo global crível e uma porcentagem de A sobre B ou vice-versa.
+
+## As vatangens do teste A/B Bayesiano
+
+As abordagens de teste A / B estão centradas nos testes de hipótese usados com uma estimativa pontual (probabilidade de rejeitar a nula) de um valor difícil de interpretar. Muitas vezes, o estatístico ou cientista de dados que estabelece as bases para o teste A / B precisa fazer um teste de potência para determinar o tamanho da amostra. Isso rapidamente fica confuso em termos de interpretabilidade. Mais importante, ele simplesmente não é tão robusto quanto o teste Bayesiano A / B e não tem a capacidade de inspecionar uma distribuição inteira sobre um parâmetro.
+
+A estatística bayesiana é simplesmente mais poderosa e informativa do que um teste A / B normal. Enquanto o teste A / B freqüentista exige que a duração do teste seja definida com antecedência, o teste Bayesiano não. Ele pode calcular os perigos potenciais de terminar o teste (o valor da perda) a qualquer momento e fornece uma probabilidade constantemente atualizada de que qualquer uma das variantes seja melhor e em quanto. Terminar o teste mais cedo pode ser desastroso para os testes A / B freqüentistas. Uma abordagem bayesiana, portanto, nos fornece uma flexibilidade muito maior durante o experimento.
+
+## Disvantagens do teste A/B Bayesiano
+
+Não existe um método acordado para escolher uma _priori_ e requer habilidade para estimar conhecimentos prévios subjetivos em um _posteriori_ calculado matematicamente. Se não for feito corretamente, pode levar a resultados enganosos. A distribuição _a posteriori_ pode ser fortemente influenciada pela seleção da _priori_ e a seleção da _priori_ é um processo subjetivo. Além disso, as estatísticas bayesianas requerem um alto nível de recurso computacional, particularmente em modelos com um grande número de parâmetros.
+
+## Considerações finais
+
+A principal vantagem da abordagem bayesiana é a capacidade de incluir dados históricos e selecionar uma distribuição a priori. A principal desvantagem dessa abordagem é a natureza subjetiva do processo de seleção da priori.
+
+
+***
+
+#### Referências
+
+Frasco, M. *The Power of Bayesian AB Testing*, disponível em: [https://medium.com/convoy-tech/the-power-of-bayesian-a-b-testing-f859d2219d5](medium.com)

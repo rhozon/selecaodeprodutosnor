@@ -1,0 +1,23 @@
+---
+title: Teste A/B no R: Um exemplo para campanhas de *Marketing*
+author: "_por Rodrigo Hermont Ozon_"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+Neste artigo, aprenderemos os conceitos e a implementação do teste AB usando R. As campanhas de marketing devem influenciar um público-alvo e incentivá-lo a comprar um produto. Nesse processo, muitas perguntas surgem nas mentes de um varejista. Por ex. qual anúncio leva a mais vendas? Um bom percentual de desconto realmente atrai mais clientes? Quais _slogans_ seriam melhores?
+
+Até os *ecommerces* no Brasil, como Amazon e Flipkart, têm muitas perguntas sobre seus sites, designs de aplicativos e estratégias de marketing. Essas perguntas podem ser respondidas através da realização de um teste A / B.
+
+***
+
+## Usando um teste A/B
+

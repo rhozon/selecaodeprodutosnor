@@ -10,7 +10,7 @@ navbar:
     - text: "About"
       icon: fa-info
       href: https://rhozon.github.io/site/about.html
-    - text: "More"
+    - text: "Selecione"
       icon: fa-gear
       menu:
         - text: "ENSINO"
@@ -22,6 +22,8 @@ navbar:
           href: EscolhadeProdutoseAnaliseConjuntanoR.html
         - text: "Comparando precos de estadias no Airbnb com R"
           href: ComparandoprecosAirbnb.html
+        - text: "Teste AB para campanhas de marketing no R"
+          href: TesteABnoR.html        
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
