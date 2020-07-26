@@ -1,6 +1,6 @@
 ---
 title: Escolhendo os melhores produtos para oferecer a seus clientes utilizando Análise Conjunta no R
-author: "por Rodrigo Hermont Ozon"
+author: "_por Rodrigo Hermont Ozon_"
 output:
   html_document:
     toc: true
