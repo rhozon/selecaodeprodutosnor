@@ -143,7 +143,7 @@ Comparado ao design com 30 perfis, agora existem mais e mais fortes correlaçõe
 Observe que os perfis não são exatamente iguais aos da experiência usada para coletar os dados do sorvete. Isso ocorre porque, para projetos desbalanceados, existe alguma aleatoriedade na definição das combinações reais de nível de atributo. É também por isso que definimos seed = 123. seed é usado para consertar o gerador de números aleatórios do R. Configurá-lo para um número fixo (123 ou 456 ou qualquer outra coisa) garantirá que o R gere sempre a mesma saída. Sem definir a seed, doe com trials = 10 não daria o mesmo design fracionário toda vez que você a executar.
 
 ## Um respondente
-### Estimar valores de peça e pesos de importância
+### Estimar valores de tipo e pesos de importância
 
 Embora alguns *softwares* exijam que você primeiro crie variáveis fictícias representando os níveis de atributo e execute uma regressão, o *Radiant* não exige que você faça isso. Você pode simplesmente usar os atributos (cada um com vários níveis) como variáveis. Primeiro, faremos uma análise conjunta dos dados de um respondente (indivíduo 1):
 
@@ -349,7 +349,7 @@ Agora podemos estimar a participação de mercado:
 ```{r}
 market_share <- maior_nota %>% 
   group_by(Sabor, Embalagem, Calorias, Procedencia) %>% 
-  summarize(count = n(),.groups = "drop") %>% 
+  summarize(count = n()) %>% 
   arrange(desc(count))
 
 market_share

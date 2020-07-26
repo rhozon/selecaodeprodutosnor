@@ -358,7 +358,7 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+  <a href="https://rhozon.github.io/site/about.html">
     <span class="fa fa-info"></span>
      
     About
@@ -368,7 +368,7 @@ div.tocify {
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
     <span class="fa fa-gear"></span>
      
-    More
+    Selecione
      
     <span class="caret"></span>
   </a>
@@ -384,6 +384,9 @@ div.tocify {
     </li>
     <li>
       <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
     </li>
   </ul>
 </li>
@@ -1108,8 +1111,8 @@ atributos &lt;- c(atributo1, atributo2, atributo3, atributo4)</code></pre>
 </div>
 <div id="um-respondente" class="section level2">
 <h2>Um respondente</h2>
-<div id="estimar-valores-de-peça-e-pesos-de-importância" class="section level3">
-<h3>Estimar valores de peça e pesos de importância</h3>
+<div id="estimar-valores-de-tipo-e-pesos-de-importância" class="section level3">
+<h3>Estimar valores de tipo e pesos de importância</h3>
 <p>Embora alguns <em>softwares</em> exijam que você primeiro crie variáveis fictícias representando os níveis de atributo e execute uma regressão, o <em>Radiant</em> não exige que você faça isso. Você pode simplesmente usar os atributos (cada um com vários níveis) como variáveis. Primeiro, faremos uma análise conjunta dos dados de um respondente (indivíduo 1):</p>
 <pre class="r"><code>respondente1 &lt;- sorvetesxls %&gt;% 
   filter(Respondente == &quot;Individuo 1&quot;)
@@ -1298,7 +1301,7 @@ predict(anconjunta_respondente1, tds.perfis) %&gt;%
 </div>
 <div id="muitos-respondentes" class="section level2">
 <h2>Muitos respondentes</h2>
-<div id="estimar-valores-de-peça-e-pesos-de-importância-1" class="section level3">
+<div id="estimar-valores-de-peça-e-pesos-de-importância" class="section level3">
 <h3>Estimar valores de peça e pesos de importância</h3>
 <p>Agora, vamos realizar a análise conjunta no conjunto de dados completo para ter uma idéia de quais sorvetes os 15 entrevistados, em média, gostaram mais e qual a importância de cada atributo:</p>
 <pre class="r"><code>conjunta_tdsrespondentes &lt;- conjoint(sorvetesxls,
@@ -1525,11 +1528,12 @@ maior_nota</code></pre>
 <p>Agora podemos estimar a participação de mercado:</p>
 <pre class="r"><code>market_share &lt;- maior_nota %&gt;% 
   group_by(Sabor, Embalagem, Calorias, Procedencia) %&gt;% 
-  summarize(count = n(),.groups = &quot;drop&quot;) %&gt;% 
-  arrange(desc(count))
-
-market_share</code></pre>
+  summarize(count = n()) %&gt;% 
+  arrange(desc(count))</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;Sabor&#39;, &#39;Embalagem&#39;, &#39;Calorias&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>market_share</code></pre>
 <pre><code>## # A tibble: 4 x 5
+## # Groups:   Sabor, Embalagem, Calorias [4]
 ##   Sabor     Embalagem Calorias      Procedencia  count
 ##   &lt;fct&gt;     &lt;fct&gt;     &lt;fct&gt;         &lt;fct&gt;        &lt;int&gt;
 ## 1 Baunilha  Cone      Convencional  Nao Organico     5

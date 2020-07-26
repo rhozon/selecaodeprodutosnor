@@ -18,6 +18,9 @@ Tutoriais disponíveis:
 
 + Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.
 
+### *Teste A/B Baysiano no R para campanhas de marketing*
+
++ Qual anúncio/publicidade conduz a maior níveis de venda ? Será que um bom desconto, atrai mesmo mais clientes ? Quais testes experimento para vender melhor e como meço isso ?
 
 ***
 

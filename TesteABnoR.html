@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="por Rodrigo Hermont Ozon" />
+
+
+<title>Teste AB no R para campanhas de marketing</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Teste AB no R para campanhas de marketing</h1>
+<h4 class="author"><em>por Rodrigo Hermont Ozon</em></h4>
+
+</div>
+
+
+<hr />
+<p>Neste artigo, aprenderemos os conceitos e a implementação do teste AB usando R. As campanhas de marketing devem influenciar um público-alvo e incentivá-lo a comprar um produto. Nesse processo, muitas perguntas surgem nas mentes de um varejista. Por ex. qual anúncio leva a mais vendas? Um bom percentual de desconto realmente atrai mais clientes? Quais <em>slogans</em> seriam melhores?</p>
+<p>Até os <em>ecommerces</em> no Brasil, como Amazon e Flipkart, têm muitas perguntas sobre seus sites, designs de aplicativos e estratégias de marketing. Essas perguntas podem ser respondidas através da realização de um teste A / B.</p>
+<hr />
+<div id="usando-um-teste-ab" class="section level2">
+<h2>Usando um teste A/B</h2>
+<p>Ao comparar duas versões de produtos (como A e B) para clientes semelhantes, são testados para ver qual grupo deve vender mais no mercado ou, às vezes, dois grupos de clientes A e B para produtos similares, para ver qual grupo devemos almejar. produtos, usamos testes A / B.</p>
+<p>Por exemplo, para um site:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">Produto</th>
+<th align="center">Views</th>
+<th align="center">Cliks,Conversões/Vendas</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">A</td>
+<td align="center">3450</td>
+<td align="center">225</td>
+</tr>
+<tr class="even">
+<td align="center">B</td>
+<td align="center">3000</td>
+<td align="center">250</td>
+</tr>
+</tbody>
+</table>
+<p><em>Hipótese nula</em>: suposição de que não há diferença entre as taxas de conversão dos produtos A e B</p>
+<p><em>Hipótese alternativa</em>: há uma diferença entre as taxas de conversão dos produtos A e B</p>
+<p>Para rejeitar a hipótese nula, precisamos de um valor-<span class="math inline">\(p\)</span> menor que o nível de significância, ou seja, p$ &lt;0,05$</p>
+<pre class="r"><code>#install.packages(&quot;pwr&quot;)
+library(pwr)
+ 
+######## Teste para igualdade de proporcoes para 2 amostras ############
+ 
+prop.test(c (225, 250), c (3450, 3000))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  c(225, 250) out of c(3450, 3000)
+## X-squared = 7.4563, df = 1, p-value = 0.006322
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.031299847 -0.004932037
+## sample estimates:
+##     prop 1     prop 2 
+## 0.06521739 0.08333333</code></pre>
+<p>O valor <span class="math inline">\(p\)</span> é menor que 0,05, portanto, podemos rejeitar a hipótese de que as taxas de conversão são iguais.</p>
+<p>Mas não se pode concluir diretamente que A e B tenham taxas de conversão diferentes ou vice-versa. Aqui, o verdadeiro comportamento subjacente não é conhecido, pois estamos tentando testar a hipótese realizando o experimento em uma amostra.</p>
+<div id="as-desvantagens-do-uso-do-teste-ab" class="section level4">
+<h4>As desvantagens do uso do teste A/B:</h4>
+<ol style="list-style-type: decimal">
+<li>O teste A / B considera uma amostra de dados de toda a população em um determinado momento. Portanto, o teste é limitado a um ponto no tempo. Em segundo lugar, os dados da amostra podem não nos dizer a verdadeira taxa de conversação da população original.</li>
+<li>Além disso, o teste A / B simplesmente trabalha com a hipótese calculando o valor-<span class="math inline">\(p\)</span>. Isso significa que ele não responde a perguntas como “qual a probabilidade de B ser semelhante ou melhor que A e em quanto?”</li>
+</ol>
+</div>
+</div>
+<div id="teste-ab-bayesiano" class="section level2">
+<h2>Teste A/B Bayesiano</h2>
+<p>As estatísticas bayesianas nos testes A/B são baseadas principalmente em conhecimentos anteriores ou prévios de experimentos semelhantes e nos dados atuais. O conhecimento passado é conhecido como distribuição de probabilidade <em>a priori</em> e a <em>posteriori</em>, combinada com os dados atuais do experimento para concluir o teste em questão.</p>
+<p>Nesse método, modelamos a métrica para cada variante. Temos conhecimento prévio sobre a taxa de conversão para A, que possui um certo intervalo de valores com base nos dados históricos. Após observar os dados de ambas as variantes, estimamos os valores mais prováveis ou as novas evidências para cada variante.</p>
+<p><em>Agora precisamos saber:</em></p>
+<p>O que é distribuição de probabilidade <em>posteriori</em> ?</p>
+<p>Probabilidade <em>posteriori</em> é a probabilidade de um evento ocorrer depois que todas as informações básicas sobre o evento foram levadas em consideração. Essa probabilidade <em>posteriori</em> atua como um ajuste na probabilidade anterior:</p>
+<p><span class="math display">\[
+posteriori=\frac{\mbox{verossimilhança (nova evidência)}\times\mbox{prop. prob. a priori}}{\mbox{evidência da prob. a priori}}
+\]</span> Ao calcular essa distribuição posterior para cada variante, podemos expressar a incerteza sobre nossas expectativas por meio de declarações de probabilidade.</p>
+<pre class="r"><code>#install.packages(“bayesAB”)
+library(bayesAB)</code></pre>
+<p><a href="https://rdrr.io/cran/bayesAB/man/bayesTest.html">Este link contém todas as informações para explicar os parâmetros e funções no pacote bayesAB no CRAN.</a></p>
+<p>Usando o exemplo anterior:</p>
+<pre class="r"><code>library (bayesAB)
+A_binom &lt;- rbinom (3450, 1, 0.065)
+B_binom &lt;- rbinom (3000, 1, 0.083)</code></pre>
+<p>Sobre a função rbinom rbinom (n, tamanho, p) onde: + <span class="math inline">\(n =\)</span> número de observações</p>
+<ul>
+<li><p>tamanho = número de tentativas</p></li>
+<li><p><span class="math inline">\(p =\)</span> vetor de probabilidade</p></li>
+</ul>
+<p>Escolhemos o nível alfa e beta do conhecimento prévio que tínhamos sobre parâmetros. Aqui eu mostrei o teste com dois níveis dos valores. Geralmente, usamos o método de tentativa e erro para fazer com que a distribuição se pareça com a nossa distribuição anterior imaginada. O pico deve ser centrado sobre nossa média esperada, com base em experiências anteriores.</p>
+<pre class="r"><code>plotBeta (1, 1)  </code></pre>
+<p><img src="TesteABnoR_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<pre class="r"><code>plotBeta (100, 200) ## um range mais especifico para p</code></pre>
+<p><img src="TesteABnoR_files/figure-html/unnamed-chunk-4-2.png" width="768" /></p>
+<pre class="r"><code>AB1 &lt;- bayesTest (A_binom, B_binom,
+                 priors = c (&#39;alpha&#39; = 1, &#39;beta&#39; = 1),
+                 distribution = &#39;bernoulli&#39;)</code></pre>
+<p>Salvando os outputs em teste AB2:</p>
+<pre class="r"><code>AB2 &lt;- bayesTest (A_binom, B_binom,
+                 priors = c (&#39;alpha&#39; = 100,&#39;beta&#39; = 200),
+                 distribution = &#39;bernoulli&#39;)
+
+AB2 &lt;- bayesTest (A_binom, B_binom,
+                 priors = c (&#39;alpha&#39; = 100,&#39;beta&#39; = 200),
+                 distribution = &#39;bernoulli&#39;)</code></pre>
+<p>Aqui eu verifiquei o teste AB2 com um valor alfa e beta de 100 e 200, respectivamente. Você também pode verificar os gráficos e resultados para AB1.</p>
+<p>Vamos imprimir as entradas que fizemos e as estatísticas resumidas dos dados.</p>
+<pre class="r"><code>print(AB2)</code></pre>
+<pre><code>## --------------------------------------------
+## Distribution used: bernoulli 
+## --------------------------------------------
+## Using data with the following properties: 
+##            A          B
+## Min.    0.00 0.00000000
+## 1st Qu. 0.00 0.00000000
+## Median  0.00 0.00000000
+## Mean    0.06 0.08566667
+## 3rd Qu. 0.00 0.00000000
+## Max.    1.00 1.00000000
+## --------------------------------------------
+## Conjugate Prior Distribution: Beta 
+## Conjugate Prior Parameters: 
+## $alpha
+## [1] 100
+## 
+## $beta
+## [1] 200
+## 
+## --------------------------------------------
+## Calculated posteriors for the following parameters: 
+## Probability 
+## --------------------------------------------
+## Monte Carlo samples generated per posterior: 
+## [1] 1e+05</code></pre>
+<pre class="r"><code>summary (AB2)</code></pre>
+<pre><code>## Quantiles of posteriors for A and B:
+## 
+## $Probability
+## $Probability$A
+##         0%        25%        50%        75%       100% 
+## 0.06500074 0.07878071 0.08174515 0.08481779 0.10168593 
+## 
+## $Probability$B
+##         0%        25%        50%        75%       100% 
+## 0.08664457 0.10448888 0.10809144 0.11177555 0.13092697 
+## 
+## 
+## --------------------------------------------
+## 
+## P(A &gt; B) by (0)%: 
+## 
+## $Probability
+## [1] 9e-05
+## 
+## --------------------------------------------
+## 
+## Credible Interval on (A - B) / B for interval length(s) (0.9) : 
+## 
+## $Probability
+##         5%        95% 
+## -0.3302033 -0.1454305 
+## 
+## --------------------------------------------
+## 
+## Posterior Expected Loss for choosing B over A:
+## 
+## $Probability
+## [1] 0.3258108</code></pre>
+<p>O resumo fornece o intervalo crível. Os intervalos bayesianos tratam seus limites como fixos e o Parâmetro estimado como uma variável aleatória, enquanto os intervalos de confiança freqüentistas tratam seus limites como variáveis aleatórias e parâmetros como o valor fixo.</p>
+<p>Também mostra que <span class="math inline">\(p(A&gt; B)\)</span> é de 0,00068%. Portanto, B é muito melhor que A. E a perda posterior esperada para escolher B sobre A é baixa.</p>
+<pre class="r"><code>plot (AB2)</code></pre>
+<p><img src="TesteABnoR_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="TesteABnoR_files/figure-html/unnamed-chunk-8-2.png" width="672" /><img src="TesteABnoR_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<p>As médias são bastante separadas, mas há uma sobreposição mínima entre distribuições.</p>
+<p>O intervalo crível destaca essa região de sobreposição. Para quantificar as descobertas, calculamos a probabilidade de uma variação superar a outra, ou seja, se tirarmos aleatoriamente uma amostra do Produto A e do Produto B, quais são as chances de que a amostra do B tenha taxas de conversão mais altas que a do A.</p>
+<p>Assim, a partir dos diagramas e do resumo do teste, podemos resolver facilmente os problemas que enfrentamos anteriormente, ao fazer um teste simples.</p>
+<p>Da mesma forma, também podemos tentar o teste para outras distribuições específicas como Poisson, normal, exponencial e etc e verificar os resultados para elas. Em seguida, podemos combinar os resultados dos testes e descobrir um intervalo global crível e uma porcentagem de A sobre B ou vice-versa.</p>
+</div>
+<div id="as-vatangens-do-teste-ab-bayesiano" class="section level2">
+<h2>As vatangens do teste A/B Bayesiano</h2>
+<p>As abordagens de teste A / B estão centradas nos testes de hipótese usados com uma estimativa pontual (probabilidade de rejeitar a nula) de um valor difícil de interpretar. Muitas vezes, o estatístico ou cientista de dados que estabelece as bases para o teste A / B precisa fazer um teste de potência para determinar o tamanho da amostra. Isso rapidamente fica confuso em termos de interpretabilidade. Mais importante, ele simplesmente não é tão robusto quanto o teste Bayesiano A / B e não tem a capacidade de inspecionar uma distribuição inteira sobre um parâmetro.</p>
+<p>A estatística bayesiana é simplesmente mais poderosa e informativa do que um teste A / B normal. Enquanto o teste A / B freqüentista exige que a duração do teste seja definida com antecedência, o teste Bayesiano não. Ele pode calcular os perigos potenciais de terminar o teste (o valor da perda) a qualquer momento e fornece uma probabilidade constantemente atualizada de que qualquer uma das variantes seja melhor e em quanto. Terminar o teste mais cedo pode ser desastroso para os testes A / B freqüentistas. Uma abordagem bayesiana, portanto, nos fornece uma flexibilidade muito maior durante o experimento.</p>
+</div>
+<div id="disvantagens-do-teste-ab-bayesiano" class="section level2">
+<h2>Disvantagens do teste A/B Bayesiano</h2>
+<p>Não existe um método acordado para escolher uma <em>priori</em> e requer habilidade para estimar conhecimentos prévios subjetivos em um <em>posteriori</em> calculado matematicamente. Se não for feito corretamente, pode levar a resultados enganosos. A distribuição <em>a posteriori</em> pode ser fortemente influenciada pela seleção da <em>priori</em> e a seleção da <em>priori</em> é um processo subjetivo. Além disso, as estatísticas bayesianas requerem um alto nível de recurso computacional, particularmente em modelos com um grande número de parâmetros.</p>
+</div>
+<div id="considerações-finais" class="section level2">
+<h2>Considerações finais</h2>
+<p>A principal vantagem da abordagem bayesiana é a capacidade de incluir dados históricos e selecionar uma distribuição a priori. A principal desvantagem dessa abordagem é a natureza subjetiva do processo de seleção da priori.</p>
+<hr />
+<div id="referências" class="section level4">
+<h4>Referências</h4>
+<p>Frasco, M. <em>The Power of Bayesian AB Testing</em>, disponível em: <a href="medium.com">https://medium.com/convoy-tech/the-power-of-bayesian-a-b-testing-f859d2219d5</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
