@@ -417,16 +417,8 @@ str(sorvetesxls)</code></pre>
 ##  $ Individuo 14: num [1:10] 10 1 9 6 5 4 7 3 8 2
 ##  $ Individuo 15: num [1:10] 5 7 3 10 9 4 2 1 6 8</code></pre>
 <p>Este dataset está organizado de forma que as avaliações que cada respondente fez foi inserida nas colunas. Vamos corrigir isso:</p>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(tidyr)
+<pre class="r"><code>library(dplyr)
+library(tidyr)
 sorvetesxls &lt;- sorvetesxls %&gt;% 
   gather(Respondente, Nota, starts_with(&quot;Individuo&quot;)) %&gt;% 
   
@@ -474,36 +466,6 @@ sorvetesxls</code></pre>
 <p>A discussão a seguir da função doe é baseada na discussão da Radiant sobre essa função.</p>
 <pre class="r"><code>#install.packages(&quot;radiant&quot;)
 library(radiant)</code></pre>
-<pre><code>## Loading required package: radiant.data</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## Loading required package: lubridate</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre><code>## 
-## Attaching package: &#39;radiant.data&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:lubridate&#39;:
-## 
-##     month, wday</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     diamonds</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     date</code></pre>
-<pre><code>## Loading required package: radiant.design</code></pre>
-<pre><code>## Loading required package: mvtnorm</code></pre>
-<pre><code>## Loading required package: radiant.basics</code></pre>
-<pre><code>## Loading required package: radiant.model</code></pre>
-<pre><code>## Loading required package: radiant.multivariate</code></pre>
 <p>Para usar a doe, precisamos inserir as informações sobre nossos atributos e seus níveis de uma maneira específica:</p>
 <pre class="r"><code># atributo1, atributo2, etc. sao vetores com um elemento no qual fornecemos 
 #primeiro o nome do atributo seguido por um ponto e virgula e depois fornecemos

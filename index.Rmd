@@ -4,7 +4,7 @@ title: "Rodrigo Hermont Ozon"
 
 Bem vindo ao meu portfólio!
 
-![](C:/Users/rodri/Desktop/sitecompleto/me.jpg)
+![](C:/Users/rodri/Desktop/RHO/Gitpage/Pagina Nova/me.jpg)
 
 
 Navegue pelo menu para conhecer um pouco mais do meu trabalho!
