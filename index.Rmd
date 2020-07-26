@@ -6,7 +6,7 @@ title: "_Tutoriais_"
 
 Tutoriais disponíveis:
 
-+ Seleção de produtos com Análise Conjunta no R
++ Seleção de produtos com Análise Conjunta no R (baixar o pdf ($\LaTeX$) no repositório)
 
 + Análise básica de dados com dataset do Airbnb
 

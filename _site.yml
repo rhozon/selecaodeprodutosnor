@@ -7,3 +7,12 @@ navbar:
       href: index.html
     - text: "Selecao de Produtos no R"
       href: EscolhadeProdutoseAnaliseConjuntanoR.html
+  right:
+    - icon: fa-question fa-lg
+      href: https://rhozon.github.io/PortfolioRodrigo.html
+    - icon: fa-github
+      href: https://github.com/rhozon
+    - icon: fa-linkedin
+      href: https://www.linkedin.com/in/rodrigohermontozon/
+    - icon: fa-whatsapp
+      href: https://api.whatsapp.com/send?phone=5541988382904&text=
