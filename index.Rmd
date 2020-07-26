@@ -1,24 +1,13 @@
 ---
-title: "Rodrigo Hermont Ozon"
+title: "_Tutoriais_"
 ---
 
-Bem vindo ao meu portfólio!
+***
 
-![](C:/Users/rodri/Desktop/RHO/Gitpage/Pagina Nova/me.jpg)
+Tutoriais disponíveis:
 
++ Seleção de produtos com Análise Conjunta no R
 
-Navegue pelo menu para conhecer um pouco mais do meu trabalho!
-
-
-$$
-\widehat{Y}_{t+n}=(\mbox{Only God knows})+0\epsilon
-$$
-
-Where:
-
-$\widehat{Y}_{t+n}=$ Jr 29:11
-
-$0\epsilon=$ He is omniscient, omnipresent and omnipotent
-
++ Análise básica de dados com dataset do Airbnb
 
 ***
