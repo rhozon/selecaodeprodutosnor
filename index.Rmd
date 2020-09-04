@@ -18,10 +18,14 @@ Tutoriais disponíveis:
 
 + Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.
 
-### *Teste A/B Baysiano no R para campanhas de marketing*
+### *Teste A/B Bayesiano no R para campanhas de marketing*
 
 + Qual anúncio/publicidade conduz a maior níveis de venda ? Será que um bom desconto, atrai mesmo mais clientes ? Quais testes experimento para vender melhor e como meço isso ?
 
+### *Regressão do Componente Principal no Excel para Multicolinearidade*
+
++ Veja como utilizar um método para corrigir a multicolinearidade no seu modelo de regressão linear múltipla.
+
 ***
 
-![](C:/Users/rodri/Downloads/econnerd.png)
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }

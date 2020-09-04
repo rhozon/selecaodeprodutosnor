@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+<meta name="date" content="2020-02-09" />
+
+<title>Solução para multicolinearidade: Regressão do Componente Principal</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Solução para multicolinearidade: Regressão do Componente Principal</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">02/09/2020</h4>
+
+</div>
+
+
+<hr />
+<div id="resumo" class="section level3">
+<h3>Resumo</h3>
+<p>Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações. *Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.</p>
+<hr />
+</div>
+<div id="regressão-do-componente-principal" class="section level2">
+<h2>Regressão do Componente Principal</h2>
+<p>Outra solução frequentemente sugerida para o problema de multicolinearidade é a <em>regressão do componente principal,</em> que procede da seguinte forma. Suponha que tenhamos <span class="math inline">\(k\)</span> variáveis explicativas. Então podemos considerar funções lineares dessas variáveis.</p>
+<p><span class="math display">\[
+z_{1}=a_{1}x_{1}+a_{2}x_{2}+\ldots+a_{k}x_{k}
+\]</span></p>
+<p><span class="math display">\[
+z_{2}=b_{1}x_{1}+b_{2}x_{2}+\ldots+b_{k}x_{k}\quad\mbox{etc.}
+\]</span></p>
+<p>Suponha que escolhemos os <span class="math inline">\(a^{&#39;}s\)</span> de forma que variância de <span class="math inline">\(z_{1}\)</span> seja maximizada sujeita à condição de que</p>
+<p><span class="math display">\[
+a^{2}_{1}+a^{2}_{2}+\ldots+a_{k}^{2}=1
+\]</span> Isso é chamado condição de normalização. (Isso é necessário pois caso contrário, a variância de <span class="math inline">\(z_{1}\)</span> pode aumentar indefinidamente.) <span class="math inline">\(z_{1}\)</span> é, então, chamado de primeiro componente principal. É a função linear dos <span class="math inline">\(x^{&#39;}s\)</span> que tem maior variância (sujeito à regra de normalização).</p>
+<p>Discutiremos os principais destaques e usos desse método, os quais são fáceis de se compreender sem o uso de álgebra matricial. Além disso, para se usar o método existem programas de computador disponíveis que fornecem os componentes principais (<span class="math inline">\(z^{&#39;}s\)</span>), dado qualquer conjunto de variáveis <span class="math inline">\(x_{1},x_{2},\ldots,x_{k}\)</span>.</p>
+<p>Esse processo de maximização da variância da função linear <span class="math inline">\(z\)</span> sujeito à condição de que a soma dos quadrados dos coeficientes dos <span class="math inline">\(x^{&#39;}s\)</span> é igual a 1 produz <span class="math inline">\(k\)</span> soluções. Correspondendo a isso, construímos <span class="math inline">\(k\)</span> funções lineares <span class="math inline">\(z_{1},z_{2},\ldots,z_{2},\)</span> denominadas de componentes principais dos <span class="math inline">\(x^{&#39;}s\)</span>. Elas podem ser ordenadas de forma que</p>
+<p><span class="math display">\[
+var(z_{1})&gt;var(z_{2})&gt;\ldots&gt;var(z_{k})
+\]</span> <span class="math inline">\(z_{1}\)</span>, que tem a maior variância, é chamada de primeiro componente principal, <span class="math inline">\(z_{2}\)</span>, que tem a segunda maior variância, é chamada de segundo componente principal e assim por diante. Esses componentes principais têm as seguintes propriedades:</p>
+<ol style="list-style-type: decimal">
+<li><p><span class="math inline">\(var(z_{1})+var(z_{2})+\ldots+var(z_{k})=var(x_{1})+var(x_{2})+\ldots+var(x_{k})\)</span></p></li>
+<li><p>Diferentemente dos <span class="math inline">\(x^{&#39;}s\)</span>, que são correlacionados, os <span class="math inline">\(z^{&#39;}s\)</span> são ortogonais e não-correlacionados. Logo, existe zero multicolinearidade entre os <span class="math inline">\(z^{&#39;}s\)</span>.</p></li>
+</ol>
+<p>Por vezes é sugerido que em vez de se regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1},x_{2},\ldots,x_{k}\)</span>, devemos regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(z_{1},z_{2},\ldots,z_{k}\)</span>. Mas isso não é um problema para solução da multicolinearidade. Se regredirmos <span class="math inline">\(y\)</span> nos <span class="math inline">\(z^{&#39;}s\)</span> e, então, substituimos os valores dos <span class="math inline">\(z^{&#39;}s\)</span> nos termos dos <span class="math inline">\(x^{&#39;}s\)</span>, acharemos finalmente as mesmas respostas que antes. O fato de os <span class="math inline">\(z^{&#39;}s\)</span> serem não-correlacionados não significa que acharemos melhores estimativas dos coeficientes na equação de regressão original. Dessa forma, faz sentido usar os componentes principais apenas se regredirmos <span class="math inline">\(y\)</span> em um subconjunto dos <span class="math inline">\(z^{&#39;}s\)</span>. Mas esse procedimento também tem problemas. São eles:</p>
+<ol style="list-style-type: decimal">
+<li><p>O primeiro componente principal, <span class="math inline">\(z_{1}\)</span>, embora tenha a maior variância, não precisa ser o mais correlacionado com <span class="math inline">\(Y\)</span>. Na verdade, não há relação necessária entre a ordem dos componentes principais e o grau de correlação com a variável dependente <span class="math inline">\(Y\)</span>.</p></li>
+<li><p>Pode-se pensar em se escolher apenas aqueles componentes principais que têm correlação elevada com <span class="math inline">\(Y\)</span> e em descartar o restante, mas o mesmo procedimento pode ser usado com o conjunto de variáveis original <span class="math inline">\(x_{1},x_{2},\ldots,x_{k}\)</span> escolhendo primeiro a variável com a maior correlação com <span class="math inline">\(Y\)</span>, depois a com maior correlação parcial e assim por diante. Isso é o que os “programas de regressão” passo a passo fazem.</p></li>
+</ol>
+<p>Por vezes é sugerido que em vez de se regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1},x_{2},\ldots,x_{k}\)</span>, devemos regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(z_{1},z_{2},\ldots,z_{k}\)</span>. Mas isso não é uma solução para o problema da multicolinearidade. Se regredirmos <span class="math inline">\(y\)</span> nos <span class="math inline">\(z^{&#39;}\)</span> nos termos dos <span class="math inline">\(x^{&#39;}\)</span>, acharemos finalmente as mesmas respostas de antes. O fato de os <span class="math inline">\(z^{&#39;}s\)</span> serem não-correlacionados não singifica que acharemos melhores estimativas dos coeficientes na equação de regressão original. Dessa forma, faz sentido usar os componentes principais <em>apenas</em> se regredirmos <span class="math inline">\(y\)</span> em um subconjunto dos <span class="math inline">\(z^{&#39;}s\)</span>. Mas esse procedimento também tem problemas. São eles:</p>
+<ol style="list-style-type: decimal">
+<li><p>O primeiro componente principal <span class="math inline">\(z_{1}\)</span>, embora tenha a maior variância, não precisa ser o mais correlacionado com <span class="math inline">\(y\)</span>. Na verdade, não há relação necessária entre a ordem dos componentes principais e o grau de correlação com a variável dependente <span class="math inline">\(y\)</span>.</p></li>
+<li><p>Pode-se pensar em se escolher apenas aqueles componentes principais que têm correlação elevada com <span class="math inline">\(y\)</span> e em se descartar o restante, mas o mesmo procedimento pode ser usado com o conjunto de variáveis original <span class="math inline">\(x_{1},x_{2},\ldots,x_{k}\)</span> escolhendo primeiro a variável com maior correlação com <span class="math inline">\(y\)</span>, depois a com maior correlação parcial e assim por diante. Isso é o que os “programas de regressão” passo a passo fazem.</p></li>
+<li><p>As combinações lineares dos <span class="math inline">\(z^{&#39;}s\)</span> com frequência não tem sentido econômico. O que significa, por exemplo, 2(renda) +3(preço) ? Essa é uma das falhas mais importantes do método.</p></li>
+<li><p>Alterar as unidades de medição dos <span class="math inline">\(x^{&#39;}s\)</span> transformará os componentes principais. Esse problema pode ser evitado se todas as variáveis forem padronizadas para terem variância unitária.</p></li>
+</ol>
+<p>No entanto, o método do componente principal tem alguma utilidade nos estágios explicativos da investigação. Suponha, por exemplo, que haja muitas taxas de juros no modelo (como todas são medidas nas mesmas unidades, não há problema de escolha de unidade de medida). Se a análise do componente principal mostrar dois componentes principais respondem por 99% da variação das taxas de juros e se, olhando para os coeficientes, conseguirmos identificá-lo como componentes de curto prazo e de longo prazo poderemos argumentar que existem apenas duas variáveis “latentes” que respondem por todas as variações das taxas de juros. Portanto, o método do componente principal nos oferecerá alguma direção para a pergunta: “quantas fontes independentes de variação existem ?” Além disso, se pudermos dar uma interpretação econômica aos componentes principais, isso será útil.</p>
+<hr />
+<p>Ilustramos o método com referência a um conjunto de dados de Mallinvaud (E. Mallinvaud, <em>Statistical Methods of Econometrics</em>, 2a. ed., Amsterdã: North-Holland, 1970, p. 19). Escolhemos esses dados porque eles foram usados por Chatterjee Price (<em>in Regression Analysis,</em> p. 161) para ilustrar o método do componente principal.</p>
+<p><a href="https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Maddala,%20p.%20151.xlsx?raw=true">Você pode baixar a planilha Excel com os dados aqui.</a></p>
+<p>Primeiro estimamos uma função de demanda por importação. Ao regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1},x_{2},x_{3}\)</span> acham-se os seguintes resultados:</p>
+<div class="figure">
+<img src="regrmadallap152.png" style="width:80.0%" alt="" />
+<p class="caption"><em>Resultados da Regressão com a série completa</em></p>
+</div>
+<p>O <span class="math inline">\(R^{2}\)</span> é muito elevado e a razão <span class="math inline">\(F\)</span> é altamente significativa, mas todas as razões <span class="math inline">\(t\)</span> individuais são insignificantes. Isso é evidência do problema da multicolinearidade. Chatterjee e Price argumentam que antes que qualquer análise adicional seja feita, devemos olhar para os resíduos dessa equação. Eles acham (veja o gráfico de resíduos) um padrão definido – os resíduos declinam até 1960 e então aumentam.</p>
+<div class="figure">
+<img src="residuosmaddalap152.png" style="width:50.0%" alt="" />
+<p class="caption"><em>Padrão de resíduos da regressão com a série completa</em></p>
+</div>
+<p>Chaterjee e Price argumentam que a dificuldade desse modelo é que o Mercado Comum Europeu começou a operar em 1960, causando mudanças nas relações entre importação e exportação. Portanto, eles excluem os anos posteriores a 1959 e consideram apenas os 11 anos do período 1949–1959. Agora os resultados da regressão são os seguintes:</p>
+<div class="figure">
+<img src="regremadallap152reduzida.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão para 1949-1959</em></p>
+</div>
+<p>Como podemos ver no gráfico de resíduos a seguir, não encontramos um padrão sistemático</p>
+<div class="figure">
+<img src="residuosregrpca.png" style="width:50.0%" alt="" />
+<p class="caption"><em>Padrão residual da Regressão para 1949-1959</em></p>
+</div>
+<p>de forma que podemos prosseguir.</p>
+<p>Embora o <span class="math inline">\(R^{2}\)</span> seja muito elevado, o coeficiente de <span class="math inline">\(x_{1}\)</span> não é significante (<span class="math inline">\(t=-0,731305765\)</span> e valor<span class="math inline">\(-p=0,488344308\)</span>). Existe, por conseguinte, um problema de multicolinearidade.</p>
+<p>Para ver o que deve ser feito sobre isso, primeiro olhamos para as correlações simple entre as variáveis explicativas:</p>
+<div class="figure">
+<img src="matrizcorrelpca.png" style="width:50.0%" alt="" />
+<p class="caption"><em>Matriz de correlação das explicativas para a Regressão para 1949-1959</em></p>
+</div>
+<p>Suspeitamos que a alta correlação presente nos dados de Consumo (<span class="math inline">\(X3\)</span>) com Produto Doméstico Bruto (<span class="math inline">\(X1\)</span>), possa ser a causa do problema.</p>
+<p>A análise de componentes principais ajuda ? Vamos para o primeiro passo, rumando para a obtenção dos valores dos componentes principais no pacote estatístico R:</p>
+<pre class="r"><code>library(readxl)
+
+url&lt;-&quot;https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Maddala,%20p.%20151.xlsx?raw=true)&quot;
+dados &lt;- tempfile()
+download.file(url, dados, mode=&quot;wb&quot;)
+dados&lt;-read_excel(path = dados, sheet = 1)
+
+dados</code></pre>
+<pre><code>## # A tibble: 11 x 9
+##      Ano     Y    X1    X2    X3  Ypadr X1padr X2padr  X3padr
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+##  1  1949  15.9  149.   4.2  108. -1.32  -1.51   0.546 -1.53  
+##  2  1950  16.4  161.   4.1  115. -1.21  -1.11   0.485 -1.21  
+##  3  1951  19    172.   3.1  123. -0.636 -0.770 -0.121 -0.801 
+##  4  1952  19.1  176.   3.1  127. -0.614 -0.636 -0.121 -0.622 
+##  5  1953  18.8  181.   1.1  132. -0.680 -0.460 -1.33  -0.370 
+##  6  1954  20.4  191.   2.2  138. -0.328 -0.130 -0.667 -0.0987
+##  7  1955  22.7  202.   2.1  146   0.178  0.250 -0.728  0.304 
+##  8  1956  26.5  212.   5.6  154.  1.01   0.594  1.39   0.696 
+##  9  1957  28.1  226.   5    162.  1.37   1.05   1.03   1.09  
+## 10  1958  27.6  232.   5.1  164.  1.26   1.24   1.09   1.19  
+## 11  1959  26.3  239    0.7  168.  0.970  1.48  -1.58   1.35</code></pre>
+<p>Então seleciono somente as variáveis explicativas e em seguida calculo as variâncias de cada uma das três variáveis</p>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>explicativas&lt;-dados%&gt;%
+  select(X1,X2,X3)
+
+vars &lt;- apply(explicativas, 2, var)
+vars</code></pre>
+<pre><code>##       X1       X2       X3 
+## 899.9709   2.7200 425.7785</code></pre>
+<p>A maior fração da variância explicada entre essas variáveis é 70%, e a menor é quase 0% (X2). Também podemos calcular essas frações para subconjuntos de variáveis. Por exemplo, as variáveis 1 e 3 juntas explicam 99,94% da variância total, e as variáveis 1 e 2 explicam 70,02%.</p>
+<p>A análise de componentes principais calcula um novo conjunto de variáveis (“componentes principais”) e expressa os dados em termos dessas novas variáveis. Consideradas em conjunto, as novas variáveis representam a mesma quantidade de informação que as variáveis originais, no sentido de que podemos restaurar o conjunto de dados original do transformado.</p>
+<p>Além disso, a variância total permanece a mesma. No entanto, é redistribuído entre as novas variáveis da forma mais “desigual”: a primeira variável não apenas explica a maior variância entre as novas variáveis, mas também a maior variância que uma única variável pode possivelmente explicar.</p>
+<pre class="r"><code>vars/sum(vars)</code></pre>
+<pre><code>##          X1          X2          X3 
+## 0.677449456 0.002047469 0.320503075</code></pre>
+<p>De forma mais geral, os primeiros componentes principais (onde <span class="math inline">\(k\)</span> pode ser 1, 2, 3 etc.) explicam a maior variância que qualquer <span class="math inline">\(k\)</span> variável pode explicar, e as últimas <span class="math inline">\(k\)</span> variáveis explicam a menor variância que qualquer <span class="math inline">\(k\)</span> variável pode explicar, sob algumas restrições gerais. (As restrições garantem, por exemplo, que não podemos ajustar a variância explicada de uma variável simplesmente escalando-a.)</p>
+<pre class="r"><code>pca &lt;- prcomp(explicativas, retx=T)
+expl_transformada &lt;- pca$x
+expl_transformada</code></pre>
+<pre><code>##              PC1        PC2        PC3
+##  [1,] -55.243186  0.8526477 -0.6319214
+##  [2,] -41.641198  0.4642629 -1.7916913
+##  [3,] -28.396312 -0.2823642 -0.5011266
+##  [4,] -23.004179 -0.1131437  0.2645521
+##  [5,] -15.693755 -1.7829447  1.9673323
+##  [6,]  -4.361502 -0.9482986  0.7576149
+##  [7,]   9.734530 -0.9774781  1.1588999
+##  [8,]  22.815447  2.6055542  1.1976004
+##  [9,]  38.749791  1.7756696  0.3621647
+## [10,]  44.662808  1.4979238 -1.2531020
+## [11,]  52.377555 -3.0918290 -1.5303231</code></pre>
+<p>Estas são as variâncias de amostra das novas variáveis.</p>
+<pre class="r"><code>vars_transformadas &lt;- apply(expl_transformada, 2, var)
+# ou: pca$sdev^2
+vars_transformadas</code></pre>
+<pre><code>##         PC1         PC2         PC3 
+## 1324.168516    2.781380    1.519559</code></pre>
+<p>Observe que sua soma, a variância total, é a mesma das variáveis originais: 2,99.</p>
+<p>E essas são as mesmas variâncias divididas pela variância total, ou seja, quanto da variância total cada nova variável explica:</p>
+<pre class="r"><code>vars_transformadas/sum(vars_transformadas)</code></pre>
+<pre><code>##         PC1         PC2         PC3 
+## 0.996762486 0.002093673 0.001143842</code></pre>
+<p>os componentes principais (obtidos pelo pacote Eviews) são:</p>
+<div class="figure">
+<img src="autovalores.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Matriz de Autovalores para os dados 1949-1959</em></p>
+</div>
+<p>Obtemos assim os mesmos valores encontrados por Maddala, p. 152, 2001:</p>
+<p><span class="math display">\[
+z_{1}=0,706330X_{1}+0,043501X_{2}+0,706544X_{3}
+\]</span> <span class="math display">\[
+z_{2}=-0,035689X_{1}+0,999029X_{2}-0,025830X_{3}
+\]</span> <span class="math display">\[
+z_{3}=0,706982X_{1}+0,006971X_{2}-0,707197X_{3}
+\]</span> onde <span class="math inline">\(X_{1},X_{2},X_{3}\)</span> são os valores normalizados de <span class="math inline">\(x_{1},x_{2},x_{2}\)</span>. Isto é, <span class="math inline">\(X_{1}=(x_{1i}-\overline{x_{1}})/\sigma(x_{1})\)</span> e <span class="math inline">\(X_{2}=(x_{2i}-\overline{x_{2}})/\sigma(x_{2})\)</span> e <span class="math inline">\(X_{3}=(x_{3i}-\overline{x_{3}})/\sigma(x_{3})\)</span> onde <span class="math inline">\(\overline{x_{1}}, \overline{x_{2}} \,\,e\,\,\overline{x_{3}}\)</span> são as médias aritméticas de <span class="math inline">\(x_{1},x_{2},x_{3}\)</span> respectivamente. Logo</p>
+<p><span class="math display">\[
+var(X_{1})=var(X_{2})=var(X_{3})=1
+\]</span></p>
+<p>As variâncias dos componentes principais são</p>
+<div class="figure">
+<img src="varianciaspca.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Matriz de Autovetores para os dados 1949-1959</em></p>
+</div>
+<p>então</p>
+<p><span class="math display">\[
+var(z_{1})=1,99915493449973\quad var(z_{2})=0,9981541760451606\quad var(z_{3})=0,002690889455111145
+\]</span> Note que <span class="math inline">\(\sum var(z_{i})=\sum var(X_{i})=3\)</span>.O fato de que <span class="math inline">\(var(z_{3})=0\)</span> identifica aquela função linear como causa da multicolinearidade. Nesse exemplo, há apenas uma função linear desse tipo. Em alguns exemplos pode haver mais. Como <span class="math inline">\(E(X_{1})=E(X_{2})=E(X_{3})=0\)</span> por causa da normalização, os <span class="math inline">\(z^{&#39;}s\)</span> têm média zero. Assim, <span class="math inline">\(z_{3}\)</span> tem média zero e sua variância também está perto de zero. Portanto, podemos afirmar que <span class="math inline">\(z\simeq 0\)</span>. Olhando para os coeficientes <span class="math inline">\(X^{&#39;}s\)</span>, podemos dizer que (ignorando os coeficientes muito pequenos)</p>
+<p><span class="math display">\[
+z_{1}\simeq 0,7063(X_{1}+X_{3})
+\]</span> <span class="math display">\[
+z_{2}\simeq X_{2}
+\]</span> <span class="math display">\[
+z_{3}\simeq 0,707(X_{3}-X_{1})
+\]</span> <span class="math display">\[
+z_{3}\simeq 0\quad\mbox{logo}\quad X_{1}\simeq X_{3}
+\]</span> Na verdade, teríamos achado os mesmos resultados da regressão de <span class="math inline">\(X_{3}\)</span> em <span class="math inline">\(X_{1}\)</span>. O coeficiente de regressão é <span class="math inline">\(r_{13}=0,99726\)</span>. (Observe que <span class="math inline">\(X_{1}\)</span> e <span class="math inline">\(X_{3}\)</span> estão em forma padronizada e, por consequência, o coeficiente de regressão é <span class="math inline">\(r_{13}\)</span>.)</p>
+<p>Em termos de variáveis originais (não normalizadas), a regressão de <span class="math inline">\(x_{3}\)</span> em <span class="math inline">\(x_{1}\)</span> é: (erro padrão entre parêntesis)</p>
+<p><span class="math display">\[
+x_{3}=6,258606642+0,685940354x_{1}\quad R^{2}=0,99452889\\
+\quad(0,0169588)
+\]</span></p>
+<div class="figure">
+<img src="regrx3emx1.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão de <span class="math inline">\(X_{3}\)</span> em <span class="math inline">\(X_{1}\)</span> para os dados 1949-1959</em></p>
+</div>
+<p>Não obtivemos, nesse exemplo, mais informação a partir da análise do componente principal do que do estudo da correlação simples. De qualquer forma, qual é a solução agora ? Dado que existe uma relação quase exata entre <span class="math inline">\(x_{3}\)</span> em <span class="math inline">\(x_{1}\)</span>, não podemos esperar estimar os coeficientes de <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{3}\)</span> separadamente. Se a equação original for</p>
+<p><span class="math display">\[
+y=\beta_{0}+\beta_{1}x_{1}+\beta_{2}x_{2}+\beta_{3}x_{3}+u
+\]</span> então, substituindo por <span class="math inline">\(x_{3}\)</span> os termos de <span class="math inline">\(x_{1}\)</span>, temos</p>
+<p><span class="math display">\[
+y=(\beta_{0}+6,258\beta_{3})+(\beta_{1}+0,686\beta_{3})x_{1}+\beta_{3}x_{3}+u
+\]</span></p>
+<p>Isso fornece as funções lineares dos <span class="math inline">\(\beta^{&#39;}s\)</span> que são estimáveis. São eles (<span class="math inline">\(\beta_{0}+6,258\beta_{3}\)</span>),(<span class="math inline">\(\beta_{1}+0,686\beta_{3}\)</span>) e <span class="math inline">\(\beta_{2}\)</span>. Da regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{2}\)</span>, acham-se os seguintes resultados:</p>
+<div class="figure">
+<img src="regryemx1x2.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(X_{1}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></p>
+</div>
+<p>Obviamente, podemos estimar uma regressão de <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{3}\)</span>.</p>
+<div class="figure">
+<img src="regrex1emx3.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão de <span class="math inline">\(X_{1}\)</span> em <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></p>
+</div>
+<p>O coeficiente de regressão é 1,45. Agora, substituímos por <span class="math inline">\(x_{1}\)</span> e estimamos uma regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{2}\)</span> e <span class="math inline">\(x_{3}\)</span>. Os resultados que achamos são ligeiramente melhores (temos um <span class="math inline">\(R^{3}\)</span> maior). Os resultados são:</p>
+<div class="figure">
+<img src="regryemx2x3.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{2}\)</span> e <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></p>
+</div>
+<p>O coeficiente de <span class="math inline">\(x_{3}\)</span> agora é (<span class="math inline">\(\beta_{3}\)</span>+1,45).</p>
+<p>Podemos achar estimativas separadas de <span class="math inline">\(\beta_{1}\)</span> e <span class="math inline">\(\beta_{3}\)</span> apenas se tivermos alguma informação a priori. Como indica esse exemplo, a multicolinearidade implica que não podemos estimar coeficientes individuais com boa precisão, mas podemos estimar algumas funções lineares dos parâmetros com boas precisão. Se quisermos estimar os parâmetros individuais, precisaremos de alguma informação a priori. Mostraremos que o uso dos componentes principais implica a utilização de alguma informação a priori sobre as restrições dos parâmetros.</p>
+<p>Suponha que consideremos regredir <span class="math inline">\(y\)</span> nos componentes principais <span class="math inline">\(z_{1}\)</span> e <span class="math inline">\(z_{2}\)</span> (<span class="math inline">\(z_{3}\)</span> é omitido porque ele é quase zero). Vimos que <span class="math inline">\(z_{1}=0,7(X_{1}+X_{3})\)</span> e <span class="math inline">\(z_{2}=X_{2}\)</span>. Precisamos transformá-los nas variáveis originais. Temos</p>
+<p><span class="math display">\[
+z_{1}=0,7\left(\frac{x_{1i}-\overline{x_{1}}}{\sigma_{1}}+\frac{x_{3i}-\overline{x}}{\sigma_{3}} \right)
+\]</span> <span class="math display">\[
+\quad = \frac{0,7}{\sigma_{1}}\left(x_{1}+\frac{\sigma_{1}}{\sigma_{3}}x_{3}\right)+\mbox{uma constante}
+\]</span> <span class="math display">\[
+\quad z_{2}=\frac{1}{\sigma_{2}}(x_{2}-\overline{x_{2}})
+\]</span> Portanto, usar <span class="math inline">\(z_{2}\)</span> como um regressor é equivalente a usar <span class="math inline">\(x_{2}\)</span>, e usar <span class="math inline">\(z_{1}\)</span> é equivalente a usar (<span class="math inline">\(x_{1}+(\sigma_{1}/\sigma_{3})x_{3}\)</span>). Logo, a regressão do componente principal equivale a regredir <span class="math inline">\(y\)</span> em <span class="math inline">\((x_{1}+(\sigma_{1}/\sigma_{3})x_{3})\)</span> e <span class="math inline">\(x_{2}\)</span>. Em nosso exemplo, <span class="math inline">\(\sigma_{1}/\sigma_{3}=1,453859199\)</span>. Esses resultados são</p>
+<div class="figure">
+<img src="regryemsigma.png" style="width:70.0%" alt="" />
+<p class="caption"><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{1}+1,4536X_{3}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></p>
+</div>
+<p>Essa é a equação de regressão que <em>teríamos estimado</em> se assumíssemos que <span class="math inline">\((\beta_{3}=(\sigma_{1}/\sigma_{3})\beta_{1})=1,4536\beta_{1}\)</span>. Assim, a regressão do componente principal equivale, nesse mesmo exemplo, ao uso da informação a priori <span class="math inline">\(\beta_{3}=1,4536\beta_{1}\)</span>.</p>
+<p>Se todos os componentes principais forem usados, isso é exatamente equivalente a usar o conjunto de variáveis explicativas original. Se alguns componentes principais forem omitidos, isso equivale a usar alguma informação a priori nos <span class="math inline">\(\beta^{&#39;}s\)</span>. Em nosso exemplo, a pergunta é se o pressuposto <span class="math inline">\(\beta_{3}=1,45\beta_{1}\)</span> tem sentido econômico. Sem mais dados desagregados que dividam as importações em bens de consumo e bens de produção, não podemos dizer nada. De qualquer forma, com 11 observações não podemos esperar responder a mais perguntas. O propósito de nossa análise tem sido meramente mostrar o que é a regressão do componente principal e que ela implica alguma informação a priori.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
