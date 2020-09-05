@@ -21,6 +21,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -252,6 +255,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -259,6 +325,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -361,13 +437,15 @@ $(document).ready(function () {
 
 
 <hr />
-<div id="resumo" class="section level3">
-<h3>Resumo</h3>
-<p>Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações. *Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.</p>
+<div id="resumo" class="section level1">
+<h1>Resumo</h1>
+<p>Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações.</p>
+<p>O método dos componentes principais é uma das opções para solução deste problema, <a href="https://drsimonj.svbtle.com/ridge-regression-with-glmnet">bem como a regressão ridge</a> que pode ser feita no R ou veja aqui sobre a <a href="https://www.youtube.com/watch?v=CJIfmy2ws68">Regressão Ridge no Eviews:</a></p>
+<p>*Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.</p>
 <hr />
 </div>
-<div id="regressão-do-componente-principal" class="section level2">
-<h2>Regressão do Componente Principal</h2>
+<div id="regressão-do-componente-principal" class="section level1">
+<h1>Regressão do Componente Principal</h1>
 <p>Outra solução frequentemente sugerida para o problema de multicolinearidade é a <em>regressão do componente principal,</em> que procede da seguinte forma. Suponha que tenhamos <span class="math inline">\(k\)</span> variáveis explicativas. Então podemos considerar funções lineares dessas variáveis.</p>
 <p><span class="math display">\[
 z_{1}=a_{1}x_{1}+a_{2}x_{2}+\ldots+a_{k}x_{k}
@@ -407,29 +485,29 @@ var(z_{1})&gt;var(z_{2})&gt;\ldots&gt;var(z_{k})
 <p>Primeiro estimamos uma função de demanda por importação. Ao regredir <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1},x_{2},x_{3}\)</span> acham-se os seguintes resultados:</p>
 <div class="figure">
 <img src="regrmadallap152.png" style="width:80.0%" alt="" />
-<p class="caption"><em>Resultados da Regressão com a série completa</em></p>
+<p class="caption"><strong><em>Resultados da Regressão com a série completa</em></strong></p>
 </div>
 <p>O <span class="math inline">\(R^{2}\)</span> é muito elevado e a razão <span class="math inline">\(F\)</span> é altamente significativa, mas todas as razões <span class="math inline">\(t\)</span> individuais são insignificantes. Isso é evidência do problema da multicolinearidade. Chatterjee e Price argumentam que antes que qualquer análise adicional seja feita, devemos olhar para os resíduos dessa equação. Eles acham (veja o gráfico de resíduos) um padrão definido – os resíduos declinam até 1960 e então aumentam.</p>
 <div class="figure">
 <img src="residuosmaddalap152.png" style="width:50.0%" alt="" />
-<p class="caption"><em>Padrão de resíduos da regressão com a série completa</em></p>
+<p class="caption"><strong><em>Padrão de resíduos da regressão com a série completa</em></strong></p>
 </div>
 <p>Chaterjee e Price argumentam que a dificuldade desse modelo é que o Mercado Comum Europeu começou a operar em 1960, causando mudanças nas relações entre importação e exportação. Portanto, eles excluem os anos posteriores a 1959 e consideram apenas os 11 anos do período 1949–1959. Agora os resultados da regressão são os seguintes:</p>
 <div class="figure">
 <img src="regremadallap152reduzida.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão para 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão para 1949-1959</em></strong></p>
 </div>
 <p>Como podemos ver no gráfico de resíduos a seguir, não encontramos um padrão sistemático</p>
 <div class="figure">
 <img src="residuosregrpca.png" style="width:50.0%" alt="" />
-<p class="caption"><em>Padrão residual da Regressão para 1949-1959</em></p>
+<p class="caption"><strong><em>Padrão residual da Regressão para 1949-1959</em></strong></p>
 </div>
 <p>de forma que podemos prosseguir.</p>
 <p>Embora o <span class="math inline">\(R^{2}\)</span> seja muito elevado, o coeficiente de <span class="math inline">\(x_{1}\)</span> não é significante (<span class="math inline">\(t=-0,731305765\)</span> e valor<span class="math inline">\(-p=0,488344308\)</span>). Existe, por conseguinte, um problema de multicolinearidade.</p>
 <p>Para ver o que deve ser feito sobre isso, primeiro olhamos para as correlações simple entre as variáveis explicativas:</p>
 <div class="figure">
 <img src="matrizcorrelpca.png" style="width:50.0%" alt="" />
-<p class="caption"><em>Matriz de correlação das explicativas para a Regressão para 1949-1959</em></p>
+<p class="caption"><strong><em>Matriz de correlação das explicativas para a Regressão para 1949-1959</em></strong></p>
 </div>
 <p>Suspeitamos que a alta correlação presente nos dados de Consumo (<span class="math inline">\(X3\)</span>) com Produto Doméstico Bruto (<span class="math inline">\(X1\)</span>), possa ser a causa do problema.</p>
 <p>A análise de componentes principais ajuda ? Vamos para o primeiro passo, rumando para a obtenção dos valores dos componentes principais no pacote estatístico R:</p>
@@ -508,7 +586,7 @@ vars_transformadas</code></pre>
 <p>os componentes principais (obtidos pelo pacote Eviews) são:</p>
 <div class="figure">
 <img src="autovalores.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Matriz de Autovalores para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Matriz de Autovalores para os dados 1949-1959</em></strong></p>
 </div>
 <p>Obtemos assim os mesmos valores encontrados por Maddala, p. 152, 2001:</p>
 <p><span class="math display">\[
@@ -524,7 +602,7 @@ var(X_{1})=var(X_{2})=var(X_{3})=1
 <p>As variâncias dos componentes principais são</p>
 <div class="figure">
 <img src="varianciaspca.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Matriz de Autovetores para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Matriz de Autovetores para os dados 1949-1959</em></strong></p>
 </div>
 <p>então</p>
 <p><span class="math display">\[
@@ -546,7 +624,7 @@ x_{3}=6,258606642+0,685940354x_{1}\quad R^{2}=0,99452889\\
 \]</span></p>
 <div class="figure">
 <img src="regrx3emx1.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão de <span class="math inline">\(X_{3}\)</span> em <span class="math inline">\(X_{1}\)</span> para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão de <span class="math inline">\(X_{3}\)</span> em <span class="math inline">\(X_{1}\)</span> para os dados 1949-1959</em></strong></p>
 </div>
 <p>Não obtivemos, nesse exemplo, mais informação a partir da análise do componente principal do que do estudo da correlação simples. De qualquer forma, qual é a solução agora ? Dado que existe uma relação quase exata entre <span class="math inline">\(x_{3}\)</span> em <span class="math inline">\(x_{1}\)</span>, não podemos esperar estimar os coeficientes de <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{3}\)</span> separadamente. Se a equação original for</p>
 <p><span class="math display">\[
@@ -558,17 +636,17 @@ y=(\beta_{0}+6,258\beta_{3})+(\beta_{1}+0,686\beta_{3})x_{1}+\beta_{3}x_{3}+u
 <p>Isso fornece as funções lineares dos <span class="math inline">\(\beta^{&#39;}s\)</span> que são estimáveis. São eles (<span class="math inline">\(\beta_{0}+6,258\beta_{3}\)</span>),(<span class="math inline">\(\beta_{1}+0,686\beta_{3}\)</span>) e <span class="math inline">\(\beta_{2}\)</span>. Da regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{2}\)</span>, acham-se os seguintes resultados:</p>
 <div class="figure">
 <img src="regryemx1x2.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(X_{1}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(X_{1}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></strong></p>
 </div>
 <p>Obviamente, podemos estimar uma regressão de <span class="math inline">\(x_{1}\)</span> e <span class="math inline">\(x_{3}\)</span>.</p>
 <div class="figure">
 <img src="regrex1emx3.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão de <span class="math inline">\(X_{1}\)</span> em <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão de <span class="math inline">\(X_{1}\)</span> em <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></strong></p>
 </div>
 <p>O coeficiente de regressão é 1,45. Agora, substituímos por <span class="math inline">\(x_{1}\)</span> e estimamos uma regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x_{2}\)</span> e <span class="math inline">\(x_{3}\)</span>. Os resultados que achamos são ligeiramente melhores (temos um <span class="math inline">\(R^{3}\)</span> maior). Os resultados são:</p>
 <div class="figure">
 <img src="regryemx2x3.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{2}\)</span> e <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{2}\)</span> e <span class="math inline">\(X_{3}\)</span> para os dados 1949-1959</em></strong></p>
 </div>
 <p>O coeficiente de <span class="math inline">\(x_{3}\)</span> agora é (<span class="math inline">\(\beta_{3}\)</span>+1,45).</p>
 <p>Podemos achar estimativas separadas de <span class="math inline">\(\beta_{1}\)</span> e <span class="math inline">\(\beta_{3}\)</span> apenas se tivermos alguma informação a priori. Como indica esse exemplo, a multicolinearidade implica que não podemos estimar coeficientes individuais com boa precisão, mas podemos estimar algumas funções lineares dos parâmetros com boas precisão. Se quisermos estimar os parâmetros individuais, precisaremos de alguma informação a priori. Mostraremos que o uso dos componentes principais implica a utilização de alguma informação a priori sobre as restrições dos parâmetros.</p>
@@ -582,14 +660,27 @@ z_{1}=0,7\left(\frac{x_{1i}-\overline{x_{1}}}{\sigma_{1}}+\frac{x_{3i}-\overline
 \]</span> Portanto, usar <span class="math inline">\(z_{2}\)</span> como um regressor é equivalente a usar <span class="math inline">\(x_{2}\)</span>, e usar <span class="math inline">\(z_{1}\)</span> é equivalente a usar (<span class="math inline">\(x_{1}+(\sigma_{1}/\sigma_{3})x_{3}\)</span>). Logo, a regressão do componente principal equivale a regredir <span class="math inline">\(y\)</span> em <span class="math inline">\((x_{1}+(\sigma_{1}/\sigma_{3})x_{3})\)</span> e <span class="math inline">\(x_{2}\)</span>. Em nosso exemplo, <span class="math inline">\(\sigma_{1}/\sigma_{3}=1,453859199\)</span>. Esses resultados são</p>
 <div class="figure">
 <img src="regryemsigma.png" style="width:70.0%" alt="" />
-<p class="caption"><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{1}+1,4536X_{3}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></p>
+<p class="caption"><strong><em>Regressão de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X_{1}+1,4536X_{3}\)</span> e <span class="math inline">\(X_{2}\)</span> para os dados 1949-1959</em></strong></p>
 </div>
 <p>Essa é a equação de regressão que <em>teríamos estimado</em> se assumíssemos que <span class="math inline">\((\beta_{3}=(\sigma_{1}/\sigma_{3})\beta_{1})=1,4536\beta_{1}\)</span>. Assim, a regressão do componente principal equivale, nesse mesmo exemplo, ao uso da informação a priori <span class="math inline">\(\beta_{3}=1,4536\beta_{1}\)</span>.</p>
 <p>Se todos os componentes principais forem usados, isso é exatamente equivalente a usar o conjunto de variáveis explicativas original. Se alguns componentes principais forem omitidos, isso equivale a usar alguma informação a priori nos <span class="math inline">\(\beta^{&#39;}s\)</span>. Em nosso exemplo, a pergunta é se o pressuposto <span class="math inline">\(\beta_{3}=1,45\beta_{1}\)</span> tem sentido econômico. Sem mais dados desagregados que dividam as importações em bens de consumo e bens de produção, não podemos dizer nada. De qualquer forma, com 11 observações não podemos esperar responder a mais perguntas. O propósito de nossa análise tem sido meramente mostrar o que é a regressão do componente principal e que ela implica alguma informação a priori.</p>
+<hr />
+<div id="exercício-proposto" class="section level3">
+<h3>Exercício proposto</h3>
+<p><a href="https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Vendas%20GM.xlsx?raw=true">Para os dados das fábricas da GM rode o modelo de regressão do componente principal, para corrigir o problema da multicolinearidade.</a></p>
+<p>Quando você estima um modelo autoregressivo para esses dados, como a multicolinearidade pode viesar os resultados ?</p>
+<hr />
+</div>
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<p>Maddala, G.S. <strong>Introdução à Econometria.</strong> Third Edition, 2001.</p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -622,6 +713,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
