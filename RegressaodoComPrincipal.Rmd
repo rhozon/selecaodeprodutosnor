@@ -3,8 +3,9 @@ title: 'Solução para multicolinearidade: Regressão do Componente Principal'
 author: "Rodrigo H. Ozon"
 date: "02/09/2020"
 output:
-  html_document: default
-  pdf_document: default
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -13,14 +14,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***
 
-### Resumo
+# Resumo
 
-Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações. *Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.
+Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações. 
+
+O método dos componentes principais é uma das opções para solução deste problema, [bem como a regressão ridge](https://drsimonj.svbtle.com/ridge-regression-with-glmnet) que pode ser feita no R ou veja aqui sobre a [Regressão Ridge no Eviews:](https://www.youtube.com/watch?v=CJIfmy2ws68)
+
+
+*Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.
 
 ***
 
 
-## Regressão do Componente Principal 
+# Regressão do Componente Principal 
 
 Outra solução frequentemente sugerida para o problema de multicolinearidade é a _regressão do componente principal,_ que procede da seguinte forma. Suponha que tenhamos $k$ variáveis explicativas. Então podemos considerar funções lineares dessas variáveis.
 
@@ -81,19 +87,19 @@ Ilustramos o método com referência a um conjunto de dados de Mallinvaud (E. Ma
 
 Primeiro estimamos uma função de demanda por importação. Ao regredir $y$ em $x_{1},x_{2},x_{3}$ acham-se os seguintes resultados:
 
-![*Resultados da Regressão com a série completa*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrmadallap152.png){ width=80% }
+![***Resultados da Regressão com a série completa*** ](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrmadallap152.png){ width=80% }
 
 O $R^{2}$ é muito elevado e a razão $F$ é altamente significativa, mas todas as razões $t$ individuais são insignificantes. Isso é evidência do problema da multicolinearidade. Chatterjee e Price argumentam que antes que qualquer análise adicional seja feita, devemos olhar para os resíduos dessa equação. Eles acham (veja o gráfico de resíduos) um padrão definido -- os resíduos declinam até 1960 e então aumentam. 
 
-![*Padrão de resíduos da regressão com a série completa*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/residuosmaddalap152.png){ width=50% }
+![***Padrão de resíduos da regressão com a série completa***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/residuosmaddalap152.png){ width=50% }
 
 Chaterjee e Price argumentam que a dificuldade desse modelo é que o Mercado Comum Europeu começou a operar em 1960, causando mudanças nas relações entre importação e exportação. Portanto, eles excluem os anos posteriores a 1959 e consideram apenas os 11 anos do período 1949--1959. Agora os resultados da regressão são os seguintes:
 
-![*Regressão para 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regremadallap152reduzida.png){ width=70% }
+![***Regressão para 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regremadallap152reduzida.png){ width=70% }
 
 Como podemos ver no gráfico de resíduos a seguir, não encontramos um padrão sistemático 
 
-![*Padrão residual da Regressão para 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/residuosregrpca.png){ width=50% }
+![***Padrão residual da Regressão para 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/residuosregrpca.png){ width=50% }
 
 de forma que podemos prosseguir.
 
@@ -102,7 +108,7 @@ Embora o $R^{2}$ seja muito elevado, o coeficiente de $x_{1}$ não é significan
 Para ver o que deve ser feito sobre isso, primeiro olhamos para as correlações simple entre as variáveis explicativas:
 
 
-![*Matriz de correlação das explicativas para a Regressão para 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matrizcorrelpca.png){ width=50% }
+![***Matriz de correlação das explicativas para a Regressão para 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matrizcorrelpca.png){ width=50% }
 
 Suspeitamos que a alta correlação presente nos dados de Consumo ($X3$) com Produto Doméstico Bruto ($X1$), possa ser a causa do problema.
 
@@ -174,7 +180,7 @@ vars_transformadas/sum(vars_transformadas)
 
 os componentes principais (obtidos pelo pacote Eviews) são:
 
-![*Matriz de Autovalores para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/autovalores.png){ width=70% }
+![***Matriz de Autovalores para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/autovalores.png){ width=70% }
 
 
 Obtemos assim os mesmos valores encontrados por Maddala, p. 152, 2001:
@@ -198,7 +204,7 @@ $$
 
 As variâncias dos componentes principais são
 
-![*Matriz de Autovetores para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/varianciaspca.png){ width=70% }
+![***Matriz de Autovetores para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/varianciaspca.png){ width=70% }
 
 
 então
@@ -230,7 +236,7 @@ x_{3}=6,258606642+0,685940354x_{1}\quad R^{2}=0,99452889\\
 \quad(0,0169588)
 $$
 
-![*Regressão de $X_{3}$ em $X_{1}$ para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrx3emx1.png){ width=70% }
+![***Regressão de $X_{3}$ em $X_{1}$ para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrx3emx1.png){ width=70% }
 
 
 
@@ -248,15 +254,15 @@ $$
 
 Isso fornece as funções lineares dos $\beta^{'}s$ que são estimáveis. São eles ($\beta_{0}+6,258\beta_{3}$),($\beta_{1}+0,686\beta_{3}$) e $\beta_{2}$. Da regressão de $y$ em $x_{1}$ e $x_{2}$, acham-se os seguintes resultados:
 
-![*Regressão de $y$ em $X_{1}$ e $X_{2}$ para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemx1x2.png){ width=70% }
+![***Regressão de $y$ em $X_{1}$ e $X_{2}$ para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemx1x2.png){ width=70% }
 
 Obviamente, podemos estimar uma regressão de $x_{1}$ e $x_{3}$. 
 
-![*Regressão de $X_{1}$ em $X_{3}$ para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrex1emx3.png){ width=70% }
+![***Regressão de $X_{1}$ em $X_{3}$ para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regrex1emx3.png){ width=70% }
 
 O coeficiente de regressão é 1,45. Agora, substituímos por $x_{1}$ e estimamos uma regressão de $y$ em $x_{2}$ e $x_{3}$. Os resultados que achamos são ligeiramente melhores (temos um $R^{3}$ maior). Os resultados são:
 
-![*Regressão de $Y$ em $X_{2}$ e $X_{3}$ para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemx2x3.png){ width=70% }
+![***Regressão de $Y$ em $X_{2}$ e $X_{3}$ para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemx2x3.png){ width=70% }
 
 
 O coeficiente de $x_{3}$ agora é ($\beta_{3}$+1,45).
@@ -276,16 +282,29 @@ $$
 $$
 Portanto, usar $z_{2}$ como um regressor é equivalente a usar $x_{2}$, e usar $z_{1}$ é equivalente a usar ($x_{1}+(\sigma_{1}/\sigma_{3})x_{3}$). Logo, a regressão do componente principal equivale a regredir $y$ em $(x_{1}+(\sigma_{1}/\sigma_{3})x_{3})$ e $x_{2}$. Em nosso exemplo, $\sigma_{1}/\sigma_{3}=1,453859199$. Esses resultados são
 
-![*Regressão de $Y$ em $X_{1}+1,4536X_{3}$ e $X_{2}$ para os dados 1949-1959*](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemsigma.png){ width=70% }
+![***Regressão de $Y$ em $X_{1}+1,4536X_{3}$ e $X_{2}$ para os dados 1949-1959***](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/regryemsigma.png){ width=70% }
 
 
 Essa é a equação de regressão que _teríamos estimado_ se assumíssemos que $(\beta_{3}=(\sigma_{1}/\sigma_{3})\beta_{1})=1,4536\beta_{1}$. Assim, a regressão do componente principal equivale, nesse mesmo exemplo, ao uso da informação a priori $\beta_{3}=1,4536\beta_{1}$.
 
 Se todos os componentes principais forem usados, isso é exatamente equivalente a usar o conjunto de variáveis explicativas original. Se alguns componentes principais forem omitidos, isso equivale a usar alguma informação a priori nos $\beta^{'}s$. Em nosso exemplo, a pergunta é se o pressuposto $\beta_{3}=1,45\beta_{1}$ tem sentido econômico. Sem mais dados desagregados que dividam as importações em bens de consumo e bens de produção, não podemos dizer nada. De qualquer forma, com 11 observações não podemos esperar responder a mais perguntas. O propósito de nossa análise tem sido meramente mostrar o que é a regressão do componente principal e que ela implica alguma informação a priori.
 
+***
+### Exercício proposto
+
+[Para os dados das fábricas da GM rode o modelo de regressão do componente principal, para corrigir o problema da multicolinearidade.](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Vendas%20GM.xlsx?raw=true)
+
+Quando você estima um modelo autoregressivo para esses dados, como a multicolinearidade pode viesar os resultados ? 
 
 
 
+
+
+***
+
+# Referências
+
+Maddala, G.S. **Introdução à Econometria.** Third Edition, 2001.
 
 
 

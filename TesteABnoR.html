@@ -388,6 +388,9 @@ div.tocify {
     <li>
       <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
     </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -535,13 +538,13 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## Distribution used: bernoulli 
 ## --------------------------------------------
 ## Using data with the following properties: 
-##            A          B
-## Min.    0.00 0.00000000
-## 1st Qu. 0.00 0.00000000
-## Median  0.00 0.00000000
-## Mean    0.06 0.08566667
-## 3rd Qu. 0.00 0.00000000
-## Max.    1.00 1.00000000
+##                  A          B
+## Min.    0.00000000 0.00000000
+## 1st Qu. 0.00000000 0.00000000
+## Median  0.00000000 0.00000000
+## Mean    0.06463768 0.07766667
+## 3rd Qu. 0.00000000 0.00000000
+## Max.    1.00000000 1.00000000
 ## --------------------------------------------
 ## Conjugate Prior Distribution: Beta 
 ## Conjugate Prior Parameters: 
@@ -563,11 +566,11 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## $Probability
 ## $Probability$A
 ##         0%        25%        50%        75%       100% 
-## 0.06500074 0.07878071 0.08174515 0.08481779 0.10168593 
+## 0.06611784 0.08301421 0.08608761 0.08919908 0.10605996 
 ## 
 ## $Probability$B
 ##         0%        25%        50%        75%       100% 
-## 0.08664457 0.10448888 0.10809144 0.11177555 0.13092697 
+## 0.07792513 0.09728992 0.10079826 0.10440269 0.12429006 
 ## 
 ## 
 ## --------------------------------------------
@@ -575,22 +578,22 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## P(A &gt; B) by (0)%: 
 ## 
 ## $Probability
-## [1] 9e-05
+## [1] 0.01709
 ## 
 ## --------------------------------------------
 ## 
 ## Credible Interval on (A - B) / B for interval length(s) (0.9) : 
 ## 
 ## $Probability
-##         5%        95% 
-## -0.3302033 -0.1454305 
+##          5%         95% 
+## -0.24549047 -0.03449407 
 ## 
 ## --------------------------------------------
 ## 
 ## Posterior Expected Loss for choosing B over A:
 ## 
 ## $Probability
-## [1] 0.3258108</code></pre>
+## [1] 0.1750507</code></pre>
 <p>O resumo fornece o intervalo crível. Os intervalos bayesianos tratam seus limites como fixos e o Parâmetro estimado como uma variável aleatória, enquanto os intervalos de confiança freqüentistas tratam seus limites como variáveis aleatórias e parâmetros como o valor fixo.</p>
 <p>Também mostra que <span class="math inline">\(p(A&gt; B)\)</span> é de 0,00068%. Portanto, B é muito melhor que A. E a perda posterior esperada para escolher B sobre A é baixa.</p>
 <pre class="r"><code>plot (AB2)</code></pre>
