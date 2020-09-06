@@ -437,11 +437,41 @@ div.tocify {
 
 
 <hr />
-<div id="resumo" class="section level1">
-<h1>Resumo</h1>
+<div id="resumo" class="section level2">
+<h2>Resumo</h2>
 <p>Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações.</p>
 <p>O método dos componentes principais é uma das opções para solução deste problema, <a href="https://drsimonj.svbtle.com/ridge-regression-with-glmnet">bem como a regressão ridge</a> que pode ser feita no R ou veja aqui sobre a <a href="https://www.youtube.com/watch?v=CJIfmy2ws68">Regressão Ridge no Eviews:</a></p>
-<p>*Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.</p>
+<p><em>Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.</em></p>
+<hr />
+</div>
+<div id="introdução" class="section level2">
+<h2>Introdução</h2>
+<p>Algumas ações corretivas podem ser empregadas para a multicolinearidade, mas agora normalmente, elas provocam alterações nos modelos. Possíveis ações corretivas para a multicolinearidade são:</p>
+<ol style="list-style-type: lower-alpha">
+<li>Omitir uma ou mais variáveis independentes altamente correlacionadas e identificar outras para ajudar na previsão:</li>
+</ol>
+<p><em>Advertências</em></p>
+<ul>
+<li><p>Pode causar um erro de especificação ou regressões com poder preditivo baixo.</p></li>
+<li><p>Pode deixar de fora variáveis que são importantes para o estudo</p></li>
+</ul>
+<ol start="2" style="list-style-type: lower-alpha">
+<li>Utilizar o modelo de regressão com variáveis independentes muito correlacionadas apenas para fazer previsões.</li>
+</ol>
+<p><em>Advertências</em></p>
+<ul>
+<li><p>Não tente interpretar os coeficientes de regressão</p></li>
+<li><p>O conjunto de variáveis explicativas pode perder poder explicativo.</p></li>
+</ul>
+<p>E, ainda:</p>
+<ol start="3" style="list-style-type: lower-alpha">
+<li><p>Utilizar as correlações simples para compreender a relação entre variáveis dependentes e independentes</p></li>
+<li><p>Usar informação <em>a priori</em> sobre o valor da estimativa dos parâmetros obtida de estudos prévios, prevenindo que o pesquisador aceita parâmetros incorretos.</p></li>
+<li><p>Transformar a relação funcional (por exemplo, elevando as variáveis ao quadrado ou extraindo o logaritmo).</p></li>
+<li><p>Utilizar o método de seleção de variáveis stepwise</p></li>
+<li><p>Verificar a existência de <em>outliers</em></p></li>
+<li><p>Aumentar o tamanho da amostra.</p></li>
+</ol>
 <hr />
 </div>
 <div id="regressão-do-componente-principal" class="section level1">

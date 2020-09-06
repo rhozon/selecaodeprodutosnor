@@ -465,7 +465,7 @@ div.tocify {
 </table>
 <p><em>Hipótese nula</em>: suposição de que não há diferença entre as taxas de conversão dos produtos A e B</p>
 <p><em>Hipótese alternativa</em>: há uma diferença entre as taxas de conversão dos produtos A e B</p>
-<p>Para rejeitar a hipótese nula, precisamos de um valor-<span class="math inline">\(p\)</span> menor que o nível de significância, ou seja, p$ &lt;0,05$</p>
+<p>Para rejeitar a hipótese nula, precisamos de um valor- <em>p</em> menor que o nível de significância, ou seja, <em>p</em> <span class="math inline">\(&lt;0,05\)</span></p>
 <pre class="r"><code>#install.packages(&quot;pwr&quot;)
 library(pwr)
  
@@ -542,7 +542,7 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## Min.    0.00000000 0.00000000
 ## 1st Qu. 0.00000000 0.00000000
 ## Median  0.00000000 0.00000000
-## Mean    0.06463768 0.07766667
+## Mean    0.06347826 0.08233333
 ## 3rd Qu. 0.00000000 0.00000000
 ## Max.    1.00000000 1.00000000
 ## --------------------------------------------
@@ -566,11 +566,11 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## $Probability
 ## $Probability$A
 ##         0%        25%        50%        75%       100% 
-## 0.06611784 0.08301421 0.08608761 0.08919908 0.10605996 
+## 0.06703067 0.08196848 0.08499158 0.08809637 0.10592758 
 ## 
 ## $Probability$B
-##         0%        25%        50%        75%       100% 
-## 0.07792513 0.09728992 0.10079826 0.10440269 0.12429006 
+##        0%       25%       50%       75%      100% 
+## 0.0818170 0.1014902 0.1050494 0.1086751 0.1303051 
 ## 
 ## 
 ## --------------------------------------------
@@ -578,7 +578,7 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## P(A &gt; B) by (0)%: 
 ## 
 ## $Probability
-## [1] 0.01709
+## [1] 0.00228
 ## 
 ## --------------------------------------------
 ## 
@@ -586,14 +586,14 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## 
 ## $Probability
 ##          5%         95% 
-## -0.24549047 -0.03449407 
+## -0.28391266 -0.08672196 
 ## 
 ## --------------------------------------------
 ## 
 ## Posterior Expected Loss for choosing B over A:
 ## 
 ## $Probability
-## [1] 0.1750507</code></pre>
+## [1] 0.2394301</code></pre>
 <p>O resumo fornece o intervalo crível. Os intervalos bayesianos tratam seus limites como fixos e o Parâmetro estimado como uma variável aleatória, enquanto os intervalos de confiança freqüentistas tratam seus limites como variáveis aleatórias e parâmetros como o valor fixo.</p>
 <p>Também mostra que <span class="math inline">\(p(A&gt; B)\)</span> é de 0,00068%. Portanto, B é muito melhor que A. E a perda posterior esperada para escolher B sobre A é baixa.</p>
 <pre class="r"><code>plot (AB2)</code></pre>
