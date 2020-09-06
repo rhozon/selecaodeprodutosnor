@@ -14,17 +14,53 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***
 
-# Resumo
+## Resumo
 
 Este tutorial replica o conteúdo presente em Maddala, p. 150-153, 2001, com algumas adaptações. 
 
 O método dos componentes principais é uma das opções para solução deste problema, [bem como a regressão ridge](https://drsimonj.svbtle.com/ridge-regression-with-glmnet) que pode ser feita no R ou veja aqui sobre a [Regressão Ridge no Eviews:](https://www.youtube.com/watch?v=CJIfmy2ws68)
 
 
-*Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.
+
+ *Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.*
 
 ***
 
+## Introdução
+
+Algumas ações corretivas podem ser empregadas para a multicolinearidade, mas agora normalmente, elas provocam alterações nos modelos. Possíveis ações corretivas para a multicolinearidade são:
+
+a) Omitir uma ou mais variáveis independentes altamente correlacionadas e identificar outras para ajudar na previsão:
+
+_Advertências_
+
+- Pode causar um erro de especificação ou regressões com poder preditivo baixo.
+
+- Pode deixar de fora variáveis que são importantes para o estudo
+
+b) Utilizar o modelo de regressão com variáveis independentes muito correlacionadas apenas para fazer previsões.
+
+_Advertências_
+
+- Não tente interpretar os coeficientes de regressão
+
+- O conjunto de variáveis explicativas pode perder poder explicativo.
+
+E, ainda:
+
+c) Utilizar as correlações simples para compreender a relação entre variáveis dependentes e independentes
+
+d) Usar informação _a priori_ sobre o valor da estimativa dos parâmetros obtida de estudos prévios, prevenindo que o pesquisador aceita parâmetros incorretos.
+
+e) Transformar a relação funcional (por exemplo, elevando as variáveis ao quadrado ou extraindo o logaritmo).
+
+f) Utilizar o método de seleção de variáveis stepwise 
+
+g) Verificar a existência de _outliers_
+
+h) Aumentar o tamanho da amostra.
+
+***
 
 # Regressão do Componente Principal 
 

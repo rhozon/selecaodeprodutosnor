@@ -35,7 +35,8 @@ _Hipótese nula_: suposição de que não há diferença entre as taxas de conve
 
 _Hipótese alternativa_: há uma diferença entre as taxas de conversão dos produtos A e B
 
-Para rejeitar a hipótese nula, precisamos de um valor-$p$ menor que o nível de significância, ou seja, p$ <0,05$
+Para rejeitar a hipótese nula, precisamos de um valor-
+_p_ menor que o nível de significância, ou seja, _p_ $<0,05$
 
 
 ```{r}
