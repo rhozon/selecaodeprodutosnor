@@ -24,7 +24,15 @@ Tutoriais disponíveis:
 
 ### *Regressão do Componente Principal no Excel para Multicolinearidade*
 
-+ Veja como utilizar um método para corrigir a multicolinearidade no seu modelo de regressão linear múltipla.
+### *Regressão _Ridge_ no Excel e no R para Multicolinearidade*
+
++ Veja como utilizar dois métodos para corrigir a multicolinearidade no seu modelo de regressão linear múltipla.
+
+### Introdução aos Processos Estocásticos: Cadeias de Markov
+
++ Comece a compreender alguns conceitos relacionados a processos aleatórios [em construção]
+
+
 
 ***
 
