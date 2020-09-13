@@ -1,0 +1,640 @@
+---
+title: 'Solução para a multicolinearidade: A Regressão Ridge'
+author: "Rodrigo H. Ozon"
+date: "09/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+## Resumo
+
+Muitas vezes veremos dentre os modelos de _machine learning_, termos como **LASSO regression e Ridge Regression**; e, justamente essa que queremos exemplificar nesse breve tutorial. Esse método é sugerido como exemplo de solução da multicolinearidade, formulado inicialmente por Hoerl e Kennard (Hoerl e Kennard, 1977). 
+
+
+Reproduzimos aqui o mesmo exemplo apresentado em Maddala, p. 144-145 e 149-150, 2001.
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+    Algumas estimativas podem ser diferentes provavelmente pelas omissões de detalhes a este respeito do próprio autor ou pelos métodos empregados pelo uso de diferentes softwares.
+</p>
+
+ 
+ 
+***
+
+## Introdução
+
+Em linhas gerais, a idéia é adicionar uma constante $\lambda$ às variâncias das variáveis explicativas antes de resolver as equações normais. 
+
+Vamos a um exemplo numérico para elucidar com mais clareza:
+
+***
+
+# Exemplo ilustrativo
+
+Veremos os impactos da multicolinearidade nos dados considerando o seguinte modelo:
+
+$$
+Y=\beta_{1}X_{1}+\beta_{2}X_{2}+u.\quad\mbox{Se}\,\,X_{2}+2X_{2},\,\,\mbox{temos}
+$$
+$$
+Y=\beta_{1}X_{1}+\beta_{2}(2X_{1})+u=(\beta_{1}+2\beta_{2})X_{1}+u
+$$
+Logo, apenas ($\beta_{1}+2\beta_{2}$), poderia ser estimado. Não podemos achar estimativas de $\beta_{1}$ e $\beta_{2}$ separadamente. Nesse caso, dizemos que existe "_multicolinearidade perfeita,_" porque $X_{1}$ e $X_{2}$ são perfeitamente correlacionadas (com $R^{2}=1$). Na prática, encontramos casos onde $R^{2}$ não é exatamente 1, mas próximo de 1.
+
+Como ilustração, considere o caso no qual:
+
+
+$\quad \quad \quad \quad S_{11}=\sum X_{1i}^{2}-n\overline{X}_{1}^{2}=200 \quad \quad \quad \quad \quad  S_{12}=\sum X_{1i}X_{2i}-n\overline{X}_{1}\overline{X}_{2}=150$
+
+$\quad \quad \quad \quad S_{13}=\sum X_{2i}^{2}-n\overline{X}_{2}^{2}=113$ 
+
+$\quad \quad \quad \quad S_{1Y}=\sum X_{1i}Y_{i}-n\overline{X}_{1}\overline{Y}=350 \quad \quad \quad  S_{2Y}=\sum X_{2i}Y_{i}-n\overline{X}_{2}\overline{Y}=263$
+
+Assim, as equações normais são:
+
+$S_{1Y}=\widehat{\beta}S_{11}+\widehat{\beta_{2}}S_{12}$ e simplificando de modo similar temos:
+
+$S_{2Y}=\widehat{\beta}S_{11}+\widehat{\beta_{2}}S_{12}$ o que nos possibilita resolver essas duas equações para acharmos $\widehat{\beta_{1}}$ e $\widehat{\beta_{2}}$, obtemos
+
+$$
+\widehat{\beta_{1}}=\frac{S_{22}S_{1Y}-S_{12}S_{2Y}}{S_{11}S_{22}-S_{12}^{2}}
+$$
+e
+
+$$
+\widehat{\beta_{2}}=\frac{S_{11}S_{2Y}-S_{12}S_{1Y}}{S_{11}S_{22}-S_{12}^{2}}
+$$
+
+e o intercepto, então:
+
+$$
+\widehat{\alpha}=\overline{Y}-\widehat{\beta_{1}}\overline{X}_{1}-\widehat{\beta_{2}}\overline{X}_{2}
+$$
+
+Então substituindo os valores nas equações normais teremos:
+
+$$
+\quad \quad \,\,200\widehat{\beta}_{1}+150\widehat{\beta}_{2}=350\quad \quad \mbox{e,}
+$$
+
+$$
+150\widehat{\beta}_{1}+113\widehat{\beta}_{2}=263
+$$
+
+Em linhas gerais, a idéia é adicionar uma constante $\lambda$ às variâncias das variáveis explicativas antes de resolver essas equações normais. Em nosso exemplo citado acima, adicionamos 5 a $S_{11}$ e $S_{12}$. Vemos agora que o nosso coeficiente de determinação se reduz:
+
+Então se tínhamos $R^{2}=\frac{(150)^{2}}{200(113)}=0,995$ agora temos $R^{2}=\frac{(150)^{2}}{205(118)}=0,930$
+
+
+Pode-se facilmente ver que se trata de uma solução mecânica simples. Contudo, há uma enorme literatura sobre a regressão _ridge_.
+
+A adição de $\lambda$ às variâncias produz estimadores tendenciosos, mas o argumento é que se a variância puder ser reduzida, o erro quadrático médio diminuirá. Hoerl e Kennard, 1977 mostram que sempre existe uma constante $\lambda>0$ tal como
+
+$$
+\sum^{k}_{i=1}\mbox{EQM}(\widetilde{\beta}_{i})<\sum^{k}_{i=1}\mbox{EQM}(\widehat{\beta}_{i})
+$$
+
+onde $\widetilde{\beta}_{i}$ são os estimadores de $\beta_{i}$ da regressão ridge, $\widehat{\beta}_{i}$ são os estimadores de MQO e $k$, o número de regressores.
+
+
+
+
+
+Infelizmente, $\lambda$^[Muitos autores utilizam $k$ ao invés de $\lambda$ com o intuito de evitar confusão com autovalores.] é uma função dos parâmetros de regressão $\beta_{i}$ e da variância de erro $\sigma^{2}$, que é desconhecida. Hoerl e Kennard sugerem a tentativa de diferentes valores de $\lambda$ e a escolha de um valor para $\lambda$ de forma que _"o sistema se estabilize"_ ou que os _"coeficientes não tenham valores não-razoáveis"_. Assim argumentos subjetivos são usados. 
+
+Alguns outros sugeriram a obtenção de estimativas iniciais de $\beta_{i}$ e $\sigma^{2}$ e, então, o uso do $\lambda$ estimado. Esse procedimento pode ser iterado e acharemos estimadores _ridge_ iterados. Trata-se de um modelo que tem sido questionado devido a sua suposta inutilidade.^[todos esses modelos são revistos em N. R. Draper e R. Craig Van Nostrand, "_Ridge Regressions and James-Stein Estimation: Review and Comments_", Technometrics, Vol. 21, No. 4, novembro de 1979, pp 451-466. Os autores não aprovam e discutem defeitos em cada um deles.]
+
+Um outro problema da regressão _ridge_ é o fato de que ela não é invariante a unidades de medição das variáveis explicativas e a transformações lineares das variáveis. Se tivermos duas variáveis explicativas $X_{1}$ e $X_{2}$ e medirmos $X_{1}$ em dezenas e $X_{2}$ em milhares, não fará sentido adicionar o mesmo valor de $\lambda$ à variância de ambas. Esse problema pode ser evitado normalizando cada variável dividindo-as por seus devidos padrões. Mesmo se $X_{1}$ e $X_{2}$ forem medidas nas mesmas unidades, em alguns casos há diferentes transformações lineares de $X_{1}$ e $X_{2}$ que são igualmente sensíveis. Conforme discutido as equações demonstradas acima são todas equivalentes e sensíveis. Os estimadores _ridge_, porém, diferirão dependendo de qual dessas formas é usada.
+
+Existem diferentes situações sob as quais a regressão _ridge_ surge naturalmente. Elas iluminarão o caso das circunstâncias sob as quais o método será útil. Mencionamos três delas.
+
+1. _Mínimos quadrados restritos._ Suponha que estimamos os coeficientes de regressão sujeitos à condição de que
+
+$$
+\sum^{k}_{i=1}\beta_{i}^{2}=c
+$$
+
+então acharíamos algo como a regressão ridge. O $\lambda$ que usamos é o multiplicador lagrangeano na minimização. Para ver isso, suponha que tenhamos duas variáveis explicativas.
+
+Achamos os estimadores de mínimos quadrados restritos minimizando
+
+$$
+\sum (Y-\beta_{1}X_{1}-\beta_{2}X_{2})^{2}+\lambda(\beta_{1}^{2}+\beta_{2}^{2}-c)
+$$
+
+onde $\lambda$ é o multiplicador Lagrangeano. Diferenciando essa expressão com respeito a $\beta_{1}$ e $\beta_{2}$ e igualando as derivadas a zero, achamos as equações normais
+
+$$
+2\sum (Y-\beta_{1}X_{1}-\beta_{2}X_{2})(-X_{1})+2\lambda \beta_{1}=0
+$$
+
+$$
+2\sum (Y-\beta_{1}X_{1}-\beta_{2}X_{2})(-X_{1})+2\lambda \beta_{2}=0
+$$
+
+Essas equações pode ser escritas como
+
+$$
+(S_{11}+\lambda)\beta_{1}+S_{12}\beta_{2}=S_{1Y}
+$$
+$$
+S_{12}\beta_{1}+(S_{22}+\lambda)\beta_{2}=S_{2Y}
+$$
+
+onde: 
+
+$S_{11}=\sum X_{1}^{2},\quad \quad \quad S_{12}=\sum X_{1}X_{2}$ e 
+
+$S_{22}=\sum X^{2}_{2i}-n\overline{X}^{2}_{2}$ assim por diante. 
+
+Portanto, achamos a regressão _ridge_ e $\lambda$ é o multiplicador Lagrangeano. O valor de $\lambda$ é decidido pelo critério $\beta_{1}^{2}$ e $\beta_{2}^{2}=c$. Nesse caso, existe um atalho para se escolher $\lambda$. 
+
+É raro o caso em que temos conhecimento _a priori_ sobre $\beta_{i}$ que esteja na forma $\sum \beta_{i}^{2}=c$. Mas algumas outras informações menos concretas também podem ser usadas para se escolher o valor de $\lambda$ na regressão _ridge_. A versão de Brown e Beattie^[W.G. Brown e B. R. Beattie, _"Improving Estimates of Economic Parameters by the Use of Ridge Regression with Production Function Applications."_ American Journal of Agricultural Economics, vol. 57, 1975, pp. 21-32.] na estimação da função de produção usa informações _a priori_ sobre a relação entre os sinais dos $\beta_{i}^{'}s$.
+
+2. _Intepretação Bayesiana_ Não discutimos neste livro a abordagem Bayesiana à estatística. Contudo, grosso modo, o que tal abordagem faz é combinar sistematicamente algumas informações _a priori_ sobre os parâmetros de regressão com informação amostral. Nessa abordagem, achamos as estimativas da regressão _ridge_ dos $\beta^{'}s$ se assumirmos que a informação _a priori_ é da forma que $\beta_{i}\sim IN(0,\sigma^{2}_{\beta})$. Nesse caso, a constante _ridge_ $\lambda$ é igual a $\sigma^{2}/\sigma_{\beta}^{2}$. Novamente, $\sigma^{2}$ não é conhecida mas tem que ser estimada. Entretanto, em quase todos os problemas sobre economia esse tipo de informação _a priori_ (que as médias dos $\beta^{'}s$ são zero) é muito pouco razoável. Isso sugere que um estimador _ridge_ simples não faz sentido em econometria (com a interpretação Bayesiana). Obviamente, o pressuposto de que $\beta_{i}$ tem média zero pode ser relaxado. Mas então acharemos estimadores mais complicados (estimadores _ridge_ generalizados).
+
+3. _Interpretação de medição de erros._ Considere o modelo com duas variáveis que discutimos sob mínimos quadrados restritos. Suponha que adicionamos erros aleatórios com média zero e variância $\lambda$ em $X_{1}$ e $X_{2}$. Como esses erros são aleatórios, a covariância entre $X_{1}$ e $X_{2}$ não será afetada. As variâncias de $X_{1}$ e $X_{2}$ aumentarão em $\lambda$. Dessa forma, achamos o estimador de regressão _ridge._ Essa interpretação torna o estimador _ridge_ um tanto quanto suspeito. Smith e Campbell^[(Gary Smith e Frank Campbell, _"A Critique of Some Ridge Regression Methods"_ (com discussão), Journal of the American Statistical Association, Vol. 75, março de 1980, pp. 74)] resumem isso em uma frase da seguinte forma: "_Use dados menos precisos e ache estimativas mais precisas possíveis._" 
+
+Essas são situações nas quais a regressão _ridge_ pode ser facilmente justificada. Em quase todos os outros casos, há julgamento subjetivo envolvido. Esse julgamento subjetivo é, muitas vezes, igualado à "informação _a priori_ vaga". Os métodos Bayesianos permitem uma análise sistemática dos dados com "informação a priori vaga" mais uma discussão desses modelos está além do escopo deste tutorial.
+
+Por causa dessas deficiências da regressão _ridge_, o método não é recomendado como uma solução geral ao problema da multicolinearidade. Particularmente, a forma mais simples do método (onde uma constante $\lambda$ é adicionada a cada variância) não é mais útil. Não obstante, à guisa de curiosidade, apresentaremos alguns resultados desse método. 
+
+[A partir dessa tabela aqui no formato Excel, com base nos dados da função consumo estimamos a equação de regressão  ](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Maddala%20p.%20148.xlsx?raw=true) 
+
+
+```{r}
+#carrego os dados
+
+library(readxl)
+
+url<-"https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Maddala%20p.%20148.xlsx?raw=true"
+dados <- tempfile()
+download.file(url, dados, mode="wb")
+dados<-read_excel(path = dados, sheet = 1)
+
+
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(dados)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+
+```
+<font size="1"> **Fonte:** Maddala, p. 148, (2001). _apud_ os dados são de Z. Griliches _et al._, "Notes on Estimated Aggregate Quartely Consumption Functions". _Econometrica_, julho de 1962.</font>  
+
+[Caso queira rodar no R, segue o link da documentação do pacote para regressão ridge recomendado](https://cran.r-project.org/web/packages/ridge/ridge.pdf)
+
+ 
+
+
+
+ 
+$$
+c_{t}=\beta_{0}Y_{t}+\beta_{1}Y_{t-1}+\beta_{2}Y_{t-2}+\ldots+\beta_{8}Y_{t-8}+u_{t}
+$$
+
+Não é preciso dizer que os $Y^{'}_{t}s$ são altamente intercorrelacionados. Os resultados são apresentados a seguir. Note que conforme $\lambda$ aumenta , há uma suavização dos coeficientes e a estimativa de $\beta_{0}$ diminui. Os coeficientes de MQO, obviamente são muito erráticos. Mas as estimativas de $\beta_{0}$ (porção da renda corrente no consumo corrente) são implausivelmente baixas com a regressão _ridge._
+
+A elevação súbita dos coeficientes após o quinto trimestre também é algo muito implausível. Talvez possamos apenas estimar os efeitos somente acima de quatro períodos. As estimativas MQO são erráticas mesmo com quatro períodos. A computação das estimativas da regressão _ridge_ com quatro períodos é apresentada como exercício para você reproduzir em seu Excel.
+
+Ao simplesmente seguirmos o modelo de obtenção dos coeficientes propostos inicialmente no trabalho de Heoerl e Kennard 1970 e citado no trabalho seminal do prof. G. S. Maddala em 1974 p. 5, obtemos
+
+$$
+\widehat{\beta}=(X^{'}X^{-1})X^{'}y
+$$
+e o estimador modificado:
+
+$$
+\widehat{\beta}_{R}=(X^{'}X + kI)X^{'}y
+$$
+
+Onde $I$ é a matriz identidade dada por $(X^{'}X)(X^{'}X)^{-1}$^[Uma matriz identidade é uma matriz quadrada com a sua diagonal principal =1 e e os demais elementos são todos zeros.] e a constante $k$ faz o mesmo trabalho de $0\geq\lambda\leq 1$. Se $det(X^{'}X)\approx 0$ os estimadores de MQO serão sensíveis a uma série de erros, como coeficientes de regressão imprecisos ou não significativos (Kmenta, 1980), com sinal errado e espectro de autovalores não uniforme. Além disso, o método MQO, pode produzir altas variâncias de estimativas, grandes erros padrão e amplos intervalos de confiança. A qualidade e estabilidade
+do modelo ajustado pode ser questionável devido ao comportamento errático do MQO no caso de regressores são colineares.
+
+
+Alguns pesquisadores podem tentar eliminar o(s) regressor(es) que causam o problema, removendo conscientemente eles do modelo. No entanto, este método pode destruir a utilidade do modelo por remover regressor(es) relevante(s) do modelo. Para controlar a variância e instabilidade das estimativas MQO, pode-se regularizar os coeficientes, com alguns métodos de regularização, como regressão _ridge_ (RR), regressão de Liu, métodos de regressão Lasso etc., como alternativa ao MQO. Computacionalmente, RR
+suprime os efeitos da colinearidade e reduz a magnitude aparente da correlação entre
+regressores, a fim de obter estimativas mais estáveis dos coeficientes do que as estimativas de MQO e também melhora a precisão da previsão (ver Hoerl e Kennard, 1970a; Montgomery e Peck, 1982; Myers, 1986; Rawlings et al., 1998; Seber e Lee, 2003; Tripp, 1983, etc.).
+
+
+***
+
+# Rodando uma regressão Ridge no Excel
+
+
+
+
+Ao procedermos com o modelo matricial no software Microsoft Excel, obtemos os seguintes resultados:
+
+Iniciaremos regredindo um modelo via MQO com a notação matricial normalmente no Excel. Na aba "Regressão Ridge" na primeira etapa calculamos:
+
+$$
+(X^{'}X)
+$$
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/xlinhax.png){ width=90% }
+
+
+&nbsp;
+
+
+Em seguida obtemos a inversa da matriz $(X^{'}X)$ ou seja, $(X^{'}X)^{-1}$:
+
+
+&nbsp;
+
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matrizinversa.png){ width=90% }
+
+
+&nbsp;
+
+
+
+Agora fazendo $X^{'}y$
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/xlinhay.png){ width=90% }
+
+&nbsp;
+
+
+E finalmente os coeficientes de MQO:
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/coefmqo.png){ width=90% }
+
+&nbsp;
+
+
+Então ao obtermos essas matrizes, agora calculamos a matriz identidade quando calculamos $(X^{'}X)(X^{'}X)^{-1}$ 
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matrizidentidade.png){ width=90% }
+
+&nbsp;
+
+
+Agora montamos a matriz que multiplica a constante $\lambda$ pela identidade
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/kidentidade.png){ width=90% }
+
+
+&nbsp;
+
+
+
+Para então calcularmos $X^{'}X+kI$
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/xlinhaxki.png){ width=90% }
+
+&nbsp;
+
+
+Finalmente obtemos os coeficientes da regressão _ridge_ 
+
+
+&nbsp;
+
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/coefridge.png){ width=90% }
+
+
+&nbsp;
+
+
+
+Confirmamos o que o autor (Maddala, 2001, p. 150) "_Note que conforme $\lambda$ aumenta há uma suavização dos coeficientes e o valor de $\beta_{0}$ diminui_." Veja os valores das somas dos coeficientes dado os valores de $\lambda$ que o autor usa:
+
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/lambdas.png){ width=70% }
+
+
+
+&nbsp;
+
+
+
+***
+
+# Introdução a Regressão Ridge com o pacote lmridge do R
+
+
+
+### Resumo
+
+ O estimador de regressão _ridge_, é uma das alternativas comumente utilizadas ao convencional estimador de mínimos quadrados ordinários, evita os efeitos adversos nas situações em que existe algum considerável grau de multicolinearidade entre os regressores. Existem muitos pacotes de software disponíveis para estimativa de coeficientes de regressão _ridge_. No entanto, a maioria deles exibe
+métodos para estimar os parâmetros de viés _ridge_ sem procedimentos de teste. O pacote _lmridge_ [mantido por Imdad Ullah Muhammad](https://cran.r-project.org/web/packages/lmridge/lmridge.pdf) pode ser usado para estimar coeficientes _ridge_ considerando uma gama de diferentes parâmetros de viéses existentes, para testar esses coeficientes com mais de 25 estatísticas relacionadas _ridge_, e para apresentar diferentes
+exibições gráficas dessas estatísticas.
+
+# Detecção da colinearidade
+
+Diagnosticar a colinearidade é importante para muitos pesquisadores. Consiste em dois relacionados, mas separados
+elementos: 
+
+1. detectar a existência de relação colinear entre os regressores e;
+
+2. avaliar o até que ponto esta relação degradou as estimativas dos parâmetros
+
+Os diagnósticos mais sugeridos e amplamente utilizados:
+correlações de pares, fator inflacionário de variância (VIF) / tolerância (TOL) (Marquardt, 1970), valores próprios e autovetores (Kendall, 1957), CN & CI (Belsley et al., 1980; Chatterjee e Hadi, 2006; Maddala, 1988), método de Leamer (Greene, 2002), regra de Klein (Klein, 1962), os testes propostos por Farrar e Glauber (Farrar e Glauber, 1967), indicador vermelho (Kovács et al., 2005), VIF corrigido (Curto e Pinto, 2011) e as medidas de Theil (Theil, 1971), (ver também Imdadullah et al. (2016)). Todos esses diagnósticos medidas são implementadas no pacote R, **mctest**.
+
+
+Em seguida, usamos o pacote lmridge para calcular os coeficientes para diferentes estatísticas relacionadas aos métodos de seleção do parâmetro de viés _ridge_. Para a escolha ideal do parâmetro de viés _ridge_, representações gráficas dos coeficientes _ridge_, valores VIF, critérios de validação cruzada (CV e GCV), ridge DF, RSS, PRESS, ISRM e escala m _versus_ parâmetro de viés _ridge_ usado são considerados. Além da representação gráfica do modelo critérios de seleção (AIC e BIC) de regressão de _ridge versus ridge DF_ também são realizados. 
+
+Começamos rodando o modelo via MQO tradicional:
+
+```{r}
+url<-"https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Maddala%20p.%20148.xlsx?raw=true"
+dados <- tempfile()
+download.file(url, dados, mode="wb")
+dados<-read_excel(path = dados, sheet = 2)
+
+kbl(cbind(dados)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+
+
+mqo<-lm(C~.,data = dados)
+summary(mqo)
+
+```
+
+Agora vamos investigar os padrões de colinearidades
+
+```{r}
+library(mctest)
+
+mctest(mqo)
+
+```
+
+Os resultados de todas as medidas de diagnóstico de colinearidade geral indicam a existência de colinearidade entre os regressor(es). Esses resultados não informam qual (is) regressor(es) são razões de colinearidade. As medidas de diagnóstico individuais de colinearidade podem ser obtidas através de:
+  
+  
+```{r}
+imcdiag(mqo,all=TRUE)
+```
+
+
+Os resultados da maioria dos diagnósticos de colinearidade individual sugerem que todos os regressores são a razão para colinearidade entre regressores. A última linha da saída da função imcdiag () sugere que o _method argument_ da função deve ser usado para verificar quais regressores podem ser a razão da colinearidade entre
+diferentes regressores. 
+
+
+# Rodando a regressão ridge no R
+
+Como estamos utilizando os dados de exemplo de Maddala, 2001 p. 148 neste tutorial, definimos do seguinte modo o nosso modelo:
+
+```{r}
+library(lmridge)
+
+lambdas<-c(0,0.0002,0.0006,0.0010,0.0014,0.0020)
+
+ridge<-lmridge(C~.,dados,K=lambdas,scaling="sc")
+summary(ridge)
+
+print(ridge)
+```
+
+Na função acima, ao definirmos scaling="sc" informamos ao R para o método para padronizar os preditores. A opção scaling="sc" escala (trata) os preditores para a forma de correlação, de modo que a matriz de correlação tenha elementos de sua diagonal iguais a 1. A opção scaling="scaled" padroniza os preditores para ter média zero e variância um. a opção scaling="centered" centraliza os preditores.
+
+Os resultados gerados pela função summary(ridge) nos apontam a questão da significância somente até o segundo o lag(Y) para todos os valores de $\lambda$ (K) definidos por Maddala, 2001.
+
+Como todas as estimativas apontaram para os valores de MSE (em português erro quadrático médio, EQM) iguais, veremos como se comportam os valores de $\lambda$ nos coeficientes:
+
+```{r}
+ridge$coef
+
+colSums(ridge$coef)
+```
+
+Esse resultado das somas dos coeficientes vai contra o que Maddala, 2001, p. 150, obteve:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"Note que conforme $\lambda$ aumenta, há uma suavização dos coeficientes e a estimativa de $\beta_{0}$ diminui."
+</p>
+
+Vamos ver como o EQM se comporta para cada valor de $\lambda$
+
+```{r}
+#Utilize o comando ridge$rfit para ver o modelo ajustado ou então o comando predict(ridge) para os valores projetados.
+
+eqm_i<-press(ridge)
+
+eqm_i
+```
+
+A função press é uma função genérica que calcula a soma dos quadrados do erro residual de previsão (_prediction residual error sum of squares_ = PRESS) para coeficientes _ridge_.
+
+
+```{r}
+colSums(eqm_i)
+```
+
+Assim, notamos que ao valor de $K=\lambda=0.002$ temos o menor EQM.
+
+A função kest(), que funciona com o modelo ridge ajustado, calcula diferentes parâmetros viés desenvolvido por diferentes pesquisadores. A lista de diferentes valores de k (22 no total no pacote lmridge) pode ajudar em decidir a quantidade de viés precisa ser introduzido no RR.
+
+```{r}
+kest<-kest(ridge)
+
+kest
+```
+
+Isso nos levaria a fazer um exercício com todos esses valores sugeridos por esses diferentes pesquisadores com os valores de $\lambda=$k values. (vamos deixar isso para depois).
+
+
+As funções rstats1() e rstats2() podem ser usadas para calcular estatísticas diferentes para um determinado parâmetro _ridge_ estimado especificado em uma função lmridge. As estatísticas do modelo _ridge_ são MSE, desvio-quadrático,
+Estatísticas $F$, variância ridge, graus de liberdade por Hastie e Tibshirani (1990), números de condição, PRESS, $R^{2}$, e ISRM etc. A seguir estão os resultados usando as funções rstats1() e rstats2(), para os valores de $\lambda$ em Maddala, 2001, p. 150: 
+
+```{r}
+rstats1(ridge)
+
+
+```
+
+Note que o menor valor de MSE (EQM) é para $\lambda=0.002$ com a menor variância e menor CN (Número de Condição, identifica a multicolinearidade). Veremos as próximas estatísticas:
+
+
+```{r}
+rstats2(ridge)
+```
+
+Os resíduos, valores ajustados da regressão ridge (RR) e valores previstos da variável de resposta (C = consumo real per capita) podem ser calculados usando as funções residual(), fitted() e predict(), respectivamente. Para obter matriz de _Var-Cov_, FIV e matriz estimada ("matriz-chapéu"), as funções vcov(), vif() e hatr() podem ser usadas. Os graus de liberdade são calculados seguindo Hastie e Tibshirani (1990). Os resultados para FIV, Var-Cov e elementos diagonais da matriz estimada das funções vif(), vcov() e hatr() são fornecidas abaixo para o objeto lambdas.
+
+```{r}
+hatr(ridge)
+hatr(ridge)[[2]]
+diag(hatr(ridge)[[2]])
+diag(hatr(lmridge(C ~ ., dados, K = lambdas))[[2]])
+vif(ridge)
+vcov(ridge)
+```
+
+A seguir estão os possíveis usos de algumas funções para calcular diferentes estatísticas relacionadas ao ridge. Para descrição detalhada dessas funções / comandos, consulte a documentação do pacote lmridge.
+
+```{r}
+# ridge$rfit
+# resid(ridge)
+# fitted(ridge)
+ infocr(ridge)
+# press(ridge)
+
+```
+
+Tanto o AIC quanto o BIC aumentam conforme SQE aumenta. Além disso, ambos critérios penalizam modelos com muitas variáveis sendo que valores menores de AIC e BIC são preferíveis.
+
+Como modelos com mais variáveis tendem a produzir menor SQE mas usam mais parâmetros, a melhor escolha é balancear o ajuste com a quantidade de variáveis.
+
+Note que o modelo com $K=\lambda=0.002$ é o que esses critérios escolhem.
+
+Para determinados valores de $X$, como para as primeiras cinco linhas da matriz $X$, os valores previstos para alguns $\lambda=K=0,0.0002,0.0006,\ldots$ serão calculados por predict():
+
+```{r}
+pred<-predict(ridge)
+
+pred[1:5,]
+
+```
+O efeito da multicolinearidade nas estimativas dos coeficientes pode ser identificada usando diferentes gráficos exibições como ridge, FIV e graus de liberdade, plotagem de RSS contra gl, PRESS vs $K$ e plotagem de viés, variância e EQM contra $K$ etc.
+
+```{r}
+
+plot(ridge)
+plot(ridge, type = "vif", abline = FALSE)
+plot(ridge, type = "ridge", abline = TRUE)
+bias.plot(ridge, abline = TRUE)
+info.plot(ridge, abline = TRUE)
+cv.plot(ridge, abline = TRUE)
+isrm.plot(ridge)
+```
+
+As linhas verticais no traço de ridge e traço VIF sugerem o valor ideal do parâmetro de viés $K$ selecionado em que GCV é mínimo. A linha horizontal no traçado do ridge é a linha de referência em y = 0 para coeficiente de ridge em relação ao eixo vertical.
+
+O gráfico de compensação de viés-variância (Figura 3) pode ser usado para selecionar o k ideal usando bias.plot(). A linha vertical no gráfico de compensação de viés-variância mostra o valor do parâmetro de viés k e a linha horizontal mostra o EQM mínimo para o ridge.
+
+O gráfico dos critérios de seleção de modelo AIC e BIC para escolher o $K$ ideal (Figura 4), info.plot() pode ser usado; A função cv.plot() plota a validação cruzada CV e GCV contra o parâmetro de viés k para a seleção ótima de $K$ (ver Figura 5), isto é, as medidas da escala m e ISRM (Figura 6) por Vinod (1976) também podem ser plotadas a partir da função isrm.plot() e podem ser usadas para julgar o valor ótimo de $K$.
+
+A função rplots.plot() plota o painel de três visualizações, a saber (i) traço gl, (ii) RSS vs $K$ e (iii)
+PRESS vs $K$ e pode ser usado para julgar o valor ideal de $K$, consulte a Figura 7 a seguir:
+
+```{r}
+rplots.plot(ridge)
+```
+
+
+###Considerações finais
+
+Neste tutorial, utilizamos os dados de exemplo presente na clássica literatura de G.S. Maddala, 2001, _Introdução à Econometria_ utilizando a representação mais simples no Excel e com algumas contribuições de análises adicionais presentes na documentação de utilização do pacote lmridge do R.
+
+
+Notavelmente, a distância em relação ao poder de análise, velocidade e qualidade do R é abissal em relação ao Excel por inúmeros outras razões (como p. ex. o guardar de scripts do que está sendo feito em cada etapa em poucas linhas de instruções e comandos).
+
+Esperamos que em breve o uso do Excel para compreender os conceitos iniciais dos modelos econométricos e suas aplicações (ainda que limitadas), seja visto como um start para aqueles que gostam de trabalhar com dados econômicos e que; melhor e mais pessoas utilizem o pacote completo lmridge no R para aperfeiçoar seu trabalho.
+
+
+
+
+
+***
+
+# Referências
+
+
+D. A. Belsley. _A Guide to Using the Collinearity Diagnostics_. Computer Science in Economics and Management, 4(1):33–50, 1991. URL https://doi.org/10.1007/BF00426854. [p334]
+
+S. Chatterjee and A. S. Hadi. _Regression Analysis by Example_. John Wiley & Sons, 4th edition, 2006.[p328, 330]
+
+E. Cule and M. De Iorio. _A Semi-Automatic Method to Guide the Choice of Ridge Regression._ Annals of Applied Statistics, arxiv:1205.0686v1, 2012. URL https://arxiv.org/abs/1205.0686v1. [p328,334]
+
+
+J. D. Curto and J. C. Pinto. _The Corrected VIF (CVIF). Journal of Applied Statistics_, 38(7):1499–1507, 2011. URL https://doi.org/10.1080/02664763.2010.505956. [p328]
+
+G.S., Maddala **Introdução à Econometria.** Third Edition, 2001.
+
+G.S., Maddala _Ridge Estimators for distributed lag models_, [NBER Working Paper Series, October, 1974, COMPUTER RESEARCH CENTER FOR ECONOMICS AND MANAGEMENT SCIENCE, Cambridge, Massachussets.](https://www.nber.org/papers/w0069.pdf)  
+
+G. S. Maddala. _Introduction to Econometrics_. Macmillan Publishing Company, New York, 1988. [p328]
+
+D. W. Marquardt. _Generalized Inverses, Ridge Regression, Biased Linear Estimation, and Nonlinear Estimation._ Technometrics, 12(3):591–612, 1970. URL http://doi.org/10.2307/1267205. [p328, 330]
+
+A. Hald. _Statistical Theory with Engineering Applications_. John Wiley & Sons, 1952. [p328]
+
+D. E. Farrar and R. R. Glauber. _Multicollinearity in Regression Analysis: The Problem Revisted._ The Review of Economics and Statistics, 49(1):92–107, 1967. URL 
+http://doi.org/10.2307/1937887. [p328]
+
+J. Fox and S. Weisberg. _An R Companion to Applied Regression_. Sage, Thousand Oaks, CA, 2nd edition, 2011. URL https://socialsciences.mcmaster.ca/jfox/Books/Companion. [p328]
+
+R. F. Gunst and R. L. Mason. _Advantages of Examining Multicollinearities in Regression Analysis_. Biometrics, 33(1):249–260, 1977. [p328]
+
+M. Imdadullah, M. Aslam, and S. Altaf. _mctest: An R Package for Detection of Collinearity Among Regressors._ The R Journal, 8(2):495–505, 2016. URL https://journal.r-project.org/archive/accepted/imdadullah-aslam-altaf.pdf. [p328]
+
+
+A. Koutsoyiannis. _Theory of Econometrics_. Macmillan Education Limited, 1977. [p328]
+
+A. E. Hoerl. _Optimum Solution of Many Variables Equations+. Chemical Engineering Progress, 55:67–78, 1959. [p329]
+
+A. E. Hoerl. _Application of Ridge Analysis to Regression Problems_. Chemical Engineering Progress, 58:54–59, 1962. URL http://doi.org/10.1002/sim.4780030311. [p329]
+
+A. E. Hoerl. _Ridge Analysis_. Chemical Engineering Progress Symposium Series, 60:67–77, 1964. [p329]
+
+A. E. Hoerl and R. W. Kennard. _Ridge Regression: Biased Estimation of Nonorthogonal Problems_. Technometrics, 12(1):55–67, 1970a. URL http://doi.org/10.2307/1267351. [p326, 328, 329, 330, 333]
+
+A. E. Hoerl and R. W. Kennard. _Ridge Regression: Application to Nonorthogonal Problems_. Technometrics, 12(1):69–82, 1970b. URL http://doi.org/10.2307/1267352. [p329, 330]
+
+A. E. Hoerl, R. W. Kennard, and K. F. Baldwin. _Ridge Regression: Some Simulations. Communications in Statistics,_ 4(2):105–123, 1975. URL https://doi.org/10.1080/03610927508827232. [p328]
+
+
+J. Kmenta. _Elements of Econometrics._ Macmillan Publishing Company, New York, 2nd edition, 1980. pp. 431. [p326]
+
+E. Hoerl and R. W. Kennard. _Ridge Regression: Biased Estimation of Nonorthogonal Problems._ Technometrics, 12(1):55–67, 1970a. URL http://doi.org/10.2307/1267351. [p326, 328, 329, 330, 333]
+
+P. Kovács, T. Petres, and Tóth. _A New Measure of Multicollinearity in Linear Regression Models_. International Statistical Review / Revue Internationale de Statistique, 73(3):405–412, 2005. URL http://doi.org/10.1111/j.1751-5823.2005.tb00156.x. [p328]
+
+D. C. Montgomery and E. A. Peck. _Introduction to Linear Regression Analysis_. John Wiley & Sons, New York, 1982. [p326]
+
+H. Theil. _Specification Errors and the Estimation of Economic Relationships._ International Statistical Institute (ISI), 25(1/3):41–51, 1957. URL http://doi.org/10.2307/1401673. [p329]
+
+H. Theil. _Principles of Econometrics._ John Wiley & Sons, New York, 1971. [p328]
+
+T. Hastie and R. Tibshirani. _Generalized Additive Models_. Chapman & Hall, 1990. [p334, 337]
+
+R. H. Myers. _Classical and Modern Regression with Application_. PWS-KENT Publishing Company, 2 edition, 1986. [p326]
+
+J. O. Rawlings, S. G. Pantula, and D. A. Dickey. _Applied Regression Analysis: A Research Tool._ SpringerVerlag, New York, 2nd edition, 1998. [p326]
+
+G. A. F. Seber and A. J. Lee. _Linear Regression Analysis._ John Wiley & Sons, New Jersey, 2 edition, 2003. [p326, 329]
+
+R. E. Tripp. _Non-Stochastic Ridge Regression and Effective Rank of the Regressors Matrix._ Ph.d. thesis, Department of Statistic, Virginia Polytechnic Institute and State University., 1983. [p326]
+
+

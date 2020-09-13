@@ -26,6 +26,10 @@ navbar:
           href: TesteABnoR.html
         - text: "Regressão do Componente Principal no Excel para Multicolinearidade"
           href: RegressaodoComPrincipal.html
+        - text: "Regressão Ridge no Excel e no R para Multicolinearidade"
+          href: Ridge.html         
+        - text: "Processos Estocásticos e Cadeias de Markov"
+          href: Markov.html 
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

@@ -1,0 +1,28 @@
+---
+title: "Cadeias de Markov"
+author: "Rodrigo H. Ozon"
+date: "09/09/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+## Resumo
+
+
+[em construção]
+
+***
+
+## Introdução: Processos de Markov de Primeira Ordem
+
+As sequências de observações ou resultados experimentais às vezes são consideradas como independentes, isto é, supõe-se que a probabilidade de se observar um resultado particular seja constante. A generalização mais simples desse modelo permite que a probabilidade do resultado de qualquer experimento ou observação dependa do resultado da observação imediatamente precedente, mas não dependa das outras observações anteriores. Um processo ou sequência deste tipo denomina-se um _processo em cadeia de Markov de primeira ordem, uma cadeia de Markov de primeira ordem_ ou um _processo de Markov de primeira ordem_ e os seus estados estacionários ou de equilíbrio.
+
+## Definição de Processo de Markov de Primeira Ordem
+
+
+
