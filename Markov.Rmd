@@ -21,7 +21,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***
 
-# Introdução: Processos de Markov de Primeira Ordem
+# Introdução
+
+[em construção]
+
+# Processos Estocásticos
+
+[em construção]
+
+
+#  Processos de Markov de Primeira Ordem
 
 As sequências de observações ou resultados experimentais às vezes são consideradas como independentes, isto é, supõe-se que a probabilidade de se observar um resultado particular seja constante. A generalização mais simples desse modelo permite que a probabilidade do resultado de qualquer experimento ou observação dependa do resultado da observação imediatamente precedente, mas não dependa das outras observações anteriores. Um processo ou sequência deste tipo denomina-se um _processo em cadeia de Markov de primeira ordem, uma cadeia de Markov de primeira ordem_ ou um _processo de Markov de primeira ordem_ e os seus estados estacionários ou de equilíbrio.
 
@@ -102,7 +111,7 @@ $$
 
 dá a distribuição de probabilidade dos estados para a próxima observação. Se esta distribuição também é $[p_{1},p_{2},\ldots,p_{r}]$, da mesma forma que a observação precedente, então o sistema está em desequilíbrio.
 
-# Exemplo 1
+## Exemplo 1
 
 Suponha que, no 1 de setembro, dos assinantes de uma determinada região, a Folha tenha 50%, a Tribuna, 25% e a Gazeta outros 25%. Durante o mês de setembro, a Folha retém 87,5% de seus assinantes e perde 12,5% deles à Tribuna, esta retém 8,33% de seus assinantes e perde 75% deles à Folha e 16,67% deles à Gazeta; a Gazeta retém 33,33% de seus assinantes e perde 50% deles à Folha e 16,67% deles à Tribuna. Suponha que não haja novos assinantes e que nenhum deles deixe de sê-lo.
 
@@ -220,7 +229,7 @@ p_1=\frac{28}{33},\:p_3=\frac{1}{33},\:p_2=\frac{4}{33}
 $$
 Então concluímos que após um longo período, a Folha terá 84,85%, a Tribuna 12,12% e a Gazeta 3,03% dos assinantes.
 
-# Exemplo 2
+## Exemplo 2
 
 Todos os anos, 5% dos residentes de uma cidade muda-se para os subúrbios e 2% da população dos subúrbios muda-se para a cidade. Admitindo que o número total de pessoas da comunidade permaneça constante, determine a proporção, a longo prazo, dos residentes da cidade e dos subúrbios.
 
@@ -293,7 +302,7 @@ p_1=\frac{2}{7}\Rightarrow 28,57\%,\:p_2=\frac{5}{7}\Rightarrow 71,43\%
 $$
 Então, eventualmente, 28,57% da população serão residentes da cidade e 71,43% serão residentes dos subúrbios. Observe que neste estado de equilíbrio, a cada ano 50% de 28,57%= 14,28% da população muda-se dos subúrbios para a cidade -- os números de residentes das cidades e suburbanos são, assim, invariáveis ou estáveis. 
 
-# Exemplo 3
+## Exemplo 3
 
 Um corretor está estudando o movimento de preço de várias ações no mercado e está particularmente interessado numa companhia de equipamentos agrícolas. Ele observou que se estas ações têm uma alta num determinado dia, então, no dia seguinte elas tem uma chance de 50:50 de ter uma alta de novo, uma chance de 1/3 (33,33%) de permanecer com o mesmo preço e uma chance de 1/6 (16,66%) de subir. Que proporção do tempo (a longo prazo) as ações sobem, permanecem iguais e baixam de preço ?
 
