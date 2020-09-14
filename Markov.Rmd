@@ -2,7 +2,10 @@
 title: "Cadeias de Markov"
 author: "Rodrigo H. Ozon"
 date: "09/09/2020"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -11,18 +14,240 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ***
 
-## Resumo
+# Resumo
 
 
 [em construção]
 
 ***
 
-## Introdução: Processos de Markov de Primeira Ordem
+# Introdução: Processos de Markov de Primeira Ordem
 
 As sequências de observações ou resultados experimentais às vezes são consideradas como independentes, isto é, supõe-se que a probabilidade de se observar um resultado particular seja constante. A generalização mais simples desse modelo permite que a probabilidade do resultado de qualquer experimento ou observação dependa do resultado da observação imediatamente precedente, mas não dependa das outras observações anteriores. Um processo ou sequência deste tipo denomina-se um _processo em cadeia de Markov de primeira ordem, uma cadeia de Markov de primeira ordem_ ou um _processo de Markov de primeira ordem_ e os seus estados estacionários ou de equilíbrio.
 
-## Definição de Processo de Markov de Primeira Ordem
+# Definição de Processo de Markov de Primeira Ordem
+
+Suponha que o resultado de cada sequência de experimentos ou observações esteja num conjunto de possíveis resultados $a_{1},a_{2},\ldots,a_{r}$. A probabilidade do resultado $a_{j}$ de cada experimento ou observação depende no máximo do resultado da observação imediatamente precedente. Estas prbabilidades são denotadas por $p_{ij},i=1,2,\ldots,r$ e $j=1,2,\ldots,r$, onde $p_{ij}$ representa a probabilidade do resultado $a_{j}$ de qualquer observação particular, dado que o resultado $a_{i}$ ocorreu na observação imediatamente anterior. Os resultados $a_{1},a_{2},\ldots,a_{r}$ são denominados _estados_ e as $p_{ij}$ são denominadas _probabilidades de transição_ de uma cadeia de Markov de primeira ordem. Se é suposto que o processo se inicia em algum estado particular, as probabilidades de várias sequências de observações podem ser calculadas. Assim, uma cadeia de Markov de primeira ordem está determinada se forem especificadas os seus possíveis estados de Markov de primeiraa ordem está determinada se forem especificadas os seus possíveis estados, a distribuição inicial de probabilidade e a matriz de transição.
+
+
+As probabilidades de transição podem ser resumidas numa matriz quadrada. A matriz das probabilidades de transição de um processo de Markov, com estados $a_{1},a_{2},\ldots,a_{r},$ é 
+
+$$
+p={p_{ij}}=\begin{bmatrix}
+           p_{11}&p_{12}&\ldots&p_{1r}\\
+           p_{21}&p_{22}&\ldots&p_{2r}\\
+           \vdots&\vdots& &\vdots\\
+           p_{r1}&p_{r2}&\cdots&p_{rr}
+\end{bmatrix}
+$$
+
+
+Observe que a soma dos elementos de cada linha da matriz $p$ é 1, pois os elementos da $i-$ésima linha representam as probabilidades de todas as possíveis transições quando o processo está no estado $a_{i}$. Isto é,
+
+$$
+\displaystyle\sum^{r}_{j=1}p_{ij}=1\quad \mbox{para}\quad  i=1,2,\ldots,r
+$$
+Assim, se a distribuição de probabilidades dos estados no ensaio $n$ é $[p_{1},p_{2},\ldots,p_{r}]$, a distribuição de probabilidade dos estados no ensaio $n+1$ é:
+
+$$
+[p_{1}, p_{2},\ldots,p_{r}]\begin{bmatrix}
+p_{11}&p_{12}&\ldots&p_{1r}\\
+p_{21}&p_{22}&\ldots&p_{2r}\\
+\vdots&\vdots&\vdots\\
+p_{r1}&p_{r2}&\cdots&p_{rr}
+\end{bmatrix}=
+\begin{bmatrix}
+\displaystyle\sum^{r}_{i=1}p_{i}p_{i1},\sum^{r}_{i=1}p_{i}p_{i2},\ldots,\sum^{r}_{i=1}p_{i}p_{ir}
+\end{bmatrix}
+$$
+
+
+# Estado Estacionário ou Equilíbrio
+
+A distribuição de probabilidade dos resultados da $n-$ésima observação de um processo de Markov de primeira ordem é o produto do vetor das probabilidades iniciais pela $n-$ésima potência da matriz de transição. Isto pode ser mostrado, estendendo-se os argumentos da seção anterior. Se o vetor das probabilidades iniciais é denotado por $p_{0}$ e o vetor de probabilidades no estágio $n$ é denotado por $p_{n}$, então $p_{1}=p_{0}p,\,\,p_{2}=p_{1}p=p_{0}p^{2},\,p_{3}=p_{2}p=p_{0}p^{3},\ldots,p_{n}=p_{0}p^{n}$. Com algumas hipóteses matemáticas pouco restritivas, pode se mostrar que um processo de Markov de primeira ordem se aproxima de um estado estacionário ou equilíbrio, quando o número de observações aumenta, isto é, quando $n$ tende ao infinito.
+
+Por definição, quando uim processo de Markov de primeira ordem está no equilíbrio, a probabilidade de cada estado ou resultado possível é constante, não variando de uma observação para outra. O processo de Markov de primeira ordem utilizando para descrever situações da Administração e da Economia preenche, quase invariavelmente, as condições matemáticas de equilíbrio ou estacionário, quando o número de observações ou transições tende ao infinito, a distribuição da probabilidade estacionária (de equilíbrio) de seus estados é única e depende somente da matriz de transição e não da distribuição inicial de probabilidade dos estados. Toda cadeia de Markov particular está claramente num só estado particular, para qualquer observação dada. O significado físico e computacional da estacionariedade torna-se assim, claro apenas se um número de processos de Markov estpa simultaneamente no mesmo estado de equilíbrio. Neste caso, se existem $N$ de tais processos estejam no estado $i$ para qualquer observação dada. Assim, se $N$ é grande, um estado de equilíbrio macroscópio é mantido com um grande número de transições em direções opostas. Muitos equilíbrios estatísticos em Física são desta natureza.
+
+Do ponto de vista computacional, obtém-se a distribuição de probabilidade estacionária $[p_{1},p_{2},\ldots,p_{r}]$ dos estados de uma cadeia de Markov, resolvendo-se as equações dadas em forma matricial por
+
+$$
+[p_{1},p_{2},\ldots,p_{r}]
+\begin{bmatrix} 
+p_{11}&p_{12}&\ldots&p_{1r}\\
+p_{21}&p_{22}&\ldots&p_{2r}\\
+\vdots&\vdots&      &\vdots\\
+p_{r1}&p_{r2}&\cdots&p_{rr}
+\end{bmatrix}=
+[p_{1},p_{2},\ldots,p_{r}]
+$$
+
+onde $p_{i}$ é a probabilidade de estar no estado $i,i=1,\ldots,r$ e $\displaystyle \sum^{r}_{i=1}p_{i}=1$. Isto envolve a solução das $r$ equações lineares independentes
+
+\begin{align}
+\displaystyle\sum^{r}_{i=1}p_{i}p_{ij}&=p_{j}\quad\mbox{para}\quad j=1,2,\ldots,r\,\,(r-1\,\,\mbox{das quais são independentes})\\
+
+\displaystyle\sum^{r}_{i=1}p_{i}&=1
+\end{align}
+
+Observe que estas equações realmente definem o equilíbrio: Se $[p_{1},p_{2},\ldots,p_{r}]$ é a distribuição de probabilidade dos estados para uma dada observação, o produto
+
+$$
+[p_{1},p_{2},\ldots,p_{r}]\begin{bmatrix}
+p_{11}&p_{12}&\ldots&p_{1r}\\
+p_{21}&p_{22}&\ldots&p_{2r}\\
+\vdots&\vdots& &\vdots\\
+p_{r1}&p_{r2}&\ldots&p_{rr}
+\end{bmatrix}
+$$
+
+dá a distribuição de probabilidade dos estados para a próxima observação. Se esta distribuição também é $[p_{1},p_{2},\ldots,p_{r}]$, da mesma forma que a observação precedente, então o sistema está em desequilíbrio.
+
+# Exemplo 1
+
+Suponha que, no 1 de setembro, dos assinantes de uma determinada região, a Folha tenha 50%, a Tribuna, 25% e a Gazeta outros 25%. Durante o mês de setembro, a Folha retém 87,5% de seus assinantes e perde 12,5% deles à Tribuna, esta retém 8,33% de seus assinantes e perde 75% deles à Folha e 16,67% deles à Gazeta; a Gazeta retém 33,33% de seus assinantes e perde 50% deles à Folha e 16,67% deles à Tribuna. Suponha que não haja novos assinantes e que nenhum deles deixe de sê-lo.
+
+a) Que proporção dos assinantes tem cada jornal no primeiro dia de outubro ?
+
+A matriz de transição é:
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matriztransicao.png){ width=30% }
+</center>
+
+multiplicando a matriz linha no estado inicial (1 de setembro, $t_{0}$) pela matriz de transição exposta acima
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/questaoa.png){ width=50% }
+
+</center>
+
+selecionando as três colunas com o mouse no Excel e inserindo a fórmula =MATRIZ.MULT() escolhendo a matriz de estados iniciais seguido de ponto e vírgula e selecionando a matriz de transição e apertando as teclas conjuntamente CTRL+SHIFT+ENTER obtemos o seguinte resultado
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/questaoaa.png){ width=50% }
+
+</center>
+
+Vemos que no dia 1 de outubro (mês subsequente ao de setembro, ou $t+1$), a Folha tem 75%, a Tribuna tem 13%, e a Gazeta tem 13% dos assinantes.
+
+b) Se o mesmo modelo de ganhos e perdas continua em cada mês, que proporção dos assinantes terá cada jornal no dia 1 de novembro ?
+
+Utilizando os valores encontrados pela multiplicação da matriz de estados iniciais pela matriz de transição ($t+1$), simplesmente obtemos os valores para o 1 de novembro 
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matriztmais1.png){ width=50% }
+
+</center>
+
+Então no período $t+1$, ou seja, no dia 1 de novembro, a Folha tem 81,25%, a Tribuna tem 12,5% e a Gazeta tem 6,25% dos assinantes.
+
+c) Se o mesmo modelo de ganhos e perdas contínuas em cada mês, que proporção dos assinantes terá cada jornal depois de um longo período (isto é, no equilíbrio) ?
+
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matriznesima.png){ width=50% }
+
+</center>
+
+O resultado da multiplicação da matriz de probabilidades futuras (lado direito) pela matriz de transição 
+
+\begin{align}
+p_{1}87,5\%+p_{2}75\%+p_{3}50\%&=p_{1}\\
+p_{1}12,5\%+p_{2}8,33\%+p_{3}16,67\%&=p_{2}\\
+p_{2}16,67\%+p_{3}33,33\%&=p_{3}\\
+p_{1}+p_{2}+p_{3}&=1
+\end{align}
+
+
+Transformando essas equações pela multiplicação da primeira por 8, a segunda por 24 e a terceira por 6:
+
+\begin{align}   
+-p_{1}+6p_{2}+4p_{3}&=0\\
+3p_{1}-22p_{2}+4p_{3}&=0\\
+p_{2}-4p_{3}=0\\
+p_{1}+p_{2}+p_{3}=1
+\end{align}
+
+Então resolvendo a primeira, a terceira e a quarta equações simultaneamente^[sistema de equações lineares] (quaisquer três das quatro equações são independentes),
+
+$$
+\begin{bmatrix}
+-p_1+6p_2+4p_3=0\\ p_2-4p_3=0\\ p_1+p_2+p_3=1
+\end{bmatrix}
+$$
+Substituindo $p_{2}=4p_{3}$
+
+$$
+\begin{bmatrix}
+-p_1+6\cdot \:4p_3+4p_3=0\\
+p_1+4p_3+p_3=1
+\end{bmatrix}
+$$
+simplificando temos
+
+$$
+\begin{bmatrix}
+-p_1+28p_3=0\\
+p_1+5p_3=1
+\end{bmatrix}
+$$
+isolando $\:p_1\:\mathrm{de}\:-p_1+28p_3=0:\quad p_1=28p_3$ e substituindo $p_1=28p_3$
+
+$$
+\begin{bmatrix}
+28p_3+5p_3=1
+\end{bmatrix}
+$$
+simplificando
+
+$$
+\begin{bmatrix}33p_3=1\end{bmatrix}
+$$
+
+Isolando $p_3\:\mathrm{de}\:33p_3=1:\quad p_3=\frac{1}{33}$ para $p_1=28p_3$ substituindo $p_3=\frac{1}{33}$ 
+
+$$
+p_1=28\cdot \frac{1}{33}=\frac{28}{33}
+$$
+Para $p_2=4p_3$ substituindo $p_1=\frac{28}{33},\:p_3=\frac{1}{33}$
+
+$$
+p_2=4\cdot \frac{1}{33}=\frac{4}{33}
+$$
+As soluções para o sistema de equações são:
+
+$$
+p_1=\frac{28}{33},\:p_3=\frac{1}{33},\:p_2=\frac{4}{33}
+$$
+Então concluímos que após um longo período, a Folha terá 84,85%, a Tribuna 12,12% e a Gazeta 3,03% dos assinantes.
+
+# Exemplo 2
+
+[em construção]
+
+# Exemplo 3
+
+[em construção]
+
+
+***
+
+# Referências
+
+Weber, J.,E. **Matemática para Economia e Administração**. 2a ed. Harbra, São Paulo, 1986.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

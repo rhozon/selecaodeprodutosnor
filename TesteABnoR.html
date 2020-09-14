@@ -391,6 +391,12 @@ div.tocify {
     <li>
       <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
     </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -542,7 +548,7 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## Min.    0.00000000 0.00000000
 ## 1st Qu. 0.00000000 0.00000000
 ## Median  0.00000000 0.00000000
-## Mean    0.06347826 0.08233333
+## Mean    0.06347826 0.08366667
 ## 3rd Qu. 0.00000000 0.00000000
 ## Max.    1.00000000 1.00000000
 ## --------------------------------------------
@@ -566,11 +572,11 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## $Probability
 ## $Probability$A
 ##         0%        25%        50%        75%       100% 
-## 0.06703067 0.08196848 0.08499158 0.08809637 0.10592758 
+## 0.06735518 0.08194850 0.08502474 0.08811922 0.10597467 
 ## 
 ## $Probability$B
-##        0%       25%       50%       75%      100% 
-## 0.0818170 0.1014902 0.1050494 0.1086751 0.1303051 
+##         0%        25%        50%        75%       100% 
+## 0.08568807 0.10273313 0.10631376 0.10994524 0.13102127 
 ## 
 ## 
 ## --------------------------------------------
@@ -578,7 +584,7 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## P(A &gt; B) by (0)%: 
 ## 
 ## $Probability
-## [1] 0.00228
+## [1] 0.0011
 ## 
 ## --------------------------------------------
 ## 
@@ -586,14 +592,14 @@ AB2 &lt;- bayesTest (A_binom, B_binom,
 ## 
 ## $Probability
 ##          5%         95% 
-## -0.28391266 -0.08672196 
+## -0.29209180 -0.09725803 
 ## 
 ## --------------------------------------------
 ## 
 ## Posterior Expected Loss for choosing B over A:
 ## 
 ## $Probability
-## [1] 0.2394301</code></pre>
+## [1] 0.2541762</code></pre>
 <p>O resumo fornece o intervalo crível. Os intervalos bayesianos tratam seus limites como fixos e o Parâmetro estimado como uma variável aleatória, enquanto os intervalos de confiança freqüentistas tratam seus limites como variáveis aleatórias e parâmetros como o valor fixo.</p>
 <p>Também mostra que <span class="math inline">\(p(A&gt; B)\)</span> é de 0,00068%. Portanto, B é muito melhor que A. E a perda posterior esperada para escolher B sobre A é baixa.</p>
 <pre class="r"><code>plot (AB2)</code></pre>
