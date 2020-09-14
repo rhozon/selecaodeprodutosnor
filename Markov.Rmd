@@ -222,11 +222,216 @@ Então concluímos que após um longo período, a Folha terá 84,85%, a Tribuna 
 
 # Exemplo 2
 
-[em construção]
+Todos os anos, 5% dos residentes de uma cidade muda-se para os subúrbios e 2% da população dos subúrbios muda-se para a cidade. Admitindo que o número total de pessoas da comunidade permaneça constante, determine a proporção, a longo prazo, dos residentes da cidade e dos subúrbios.
+
+A matriz de transição é
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/ex2.png){ width=50% }
+
+</center>
+
+Então ao multiplicarmos a matriz de probabilidades pela matriz de transição, obtemos:
+
+\begin{align}
+95\%p_{1}+2%p_{2}&=p_{1}\\
+5\%p_{1}+98%p_{2}&=p_{2}\\
+p_{1}+p_{2}=1
+\end{align}
+
+Multiplicando as duas primeiras equações por 100,
+
+\begin{align}   
+-5p_{1}+2p_{2}=0\\
+5p_{1}-2p_{2}=0\\
+p_{1}+p_{2}=1
+\end{align}
+
+Resolvendo-se a primeira e a terceira equações simultaneamente (quaisquer duas das três equações são independentes),
+
+$$
+\begin{bmatrix}
+-5p_1+2p_2=0\\ 
+p_1+p_2=1
+\end{bmatrix}
+$$
+
+Isolamos $p_1\:\mathrm{de}\:-5p_1+2p_2=0:\quad p_1=\frac{2p_2}{5}$ e substituimos $p_1=\frac{2p_2}{5}$
+
+$$
+\begin{bmatrix}
+\frac{2p_2}{5}+p_2=1
+\end{bmatrix}
+$$
+simplificando
+
+$$
+\begin{bmatrix}
+\frac{7p_2}{5}=1
+\end{bmatrix}
+$$
+Isolando $p_2\:\mathrm{de}\:\frac{7p_2}{5}=1:\quad p_2=\frac{5}{7}$
+
+Para $p_1=\frac{2p_2}{5}$
+
+$$
+p_1=\frac{2\cdot \frac{5}{7}}{5}
+$$
+
+$$
+\frac{2\cdot \frac{5}{7}}{5}=\frac{2}{7}
+$$
+
+$$
+p_1=\frac{2}{7}
+$$
+
+Então, as soluções para o sistema de equações são:
+
+$$
+p_1=\frac{2}{7}\Rightarrow 28,57\%,\:p_2=\frac{5}{7}\Rightarrow 71,43\%
+$$
+Então, eventualmente, 28,57% da população serão residentes da cidade e 71,43% serão residentes dos subúrbios. Observe que neste estado de equilíbrio, a cada ano 50% de 28,57%= 14,28% da população muda-se dos subúrbios para a cidade -- os números de residentes das cidades e suburbanos são, assim, invariáveis ou estáveis. 
 
 # Exemplo 3
 
-[em construção]
+Um corretor está estudando o movimento de preço de várias ações no mercado e está particularmente interessado numa companhia de equipamentos agrícolas. Ele observou que se estas ações têm uma alta num determinado dia, então, no dia seguinte elas tem uma chance de 50:50 de ter uma alta de novo, uma chance de 1/3 (33,33%) de permanecer com o mesmo preço e uma chance de 1/6 (16,66%) de subir. Que proporção do tempo (a longo prazo) as ações sobem, permanecem iguais e baixam de preço ?
+
+A matriz de transição é definida por:
+
+<center>
+![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/matriztranscorretor.png){ width=30% }
+
+</center>
+
+Como vimos nos exercícios anteriores, as probabilidades de equilíbrio são dadas por
+
+\begin{align}
+50\%p_{1}+33\%p_{2}+17\%p_{3}&=p_{1}\\
+33\%p_{1}+33\%p_{2}+33\%p_{3}&=p_{2}\\
+17\%p_{1}+33\%p_{2}+50\%p_{3}&=p_{3}\\
+p_{1}+p_{2}+p_{3}&=1
+\end{align}
+
+
+que é o mesmo que
+
+\begin{align}
+\frac{1}{2}p_{1}+\frac{1}{3}p_{2}+\frac{1}{6}p_{3}&=p_{1}\\
+\frac{1}{3}p_{1}+\frac{1}{3}p_{2}+\frac{1}{3}p_{3}&=p_{2}\\
+\frac{1}{6}p_{1}+\frac{1}{3}p_{2}+\frac{1}{2}p_{3}&=p_{3}\\
+p_{1}+p_{2}+p_{3}&=1
+\end{align}
+
+Multiplicando a primeira equação por 6, a segunda por 2 e a terceira equação por 6, temos:
+
+\begin{align}   
+-3p_{1}+2p_{2}+p_{3}&=0\\
+p_{1}-2p_{2}+p_{3}&=0\\
+p_{1}+2p_{2}-3p_{3}&=0\\
+p_{1}+p_{2}+p_{3}&=1
+\end{align}
+
+Resolvendo-se a segunda, a terceira e a quarta equações simultaneamente (quaisquer três das quatro equações são independentes),
+
+$$
+\begin{bmatrix}
+p_1-2p_2+p_3=0\\
+p_1+2p_2-3p_3=0\\ 
+p_1+p_2+p_3=1
+\end{bmatrix}
+$$
+Isolando $p_1\:\mathrm{de}\:p_1-2p_2+p_3=0:\quad p_1=-p_3+2p_2$ e substituindo $p_1=-p_3+2p_2$
+
+$$
+\begin{bmatrix}
+-p_3+2p_2+2p_2-3p_3=0\\
+-p_3+2p_2+p_2+p_3=1
+\end{bmatrix}
+$$
+
+e simplificando
+
+$$
+\begin{bmatrix}
+4p_2-4p_3=0\\
+3p_2=1
+\end{bmatrix}
+$$
+Isolando $p_2\:\mathrm{de}\:3p_2=1:\quad p_2=\frac{1}{3}$ e substituindo $p_2=\frac{1}{3}$
+
+$$
+\begin{bmatrix}
+4\cdot \frac{1}{3}-4p_3=0
+\end{bmatrix}
+$$
+Simplificando
+
+$$
+\begin{bmatrix}
+\frac{4}{3}-4p_3=0
+\end{bmatrix}
+$$
+
+Isolando $p_3\:\mathrm{de}\:\frac{4}{3}-4p_3=0:\quad p_3=\frac{1}{3}$ 
+
+$$
+\frac{4}{3}-4p_3=0
+$$
+
+
+Subtrair $\frac{4}{3}$ de ambos os lados
+
+$$
+\frac{4}{3}-4p_3-\frac{4}{3}=0-\frac{4}{3}
+$$
+
+e simplificando
+
+$$
+-4p_3=-\frac{4}{3}
+$$
+Dividimos ambos os lados por -4:
+
+$$
+\frac{-4p_3}{-4}=\frac{-\frac{4}{3}}{-4}
+$$
+
+e simplificando
+
+$$
+p_3=\frac{1}{3}
+$$
+
+e para $p_1=-p_3+2p_2$ e substituindo $p_3=\frac{1}{3},\:p_2=\frac{1}{3}$ 
+
+$$
+p_1=-\frac{1}{3}+2\cdot \frac{1}{3}
+$$
+
+$$
+-\frac{1}{3}+2\cdot \frac{1}{3}=\frac{1}{3}
+$$
+
+$$
+p_1=\frac{1}{3}
+$$
+
+Então as soluções para o sistema de equações lineares são:
+
+$$
+p_1=\frac{1}{3},\:p_3=\frac{1}{3},\:p_2=\frac{1}{3}
+$$
+
+Conforme o processo de Markov, podemos projetar que a longo prazo, 33,33% das ações sobem, outros 33,33% se mantém e outros 33,33% baixam de preço.
+
+
+
+
+
+
+
+
 
 
 ***
