@@ -6,11 +6,15 @@ title: "_Tutoriais_"
 
 Tutoriais disponíveis:
 
+&nbsp;
+
 ### *Seleção de produtos com Análise Conjunta no R* 
 
 <small>(baixar o pdf ($\LaTeX$) no repositório)</small>
 
 + Aqui aprenderemos com dados de uma pesquisa de mercado compilada, como escolhemos os melhores perfis (_mix_) de produtos para oferecer aos nossos clientes de acordo com seus gostos e preferências.
+
+&nbsp;
 
 ### *Avaliando as melhores estadias do Airbnb no R* 
 
@@ -20,15 +24,33 @@ Tutoriais disponíveis:
 
 + Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.
 
+&nbsp;
+
 ### *Teste A/B Bayesiano no R para campanhas de marketing*
 
 + Qual anúncio/publicidade conduz a maior níveis de venda ? Será que um bom desconto, atrai mesmo mais clientes ? Quais testes experimento para vender melhor e como meço isso ?
 
+&nbsp;
+
+### *A importância da análise de resíduos na regressão: O clássico trabalho de Anscombe (1973)*
+
+&nbsp;
+
++ Quatro conjuntos de dados diferentes apresentam os mesmos valores para os coeficientes de regressão linear via MQO. Os valores de erro padrão de $\beta$, $R^{2}$ e das médias para os valores de $X^{'}s$ e $Y^{'}s$ são exatamente iguais. Como ajustar o modelo de regressão corretamente ?
+
+&nbsp;
+
 ### *Regressão do Componente Principal no Excel para Multicolinearidade*
+
++ Um método mais simples de corrigir a multicolinearidade, algumas aplicações em Eviews, com a reprodução de dados de Maddala, 2001.
+
+&nbsp;
 
 ### *Regressão _Ridge_ no Excel e no R para Multicolinearidade*
 
 + Veja como utilizar dois métodos para corrigir a multicolinearidade no seu modelo de regressão linear múltipla.
+
+&nbsp;
 
 ### Introdução aos Processos Estocásticos: Cadeias de Markov
 
