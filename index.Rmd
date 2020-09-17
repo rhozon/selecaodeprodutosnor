@@ -16,6 +16,8 @@ Tutoriais disponíveis:
 
 <small>([ler o e-book traduzido (feito em $\LaTeX$) no repositório](https://github.com/rhozon/R-para-estudantes-de-marketing/raw/master/R_para_estudantes_de_marketing.pdf))</small>
 
+<small> ([ler a versão bookdown na íntegra traduzida do original](https://rhozon.github.io/rparamkt/))</small>
+
 + Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.
 
 ### *Teste A/B Bayesiano no R para campanhas de marketing*

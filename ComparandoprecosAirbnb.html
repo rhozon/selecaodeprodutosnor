@@ -468,12 +468,12 @@ div.tocify {
 <h3>Atribuindo dados a objetos</h3>
 <p>Observe a seta <span class="math inline">\(&lt;-\)</span> no meio da linha que importou o arquivo .csv:</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages -------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --</code></pre>
 <pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
 ## v tibble  3.0.3     v dplyr   1.0.0
-## v tidyr   1.1.0     v stringr 1.4.0
+## v tidyr   1.1.2     v stringr 1.4.0
 ## v readr   1.3.1     v forcats 0.5.0</code></pre>
-<pre><code>## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(readxl)
@@ -485,27 +485,27 @@ airbnb&lt;-read_excel(path = airbnbtemp, sheet = 1)
 glimpse(airbnb)</code></pre>
 <pre><code>## Rows: 17,651
 ## Columns: 21
-## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301...
-## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454...
-## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 142940...
-## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;...
-## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
-## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Bru...
-## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;,...
-## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, ...
-## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4...
-## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2...
-## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37...
-## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartem...
-## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 201...
-## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.839...
-## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.3338...
-## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A91608...
-## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2...</code></pre>
+## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 145...
+## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...
+## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room...
+## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
+## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Brussel&quot;, &quot;Bru...
+## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;, &quot;Anderlech...
+## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, 0, 1, 3, 0,...
+## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4.5, 0.0, 0....
+## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2, 2, 2, 2, ...
+## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37, 28, 177, ...
+## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartement cosy&quot;, ...
+## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 2017-07-17 03:...
+## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.83971, 50.8591...
+## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.333850, 4.33696...
+## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A9160844940&quot;, &quot;01...
+## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2, 11, 11, 5...</code></pre>
 <p><span class="math inline">\(&lt;-\)</span> é o operador de atribuição. Nesse caso, atribuímos o conjunto de dados (ou seja, os dados que lemos do arquivo .csv) a um objeto chamado airbnb. Um objeto é uma estrutura de dados. Todos os objetos que você criar serão exibidos no painel Ambiente (a janela superior direita). O R Studio fornece um atalho para escrever <span class="math inline">\(&lt;-\)</span>: Alt + - (no Windows). É uma boa ideia aprender esse atalho de cor.</p>
 <p>Quando você importa dados para o R, ele se torna um objeto chamado <em>dataframe</em>. Um <em>dataframe</em> é como uma tabela ou uma planilha do Excel. Tem duas dimensões: linhas e colunas. Geralmente, as linhas representam suas observações, as colunas representam as diferentes variáveis. Quando seus dados consistem em apenas uma dimensão (por exemplo, uma sequência de números ou palavras), eles são armazenados em um segundo tipo de objeto chamado vetor. Mais tarde, aprenderemos como criar vetores.</p>
 </div>
@@ -527,83 +527,83 @@ glimpse(airbnb)</code></pre>
 <p>Uma etapa realmente importante é verificar se seus dados foram importados corretamente. É uma boa prática sempre inspecionar seus dados. Você vê algum valor ausente, os números e os nomes fazem sentido? Se você começar imediatamente com a análise, corre o risco de ter que refazê-la porque os dados não foram lidos corretamente, ou pior, analisando dados errados sem perceber.</p>
 <pre class="r"><code>airbnb[1:10,] # Visualiza o conteudo do conjunto de dados da Airbnb</code></pre>
 <pre><code>## # A tibble: 10 x 21
-##    room_id survey_id host_id room_type country city  borough neighborhood
-##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       
-##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent        
-##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek  
-##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene      
-##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke 
-##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht  
-##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg  
-##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent        
-##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene      
-##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen      
-## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek   
-## # ... with 13 more variables: reviews &lt;dbl&gt;, overall_satisfaction &lt;dbl&gt;,
-## #   accommodates &lt;dbl&gt;, bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;,
-## #   minstay &lt;lgl&gt;, name &lt;chr&gt;, last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;,
-## #   longitude &lt;dbl&gt;, location &lt;chr&gt;, rooms_per_host &lt;dbl&gt;</code></pre>
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## # ... with 12 more variables: overall_satisfaction &lt;dbl&gt;, accommodates &lt;dbl&gt;,
+## #   bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;, name &lt;chr&gt;,
+## #   last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;</code></pre>
 <p>O R nos diz que estamos lidando com uma <em>tibble</em> (essa é apenas outra palavra para <em>dataframe</em>) com 17651 linhas ou observações e 20 colunas ou variáveis. Para cada coluna, é fornecido o tipo da variável: int (inteiro), chr (caractere), dbl (duplo), dttm (data e hora). Variáveis inteiras e duplas armazenam números (inteiro para números redondos, duplicam para números com decimais), variáveis de caracteres armazenam letras, variáveis de data e hora armazenam datas e / ou horas.</p>
 <p>O R imprime apenas os dados das dez primeiras linhas e o número máximo de colunas que cabem na tela. Se, no entanto, você deseja inspecionar todo o conjunto de dados, clique duas vezes no objeto airbnb no painel Ambiente (a janela superior direita) para abrir uma aba Visualizador ou executar a Visualização (airbnb). Observe o V maiúsculo no comando Visualizar. O R sempre diferencia maiúsculas de minúsculas!</p>
 <p>Você também pode usar o comando <em>print</em> para solicitar mais (ou menos) linhas e colunas na janela do console:</p>
 <pre class="r"><code>print(airbnb, n = 25, width = 100)</code></pre>
 <pre><code>## # A tibble: 17,651 x 21
-##    room_id survey_id host_id room_type country city  borough neighborhood
-##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       
-##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent        
-##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek  
-##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene      
-##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke 
-##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht  
-##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg  
-##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent        
-##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene      
-##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen      
-## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek   
-## 11  1.94e7      1454  1.87e7 Shared r~ NA      Belg~ Tournai Brunehaut   
-## 12  1.99e7      1454  1.29e8 Shared r~ NA      Belg~ Brussel Etterbeek   
-## 13  6.77e6      1454  3.50e7 Shared r~ NA      Belg~ Gent    Gent        
-## 14  1.39e7      1454  8.18e7 Shared r~ NA      Belg~ Arlon   Arlon       
-## 15  1.16e7      1454  5.00e7 Shared r~ NA      Belg~ Kortri~ Waregem     
-## 16  3.65e6      1454  1.84e7 Shared r~ NA      Belg~ Antwer~ Boom        
-## 17  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen   
-## 18  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen   
-## 19  4.28e5      1454  1.33e6 Shared r~ NA      Belg~ Gent    Gent        
-## 20  1.42e7      1454  8.61e7 Shared r~ NA      Belg~ Brussel Sint-Jans-M~
-## 21  1.93e7      1454  1.07e8 Shared r~ NA      Belg~ Leuven  Rotselaar   
-## 22  1.21e7      1454  6.21e7 Shared r~ NA      Belg~ Brugge  Jabbeke     
-## 23  4.42e6      1454  2.29e7 Shared r~ NA      Belg~ Ath     Ath         
-## 24  1.56e7      1454  2.05e7 Shared r~ NA      Belg~ Leuven  Leuven      
-## 25  1.33e6      1454  3.51e6 Shared r~ NA      Belg~ Tonger~ Voeren      
-##    reviews overall_satisfa~ accommodates bedrooms bathrooms price minstay name 
-##      &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;lgl&gt;   &lt;chr&gt;
-##  1       9              4.5            2        1 NA           59 NA      &quot;Spa~
-##  2       2              0              2        1 NA           53 NA      &quot;app~
-##  3      12              4              2        1 NA           46 NA      &quot;YOU~
-##  4      19              4.5            4        1 NA           56 NA      &quot;stu~
-##  5       5              5              2        1 NA           47 NA      &quot;NIC~
-##  6      28              5              4        1 NA           60 NA      &quot;Che~
-##  7       2              0              2        1 NA           41 NA      &quot;a d~
-##  8      13              4              2        1 NA           36 NA      &quot;Cal~
-##  9       2              0              8        1 NA           18 NA      &quot;Ecu~
-## 10      57              4.5            3        1 NA           38 NA      &quot;Bel~
-## 11       1              0              4        1 NA           14 NA      &quot;Cha~
-## 12       0              0              2        1 NA           37 NA      &quot;Cos~
-## 13     143              5              2        1 NA           28 NA      &quot;Cou~
-## 14       0              0              1        1 NA          177 NA      &quot;Log~
-## 15       1              0              4        1 NA          147 NA      &quot;Ter~
-## 16       3              4.5            2        1 NA          177 NA      &quot;PRI~
-## 17       0              0              2        1 NA          129 NA      &quot;Spa~
-## 18       0              0              2        1 NA          140 NA      &quot;Spa~
-## 19       9              5              2        1 NA          141 NA      &quot;pen~
-## 20       0              0              5        1 NA          136 NA      &quot;App~
-## 21       1              0              2        1 NA          132 NA      &quot;Hou~
-## 22       0              0              1        1 NA          117 NA      &quot;Oud~
-## 23       0              0              6        1 NA          106 NA      &quot;Cha~
-## 24       3              5              1        1 NA          116 NA      &quot;The~
-## 25      13              4.5            2        1 NA          106 NA      &quot;Voe~
-## # ... with 17,626 more rows, and 5 more variables: last_modified &lt;dttm&gt;,
-## #   latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;, rooms_per_host &lt;dbl&gt;</code></pre>
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## 11  1.94e7      1454  1.87e7 Shared r~ NA      Belg~ Tournai Brunehaut          1
+## 12  1.99e7      1454  1.29e8 Shared r~ NA      Belg~ Brussel Etterbeek          0
+## 13  6.77e6      1454  3.50e7 Shared r~ NA      Belg~ Gent    Gent             143
+## 14  1.39e7      1454  8.18e7 Shared r~ NA      Belg~ Arlon   Arlon              0
+## 15  1.16e7      1454  5.00e7 Shared r~ NA      Belg~ Kortri~ Waregem            1
+## 16  3.65e6      1454  1.84e7 Shared r~ NA      Belg~ Antwer~ Boom               3
+## 17  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen          0
+## 18  1.20e7      1454  6.37e7 Shared r~ NA      Belg~ Vervie~ Büllingen          0
+## 19  4.28e5      1454  1.33e6 Shared r~ NA      Belg~ Gent    Gent               9
+## 20  1.42e7      1454  8.61e7 Shared r~ NA      Belg~ Brussel Sint-Jans-M~       0
+## 21  1.93e7      1454  1.07e8 Shared r~ NA      Belg~ Leuven  Rotselaar          1
+## 22  1.21e7      1454  6.21e7 Shared r~ NA      Belg~ Brugge  Jabbeke            0
+## 23  4.42e6      1454  2.29e7 Shared r~ NA      Belg~ Ath     Ath                0
+## 24  1.56e7      1454  2.05e7 Shared r~ NA      Belg~ Leuven  Leuven             3
+## 25  1.33e6      1454  3.51e6 Shared r~ NA      Belg~ Tonger~ Voeren            13
+##    overall_satisfa~ accommodates bedrooms bathrooms price minstay name  last_modified      
+##               &lt;dbl&gt;        &lt;dbl&gt;    &lt;dbl&gt; &lt;lgl&gt;     &lt;dbl&gt; &lt;lgl&gt;   &lt;chr&gt; &lt;dttm&gt;             
+##  1              4.5            2        1 NA           59 NA      &quot;Spa~ 2017-07-17 03:49:10
+##  2              0              2        1 NA           53 NA      &quot;app~ 2017-07-17 03:49:09
+##  3              4              2        1 NA           46 NA      &quot;YOU~ 2017-07-17 03:49:09
+##  4              4.5            4        1 NA           56 NA      &quot;stu~ 2017-07-17 03:49:07
+##  5              5              2        1 NA           47 NA      &quot;NIC~ 2017-07-17 03:49:07
+##  6              5              4        1 NA           60 NA      &quot;Che~ 2017-07-17 03:49:06
+##  7              0              2        1 NA           41 NA      &quot;a d~ 2017-07-17 03:49:04
+##  8              4              2        1 NA           36 NA      &quot;Cal~ 2017-07-17 03:49:02
+##  9              0              8        1 NA           18 NA      &quot;Ecu~ 2017-07-17 03:49:02
+## 10              4.5            3        1 NA           38 NA      &quot;Bel~ 2017-07-17 03:49:01
+## 11              0              4        1 NA           14 NA      &quot;Cha~ 2017-07-17 03:49:01
+## 12              0              2        1 NA           37 NA      &quot;Cos~ 2017-07-17 03:49:01
+## 13              5              2        1 NA           28 NA      &quot;Cou~ 2017-07-17 03:49:01
+## 14              0              1        1 NA          177 NA      &quot;Log~ 2017-07-17 03:48:56
+## 15              0              4        1 NA          147 NA      &quot;Ter~ 2017-07-17 03:48:56
+## 16              4.5            2        1 NA          177 NA      &quot;PRI~ 2017-07-17 03:48:56
+## 17              0              2        1 NA          129 NA      &quot;Spa~ 2017-07-17 03:48:55
+## 18              0              2        1 NA          140 NA      &quot;Spa~ 2017-07-17 03:48:55
+## 19              5              2        1 NA          141 NA      &quot;pen~ 2017-07-17 03:48:55
+## 20              0              5        1 NA          136 NA      &quot;App~ 2017-07-17 03:48:55
+## 21              0              2        1 NA          132 NA      &quot;Hou~ 2017-07-17 03:48:55
+## 22              0              1        1 NA          117 NA      &quot;Oud~ 2017-07-17 03:48:53
+## 23              0              6        1 NA          106 NA      &quot;Cha~ 2017-07-17 03:48:53
+## 24              5              1        1 NA          116 NA      &quot;The~ 2017-07-17 03:48:53
+## 25              4.5            2        1 NA          106 NA      &quot;Voe~ 2017-07-17 03:48:53
+## # ... with 17,626 more rows, and 4 more variables: latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
+## #   location &lt;chr&gt;, rooms_per_host &lt;dbl&gt;</code></pre>
 </div>
 </div>
 <div id="manipulando-dataframes" class="section level1">
@@ -613,22 +613,22 @@ glimpse(airbnb)</code></pre>
 <p>Vamos observar nosso dataset novamente:</p>
 <pre class="r"><code>airbnb[1:10,]</code></pre>
 <pre><code>## # A tibble: 10 x 21
-##    room_id survey_id host_id room_type country city  borough neighborhood
-##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;       
-##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent        
-##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek  
-##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene      
-##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke 
-##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht  
-##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg  
-##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent        
-##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene      
-##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen      
-## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek   
-## # ... with 13 more variables: reviews &lt;dbl&gt;, overall_satisfaction &lt;dbl&gt;,
-## #   accommodates &lt;dbl&gt;, bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;,
-## #   minstay &lt;lgl&gt;, name &lt;chr&gt;, last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;,
-## #   longitude &lt;dbl&gt;, location &lt;chr&gt;, rooms_per_host &lt;dbl&gt;</code></pre>
+##    room_id survey_id host_id room_type country city  borough neighborhood reviews
+##      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+##  1  5.14e6      1454  2.07e7 Shared r~ NA      Belg~ Gent    Gent               9
+##  2  1.31e7      1454  4.61e7 Shared r~ NA      Belg~ Brussel Schaarbeek         2
+##  3  8.30e6      1454  3.09e7 Shared r~ NA      Belg~ Brussel Elsene            12
+##  4  1.38e7      1454  8.14e7 Shared r~ NA      Belg~ Oosten~ Middelkerke       19
+##  5  1.83e7      1454  1.43e7 Shared r~ NA      Belg~ Brussel Anderlecht         5
+##  6  1.27e7      1454  6.88e7 Shared r~ NA      Belg~ Brussel Koekelberg        28
+##  7  1.55e7      1454  9.91e7 Shared r~ NA      Belg~ Gent    Gent               2
+##  8  3.91e6      1454  3.69e6 Shared r~ NA      Belg~ Brussel Elsene            13
+##  9  1.49e7      1454  3.06e7 Shared r~ NA      Belg~ Vervie~ Baelen             2
+## 10  8.50e6      1454  4.05e7 Shared r~ NA      Belg~ Brussel Etterbeek         57
+## # ... with 12 more variables: overall_satisfaction &lt;dbl&gt;, accommodates &lt;dbl&gt;,
+## #   bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;, name &lt;chr&gt;,
+## #   last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;</code></pre>
 <p>Vimos que <em>room_id</em> e <em>host_id</em> são “identificadores” ou rótulos que identificam as observações. São nomes (neste caso, apenas números) para as salas(quartos) e hóspedes específicos. No entanto, vemos que o Ros trata como números inteiros, ou seja, como números. Isso significa que poderíamos adicionar os <em>room_id‘s</em> de duas salas diferentes e obter um novo número. No entanto, isso não faria muito sentido, porque os <em>room_id</em> são apenas rótulos.</p>
 <p>Certifique-se de que R trate os identificadores como rótulos, em vez de números, fatorando-os. Observe o operador $. Este operador muito importante nos permite selecionar variáveis específicas de um <em>dataframe</em>, neste caso <em>room_id</em> e <em>host_id</em>.</p>
 <pre class="r"><code>airbnb$room_id_F &lt;- factor(airbnb$room_id)
@@ -640,29 +640,29 @@ airbnb$host_id_F &lt;- factor(airbnb$host_id)</code></pre>
 <pre class="r"><code>glimpse(airbnb)</code></pre>
 <pre><code>## Rows: 17,651
 ## Columns: 23
-## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301...
-## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454...
-## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 142940...
-## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;...
-## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
-## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Bru...
-## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;,...
-## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, ...
-## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4...
-## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2...
-## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37...
-## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartem...
-## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 201...
-## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.839...
-## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.3338...
-## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A91608...
-## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2...
-## $ room_id_F            &lt;fct&gt; 5141135, 13128333, 8298885, 13822088, 18324301...
-## $ host_id_F            &lt;fct&gt; 20676997, 46098805, 30924336, 81440431, 142940...</code></pre>
+## $ room_id              &lt;dbl&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ survey_id            &lt;dbl&gt; 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 1454, 145...
+## $ host_id              &lt;dbl&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...
+## $ room_type            &lt;chr&gt; &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room&quot;, &quot;Shared room...
+## $ country              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ city                 &lt;chr&gt; &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;Belgium&quot;, &quot;B...
+## $ borough              &lt;chr&gt; &quot;Gent&quot;, &quot;Brussel&quot;, &quot;Brussel&quot;, &quot;Oostende&quot;, &quot;Brussel&quot;, &quot;Bru...
+## $ neighborhood         &lt;chr&gt; &quot;Gent&quot;, &quot;Schaarbeek&quot;, &quot;Elsene&quot;, &quot;Middelkerke&quot;, &quot;Anderlech...
+## $ reviews              &lt;dbl&gt; 9, 2, 12, 19, 5, 28, 2, 13, 2, 57, 1, 0, 143, 0, 1, 3, 0,...
+## $ overall_satisfaction &lt;dbl&gt; 4.5, 0.0, 4.0, 4.5, 5.0, 5.0, 0.0, 4.0, 0.0, 4.5, 0.0, 0....
+## $ accommodates         &lt;dbl&gt; 2, 2, 2, 4, 2, 4, 2, 2, 8, 3, 4, 2, 2, 1, 4, 2, 2, 2, 2, ...
+## $ bedrooms             &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ...
+## $ bathrooms            &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ price                &lt;dbl&gt; 59, 53, 46, 56, 47, 60, 41, 36, 18, 38, 14, 37, 28, 177, ...
+## $ minstay              &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ name                 &lt;chr&gt; &quot;Spacious shared apartment in Gent&quot;, &quot;appartement cosy&quot;, ...
+## $ last_modified        &lt;dttm&gt; 2017-07-17 03:49:10, 2017-07-17 03:49:09, 2017-07-17 03:...
+## $ latitude             &lt;dbl&gt; 51.03420, 50.86915, 50.82829, 51.19050, 50.83971, 50.8591...
+## $ longitude            &lt;dbl&gt; 3.714149, 4.384435, 4.376590, 2.822373, 4.333850, 4.33696...
+## $ location             &lt;chr&gt; &quot;0101000020E6100000D2C43BC093B60D40874F3A9160844940&quot;, &quot;01...
+## $ rooms_per_host       &lt;dbl&gt; 1, 1, 1, 1, 3, 1, 1, 2, 2, 1, 4, 1, 1, 1, 1, 2, 11, 11, 5...
+## $ room_id_F            &lt;fct&gt; 5141135, 13128333, 8298885, 13822088, 18324301, 12664969,...
+## $ host_id_F            &lt;fct&gt; 20676997, 46098805, 30924336, 81440431, 14294054, 6881017...</code></pre>
 <p>Vemos que o tipo de <em>room_id</em> e <em>host_id</em> agora é <span class="math inline">\(&lt;\)</span><em>fct</em><span class="math inline">\(&gt;\)</span> (fator).</p>
 </div>
 <div id="transformações-numéricas" class="section level2">
@@ -708,17 +708,14 @@ head(airbnb$overall_satisfaction_100) </code></pre>
 #de dados ao objeto airbnb.
 
 colnames(airbnb) # Agora você verá que o country e o survey_id se foram.</code></pre>
-<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                 
-##  [3] &quot;room_type&quot;                &quot;city&quot;                    
-##  [5] &quot;borough&quot;                  &quot;neighborhood&quot;            
-##  [7] &quot;reviews&quot;                  &quot;overall_satisfaction&quot;    
-##  [9] &quot;accommodates&quot;             &quot;bedrooms&quot;                
-## [11] &quot;bathrooms&quot;                &quot;price&quot;                   
-## [13] &quot;minstay&quot;                  &quot;name&quot;                    
-## [15] &quot;last_modified&quot;            &quot;latitude&quot;                
-## [17] &quot;longitude&quot;                &quot;location&quot;                
-## [19] &quot;rooms_per_host&quot;           &quot;room_id_F&quot;               
-## [21] &quot;host_id_F&quot;                &quot;overall_satisfaction_100&quot;</code></pre>
+<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                  &quot;room_type&quot;               
+##  [4] &quot;city&quot;                     &quot;borough&quot;                  &quot;neighborhood&quot;            
+##  [7] &quot;reviews&quot;                  &quot;overall_satisfaction&quot;     &quot;accommodates&quot;            
+## [10] &quot;bedrooms&quot;                 &quot;bathrooms&quot;                &quot;price&quot;                   
+## [13] &quot;minstay&quot;                  &quot;name&quot;                     &quot;last_modified&quot;           
+## [16] &quot;latitude&quot;                 &quot;longitude&quot;                &quot;location&quot;                
+## [19] &quot;rooms_per_host&quot;           &quot;room_id_F&quot;                &quot;host_id_F&quot;               
+## [22] &quot;overall_satisfaction_100&quot;</code></pre>
 <pre class="r"><code>colnames(airbnb)[5]&lt;-&quot;city&quot;
 # Diga ao R para renomear algumas 
 #variaveis do \textit{dataframe} do airbnb e
@@ -726,23 +723,21 @@ colnames(airbnb) # Agora você verá que o country e o survey_id se foram.</code
 
 airbnb[1:10,] # country = Belgica agora e cidade se refere a cidades</code></pre>
 <pre><code>## # A tibble: 10 x 22
-##    room_id host_id room_type city  city  neighborhood reviews overall_satisfa~
-##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;
-##  1  5.14e6  2.07e7 Shared r~ Belg~ Gent  Gent               9              4.5
-##  2  1.31e7  4.61e7 Shared r~ Belg~ Brus~ Schaarbeek         2              0  
-##  3  8.30e6  3.09e7 Shared r~ Belg~ Brus~ Elsene            12              4  
-##  4  1.38e7  8.14e7 Shared r~ Belg~ Oost~ Middelkerke       19              4.5
-##  5  1.83e7  1.43e7 Shared r~ Belg~ Brus~ Anderlecht         5              5  
-##  6  1.27e7  6.88e7 Shared r~ Belg~ Brus~ Koekelberg        28              5  
-##  7  1.55e7  9.91e7 Shared r~ Belg~ Gent  Gent               2              0  
-##  8  3.91e6  3.69e6 Shared r~ Belg~ Brus~ Elsene            13              4  
-##  9  1.49e7  3.06e7 Shared r~ Belg~ Verv~ Baelen             2              0  
-## 10  8.50e6  4.05e7 Shared r~ Belg~ Brus~ Etterbeek         57              4.5
-## # ... with 14 more variables: accommodates &lt;dbl&gt;, bedrooms &lt;dbl&gt;,
-## #   bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;, name &lt;chr&gt;,
-## #   last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
-## #   rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;,
-## #   overall_satisfaction_100 &lt;dbl&gt;</code></pre>
+##    room_id host_id room_type city  city  neighborhood reviews overall_satisfa~ accommodates
+##      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1  5.14e6  2.07e7 Shared r~ Belg~ Gent  Gent               9              4.5            2
+##  2  1.31e7  4.61e7 Shared r~ Belg~ Brus~ Schaarbeek         2              0              2
+##  3  8.30e6  3.09e7 Shared r~ Belg~ Brus~ Elsene            12              4              2
+##  4  1.38e7  8.14e7 Shared r~ Belg~ Oost~ Middelkerke       19              4.5            4
+##  5  1.83e7  1.43e7 Shared r~ Belg~ Brus~ Anderlecht         5              5              2
+##  6  1.27e7  6.88e7 Shared r~ Belg~ Brus~ Koekelberg        28              5              4
+##  7  1.55e7  9.91e7 Shared r~ Belg~ Gent  Gent               2              0              2
+##  8  3.91e6  3.69e6 Shared r~ Belg~ Brus~ Elsene            13              4              2
+##  9  1.49e7  3.06e7 Shared r~ Belg~ Verv~ Baelen             2              0              8
+## 10  8.50e6  4.05e7 Shared r~ Belg~ Brus~ Etterbeek         57              4.5            3
+## # ... with 13 more variables: bedrooms &lt;dbl&gt;, bathrooms &lt;lgl&gt;, price &lt;dbl&gt;, minstay &lt;lgl&gt;,
+## #   name &lt;chr&gt;, last_modified &lt;dttm&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, location &lt;chr&gt;,
+## #   rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;, overall_satisfaction_100 &lt;dbl&gt;</code></pre>
 </div>
 <div id="incluindo-ou-excluindo-observações-linhas" class="section level3">
 <h3>Incluindo ou excluindo observações (linhas)</h3>
@@ -754,8 +749,8 @@ topten &lt;- c(&quot;Brussel&quot;,&quot;Antwerpen&quot;,&quot;Gent&quot;,
             &quot;Charleroi&quot;,&quot;Liege&quot;,&quot;Brugge&quot;,
             &quot;Namur&quot;,&quot;Leuven&quot;,&quot;Mons&quot;,&quot;Aalst&quot;) 
 topten # Mostra esse vetor.</code></pre>
-<pre><code>##  [1] &quot;Brussel&quot;   &quot;Antwerpen&quot; &quot;Gent&quot;      &quot;Charleroi&quot; &quot;Liege&quot;     &quot;Brugge&quot;   
-##  [7] &quot;Namur&quot;     &quot;Leuven&quot;    &quot;Mons&quot;      &quot;Aalst&quot;</code></pre>
+<pre><code>##  [1] &quot;Brussel&quot;   &quot;Antwerpen&quot; &quot;Gent&quot;      &quot;Charleroi&quot; &quot;Liege&quot;     &quot;Brugge&quot;    &quot;Namur&quot;    
+##  [8] &quot;Leuven&quot;    &quot;Mons&quot;      &quot;Aalst&quot;</code></pre>
 <p><a href="https://bookdown.org/content/1340/airbnbdata.html#assignment">Lembre-se</a> de que um vetor é uma estrutura de dados unidimensional (diferente de um <em>dataframe</em> que possui duas dimensões, isto é, colunas e linhas). Usamos o operador <em>c()</em> para criar um vetor que chamamos de topten. <em>c()</em> é uma abreviação de concatenar, que significa juntar as coisas. O vetor <em>topten</em> é um vetor de strings (palavras). Deve haver aspas entre as strings. Um vetor de números, no entanto, não requer aspas.</p>
 <p>Qualquer vetor que você criará aparecerá como um objeto no painel Ambiente (janela superior direita).</p>
 </div>
@@ -1075,17 +1070,13 @@ ggplot(data = airbnb.topten,
   #veja a introdução de por que fazemos isso
   
 colnames(airbnb)</code></pre>
-<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                 
-##  [3] &quot;room_type&quot;                &quot;city&quot;                    
-##  [5] &quot;neighborhood&quot;             &quot;reviews&quot;                 
-##  [7] &quot;overall_satisfaction&quot;     &quot;accommodates&quot;            
-##  [9] &quot;bedrooms&quot;                 &quot;bathrooms&quot;               
-## [11] &quot;price&quot;                    &quot;minstay&quot;                 
-## [13] &quot;name&quot;                     &quot;last_modified&quot;           
-## [15] &quot;latitude&quot;                 &quot;longitude&quot;               
-## [17] &quot;location&quot;                 &quot;rooms_per_host&quot;          
-## [19] &quot;room_id_F&quot;                &quot;host_id_F&quot;               
-## [21] &quot;overall_satisfaction_100&quot;</code></pre>
+<pre><code>##  [1] &quot;room_id&quot;                  &quot;host_id&quot;                  &quot;room_type&quot;               
+##  [4] &quot;city&quot;                     &quot;neighborhood&quot;             &quot;reviews&quot;                 
+##  [7] &quot;overall_satisfaction&quot;     &quot;accommodates&quot;             &quot;bedrooms&quot;                
+## [10] &quot;bathrooms&quot;                &quot;price&quot;                    &quot;minstay&quot;                 
+## [13] &quot;name&quot;                     &quot;last_modified&quot;            &quot;latitude&quot;                
+## [16] &quot;longitude&quot;                &quot;location&quot;                 &quot;rooms_per_host&quot;          
+## [19] &quot;room_id_F&quot;                &quot;host_id_F&quot;                &quot;overall_satisfaction_100&quot;</code></pre>
 <p>Não se esqueça de salvar seu script no diretório de trabalho.</p>
 </div>
 <div id="manipulação" class="section level2">
@@ -1190,22 +1181,21 @@ airbnb.merged %&gt;%
 ## # ... with 17,641 more rows</code></pre>
 <pre class="r"><code>airbnb.merged</code></pre>
 <pre><code>## # A tibble: 17,651 x 18
-##    room_id host_id room_type city  neighborhood reviews overall_satisfa~
-##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;
-##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5
-##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA  
-##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4  
-##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5
-##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5  
-##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5  
-##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA  
-##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4  
-##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA  
-## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5
-## # ... with 17,641 more rows, and 11 more variables: accommodates &lt;dbl&gt;,
-## #   bedrooms &lt;dbl&gt;, price &lt;dbl&gt;, name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;,
-## #   rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;,
-## #   overall_satisfaction_100 &lt;dbl&gt;, population &lt;dbl&gt;</code></pre>
+##    room_id host_id room_type city  neighborhood reviews overall_satisfa~ accommodates
+##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5            2
+##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA              2
+##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4              2
+##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5            4
+##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5              2
+##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5              4
+##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA              2
+##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4              2
+##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA              8
+## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5            3
+## # ... with 17,641 more rows, and 10 more variables: bedrooms &lt;dbl&gt;, price &lt;dbl&gt;,
+## #   name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;,
+## #   host_id_F &lt;fct&gt;, overall_satisfaction_100 &lt;dbl&gt;, population &lt;dbl&gt;</code></pre>
 </div>
 <div id="amostras-independentes-teste-t" class="section level2">
 <h2>Amostras independentes: teste t</h2>
@@ -1224,22 +1214,21 @@ head(airbnb$size)</code></pre>
 ## Levels: small large</code></pre>
 <pre class="r"><code>airbnb[1:10,]</code></pre>
 <pre><code>## # A tibble: 10 x 19
-##    room_id host_id room_type city  neighborhood reviews overall_satisfa~
-##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;
-##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5
-##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA  
-##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4  
-##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5
-##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5  
-##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5  
-##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA  
-##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4  
-##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA  
-## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5
-## # ... with 12 more variables: accommodates &lt;dbl&gt;, bedrooms &lt;dbl&gt;, price &lt;dbl&gt;,
-## #   name &lt;chr&gt;, latitude &lt;dbl&gt;, longitude &lt;dbl&gt;, rooms_per_host &lt;dbl&gt;,
-## #   room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;, overall_satisfaction_100 &lt;dbl&gt;,
-## #   population &lt;dbl&gt;, size &lt;fct&gt;</code></pre>
+##    room_id host_id room_type city  neighborhood reviews overall_satisfa~ accommodates
+##    &lt;fct&gt;   &lt;fct&gt;   &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;        &lt;dbl&gt;
+##  1 5141135 206769~ Shared r~ Gent  Gent               9              4.5            2
+##  2 131283~ 460988~ Shared r~ Brus~ Schaarbeek         2             NA              2
+##  3 8298885 309243~ Shared r~ Brus~ Elsene            12              4              2
+##  4 138220~ 814404~ Shared r~ Oost~ Middelkerke       19              4.5            4
+##  5 183243~ 142940~ Shared r~ Brus~ Anderlecht         5              5              2
+##  6 126649~ 688101~ Shared r~ Brus~ Koekelberg        28              5              4
+##  7 154528~ 991271~ Shared r~ Gent  Gent               2             NA              2
+##  8 3911778 3690027 Shared r~ Brus~ Elsene            13              4              2
+##  9 149294~ 306245~ Shared r~ Verv~ Baelen             2             NA              8
+## 10 8497852 405130~ Shared r~ Brus~ Etterbeek         57              4.5            3
+## # ... with 11 more variables: bedrooms &lt;dbl&gt;, price &lt;dbl&gt;, name &lt;chr&gt;, latitude &lt;dbl&gt;,
+## #   longitude &lt;dbl&gt;, rooms_per_host &lt;dbl&gt;, room_id_F &lt;fct&gt;, host_id_F &lt;fct&gt;,
+## #   overall_satisfaction_100 &lt;dbl&gt;, population &lt;dbl&gt;, size &lt;fct&gt;</code></pre>
 <p>No script acima, primeiro criamos uma variável lógica (esse é outro tipo de variável; discutimos outras aqui). Chamamos essa variável de grande e é <em>TRUE</em> quando a população é maior que 100000 e <em>FALSE</em>, se não. Depois, criamos um novo tamanho de variável que é a fatoração de grande porte. Observe que adicionamos outro argumento à função <em>factor</em>, ou seja, <em>labels</em>, para fornecer os valores <em>large</em> de nomes mais intuitivos. <em>FALSE</em> vem em primeiro lugar no alfabeto e obtém o primeiro rótulo pequeno, *TRUE} fica em segundo lugar no alfabeto e obtém o segundo rótulo grande.</p>
 <p>Para saber quais cidades são grandes e quais são pequenas, podemos solicitar frequências de combinações de tamanho (grande versus pequeno) e <em>city</em> (a própria cidade). Aprendemos como fazer isso no início desse tutorial (consulte as tabelas de frequência e as estatísticas descritivas):</p>
 <pre class="r"><code>airbnb %&gt;% 
@@ -1452,8 +1441,8 @@ library(car)
 #segundo argumento = variavel independente categorica.
 
 leveneTest(airbnb$price, airbnb$room_type) </code></pre>
-<pre><code>## Warning in leveneTest.default(airbnb$price, airbnb$room_type): airbnb$room_type
-## coerced to factor.</code></pre>
+<pre><code>## Warning in leveneTest.default(airbnb$price, airbnb$room_type): airbnb$room_type coerced to
+## factor.</code></pre>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
 ##          Df F value    Pr(&gt;F)    
 ## group     2  140.07 &lt; 2.2e-16 ***
