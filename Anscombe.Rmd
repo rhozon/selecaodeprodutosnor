@@ -1,0 +1,184 @@
+---
+title: "O quarteto de Anscombe: O que os gráficos podem revelar"
+author: "Rodrigo H. Ozon"
+date: "17/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+"Graphs are essential to good statistical analisys. Ordinary scatterplots and "tripple" scatterplots are discussed in relation to regression analysis."
+</p>
+
+&nbsp;
+
+#### Resumo
+
+<small>Vemos os dados de [Anscombe, 1973](https://www.sjsu.edu/faculty/gerstman/StatPrimer/anscombe1973.pdf), que é um dos
+os conjuntos de dados que vêm com o _software_ R. Calculamos diferentes regressões lineares dos quatro conjuntos de dados de Anscombe - eles nos dão os mesmos resultados. 
+Quando olhamos para os gráficos de dispersão correspondentes aos quatro conjuntos de dados, vemos que eles são muito diferentes.
+
+Neste breve tutorial, rodamos uma análise desses dados no R (com maior ênfase) e para aqueles que desejem utilizar os dados em algum outro software, [disponibilizo aqui em formato .xlsx](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/Ascombe%20(1973).xlsx?raw=true)
+
+**Palavras-chave**: Anscombe, Gráficos </small>
+
+
+
+***
+
+&nbsp;
+
+# Introdução
+
+Em 1973, o estatístico Anscombe publicou um clássico artigo no qual argumentou que
+devemos usar gráficos estatísticos (p.17):
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+  "A computer should make both calculations and graphs. Both sorts of output should be
+studied; each will contribute to understanding. ... Most kinds of statistical calculation rest on assumptions about the behavior of the data. Those assumptions may be false, and then the calculations may be misleading. We ought always to try to check whether the assumptions are reasonably correct; and if they are wrong we ought to be able to perceive in what ways they are wrong. Graphs are very valuable for these purposes."
+</p>
+
+Os dados de Anscombe (1973) ilustram a importância da visualização, de examinar os dados graficamente.
+
+# Os dados: 4 conjuntos de dados diferentes de $X^{'}s$ e $Y^{'}s$
+
+O R vem com alguns conjuntos de dados; um deles é anscombe. Chamamos o conjunto de dados de ans e vejamos o que contém:
+
+```{r}
+ans<-anscombe
+
+ans
+
+str(ans)
+
+```
+
+Os $X^{'}s$ têm médias = 9 e desvios padrão = 3,317, como pode ser verificado por
+usando as funções mean and sd. Os $Y^{'}s$ têm médias = 7,5 e desvios padrão
+= 2,03.
+
+```{r}
+#a funcao summary, fornece o resumo das estatisticas descritivas do dataset
+summary(ans)
+
+
+# vamos ver os desvios padrao para os xs e para os ys
+desvpadx<-c(sd(ans$x1,na.rm=FALSE),sd(ans$x2,na.rm=FALSE),sd(ans$x3,na.rm = FALSE),sd(ans$x4,na.rm = FALSE))
+
+desvpadx
+
+#agora os desvios padrao dos ys
+desvpady<-c(sd(ans$y1,na.rm=FALSE),sd(ans$y2,na.rm=FALSE),sd(ans$y3,na.rm = FALSE),sd(ans$y4,na.rm = FALSE))
+
+desvpady
+```
+
+# As mesmas regressões de $Y^{'}s$ nos $X^{'}s$
+
+Quando regredimos y1 em x1 e y2 em x2 etc. usando a função lm do R e vemos a saída ao exibir os coeficientes e outros, notamos que os resultados de regressão são os mesmos:
+
+```{r message=FALSE}
+regr1 <- lm(y1 ~ x1, data = ans)
+regr2 <- lm(y2 ~ x2, data = ans)
+regr3 <- lm(y3 ~ x3, data = ans)
+regr4 <- lm(y4 ~ x4, data = ans)
+library(arm)
+display(regr1)
+display(regr2)
+display(regr3)
+display(regr4)
+```
+
+
+# Diagramas de dispersão muito diferentes
+
+Carregando o pacote mosaic:
+
+```{r message=FALSE}
+library(mosaic)
+
+```
+Usamos a função xyplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e escolher os pontos (p) e linhas de regressão (r):
+
+```{r, echo=FALSE, out.width="50%", fig.cap=" "}
+xyplot(y1 ~ x1, data = ans, type = c("p","r"))
+xyplot(y2 ~ x2, data = ans, type = c("p","r"))
+xyplot(y3 ~ x3, data = ans, type = c("p","r"))
+xyplot(y4 ~ x4, data = ans, type = c("p","r"))
+```
+
+Quando examinamos as linhas de ajuste de regressão, elas são iguais, mas os gráficos de dispersão são muito diferentes. 
+
+- No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 *versus* x2 porque há curvatura. 
+
+- Na dispersão de y3 contra x3, um *outlier* está se distorcendo a inclinação
+da linha ajustada para cima. 
+
+- Na dispersão de y4 contra x4, excluirmos o *outlier* presente aproximadamente entre os pontos do eixo cartesiano (19,13), concluímos não há relação entre y4 e x4.
+
+
+O que também é notável é que as linhas mais suaves (smooth) nas figuras a seguir não nos enganam da mesma forma como a regressão linear fez.
+
+```{r message=FALSE}
+library(ggplot2)
+library(patchwork)
+
+x1y1 <- ggplot(data=ans,aes(x=x1,y=y1))+
+        geom_point()+geom_line()+geom_smooth(method = "lm")
+  
+x2y2 <- ggplot(data=ans,aes(x=x2,y=y2))+
+        geom_point()+geom_line()+geom_smooth(method = "lm")
+x3y3 <- ggplot(data=ans,aes(x=x3,y=y3))+
+        geom_point()+geom_line()+geom_smooth(method = "lm")
+x4y4 <- ggplot(data=ans,aes(x=x4,y=y4))+
+        geom_point()+geom_line()+geom_smooth(method = "lm")
+
+x1y1 + x2y2+x3y3+x4y4
+```
+
+
+Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representa a relação entre os $X^{'}s$ e $Y^{'}s$.
+
+O trabalho de Anscombe nos sugere que uma inspeção visual dos resíduos presentes em cada regressão pode fornecer uma melhor noção da função que explicaria tais relacionamentos com maior acurácia, diferentemente daqueles pesquisadores que se preocupam somente em se obter os coeficientes (regressores) e o coeficiente de determinação $R^{2}$ se esquecendo das armadilhas que as vezes a regressão nos impõe quando não se presta atenção na _inferência causal_ entre as variáveis investigadas.
+
+
+Lembre-se da atenção e cuidados especiais em relação a confusão de que regressão implica causalidade! Em muitas situações a covariação entre variáveis é ilegítima, na medida em que a relação é na verdade causada por um terceiro fator, que não foi ou não pode ser mensurado. 
+
+Outra armadilha envolve o fato de que um modelo bem ajustado não significa necessariamente que o modelo possa ser utilizado para fazer previsões. O analista com conhecimento da matéria em questão deveria estar convencido de que o processo que produziu os dados se manterá estável no futuro, para que possa utilizar o modelo com propósitos de previsão.
+
+
+
+
+&nbsp;
+
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+"É eRRando que se aprende R." (Jônatan Tatsch)
+</p>
+
+&nbsp;
+
+***
+
+## Referências
+
+
+Anscombe F.J. (1973) _Graphs in statistical analysis_. Am Stat 27(1):17–21
+
+Maddala, G.S. (2001) Introdução à Econometria. 3a. Ed. LTC, São Paulo, págs 47-48.
+
+
+
+
+
+
+
+
