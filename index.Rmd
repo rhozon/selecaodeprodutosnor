@@ -56,7 +56,11 @@ Tutoriais disponíveis:
 
 + Comece a compreender alguns conceitos relacionados a processos aleatórios [em construção]
 
+&nbsp;
 
+### Análise Fatorial para uma empresa de calçados e o impacto na condução de seu negócio
+
++ Como a análise fatorial pode extrair informações agrupadas relevantes a respeito da condução ótima do negócio.
 
 ***
 
