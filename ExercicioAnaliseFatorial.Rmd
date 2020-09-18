@@ -1,0 +1,402 @@
+---
+title: "Rodando um modelo de Análise Fatorial no R"
+author: "Rodrigo H. Ozon"
+date: "17/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+&nbsp;
+
+#### Resumo
+
+<small>Neste tutorial rodaremos uma análise fatorial com base no exercício resolvido disponível em Corrar _et alli_ (2009, p. 119-125), utilizando o software R, que segundo o IBPAD (2020):
+
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+"O R é uma linguagem e ambiente para análise estatística e produção de gráficos, um projeto GNU semelhante a linguagem S, foi desenvolvido pelos estatísticos Ross Ihaka e Robert Gentleman na década de 90 quando precisavam utilizar programas pagos em seus projetos. R oferece uma grande variedade de estatísticas (modelagem linear e não-linear, testes estatísticos clássicos, análise de séries temporais, classificação, agrupamento, etc.) e técnicas gráficas extensíveis, que fornecem uma rota de código aberto para que haja participações entre programadores."
+</p>
+
+
+
+**Palavras-chave**: Análise Fatorial, R </small>
+
+
+&nbsp;
+
+# Exercício resolvido
+
+Uma empresa do ramo de calçados populares gostaria de entender melhor a forma de relacionamento de algumas variáveis e como esse relacionamento pode interferir na condução de seu negócio. Para isso, resolveu encomendar uma pesquisa com outras empresas do ramo para identificar a importância de algumas variáveis.
+
+As variáveis que fizeram parte da pesquisa foram:
+
+- v1$\Rightarrow$ Automação
+- v2$\Rightarrow$ Crescimento do PIB
+- v3$\Rightarrow$ Parceria com os fornecedores
+- v4$\Rightarrow$ Novos concorrentes
+- v5$\Rightarrow$ Diversidade de produtos
+- v6$\Rightarrow$ Controle de despesas
+- v7$\Rightarrow$ Câmbio
+- v8$\Rightarrow$ Estabilidade econômica
+
+A pesquisa era respondida por uma escala de concordância:
+
+1 $\Rightarrow$ Não interfere
+
+2 $\Rightarrow$ Interfere pouco
+
+3 $\Rightarrow$ Interfere
+
+4 $\Rightarrow$ Interfere muito
+
+5 $\Rightarrow$ Fundamental
+
+Os resultados da pesquisa foram:
+
+
+
+
+```{r}
+
+library(readxl)
+
+url<-"https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/AnaliseFatorial.xlsx?raw=true"
+dados <- tempfile()
+download.file(url, dados, mode="wb")
+dados<-read_excel(path = dados, sheet = 1)
+
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(dados)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+```
+
+
+**Pede-se:**
+
+1. Faça uma AF e avalie se o seu resultado (teste de esfericidade, KMO e KMO individual, total de variância explicada e comunalidades) e comente sobre a aderência da referida técnica à solução deste caso.
+
+
+**Resposta:**
+
+
+Para diferenciarmos, partimos com a conceituação entre os métodos:
+
+
+**_Análise de Componentes Principais (PCA)_** O PCA decompõe uma matriz de correlação com outras nas diagonais. A quantidade de variância é igual ao traço da matriz, a soma das diagonais ou o número de variáveis observadas na análise. PCA minimiza a soma da distância perpendicular quadrada ao eixo do componente. Os componentes são ininterpretáveis, por exemplo, nenhuma construção subjacente.
+
+Os componentes principais extraídos são responsáveis por uma quantidade máxima de variância. A pontuação do componente é uma combinação linear de variáveis observadas ponderadas por vetores próprios.
+
+**_Análise exploratória de fatores (EFA)_** decompõe uma matriz de correlação ajustada. As diagonais foram ajustadas para os fatores únicos. A quantidade de variância explicada é igual ao traço da matriz, a soma das diagonais ajustadas ou comunalidades.
+Os fatores são responsáveis pela variação comum em um conjunto de dados. As correlações múltiplas ao quadrado (SMC) são usadas como estimativas de comunalidade nas diagonais. As variáveis observadas são uma combinação linear dos fatores subjacentes e únicos.
+
+
+O primeiro passo consiste na avaliação dos padrões de distribuição de probabilidades presentes nos dados:
+
+```{r message=FALSE}
+library(tidyverse)
+dados<-as_tibble(dados) #primeiro selecionamos as variaveis que queremos...
+dados
+#teremos que retirar a primeira coluna pelo fato de nao ser numerica
+
+  
+#O teste de Shapiro-Wilk avalia a condição de normalidade
+
+shapiro.test(dados$v1)
+
+shapiro.test(dados$v2)
+
+shapiro.test(dados$v3)
+
+shapiro.test(dados$v4)
+
+shapiro.test(dados$v5)
+
+shapiro.test(dados$v6)
+
+shapiro.test(dados$v7)
+
+shapiro.test(dados$v8)
+```
+Neste teste se o valor $p> 0,05$ sabemos que a distribuição dos dados não é significativamente diferente da distribuição normal. Em outras palavras, podemos assumir a normalidade. Como vemos, nenhuma delas possui distribuição normal.
+
+Veremos mais nitidamente com os histogramas:
+
+```{r}
+par(mfrow=(c(2,2)))
+hist(dados$v1)
+hist(dados$v2)
+hist(dados$v3)
+hist(dados$v4)
+hist(dados$v5)
+hist(dados$v6)
+hist(dados$v7)
+hist(dados$v8)
+```
+
+
+Isso sugere que deveríamos transformar as variáveis antes da aplicação do PCA. Visto que a assimetria e a magnitude das variáveis influenciam os componentes resultantes, é uma boa prática aplicar a transformação de assimetria, centralizar e dimensionar as variáveis antes da aplicação da Análise de Componentes Principais.
+
+Aqui, poderíamos, p. ex. aplicar uma transformação de log às variáveis, ou então ter sido mais geral e aplicado uma transformação de Box e Cox. Por ora, manteremos as variáveis sem transformação, pela característica da pesquisa.
+
+Vamos ver a matriz de correlação:
+
+```{r}
+library(dplyr) #pacote para select e para o operador pipe
+
+variaveisX<-dados%>%
+  select(-Empresas)
+
+as.tibble(cor(variaveisX))
+```
+
+
+Para rodarmos o KMO (do pacote psych) precisamos organizar o dataset declarando quais são as variáveis quanti que devemos empregar o teste
+
+```{r message=FALSE}
+kbl(cbind(variaveisX)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+```
+
+
+Então rodamos o teste:
+
+```{r message=FALSE}
+library(psych)
+KMO(variaveisX)
+```
+Utilizando o critério de interpretação para o KMO: [veja mais detalhes aqui](https://www.statisticshowto.com/kaiser-meyer-olkin/#:~:text=A%20rule%20of%20thumb%20for,values%20between%200.5%20and%200.6.)
+
++ 0,00 a 0,49 inaceitável.
++ 0,50 a 0,59 miserável.
++ 0,60 a 0,69 medíocre.
++ 0,70 a 0,79 mediano.
++ 0,80 a 0,89 meritório.
++ 0,90 a 1,00 maravilhoso.
+
+Teste de esfericidade de Bartlett: Para verificar se a redução de dados é possível
+
+A hipótese nula é que a redução da dimensão dos dados não é possível. Se o valor $p$ for menor que 0,05, a redução da dimensão é possível.
+
+```{r}
+print(cortest.bartlett(cor(variaveisX), nrow(variaveisX)))
+```
+O significado deste teste nos diz que a matriz de correlação não é uma matriz de identidade. Portanto, assumimos que existe alguma relação entre a variável.
+
+**PCA usando prcomp()**
+
+As funções prcomp() usam a decomposição de valor singular (a decomposição de valor singular examina as covariâncias / correlações entre os indivíduos).
+
+Argumentos para prcomp():
+
++ x: uma matriz numérica ou conjunto de dados numéricos
++ escala: um valor lógico que indica se as variáveis devem ser escaladas para ter variância de unidade antes que a análise ocorra.
+
+
+```{r message=FALSE}
+
+pca<-prcomp(variaveisX, scale=T)
+
+pca
+
+```
+
+A saída retorna o desvio padrão de cada um dos quatro PCs e sua rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis contínuas.
+
+Vamos plotar o gráfico que descreve o resultado da PCA:
+
+```{r}
+biplot(pca, scale = 0)
+```
+
+**Análise de Componentes Principais: Variância**
+
+Identificamos os componentes que explicam a maior parcela de variância:
+
+```{r}
+plot(pca,type="lines")
+```
+
+O método plot retorna um gráfico das variâncias (eixo y) associadas aos PCs ou componentes principais (eixo x).
+
+O gráfico é útil para decidir quantos componentes reter para análise posterior.
+Neste caso simples, com 8 componentes, esta não é uma tarefa difícil e podemos ver que os primeiros três componentes explicam a maior parte da variabilidade nos dados, pois na medida em que o valor da variância explicada se mostrar inferior a 1, descartamos sua inclusão em nosso modelo fatorial.
+
+```{r}
+summary(pca)
+```
+
+
+A função summary descreve a importância dos componentes.
+
++ A primeira linha descreve o desvio padrão associado a cada componente.
++ A segunda linha mostra a proporção da variação nos dados explicada por cada componente.
++ A terceira linha descreve a proporção cumulativa da variância explicada.
+
+Podemos ver ali que os primeiros três componentes respondem por mais de 83% da variância dos dados.
+
+
+Veremos a porcentagem de variações explicadas por cada componente principal:
+
+```{r message=FALSE}
+library(factoextra)
+fviz_eig(pca)
+```
+
+
+
+
+
+Agora visualizamos as contribuições individuais em cada componente:
+
+```{r}
+fviz_pca_ind(pca,
+             col.ind = "cos2", # Cores pela qualidade da representatividade
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Evite a sobreposição de texto
+             )
+```
+
+
+Variáveis correlacionadas positivamente apontam para o mesmo lado do gráfico.
+
+Variáveis correlacionadas negativamente apontam para lados opostos do gráfico.
+
+```{r}
+fviz_pca_var(pca,
+             col.var = "contrib", # Cores pela contribuicao da componente
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Evite a sobreposição de texto
+             )
+```
+
+Biplot das variáveis individuais
+
+```{r}
+fviz_pca_biplot(pca, repel = TRUE,
+                col.var = "#2E9FDF", # Cores das variavesi
+                col.ind = "#696969"  # Cores individuais
+                )
+```
+
+
+Usando a função de predict para prever os componentes principais para os novos dados. 
+
+```{r}
+#Componentes das dez ultimas linhas (empresas) da pesquisa
+PC1<-predict(pca, newdata=tail(variaveisX, 2))
+as.tibble(PC1) 
+```
+
+
+## Decomposição de valores únicos
+
+A decomposição de valores únicos pode ser pensada como um método que transforma variáveis correlacionadas em um conjunto de variáveis não correlacionadas, permitindo analisar melhor as relações dos dados originais.
+
+- Descubra os valores próprios e vetores próprios da matriz de correlação dos dados.
+- Os vetores próprios são ortogonais entre si.
+- O primeiro vetor próprio aponta na direção da variância máxima presente nos dados.
+- Segundo vetor próprio na próxima direção máxima e assim por diante.
+- Valores próprios (variância explicada por um componente) e vetores próprios (direção onde a variância máxima é explicada)
+
+
+```{r}
+correldados<-cor(variaveisX)
+
+as.tibble(correldados)
+
+autovalores<-eigen(correldados)
+
+as.tibble(autovalores$values)
+```
+
+
+Então a proporção da variância explicada será:
+
+```{r}
+dados.var.prop<-autovalores$values/sum(autovalores$values)
+
+as.tibble(dados.var.prop)
+
+```
+
+A variância explicada pela primeira componente é de 38,04%
+
+A variância explicada pela segunda componente é de 24,70%
+
+A variância explicada pela terceira componente é de 20,48%
+
+A variância explicada pela quarta componente é de 8,23%
+
+A variância explicada pela quinta componente é de 5,25%
+
+A variância explicada pela sexta componente é de 2,48%
+
+A variância explicada pela sétima componente é de 0,4%
+
+A variância explicada pela oitava componente é de 0,3%
+
+Vamos aos autovetores:
+
+```{r message=FALSE}
+as.tibble(autovalores$vectors)
+```
+
+A saída retorna a rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis.
+
+
+Quantos componentes selecionar?
+
+Scree plot é usado para nos ajudar a escolher o número de componentes que devemos selecionar, considerando a variabilidade dos dados explicados.
+
+
+```{r message=FALSE}
+library(patchwork)
+
+par(mfcol = c(1, 2))
+
+
+p1<-plot(autovalores$values, xlab = "Componente Principal", ylab = "Autovalor", type = "b")
+
+p2<-plot(cumsum(dados.var.prop), xlab = "Componente Principal", ylab = "Autovalores acumulados", type = "b")
+
+p1+p2
+
+```
+
+# PCA usando princomp()
+
+A função princomp() usa a abordagem de decomposição espectral (a decomposição espectral examina as covariâncias / correlações entre as variáveis).
+
+- x: uma matriz numérica ou quadro de dados
+- cor: um valor lógico. Se TRUE, os dados serão centralizados e escalados antes da análise
+- pontuações: um valor lógico. Se TRUE, as coordenadas em cada componente principal são calculadas
+
+**Carregamentos de componentes**
+
+Porcentagem de variância em uma variável, explicada por um componente.
+
+
+
+
+
+
+
+&nbsp;
+
+***
+
+## Referências
+
+Corrar, L.J., Paulo, E., **Análise Multivariada: para os cursos de administração, ciências contábeis e economia**, FIPECAFI, São Paulo, Ed. Atlas.  

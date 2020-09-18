@@ -30,6 +30,8 @@ navbar:
           href: Ridge.html         
         - text: "Processos Estocásticos e Cadeias de Markov"
           href: Markov.html 
+        - text: "Análise de Componentes Principais e Fatorial"
+          href: ExercicioAnaliseFatorial.html 
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

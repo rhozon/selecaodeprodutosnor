@@ -218,8 +218,7 @@ $$
 \widehat{\beta}_{R}=(X^{'}X + kI)X^{'}y
 $$
 
-Onde $I$ é a matriz identidade dada por $(X^{'}X)(X^{'}X)^{-1}$^[Uma matriz identidade é uma matriz quadrada com a sua diagonal principal =1 e e os demais elementos são todos zeros.] e a constante $k$ faz o mesmo trabalho de $0\geq\lambda\leq 1$. Se $det(X^{'}X)\approx 0$ os estimadores de MQO serão sensíveis a uma série de erros, como coeficientes de regressão imprecisos ou não significativos (Kmenta, 1980), com sinal errado e espectro de autovalores não uniforme. Além disso, o método MQO, pode produzir altas variâncias de estimativas, grandes erros padrão e amplos intervalos de confiança. A qualidade e estabilidade
-do modelo ajustado pode ser questionável devido ao comportamento errático do MQO no caso de regressores são colineares.
+Onde $I$ é a matriz identidade dada por $(X^{'}X)(X^{'}X)^{-1}$^[Uma matriz identidade é uma matriz quadrada com a sua diagonal principal =1 e e os demais elementos são todos zeros.] e a constante $k$ faz o mesmo trabalho de $0\geq\lambda\leq 1$. Se $det(X^{'}X)\approx 0$ os estimadores de MQO serão sensíveis a uma série de erros, como coeficientes de regressão imprecisos ou não significativos (Kmenta, 1980), com sinal errado e espectro de autovalores não uniforme. Além disso, o método MQO, pode produzir altas variâncias de estimativas, grandes erros padrão e amplos intervalos de confiança. A qualidade e estabilidade do modelo ajustado pode ser questionável devido ao comportamento errático do MQO no caso de regressores são colineares.
 
 
 Alguns pesquisadores podem tentar eliminar o(s) regressor(es) que causam o problema, removendo conscientemente eles do modelo. No entanto, este método pode destruir a utilidade do modelo por remover regressor(es) relevante(s) do modelo. Para controlar a variância e instabilidade das estimativas MQO, pode-se regularizar os coeficientes, com alguns métodos de regularização, como regressão _ridge_ (RR), regressão de Liu, métodos de regressão Lasso etc., como alternativa ao MQO. Computacionalmente, RR
@@ -230,7 +229,6 @@ regressores, a fim de obter estimativas mais estáveis dos coeficientes do que a
 ***
 
 # Rodando uma regressão Ridge no Excel
-
 
 
 
