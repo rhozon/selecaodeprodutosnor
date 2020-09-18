@@ -397,6 +397,9 @@ div.tocify {
     <li>
       <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
     </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -465,7 +468,9 @@ div.tocify {
 <div id="os-dados-4-conjuntos-de-dados-diferentes-de-xs-e-ys" class="section level1">
 <h1>Os dados: 4 conjuntos de dados diferentes de <span class="math inline">\(X^{&#39;}s\)</span> e <span class="math inline">\(Y^{&#39;}s\)</span></h1>
 <p>O R vem com alguns conjuntos de dados; um deles é anscombe. Chamamos o conjunto de dados de ans e vejamos o que contém:</p>
-<pre class="r"><code>ans&lt;-anscombe
+<pre class="r"><code>library(tidyverse)
+
+ans&lt;-anscombe
 
 ans</code></pre>
 <pre><code>##    x1 x2 x3 x4    y1   y2    y3    y4
@@ -490,7 +495,67 @@ ans</code></pre>
 ##  $ y2: num  9.14 8.14 8.74 8.77 9.26 8.1 6.13 3.1 9.13 7.26 ...
 ##  $ y3: num  7.46 6.77 12.74 7.11 7.81 ...
 ##  $ y4: num  6.58 5.76 7.71 8.84 8.47 7.04 5.25 12.5 5.56 7.91 ...</code></pre>
-<p>Os <span class="math inline">\(X^{&#39;}s\)</span> têm médias = 9 e desvios padrão = 3,317, como pode ser verificado por usando as funções mean and sd. Os <span class="math inline">\(Y^{&#39;}s\)</span> têm médias = 7,5 e desvios padrão = 2,03.</p>
+<p>Nós o convertemos em uma <em>tibble</em> (a versão tidyverse de um dataset) e usamos uma versão resumida de str com glimpse:</p>
+<pre class="r"><code>ans &lt;- as_tibble(anscombe)
+glimpse(ans)</code></pre>
+<pre><code>## Rows: 11
+## Columns: 8
+## $ x1 &lt;dbl&gt; 10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5
+## $ x2 &lt;dbl&gt; 10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5
+## $ x3 &lt;dbl&gt; 10, 8, 13, 9, 11, 14, 6, 4, 12, 7, 5
+## $ x4 &lt;dbl&gt; 8, 8, 8, 8, 8, 8, 8, 19, 8, 8, 8
+## $ y1 &lt;dbl&gt; 8.04, 6.95, 7.58, 8.81, 8.33, 9.96, 7.24, 4.26, 10.84, 4.82, 5.68
+## $ y2 &lt;dbl&gt; 9.14, 8.14, 8.74, 8.77, 9.26, 8.10, 6.13, 3.10, 9.13, 7.26, 4.74
+## $ y3 &lt;dbl&gt; 7.46, 6.77, 12.74, 7.11, 7.81, 8.84, 6.08, 5.39, 8.15, 6.42, 5.73
+## $ y4 &lt;dbl&gt; 6.58, 5.76, 7.71, 8.84, 8.47, 7.04, 5.25, 12.50, 5.56, 7.91, 6.89</code></pre>
+<p>Como a tabela é pequena, podemos ver tudo.</p>
+<pre class="r"><code>ans</code></pre>
+<pre><code>## # A tibble: 11 x 8
+##       x1    x2    x3    x4    y1    y2    y3    y4
+##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1    10    10    10     8  8.04  9.14  7.46  6.58
+##  2     8     8     8     8  6.95  8.14  6.77  5.76
+##  3    13    13    13     8  7.58  8.74 12.7   7.71
+##  4     9     9     9     8  8.81  8.77  7.11  8.84
+##  5    11    11    11     8  8.33  9.26  7.81  8.47
+##  6    14    14    14     8  9.96  8.1   8.84  7.04
+##  7     6     6     6     8  7.24  6.13  6.08  5.25
+##  8     4     4     4    19  4.26  3.1   5.39 12.5 
+##  9    12    12    12     8 10.8   9.13  8.15  5.56
+## 10     7     7     7     8  4.82  7.26  6.42  7.91
+## 11     5     5     5     8  5.68  4.74  5.73  6.89</code></pre>
+<p>Vamos resumir esses dados observando as médias aritméticas:</p>
+<pre class="r"><code>ans %&gt;%
+summarize(
+  mediax1 = mean(x1),
+  mediax2 = mean(x2),
+  mediax3 = mean(x3),
+  mediax4 = mean(x4),
+  mediay1 = mean(y1),
+  mediay2 = mean(y2),
+  mediay3 = mean(y3),
+  mediay4 = mean(y4))</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   mediax1 mediax2 mediax3 mediax4 mediay1 mediay2 mediay3 mediay4
+##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1       9       9       9       9    7.50    7.50     7.5    7.50</code></pre>
+<p>E da mesma maneira, veremos os desvios-padrão:</p>
+<pre class="r"><code>ans%&gt;%
+  summarize(
+    desvpadx1=sd(x1),
+    desvpadx2=sd(x2),
+    desvpadx3=sd(x3),
+    desvpadx4=sd(x4),
+    desvpady1=sd(y1),
+    desvpady2=sd(y2),
+    desvpady3=sd(y3),
+    desvpady4=sd(y4),
+    )</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   desvpadx1 desvpadx2 desvpadx3 desvpadx4 desvpady1 desvpady2 desvpady3 desvpady4
+##       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1      3.32      3.32      3.32      3.32      2.03      2.03      2.03      2.03</code></pre>
+<p>Os <span class="math inline">\(X^{&#39;}s\)</span> têm médias = 9 e desvios padrão = 3,317, como pode ser verificado por usando as funções mean e sd. Os <span class="math inline">\(Y^{&#39;}s\)</span> têm médias = 7,5 e desvios padrão = 2,03.</p>
 <pre class="r"><code>#a funcao summary, fornece o resumo das estatisticas descritivas do dataset
 summary(ans)</code></pre>
 <pre><code>##        x1             x2             x3             x4           y1        
@@ -507,16 +572,6 @@ summary(ans)</code></pre>
 ##  Mean   :7.501   Mean   : 7.50   Mean   : 7.501  
 ##  3rd Qu.:8.950   3rd Qu.: 7.98   3rd Qu.: 8.190  
 ##  Max.   :9.260   Max.   :12.74   Max.   :12.500</code></pre>
-<pre class="r"><code># vamos ver os desvios padrao para os xs e para os ys
-desvpadx&lt;-c(sd(ans$x1,na.rm=FALSE),sd(ans$x2,na.rm=FALSE),sd(ans$x3,na.rm = FALSE),sd(ans$x4,na.rm = FALSE))
-
-desvpadx</code></pre>
-<pre><code>## [1] 3.316625 3.316625 3.316625 3.316625</code></pre>
-<pre class="r"><code>#agora os desvios padrao dos ys
-desvpady&lt;-c(sd(ans$y1,na.rm=FALSE),sd(ans$y2,na.rm=FALSE),sd(ans$y3,na.rm = FALSE),sd(ans$y4,na.rm = FALSE))
-
-desvpady</code></pre>
-<pre><code>## [1] 2.031568 2.031657 2.030424 2.030579</code></pre>
 </div>
 <div id="as-mesmas-regressões-de-ys-nos-xs" class="section level1">
 <h1>As mesmas regressões de <span class="math inline">\(Y^{&#39;}s\)</span> nos <span class="math inline">\(X^{&#39;}s\)</span></h1>
@@ -525,70 +580,64 @@ desvpady</code></pre>
 regr2 &lt;- lm(y2 ~ x2, data = ans)
 regr3 &lt;- lm(y3 ~ x3, data = ans)
 regr4 &lt;- lm(y4 ~ x4, data = ans)
-library(arm)
-display(regr1)</code></pre>
-<pre><code>## lm(formula = y1 ~ x1, data = ans)
-##             coef.est coef.se
-## (Intercept) 3.00     1.12   
-## x1          0.50     0.12   
-## ---
-## n = 11, k = 2
-## residual sd = 1.24, R-Squared = 0.67</code></pre>
-<pre class="r"><code>display(regr2)</code></pre>
-<pre><code>## lm(formula = y2 ~ x2, data = ans)
-##             coef.est coef.se
-## (Intercept) 3.00     1.13   
-## x2          0.50     0.12   
-## ---
-## n = 11, k = 2
-## residual sd = 1.24, R-Squared = 0.67</code></pre>
-<pre class="r"><code>display(regr3)</code></pre>
-<pre><code>## lm(formula = y3 ~ x3, data = ans)
-##             coef.est coef.se
-## (Intercept) 3.00     1.12   
-## x3          0.50     0.12   
-## ---
-## n = 11, k = 2
-## residual sd = 1.24, R-Squared = 0.67</code></pre>
-<pre class="r"><code>display(regr4)</code></pre>
-<pre><code>## lm(formula = y4 ~ x4, data = ans)
-##             coef.est coef.se
-## (Intercept) 3.00     1.12   
-## x4          0.50     0.12   
-## ---
-## n = 11, k = 2
-## residual sd = 1.24, R-Squared = 0.67</code></pre>
+library(texreg)
+screenreg(list(regr1,regr2,regr3,regr4))</code></pre>
+<pre><code>## 
+## ===================================================
+##              Model 1   Model 2   Model 3   Model 4 
+## ---------------------------------------------------
+## (Intercept)   3.00 *    3.00 *    3.00 *    3.00 * 
+##              (1.12)    (1.13)    (1.12)    (1.12)  
+## x1            0.50 **                              
+##              (0.12)                                
+## x2                      0.50 **                    
+##                        (0.12)                      
+## x3                                0.50 **          
+##                                  (0.12)            
+## x4                                          0.50 **
+##                                            (0.12)  
+## ---------------------------------------------------
+## R^2           0.67      0.67      0.67      0.67   
+## Adj. R^2      0.63      0.63      0.63      0.63   
+## Num. obs.    11        11        11        11      
+## ===================================================
+## *** p &lt; 0.001; ** p &lt; 0.01; * p &lt; 0.05</code></pre>
+<p>Veja como os coeficientes de regressão e o <span class="math inline">\(R^{2}\)</span> são idênticos em todos os conjuntos de dados para as regressões lineares simples de <span class="math inline">\(Y\)</span> em <span class="math inline">\(X\)</span>.</p>
 </div>
 <div id="diagramas-de-dispersão-muito-diferentes" class="section level1">
 <h1>Diagramas de dispersão muito diferentes</h1>
-<p>Carregando o pacote mosaic:</p>
-<pre class="r"><code>library(mosaic)</code></pre>
-<p>Usamos a função xyplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e escolher os pontos (p) e linhas de regressão (r):</p>
-<div class="figure">
-<img src="Anscombe_files/figure-html/unnamed-chunk-5-1.png" alt=" " width="50%" />
-<p class="caption">
-</p>
-</div>
-<div class="figure">
-<img src="Anscombe_files/figure-html/unnamed-chunk-5-2.png" alt=" " width="50%" />
-<p class="caption">
-</p>
-</div>
-<div class="figure">
-<img src="Anscombe_files/figure-html/unnamed-chunk-5-3.png" alt=" " width="50%" />
-<p class="caption">
-</p>
-</div>
-<div class="figure">
-<img src="Anscombe_files/figure-html/unnamed-chunk-5-4.png" alt=" " width="50%" />
-<p class="caption">
-</p>
-</div>
+<p>Usamos a função ggplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e avaliar o nível de ajuste das reta de regressão estimada aos pontos:</p>
+<pre class="r"><code>library(ggplot2)
+x1y1&lt;- ggplot(ans, aes(x = x1, y = y1)) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE)
+
+x2y2&lt;- ggplot(ans, aes(x = x2, y = y2)) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE)
+
+x3y3&lt;- ggplot(ans, aes(x = x3, y = y3)) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE)
+
+x4y4&lt;- ggplot(ans, aes(x = x4, y = y4)) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE)
+
+
+x1y1 #Diagrama de dispersão de Y1 contra X1</code></pre>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<pre class="r"><code>x2y2 #Diagrama de dispersão de Y2 contra X2</code></pre>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<pre class="r"><code>x3y3 #Diagrama de dispersão de Y3 contra X3</code></pre>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-3.png" width="672" /></p>
+<pre class="r"><code>x4y4 #Diagrama de dispersão de Y4 contra X4</code></pre>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-4.png" width="672" /></p>
 <p>Quando examinamos as linhas de ajuste de regressão, elas são iguais, mas os gráficos de dispersão são muito diferentes.</p>
 <ul>
-<li><p>No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 <em>versus</em> x2 porque há curvatura.</p></li>
-<li><p>Na dispersão de y3 contra x3, um <em>outlier</em> está se distorcendo a inclinação da linha ajustada para cima.</p></li>
-<li><p>Na dispersão de y4 contra x4, excluirmos o <em>outlier</em> presente aproximadamente entre os pontos do eixo cartesiano (19,13), concluímos não há relação entre y4 e x4.</p></li>
+<li><p>No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 <em>versus</em> x2 porque há curvatura, portanto evidenciando claramente uma relação não-linear presente entre as variáveis.</p></li>
+<li><p>No gráfico de y3 contra x3, um <em>outlier</em> está se distorcendo a inclinação da linha ajustada para cima.</p></li>
+<li><p>Na diagrama de dispersão de y4 contra x4, excluirmos o <em>outlier</em> presente aproximadamente entre os pontos do eixo cartesiano (19,13), concluímos não há relação entre y4 e x4.</p></li>
 </ul>
 <p>O que também é notável é que as linhas mais suaves (smooth) nas figuras a seguir não nos enganam da mesma forma como a regressão linear fez.</p>
 <pre class="r"><code>library(ggplot2)
@@ -596,7 +645,6 @@ library(patchwork)
 
 x1y1 &lt;- ggplot(data=ans,aes(x=x1,y=y1))+
         geom_point()+geom_line()+geom_smooth(method = &quot;lm&quot;)
-  
 x2y2 &lt;- ggplot(data=ans,aes(x=x2,y=y2))+
         geom_point()+geom_line()+geom_smooth(method = &quot;lm&quot;)
 x3y3 &lt;- ggplot(data=ans,aes(x=x3,y=y3))+
@@ -604,9 +652,9 @@ x3y3 &lt;- ggplot(data=ans,aes(x=x3,y=y3))+
 x4y4 &lt;- ggplot(data=ans,aes(x=x4,y=y4))+
         geom_point()+geom_line()+geom_smooth(method = &quot;lm&quot;)
 
-x1y1 + x2y2+x3y3+x4y4</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representa a relação entre os <span class="math inline">\(X^{&#39;}s\)</span> e <span class="math inline">\(Y^{&#39;}s\)</span>.</p>
+x1y1+x2y2+x3y3+x4y4</code></pre>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representam a relação entre os <span class="math inline">\(X^{&#39;}s\)</span> e <span class="math inline">\(Y^{&#39;}s\)</span>.</p>
 <p>O trabalho de Anscombe nos sugere que uma inspeção visual dos resíduos presentes em cada regressão pode fornecer uma melhor noção da função que explicaria tais relacionamentos com maior acurácia, diferentemente daqueles pesquisadores que se preocupam somente em se obter os coeficientes (regressores) e o coeficiente de determinação <span class="math inline">\(R^{2}\)</span> se esquecendo das armadilhas que as vezes a regressão nos impõe quando não se presta atenção na <em>inferência causal</em> entre as variáveis investigadas.</p>
 <p>Lembre-se da atenção e cuidados especiais em relação a confusão de que regressão implica causalidade! Em muitas situações a covariação entre variáveis é ilegítima, na medida em que a relação é na verdade causada por um terceiro fator, que não foi ou não pode ser mensurado.</p>
 <p>Outra armadilha envolve o fato de que um modelo bem ajustado não significa necessariamente que o modelo possa ser utilizado para fazer previsões. O analista com conhecimento da matéria em questão deveria estar convencido de que o processo que produziu os dados se manterá estável no futuro, para que possa utilizar o modelo com propósitos de previsão.</p>

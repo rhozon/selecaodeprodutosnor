@@ -53,7 +53,10 @@ Os dados de Anscombe (1973) ilustram a importância da visualização, de examin
 
 O R vem com alguns conjuntos de dados; um deles é anscombe. Chamamos o conjunto de dados de ans e vejamos o que contém:
 
-```{r}
+```{r message=FALSE}
+
+library(tidyverse)
+
 ans<-anscombe
 
 ans
@@ -62,24 +65,58 @@ str(ans)
 
 ```
 
+Nós o convertemos em uma _tibble_ (a versão tidyverse de um dataset) e usamos uma versão resumida de str com glimpse:
+
+```{r}
+ans <- as_tibble(anscombe)
+glimpse(ans)
+```
+
+Como a tabela é pequena, podemos ver tudo.
+
+```{r}
+ans
+```
+
+Vamos resumir esses dados observando as médias aritméticas:
+
+```{r}
+ans %>%
+summarize(
+  mediax1 = mean(x1),
+  mediax2 = mean(x2),
+  mediax3 = mean(x3),
+  mediax4 = mean(x4),
+  mediay1 = mean(y1),
+  mediay2 = mean(y2),
+  mediay3 = mean(y3),
+  mediay4 = mean(y4))
+```
+
+E da mesma maneira, veremos os desvios-padrão:
+
+```{r}
+ans%>%
+  summarize(
+    desvpadx1=sd(x1),
+    desvpadx2=sd(x2),
+    desvpadx3=sd(x3),
+    desvpadx4=sd(x4),
+    desvpady1=sd(y1),
+    desvpady2=sd(y2),
+    desvpady3=sd(y3),
+    desvpady4=sd(y4),
+    )
+```
+
+
 Os $X^{'}s$ têm médias = 9 e desvios padrão = 3,317, como pode ser verificado por
-usando as funções mean and sd. Os $Y^{'}s$ têm médias = 7,5 e desvios padrão
+usando as funções mean e sd. Os $Y^{'}s$ têm médias = 7,5 e desvios padrão
 = 2,03.
 
 ```{r}
 #a funcao summary, fornece o resumo das estatisticas descritivas do dataset
 summary(ans)
-
-
-# vamos ver os desvios padrao para os xs e para os ys
-desvpadx<-c(sd(ans$x1,na.rm=FALSE),sd(ans$x2,na.rm=FALSE),sd(ans$x3,na.rm = FALSE),sd(ans$x4,na.rm = FALSE))
-
-desvpadx
-
-#agora os desvios padrao dos ys
-desvpady<-c(sd(ans$y1,na.rm=FALSE),sd(ans$y2,na.rm=FALSE),sd(ans$y3,na.rm = FALSE),sd(ans$y4,na.rm = FALSE))
-
-desvpady
 ```
 
 # As mesmas regressões de $Y^{'}s$ nos $X^{'}s$
@@ -91,39 +128,58 @@ regr1 <- lm(y1 ~ x1, data = ans)
 regr2 <- lm(y2 ~ x2, data = ans)
 regr3 <- lm(y3 ~ x3, data = ans)
 regr4 <- lm(y4 ~ x4, data = ans)
-library(arm)
-display(regr1)
-display(regr2)
-display(regr3)
-display(regr4)
+library(texreg)
+screenreg(list(regr1,regr2,regr3,regr4))
 ```
+
+Veja como os coeficientes de regressão e o $R^{2}$ são idênticos em todos os conjuntos de dados para as regressões lineares simples de $Y$ em $X$.
 
 
 # Diagramas de dispersão muito diferentes
 
-Carregando o pacote mosaic:
+
+Usamos a função ggplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e avaliar o nível de ajuste das reta de regressão estimada aos pontos:
 
 ```{r message=FALSE}
-library(mosaic)
+library(ggplot2)
+x1y1<- ggplot(ans, aes(x = x1, y = y1)) +
+geom_point() +
+geom_smooth(method = "lm", se = FALSE)
+
+x2y2<- ggplot(ans, aes(x = x2, y = y2)) +
+geom_point() +
+geom_smooth(method = "lm", se = FALSE)
+
+x3y3<- ggplot(ans, aes(x = x3, y = y3)) +
+geom_point() +
+geom_smooth(method = "lm", se = FALSE)
+
+x4y4<- ggplot(ans, aes(x = x4, y = y4)) +
+geom_point() +
+geom_smooth(method = "lm", se = FALSE)
+
+
+x1y1 #Diagrama de dispersão de Y1 contra X1
+
+x2y2 #Diagrama de dispersão de Y2 contra X2
+
+x3y3 #Diagrama de dispersão de Y3 contra X3
+
+x4y4 #Diagrama de dispersão de Y4 contra X4
 
 ```
-Usamos a função xyplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e escolher os pontos (p) e linhas de regressão (r):
 
-```{r, echo=FALSE, out.width="50%", fig.cap=" "}
-xyplot(y1 ~ x1, data = ans, type = c("p","r"))
-xyplot(y2 ~ x2, data = ans, type = c("p","r"))
-xyplot(y3 ~ x3, data = ans, type = c("p","r"))
-xyplot(y4 ~ x4, data = ans, type = c("p","r"))
-```
+
+
 
 Quando examinamos as linhas de ajuste de regressão, elas são iguais, mas os gráficos de dispersão são muito diferentes. 
 
-- No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 *versus* x2 porque há curvatura. 
+- No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 *versus* x2 porque há curvatura, portanto evidenciando claramente uma relação não-linear presente entre as variáveis.
 
-- Na dispersão de y3 contra x3, um *outlier* está se distorcendo a inclinação
+- No gráfico de y3 contra x3, um *outlier* está se distorcendo a inclinação
 da linha ajustada para cima. 
 
-- Na dispersão de y4 contra x4, excluirmos o *outlier* presente aproximadamente entre os pontos do eixo cartesiano (19,13), concluímos não há relação entre y4 e x4.
+- Na diagrama de dispersão de y4 contra x4, excluirmos o *outlier* presente aproximadamente entre os pontos do eixo cartesiano (19,13), concluímos não há relação entre y4 e x4.
 
 
 O que também é notável é que as linhas mais suaves (smooth) nas figuras a seguir não nos enganam da mesma forma como a regressão linear fez.
@@ -134,7 +190,6 @@ library(patchwork)
 
 x1y1 <- ggplot(data=ans,aes(x=x1,y=y1))+
         geom_point()+geom_line()+geom_smooth(method = "lm")
-  
 x2y2 <- ggplot(data=ans,aes(x=x2,y=y2))+
         geom_point()+geom_line()+geom_smooth(method = "lm")
 x3y3 <- ggplot(data=ans,aes(x=x3,y=y3))+
@@ -142,11 +197,11 @@ x3y3 <- ggplot(data=ans,aes(x=x3,y=y3))+
 x4y4 <- ggplot(data=ans,aes(x=x4,y=y4))+
         geom_point()+geom_line()+geom_smooth(method = "lm")
 
-x1y1 + x2y2+x3y3+x4y4
+x1y1+x2y2+x3y3+x4y4
 ```
 
 
-Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representa a relação entre os $X^{'}s$ e $Y^{'}s$.
+Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representam a relação entre os $X^{'}s$ e $Y^{'}s$.
 
 O trabalho de Anscombe nos sugere que uma inspeção visual dos resíduos presentes em cada regressão pode fornecer uma melhor noção da função que explicaria tais relacionamentos com maior acurácia, diferentemente daqueles pesquisadores que se preocupam somente em se obter os coeficientes (regressores) e o coeficiente de determinação $R^{2}$ se esquecendo das armadilhas que as vezes a regressão nos impõe quando não se presta atenção na _inferência causal_ entre as variáveis investigadas.
 
@@ -165,6 +220,7 @@ Outra armadilha envolve o fato de que um modelo bem ajustado não significa nece
 </p>
 
 &nbsp;
+
 
 ***
 

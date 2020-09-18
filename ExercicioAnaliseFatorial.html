@@ -1,0 +1,2648 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+
+<title>Rodando um modelo de Análise Fatorial no R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Rodando um modelo de Análise Fatorial no R</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">17/09/2020</h4>
+
+</div>
+
+
+<hr />
+<p> </p>
+<div id="resumo" class="section level4">
+<h4>Resumo</h4>
+<p><small>Neste tutorial rodaremos uma análise fatorial com base no exercício resolvido disponível em Corrar <em>et alli</em> (2009, p. 119-125), utilizando o software R, que segundo o IBPAD (2020):</p>
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+“O R é uma linguagem e ambiente para análise estatística e produção de gráficos, um projeto GNU semelhante a linguagem S, foi desenvolvido pelos estatísticos Ross Ihaka e Robert Gentleman na década de 90 quando precisavam utilizar programas pagos em seus projetos. R oferece uma grande variedade de estatísticas (modelagem linear e não-linear, testes estatísticos clássicos, análise de séries temporais, classificação, agrupamento, etc.) e técnicas gráficas extensíveis, que fornecem uma rota de código aberto para que haja participações entre programadores.”
+</p>
+<p><strong>Palavras-chave</strong>: Análise Fatorial, R </small></p>
+<p> </p>
+</div>
+<div id="exercício-resolvido" class="section level1">
+<h1>Exercício resolvido</h1>
+<p>Uma empresa do ramo de calçados populares gostaria de entender melhor a forma de relacionamento de algumas variáveis e como esse relacionamento pode interferir na condução de seu negócio. Para isso, resolveu encomendar uma pesquisa com outras empresas do ramo para identificar a importância de algumas variáveis.</p>
+<p>As variáveis que fizeram parte da pesquisa foram:</p>
+<ul>
+<li>v1<span class="math inline">\(\Rightarrow\)</span> Automação</li>
+<li>v2<span class="math inline">\(\Rightarrow\)</span> Crescimento do PIB</li>
+<li>v3<span class="math inline">\(\Rightarrow\)</span> Parceria com os fornecedores</li>
+<li>v4<span class="math inline">\(\Rightarrow\)</span> Novos concorrentes</li>
+<li>v5<span class="math inline">\(\Rightarrow\)</span> Diversidade de produtos</li>
+<li>v6<span class="math inline">\(\Rightarrow\)</span> Controle de despesas</li>
+<li>v7<span class="math inline">\(\Rightarrow\)</span> Câmbio</li>
+<li>v8<span class="math inline">\(\Rightarrow\)</span> Estabilidade econômica</li>
+</ul>
+<p>A pesquisa era respondida por uma escala de concordância:</p>
+<p>1 <span class="math inline">\(\Rightarrow\)</span> Não interfere</p>
+<p>2 <span class="math inline">\(\Rightarrow\)</span> Interfere pouco</p>
+<p>3 <span class="math inline">\(\Rightarrow\)</span> Interfere</p>
+<p>4 <span class="math inline">\(\Rightarrow\)</span> Interfere muito</p>
+<p>5 <span class="math inline">\(\Rightarrow\)</span> Fundamental</p>
+<p>Os resultados da pesquisa foram:</p>
+<pre class="r"><code>library(readxl)
+
+url&lt;-&quot;https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/AnaliseFatorial.xlsx?raw=true&quot;
+dados &lt;- tempfile()
+download.file(url, dados, mode=&quot;wb&quot;)
+dados&lt;-read_excel(path = dados, sheet = 1)
+
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(dados)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;800px&quot;, height = &quot;200px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:800px; ">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Empresas
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v1
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v2
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v3
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v4
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v5
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v6
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v7
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v8
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+C1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C5
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C6
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C7
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C8
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C9
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C10
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C11
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C12
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C13
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C14
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C15
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C16
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C17
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C18
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C19
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C20
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C21
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C22
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C23
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C24
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C25
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C26
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C27
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C28
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C29
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C30
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Pede-se:</strong></p>
+<ol style="list-style-type: decimal">
+<li>Faça uma AF e avalie se o seu resultado (teste de esfericidade, KMO e KMO individual, total de variância explicada e comunalidades) e comente sobre a aderência da referida técnica à solução deste caso.</li>
+</ol>
+<p><strong>Resposta:</strong></p>
+<p>Para diferenciarmos, partimos com a conceituação entre os métodos:</p>
+<p><strong><em>Análise de Componentes Principais (PCA)</em></strong> O PCA decompõe uma matriz de correlação com outras nas diagonais. A quantidade de variância é igual ao traço da matriz, a soma das diagonais ou o número de variáveis observadas na análise. PCA minimiza a soma da distância perpendicular quadrada ao eixo do componente. Os componentes são ininterpretáveis, por exemplo, nenhuma construção subjacente.</p>
+<p>Os componentes principais extraídos são responsáveis por uma quantidade máxima de variância. A pontuação do componente é uma combinação linear de variáveis observadas ponderadas por vetores próprios.</p>
+<p><strong><em>Análise exploratória de fatores (EFA)</em></strong> decompõe uma matriz de correlação ajustada. As diagonais foram ajustadas para os fatores únicos. A quantidade de variância explicada é igual ao traço da matriz, a soma das diagonais ajustadas ou comunalidades. Os fatores são responsáveis pela variação comum em um conjunto de dados. As correlações múltiplas ao quadrado (SMC) são usadas como estimativas de comunalidade nas diagonais. As variáveis observadas são uma combinação linear dos fatores subjacentes e únicos.</p>
+<p>O primeiro passo consiste na avaliação dos padrões de distribuição de probabilidades presentes nos dados:</p>
+<pre class="r"><code>library(tidyverse)
+dados&lt;-as_tibble(dados) #primeiro selecionamos as variaveis que queremos...
+dados</code></pre>
+<pre><code>## # A tibble: 30 x 9
+##    Empresas    v1    v2    v3    v4    v5    v6    v7    v8
+##    &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1 C1           4     1     2     2     2     4     1     3
+##  2 C2           4     1     2     2     2     4     1     3
+##  3 C3           2     2     1     3     1     3     2     4
+##  4 C4           5     4     3     3     3     5     2     4
+##  5 C5           4     2     3     3     1     3     2     4
+##  6 C6           4     2     2     3     3     4     2     4
+##  7 C7           5     3     3     4     5     5     4     5
+##  8 C8           2     1     1     4     6     3     5     5
+##  9 C9           3     2     1     3     3     5     2     4
+## 10 C10          4     2     2     3     1     3     2     4
+## # ... with 20 more rows</code></pre>
+<pre class="r"><code>#teremos que retirar a primeira coluna pelo fato de nao ser numerica
+
+  
+#O teste de Shapiro-Wilk avalia a condição de normalidade
+
+shapiro.test(dados$v1)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v1
+## W = 0.87265, p-value = 0.00192</code></pre>
+<pre class="r"><code>shapiro.test(dados$v2)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v2
+## W = 0.86505, p-value = 0.001303</code></pre>
+<pre class="r"><code>shapiro.test(dados$v3)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v3
+## W = 0.79004, p-value = 4.34e-05</code></pre>
+<pre class="r"><code>shapiro.test(dados$v4)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v4
+## W = 0.7717, p-value = 2.084e-05</code></pre>
+<pre class="r"><code>shapiro.test(dados$v5)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v5
+## W = 0.81026, p-value = 0.0001014</code></pre>
+<pre class="r"><code>shapiro.test(dados$v6)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v6
+## W = 0.81129, p-value = 0.000106</code></pre>
+<pre class="r"><code>shapiro.test(dados$v7)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v7
+## W = 0.83574, p-value = 0.0003162</code></pre>
+<pre class="r"><code>shapiro.test(dados$v8)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  dados$v8
+## W = 0.79314, p-value = 4.929e-05</code></pre>
+<p>Neste teste se o valor <span class="math inline">\(p&gt; 0,05\)</span> sabemos que a distribuição dos dados não é significativamente diferente da distribuição normal. Em outras palavras, podemos assumir a normalidade. Como vemos, nenhuma delas possui distribuição normal.</p>
+<p>Veremos mais nitidamente com os histogramas:</p>
+<pre class="r"><code>par(mfrow=(c(2,2)))
+hist(dados$v1)
+hist(dados$v2)
+hist(dados$v3)
+hist(dados$v4)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>hist(dados$v5)
+hist(dados$v6)
+hist(dados$v7)
+hist(dados$v8)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<p>Isso sugere que deveríamos transformar as variáveis antes da aplicação do PCA. Visto que a assimetria e a magnitude das variáveis influenciam os componentes resultantes, é uma boa prática aplicar a transformação de assimetria, centralizar e dimensionar as variáveis antes da aplicação da Análise de Componentes Principais.</p>
+<p>Aqui, poderíamos, p. ex. aplicar uma transformação de log às variáveis, ou então ter sido mais geral e aplicado uma transformação de Box e Cox. Por ora, manteremos as variáveis sem transformação, pela característica da pesquisa.</p>
+<p>Vamos ver a matriz de correlação:</p>
+<pre class="r"><code>library(dplyr) #pacote para select e para o operador pipe
+
+variaveisX&lt;-dados%&gt;%
+  select(-Empresas)
+
+as.tibble(cor(variaveisX))</code></pre>
+<pre><code>## Warning: `as.tibble()` is deprecated as of tibble 2.0.0.
+## Please use `as_tibble()` instead.
+## The signature and semantics have changed, see `?as_tibble`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##        v1      v2       v3     v4       v5      v6      v7      v8
+##     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1  1       0.396   0.941    0.180 -0.0451   0.239  -0.129   0.179 
+## 2  0.396   1       0.321    0.665 -0.206    0.0234  0.256   0.568 
+## 3  0.941   0.321   1        0.197 -0.00241  0.103  -0.0974  0.207 
+## 4  0.180   0.665   0.197    1      0.111   -0.106   0.576   0.957 
+## 5 -0.0451 -0.206  -0.00241  0.111  1        0.551   0.377   0.112 
+## 6  0.239   0.0234  0.103   -0.106  0.551    1      -0.0155 -0.0944
+## 7 -0.129   0.256  -0.0974   0.576  0.377   -0.0155  1       0.505 
+## 8  0.179   0.568   0.207    0.957  0.112   -0.0944  0.505   1</code></pre>
+<p>Para rodarmos o KMO (do pacote psych) precisamos organizar o dataset declarando quais são as variáveis quanti que devemos empregar o teste</p>
+<pre class="r"><code>kbl(cbind(variaveisX)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;800px&quot;, height = &quot;200px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:800px; ">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v1
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v2
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v3
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v4
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v5
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v6
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v7
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+v8
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Então rodamos o teste:</p>
+<pre class="r"><code>library(psych)
+KMO(variaveisX)</code></pre>
+<pre><code>## Kaiser-Meyer-Olkin factor adequacy
+## Call: KMO(r = variaveisX)
+## Overall MSA =  0.49
+## MSA for each item = 
+##   v1   v2   v3   v4   v5   v6   v7   v8 
+## 0.47 0.59 0.45 0.56 0.30 0.23 0.74 0.59</code></pre>
+<p>Utilizando o critério de interpretação para o KMO: <a href="https://www.statisticshowto.com/kaiser-meyer-olkin/#:~:text=A%20rule%20of%20thumb%20for,values%20between%200.5%20and%200.6.">veja mais detalhes aqui</a></p>
+<ul>
+<li>0,00 a 0,49 inaceitável.</li>
+<li>0,50 a 0,59 miserável.</li>
+<li>0,60 a 0,69 medíocre.</li>
+<li>0,70 a 0,79 mediano.</li>
+<li>0,80 a 0,89 meritório.</li>
+<li>0,90 a 1,00 maravilhoso.</li>
+</ul>
+<p>Teste de esfericidade de Bartlett: Para verificar se a redução de dados é possível</p>
+<p>A hipótese nula é que a redução da dimensão dos dados não é possível. Se o valor <span class="math inline">\(p\)</span> for menor que 0,05, a redução da dimensão é possível.</p>
+<pre class="r"><code>print(cortest.bartlett(cor(variaveisX), nrow(variaveisX)))</code></pre>
+<pre><code>## $chisq
+## [1] 192.5975
+## 
+## $p.value
+## [1] 1.70985e-26
+## 
+## $df
+## [1] 28</code></pre>
+<p>O significado deste teste nos diz que a matriz de correlação não é uma matriz de identidade. Portanto, assumimos que existe alguma relação entre a variável.</p>
+<p><strong>PCA usando prcomp()</strong></p>
+<p>As funções prcomp() usam a decomposição de valor singular (a decomposição de valor singular examina as covariâncias / correlações entre os indivíduos).</p>
+<p>Argumentos para prcomp():</p>
+<ul>
+<li>x: uma matriz numérica ou conjunto de dados numéricos</li>
+<li>escala: um valor lógico que indica se as variáveis devem ser escaladas para ter variância de unidade antes que a análise ocorra.</li>
+</ul>
+<pre class="r"><code>pca&lt;-prcomp(variaveisX, scale=T)
+
+pca</code></pre>
+<pre><code>## Standard deviations (1, .., p=8):
+## [1] 1.7445330 1.4059408 1.2802016 0.8116653 0.6483191 0.4461810 0.1898462
+## [8] 0.1636505
+## 
+## Rotation (n x k) = (8 x 8):
+##            PC1         PC2         PC3         PC4         PC5         PC6
+## v1 -0.29320130  0.58928115 -0.07620581  0.15253484 -0.10956521  0.14503054
+## v2 -0.44595013  0.06936536  0.18684385 -0.58351499 -0.33625240 -0.52717628
+## v3 -0.29299857  0.55920794 -0.04943284  0.38927497 -0.02815767 -0.06296442
+## v4 -0.52477297 -0.22911475  0.07165964 -0.02514016  0.27931567  0.04296166
+## v5 -0.06634833 -0.16654739 -0.70056041  0.24783638  0.18759031 -0.59915738
+## v6 -0.01930093  0.16320981 -0.65024253 -0.57052908 -0.00129148  0.43472333
+## v7 -0.30826462 -0.42750381 -0.18468412  0.31054153 -0.71516225  0.27435470
+## v8 -0.50410807 -0.21352773  0.06320507  0.02672102  0.49947058  0.26832191
+##            PC7         PC8
+## v1  0.68700786  0.18079912
+## v2 -0.08197427  0.15236888
+## v3 -0.63923204 -0.18462053
+## v4  0.21500349 -0.73502597
+## v5  0.11396599  0.09210957
+## v6 -0.15869449 -0.10247569
+## v7 -0.04125614  0.05691691
+## v8 -0.16304006  0.58951040</code></pre>
+<p>A saída retorna o desvio padrão de cada um dos quatro PCs e sua rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis contínuas.</p>
+<p>Vamos plotar o gráfico que descreve o resultado da PCA:</p>
+<pre class="r"><code>biplot(pca, scale = 0)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><strong>Análise de Componentes Principais: Variância</strong></p>
+<p>Identificamos os componentes que explicam a maior parcela de variância:</p>
+<pre class="r"><code>plot(pca,type=&quot;lines&quot;)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>O método plot retorna um gráfico das variâncias (eixo y) associadas aos PCs ou componentes principais (eixo x).</p>
+<p>O gráfico é útil para decidir quantos componentes reter para análise posterior. Neste caso simples, com 8 componentes, esta não é uma tarefa difícil e podemos ver que os primeiros três componentes explicam a maior parte da variabilidade nos dados, pois na medida em que o valor da variância explicada se mostrar inferior a 1, descartamos sua inclusão em nosso modelo fatorial.</p>
+<pre class="r"><code>summary(pca)</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3     PC4     PC5     PC6     PC7
+## Standard deviation     1.7445 1.4059 1.2802 0.81167 0.64832 0.44618 0.18985
+## Proportion of Variance 0.3804 0.2471 0.2049 0.08235 0.05254 0.02488 0.00451
+## Cumulative Proportion  0.3804 0.6275 0.8324 0.91472 0.96726 0.99215 0.99665
+##                            PC8
+## Standard deviation     0.16365
+## Proportion of Variance 0.00335
+## Cumulative Proportion  1.00000</code></pre>
+<p>A função summary descreve a importância dos componentes.</p>
+<ul>
+<li>A primeira linha descreve o desvio padrão associado a cada componente.</li>
+<li>A segunda linha mostra a proporção da variação nos dados explicada por cada componente.</li>
+<li>A terceira linha descreve a proporção cumulativa da variância explicada.</li>
+</ul>
+<p>Podemos ver ali que os primeiros três componentes respondem por mais de 83% da variância dos dados.</p>
+<p>Veremos a porcentagem de variações explicadas por cada componente principal:</p>
+<pre class="r"><code>library(factoextra)
+fviz_eig(pca)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>Agora visualizamos as contribuições individuais em cada componente:</p>
+<pre class="r"><code>fviz_pca_ind(pca,
+             col.ind = &quot;cos2&quot;, # Cores pela qualidade da representatividade
+             gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;),
+             repel = TRUE     # Evite a sobreposição de texto
+             )</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Variáveis correlacionadas positivamente apontam para o mesmo lado do gráfico.</p>
+<p>Variáveis correlacionadas negativamente apontam para lados opostos do gráfico.</p>
+<pre class="r"><code>fviz_pca_var(pca,
+             col.var = &quot;contrib&quot;, # Cores pela contribuicao da componente
+             gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;),
+             repel = TRUE     # Evite a sobreposição de texto
+             )</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>Biplot das variáveis individuais</p>
+<pre class="r"><code>fviz_pca_biplot(pca, repel = TRUE,
+                col.var = &quot;#2E9FDF&quot;, # Cores das variavesi
+                col.ind = &quot;#696969&quot;  # Cores individuais
+                )</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>Usando a função de predict para prever os componentes principais para os novos dados.</p>
+<pre class="r"><code>#Componentes das dez ultimas linhas (empresas) da pesquisa
+PC1&lt;-predict(pca, newdata=tail(variaveisX, 2))
+as.tibble(PC1) </code></pre>
+<pre><code>## # A tibble: 2 x 8
+##     PC1    PC2   PC3    PC4    PC5   PC6    PC7     PC8
+##   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1 -1.42 -0.225 0.255 -0.211 0.188  0.226 0.0391 -0.0628
+## 2 -2.10  1.11  0.109  0.435 0.0320 0.311 0.0243 -0.0867</code></pre>
+<div id="decomposição-de-valores-únicos" class="section level2">
+<h2>Decomposição de valores únicos</h2>
+<p>A decomposição de valores únicos pode ser pensada como um método que transforma variáveis correlacionadas em um conjunto de variáveis não correlacionadas, permitindo analisar melhor as relações dos dados originais.</p>
+<ul>
+<li>Descubra os valores próprios e vetores próprios da matriz de correlação dos dados.</li>
+<li>Os vetores próprios são ortogonais entre si.</li>
+<li>O primeiro vetor próprio aponta na direção da variância máxima presente nos dados.</li>
+<li>Segundo vetor próprio na próxima direção máxima e assim por diante.</li>
+<li>Valores próprios (variância explicada por um componente) e vetores próprios (direção onde a variância máxima é explicada)</li>
+</ul>
+<pre class="r"><code>correldados&lt;-cor(variaveisX)
+
+as.tibble(correldados)</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##        v1      v2       v3     v4       v5      v6      v7      v8
+##     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1  1       0.396   0.941    0.180 -0.0451   0.239  -0.129   0.179 
+## 2  0.396   1       0.321    0.665 -0.206    0.0234  0.256   0.568 
+## 3  0.941   0.321   1        0.197 -0.00241  0.103  -0.0974  0.207 
+## 4  0.180   0.665   0.197    1      0.111   -0.106   0.576   0.957 
+## 5 -0.0451 -0.206  -0.00241  0.111  1        0.551   0.377   0.112 
+## 6  0.239   0.0234  0.103   -0.106  0.551    1      -0.0155 -0.0944
+## 7 -0.129   0.256  -0.0974   0.576  0.377   -0.0155  1       0.505 
+## 8  0.179   0.568   0.207    0.957  0.112   -0.0944  0.505   1</code></pre>
+<pre class="r"><code>autovalores&lt;-eigen(correldados)
+
+as.tibble(autovalores$values)</code></pre>
+<pre><code>## # A tibble: 8 x 1
+##    value
+##    &lt;dbl&gt;
+## 1 3.04  
+## 2 1.98  
+## 3 1.64  
+## 4 0.659 
+## 5 0.420 
+## 6 0.199 
+## 7 0.0360
+## 8 0.0268</code></pre>
+<p>Então a proporção da variância explicada será:</p>
+<pre class="r"><code>dados.var.prop&lt;-autovalores$values/sum(autovalores$values)
+
+as.tibble(dados.var.prop)</code></pre>
+<pre><code>## # A tibble: 8 x 1
+##     value
+##     &lt;dbl&gt;
+## 1 0.380  
+## 2 0.247  
+## 3 0.205  
+## 4 0.0824 
+## 5 0.0525 
+## 6 0.0249 
+## 7 0.00451
+## 8 0.00335</code></pre>
+<p>A variância explicada pela primeira componente é de 38,04%</p>
+<p>A variância explicada pela segunda componente é de 24,70%</p>
+<p>A variância explicada pela terceira componente é de 20,48%</p>
+<p>A variância explicada pela quarta componente é de 8,23%</p>
+<p>A variância explicada pela quinta componente é de 5,25%</p>
+<p>A variância explicada pela sexta componente é de 2,48%</p>
+<p>A variância explicada pela sétima componente é de 0,4%</p>
+<p>A variância explicada pela oitava componente é de 0,3%</p>
+<p>Vamos aos autovetores:</p>
+<pre class="r"><code>as.tibble(autovalores$vectors)</code></pre>
+<pre><code>## Warning: The `x` argument of `as_tibble.matrix()` must have unique column names if `.name_repair` is omitted as of tibble 2.0.0.
+## Using compatibility `.name_repair`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##       V1      V2      V3      V4       V5      V6      V7      V8
+##    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 0.293   0.589  -0.0762 -0.153  -0.110   -0.145   0.687   0.181 
+## 2 0.446   0.0694  0.187   0.584  -0.336    0.527  -0.0820  0.152 
+## 3 0.293   0.559  -0.0494 -0.389  -0.0282   0.0630 -0.639  -0.185 
+## 4 0.525  -0.229   0.0717  0.0251  0.279   -0.0430  0.215  -0.735 
+## 5 0.0663 -0.167  -0.701  -0.248   0.188    0.599   0.114   0.0921
+## 6 0.0193  0.163  -0.650   0.571  -0.00129 -0.435  -0.159  -0.102 
+## 7 0.308  -0.428  -0.185  -0.311  -0.715   -0.274  -0.0413  0.0569
+## 8 0.504  -0.214   0.0632 -0.0267  0.499   -0.268  -0.163   0.590</code></pre>
+<p>A saída retorna a rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis.</p>
+<p>Quantos componentes selecionar?</p>
+<p>Scree plot é usado para nos ajudar a escolher o número de componentes que devemos selecionar, considerando a variabilidade dos dados explicados.</p>
+<pre class="r"><code>library(patchwork)
+
+par(mfcol = c(1, 2))
+
+
+p1&lt;-plot(autovalores$values, xlab = &quot;Componente Principal&quot;, ylab = &quot;Autovalor&quot;, type = &quot;b&quot;)
+
+p2&lt;-plot(cumsum(dados.var.prop), xlab = &quot;Componente Principal&quot;, ylab = &quot;Autovalores acumulados&quot;, type = &quot;b&quot;)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<pre class="r"><code>p1+p2</code></pre>
+<pre><code>## integer(0)</code></pre>
+</div>
+</div>
+<div id="pca-usando-princomp" class="section level1">
+<h1>PCA usando princomp()</h1>
+<p>A função princomp() usa a abordagem de decomposição espectral (a decomposição espectral examina as covariâncias / correlações entre as variáveis).</p>
+<ul>
+<li>x: uma matriz numérica ou quadro de dados</li>
+<li>cor: um valor lógico. Se TRUE, os dados serão centralizados e escalados antes da análise</li>
+<li>pontuações: um valor lógico. Se TRUE, as coordenadas em cada componente principal são calculadas</li>
+</ul>
+<p><strong>Carregamentos de componentes</strong></p>
+<p>Porcentagem de variância em uma variável, explicada por um componente.</p>
+<p> </p>
+<hr />
+<div id="referências" class="section level2">
+<h2>Referências</h2>
+<p>Corrar, L.J., Paulo, E., <strong>Análise Multivariada: para os cursos de administração, ciências contábeis e economia</strong>, FIPECAFI, São Paulo, Ed. Atlas.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
