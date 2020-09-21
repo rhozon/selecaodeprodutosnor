@@ -454,6 +454,7 @@ div.tocify {
 <p style="font-family: times, serif; font-size:9pt; font-style:italic">
 “O R é uma linguagem e ambiente para análise estatística e produção de gráficos, um projeto GNU semelhante a linguagem S, foi desenvolvido pelos estatísticos Ross Ihaka e Robert Gentleman na década de 90 quando precisavam utilizar programas pagos em seus projetos. R oferece uma grande variedade de estatísticas (modelagem linear e não-linear, testes estatísticos clássicos, análise de séries temporais, classificação, agrupamento, etc.) e técnicas gráficas extensíveis, que fornecem uma rota de código aberto para que haja participações entre programadores.”
 </p>
+<p>Durante a década passada, o uso da técnica estatística multivariada de análise fatorial aumentou em todas as áreas de pesquisa relacionadas a negócios. À medida que o número de variáveis a serem consideradas em técnicas multivariadas aumenta, há uma necessidade proporcional de maior conhecimento da estrutura e das inter-relações das variáveis.</p>
 <p><strong>Palavras-chave</strong>: Análise Fatorial, R </small></p>
 <p> </p>
 </div>
@@ -1494,13 +1495,16 @@ hist(dados$v8)</code></pre>
 <p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 <p>Isso sugere que deveríamos transformar as variáveis antes da aplicação do PCA. Visto que a assimetria e a magnitude das variáveis influenciam os componentes resultantes, é uma boa prática aplicar a transformação de assimetria, centralizar e dimensionar as variáveis antes da aplicação da Análise de Componentes Principais.</p>
 <p>Aqui, poderíamos, p. ex. aplicar uma transformação de log às variáveis, ou então ter sido mais geral e aplicado uma transformação de Box e Cox. Por ora, manteremos as variáveis sem transformação, pela característica da pesquisa.</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Na verdade, um pouco de multicolinearidade é desejável, pois o objetivo é identificar conjuntos de variáveis inter-relacionadas. Assumindo que o pesquisador atende as exigências conceituais para as variáveis incluídas na análise, o próximo passo é garantir que as variáveis são suficientemente correlacionadas umas com as outras para produzir fatores representativos. (Hair et. alli, p. 109, 2009)
+</p>
 <p>Vamos ver a matriz de correlação:</p>
 <pre class="r"><code>library(dplyr) #pacote para select e para o operador pipe
 
 variaveisX&lt;-dados%&gt;%
   select(-Empresas)
 
-as.tibble(cor(variaveisX))</code></pre>
+as.tibble(cor(round(variaveisX,2)))</code></pre>
 <pre><code>## Warning: `as.tibble()` is deprecated as of tibble 2.0.0.
 ## Please use `as_tibble()` instead.
 ## The signature and semantics have changed, see `?as_tibble`.
@@ -2353,7 +2357,9 @@ KMO(variaveisX)</code></pre>
 <li>0,80 a 0,89 meritório.</li>
 <li>0,90 a 1,00 maravilhoso.</li>
 </ul>
-<p>Teste de esfericidade de Bartlett: Para verificar se a redução de dados é possível</p>
+<p>Teste de esfericidade de Bartlett: Para verificar se a redução de dados é possível, esse é um estatístico da significância geral de todas as correlações em uma matriz de correlação.</p>
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+<p>Outro teste deve ser feito para determinar se as medidas dependentes são significativamente correlacionadas. O teste mais empregado para esta finalidade é o teste de esfericidade de Bartlett. Ele examina as correlações entre todas as variáveis dependentes e avalia se, coletivamente, existe inter-correlação significante (…). Isso apóia os resultados de teste de igualdade das matrizes de variância-covariância entre grupos. &lt;&gt;</p>
 <p>A hipótese nula é que a redução da dimensão dos dados não é possível. Se o valor <span class="math inline">\(p\)</span> for menor que 0,05, a redução da dimensão é possível.</p>
 <pre class="r"><code>print(cortest.bartlett(cor(variaveisX), nrow(variaveisX)))</code></pre>
 <pre><code>## $chisq
@@ -2400,11 +2406,13 @@ pca</code></pre>
 ## v8 -0.16304006  0.58951040</code></pre>
 <p>A saída retorna o desvio padrão de cada um dos quatro PCs e sua rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis contínuas.</p>
 <p>Vamos plotar o gráfico que descreve o resultado da PCA:</p>
-<pre class="r"><code>biplot(pca, scale = 0)</code></pre>
+<pre class="r"><code>biplot(pca, scale = 0)
+abline(h=0,v=0)</code></pre>
 <p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p><strong>Análise de Componentes Principais: Variância</strong></p>
 <p>Identificamos os componentes que explicam a maior parcela de variância:</p>
-<pre class="r"><code>plot(pca,type=&quot;lines&quot;)</code></pre>
+<pre class="r"><code>plot(pca,type=&quot;lines&quot;)
+abline(h=1, col=&quot;blue&quot;)</code></pre>
 <p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>O método plot retorna um gráfico das variâncias (eixo y) associadas aos PCs ou componentes principais (eixo x).</p>
 <p>O gráfico é útil para decidir quantos componentes reter para análise posterior. Neste caso simples, com 8 componentes, esta não é uma tarefa difícil e podemos ver que os primeiros três componentes explicam a maior parte da variabilidade nos dados, pois na medida em que o valor da variância explicada se mostrar inferior a 1, descartamos sua inclusão em nosso modelo fatorial.</p>
@@ -2429,6 +2437,10 @@ pca</code></pre>
 <pre class="r"><code>library(factoextra)
 fviz_eig(pca)</code></pre>
 <p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+<p>Fatores suficientes para atender um percentual especificado de variância explicada, geralmente 60% ou mais</p>
+Fatores apontados pelo teste scree como tendo quantias substanciais de variância comum (i.e., fatores antes do ponto de inflexão)
+</p>
 <p>Agora visualizamos as contribuições individuais em cada componente:</p>
 <pre class="r"><code>fviz_pca_ind(pca,
              col.ind = &quot;cos2&quot;, # Cores pela qualidade da representatividade
@@ -2497,6 +2509,7 @@ as.tibble(autovalores$values)</code></pre>
 ## 6 0.199 
 ## 7 0.0360
 ## 8 0.0268</code></pre>
+<p>Um autovalor consiste na soma em coluna de cargas fatoriais ao quadrado para um fator; também conhecido como raiz latente. Representa a quantia de variância explicada por um fator.</p>
 <p>Então a proporção da variância explicada será:</p>
 <pre class="r"><code>dados.var.prop&lt;-autovalores$values/sum(autovalores$values)
 
@@ -2538,7 +2551,7 @@ as.tibble(dados.var.prop)</code></pre>
 ## 7 0.308  -0.428  -0.185  -0.311  -0.715   -0.274  -0.0413  0.0569
 ## 8 0.504  -0.214   0.0632 -0.0267  0.499   -0.268  -0.163   0.590</code></pre>
 <p>A saída retorna a rotação (ou cargas), que são os coeficientes das combinações lineares das variáveis.</p>
-<p>Quantos componentes selecionar?</p>
+<p><strong>Quantos componentes selecionar?</strong></p>
 <p>Scree plot é usado para nos ajudar a escolher o número de componentes que devemos selecionar, considerando a variabilidade dos dados explicados.</p>
 <pre class="r"><code>library(patchwork)
 
@@ -2546,11 +2559,16 @@ par(mfcol = c(1, 2))
 
 
 p1&lt;-plot(autovalores$values, xlab = &quot;Componente Principal&quot;, ylab = &quot;Autovalor&quot;, type = &quot;b&quot;)
+abline(h=1)
+
 
 p2&lt;-plot(cumsum(dados.var.prop), xlab = &quot;Componente Principal&quot;, ylab = &quot;Autovalores acumulados&quot;, type = &quot;b&quot;)</code></pre>
 <p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <pre class="r"><code>p1+p2</code></pre>
 <pre><code>## integer(0)</code></pre>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Com a análise de componentes, cada variável contribui com um valor 1 do autovalor total. Logo, apenas os fatores que têm raízes latentes ou autovalores maiores que 1 são considerados significantes; todos os fatores com raízes latentes menores que 1 são considerados insignificantes e são descartados.
+</p>
 </div>
 </div>
 <div id="pca-usando-princomp" class="section level1">
@@ -2563,11 +2581,492 @@ p2&lt;-plot(cumsum(dados.var.prop), xlab = &quot;Componente Principal&quot;, yla
 </ul>
 <p><strong>Carregamentos de componentes</strong></p>
 <p>Porcentagem de variância em uma variável, explicada por um componente.</p>
+<pre class="r"><code>pca2&lt;-princomp(variaveisX,scores=T)
+
+pca2$loadings</code></pre>
+<pre><code>## 
+## Loadings:
+##    Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## v1  0.207  0.418  0.495  0.217  0.122  0.122  0.672       
+## v2  0.378  0.364 -0.112 -0.540  0.299 -0.556         0.135
+## v3  0.194  0.360  0.431  0.390               -0.691 -0.104
+## v4  0.414        -0.186        -0.318         0.126 -0.805
+## v5  0.326 -0.650  0.452        -0.264 -0.432              
+## v6        -0.185  0.428 -0.567  0.298  0.566 -0.192       
+## v7  0.530 -0.293 -0.311  0.412  0.583  0.157              
+## v8  0.458  0.109 -0.194        -0.544  0.358         0.551
+## 
+##                Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## SS loadings     1.000  1.000  1.000  1.000  1.000  1.000  1.000  1.000
+## Proportion Var  0.125  0.125  0.125  0.125  0.125  0.125  0.125  0.125
+## Cumulative Var  0.125  0.250  0.375  0.500  0.625  0.750  0.875  1.000</code></pre>
+<p>A interpretação dessas cargas fatoriais é a seguinte:</p>
+<ul>
+<li>Cargas fatoriais na faixa de ± 0,30 a ± 0,40 são consideradas como atendendo o nível mínimo para interpretação de estrutura.</li>
+<li>Cargas de ± 0,50 ou maiores são tidas como praticamente significantes.</li>
+<li>Cargas excedendo + 0,70* são consideradas indicativas de estrutura bem definida e são a meta de qualquer análise fatorial.</li>
+</ul>
+<p>Segundo Hair, <em>et. alli</em> (2009, p. 101):</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“<strong>Cargas Fatoriais:</strong> Correlação entre as variáveis originais e os fatores, bem como a chave para o entendimento da natureza de um fator em particular. As cargas fatoriais ao quadrado indicam qual percentual da variância em uma variável original é explicado por um fator.” (Hair et. alli, p. 109, 2009)
+</p>
+<p>Vamos tentar fazer isso:</p>
+<pre class="r"><code>cargasaoquadrado&lt;-pca2$loadings^2
+
+cargasaoquadrado</code></pre>
+<pre><code>## 
+## Loadings:
+##    Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## v1        0.174  0.245                       0.452        
+## v2 0.143  0.133         0.292         0.309               
+## v3        0.129  0.185  0.152                0.477        
+## v4 0.172                       0.101                0.648 
+## v5 0.106  0.422  0.204                0.187               
+## v6               0.183  0.321         0.320               
+## v7 0.281                0.170  0.339                      
+## v8 0.209                       0.296  0.128         0.303 
+## 
+##                Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7 Comp.8
+## SS loadings     0.187  0.252  0.182  0.243  0.234  0.251  0.434  0.513
+## Proportion Var  0.023  0.031  0.023  0.030  0.029  0.031  0.054  0.064
+## Cumulative Var  0.023  0.055  0.078  0.108  0.137  0.169  0.223  0.287</code></pre>
+<div id="testando-as-premissas-para-análise-fatorial" class="section level3">
+<h3>Testando as premissas para análise fatorial</h3>
+<p><strong>Fatorabilidade</strong></p>
+<p>É a suposição de que há pelo menos algumas correlações entre as variáveis para que fatores coerentes possam ser identificados. Basicamente, deve haver algum grau de colinearidade entre as variáveis, mas não um grau extremo ou singularidade entre as variáveis.</p>
+<p>A fatorabilidade pode ser examinada por meio de qualquer um dos seguintes:</p>
+<ul>
+<li>Correlações entre itens (matriz de correlação) - existem pelo menos várias correlações consideráveis - por exemplo, &gt; 0,5?</li>
+<li>Diagonais da matriz de correlação anti-imagem - devem ser&gt; 0,5</li>
+<li>Medida de precisão de amostragem (MSA) usando o teste KMO</li>
+<li>Teste de esfericidade de Bartlett (deve ser significativo)</li>
+</ul>
+<p><strong>Matriz de Correlação</strong></p>
+<p>Para fazer a análise fatorial, devemos ter variáveis que se correlacionam razoavelmente bem umas com as outras. A matriz de correlação é gerada em R para verificar o padrão de relacionamento entre as variáveis.</p>
+<p>Vamos ver essa matriz numa representação visual</p>
+<pre class="r"><code>library(corrplot)</code></pre>
+<pre><code>## corrplot 0.84 loaded</code></pre>
+<pre class="r"><code>matrizcorrelacao&lt;-cor(variaveisX)
+
+corrplot(matrizcorrelacao, method = &quot;number&quot;) </code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>A partir da matriz de correlação acima, podemos ver que o valor de algumas das variáveis do coeficiente de correlação são maiores do que 0,5 com pelo menos uma outra variável.</p>
+<p>Portanto, podemos supor que as variáveis estão razoavelmente correlacionadas entre si e podemos executar a Análise Fatorial nesses dados.</p>
+<p>Veremos como fica a diagonal da matriz de anti-imagem:</p>
+<pre class="r"><code>library(MASS)
+X &lt;- cor(variaveisX) 
+iX &lt;- ginv(X) 
+S2 &lt;- diag(diag((iX^-1)))
+AIS &lt;- S2%*%iX%*%S2                      # anti-image covariance matrix
+IS &lt;- X+AIS-2*S2                         # image covariance matrix
+Dai &lt;- sqrt(diag(diag(AIS)))
+IR &lt;- ginv(Dai)%*%IS%*%ginv(Dai)         # image correlation matrix
+AIR &lt;- ginv(Dai)%*%AIS%*%ginv(Dai)       # anti-image correlation matrix
+
+print(diag(AIR), row.names = FALSE)</code></pre>
+<pre><code>## [1] 1 1 1 1 1 1 1 1</code></pre>
+<p>As diagonais da matriz de correlação anti-imagem devem ser <span class="math inline">\(&gt; 0,5\)</span>. Observamos que as diagonais da matriz de correlação anti-imagem é 1, podemos executar a Análise Fatorial sobre esses dados.</p>
+<p>Se quisermos ver a matriz de anti-imagem de covariâncias, também poderíamos utilizar:</p>
+<pre class="r"><code>as.tibble(KMO(variaveisX)$ImCov)</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##         V1        V2       V3       V4      V5      V6        V7       V8
+##      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1  0.0681  -0.0186   -0.0688  -0.00291  0.0539 -0.0837 -0.00110   0.00426
+## 2 -0.0186   0.301     0.00703 -0.0678   0.142  -0.100  -0.000392  0.0542 
+## 3 -0.0688   0.00703   0.0766   0.00419 -0.0606  0.0850  0.0149   -0.00668
+## 4 -0.00291 -0.0678    0.00419  0.0459  -0.0288  0.0317 -0.0479   -0.0517 
+## 5  0.0539   0.142    -0.0606  -0.0288   0.336  -0.253  -0.138     0.0214 
+## 6 -0.0837  -0.100     0.0850   0.0317  -0.253   0.356   0.0583   -0.0245 
+## 7 -0.00110 -0.000392  0.0149  -0.0479  -0.138   0.0583  0.487     0.0350 
+## 8  0.00426  0.0542   -0.00668 -0.0517   0.0214 -0.0245  0.0350    0.0677</code></pre>
+</div>
+<div id="análise-fatorial-exploratória-efa" class="section level2">
+<h2>Análise Fatorial Exploratória (EFA)</h2>
+<p>A Análise Fatorial Exploratória (EFA) é geralmente usada para descobrir a estrutura de uma medida e, para examinar sua confiabilidade interna. O EFA é freqüentemente recomendado quando os pesquisadores não têm hipóteses sobre a natureza da estrutura fatorial subjacente de sua medida.</p>
+<p>A análise fatorial exploratória tem três pontos de decisão básicos:</p>
+<ol style="list-style-type: decimal">
+<li><p>Decida o número de fatores</p></li>
+<li><p>Escolha de um método de extração</p></li>
+<li><p>Escolha de um método de rotação</p></li>
+</ol>
+<p>Decida o número de fatores</p>
+<p>A abordagem mais comum para decidir o número de fatores é gerar um gráfico de scree (gráfico com fatores no eixo xe valores próprios no eixo y).</p>
+<p>Escolha de um método de extração e extração</p>
+<p>Uma vez que o número de fatores é decidido, você precisa decidir qual solução matemática encontrar os carregamentos. Existem cinco métodos básicos de extração:</p>
+<ol style="list-style-type: decimal">
+<li><p>PCA - que assume que não há nenhum erro de medição e não é considerada uma verdadeira análise fatorial exploratória.</p></li>
+<li><p>Máxima verossimilhança (fatoração canônica)</p></li>
+<li><p>Fatores Alfa</p></li>
+<li><p>Fatoração de imagem</p></li>
+<li><p>Fatoração do eixo principal com comunalidades iteradas (mínimos quadrados)</p></li>
+</ol>
+<p>Calcular cargas fatoriais iniciais</p>
+<p>Isso pode ser feito de várias maneiras diferentes: os dois métodos mais comuns são:</p>
+<ul>
+<li><p>Análise de Componentes Principais (PCA)</p></li>
+<li><p>Fatoração do Eixo Principal</p></li>
+</ul>
+<p>Este é um método que tenta encontrar o menor número de fatores que podem explicar a variabilidade nas variáveis originais, que está associado a esses fatores (isto está em contraste com o método de componentes principais que procura um conjunto de fatores que podem explicar para a variabilidade total nas variáveis originais). Esses dois métodos tenderão a fornecer resultados semelhantes se as variáveis forem altamente correlacionadas e / ou o número de variáveis originais for muito alto. Qualquer que seja o método usado, os fatores resultantes neste estágio não serão correlacionados.</p>
+<p><strong>PCA</strong></p>
+<p>Vamos realizar uma PCA inicial e entender os valores próprios e a variância explicada por eles.</p>
+<pre class="r"><code>pc1 &lt;- principal(variaveisX,nfactors = length(variaveisX), rotate = &quot;none&quot;)
+pc1</code></pre>
+<pre><code>## Principal Components Analysis
+## Call: principal(r = variaveisX, nfactors = length(variaveisX), rotate = &quot;none&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##     PC1   PC2   PC3   PC4   PC5   PC6   PC7   PC8 h2       u2 com
+## v1 0.51  0.83  0.10 -0.12  0.07 -0.06 -0.13  0.03  1 -2.2e-16 1.9
+## v2 0.78  0.10 -0.24  0.47  0.22  0.24  0.02  0.02  1  1.8e-15 2.4
+## v3 0.51  0.79  0.06 -0.32  0.02  0.03  0.12 -0.03  1  8.9e-16 2.2
+## v4 0.92 -0.32 -0.09  0.02 -0.18 -0.02 -0.04 -0.12  1  2.0e-15 1.4
+## v5 0.12 -0.23  0.90 -0.20 -0.12  0.27 -0.02  0.02  1  1.1e-16 1.5
+## v6 0.03  0.23  0.83  0.46  0.00 -0.19  0.03 -0.02  1  1.2e-15 1.9
+## v7 0.54 -0.60  0.24 -0.25  0.46 -0.12  0.01  0.01  1 -4.4e-16 3.7
+## v8 0.88 -0.30 -0.08 -0.02 -0.32 -0.12  0.03  0.10  1  1.8e-15 1.6
+## 
+##                        PC1  PC2  PC3  PC4  PC5  PC6  PC7  PC8
+## SS loadings           3.04 1.98 1.64 0.66 0.42 0.20 0.04 0.03
+## Proportion Var        0.38 0.25 0.20 0.08 0.05 0.02 0.00 0.00
+## Cumulative Var        0.38 0.63 0.83 0.91 0.97 0.99 1.00 1.00
+## Proportion Explained  0.38 0.25 0.20 0.08 0.05 0.02 0.00 0.00
+## Cumulative Proportion 0.38 0.63 0.83 0.91 0.97 0.99 1.00 1.00
+## 
+## Mean item complexity =  2.1
+## Test of the hypothesis that 8 components are sufficient.
+## 
+## The root mean square of the residuals (RMSR) is  0 
+##  with the empirical chi square  0  with prob &lt;  NA 
+## 
+## Fit based upon off diagonal values = 1</code></pre>
+<pre class="r"><code>cat(&quot;Eigen values\n&quot;)</code></pre>
+<pre><code>## Eigen values</code></pre>
+<pre class="r"><code>print(pc1$values)</code></pre>
+<pre><code>## [1] 3.04339553 1.97666965 1.63891603 0.65880055 0.42031771 0.19907747 0.03604157
+## [8] 0.02678149</code></pre>
+<p>O resultado dessa análise nos mostra que apenas 3 componentes têm autovalores maiores que 1, sugerindo que extraímos 3 componentes.</p>
+<p>A saída acima também sugere que a extração de 3 componentes explica 83,22% da variância total.</p>
+<pre class="r"><code>#veremos a participacao de cada autovalor no total
+
+participacao&lt;-pc1$values/sum(pc1$values)
+
+participacao</code></pre>
+<pre><code>## [1] 0.380424442 0.247083706 0.204864504 0.082350068 0.052539714 0.024884683
+## [7] 0.004505196 0.003347687</code></pre>
+<p>Desenhe um gráfico de scree para decidir o número de fatores.</p>
+<p><strong>Scree Plot</strong></p>
+<pre class="r"><code>plot(pc1$values, type = &quot;b&quot;,xlab = &quot;Fatores&quot;, ylab = &quot;Autovalores&quot;, main = &quot;SCREE PLOT&quot;) 
+abline(h=1)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>No gráfico de scree, notamos uma curva acentuada um momento depois do fator 3 e, em seguida, inicia a linha plana. Retemos esses componentes ou fatores na curva acentuada antes do primeiro ponto que inicia a linha plana. Notamos que 2 desses fatores explicam a maior parte da variação - 83,22%.</p>
+<p>Portanto, devemos usar 3 como o número de fatores para realizar a Análise Fatorial.</p>
+<p><strong>Fatoração do eixo principal</strong></p>
+<p>Devemos usar a fatoração do eixo principal, (fm = “pa”) porque estamos mais interessados em identificar as construções subjacentes nos dados.</p>
+<p>O método de extração produzirá cargas fatoriais para cada item em cada fator extraído. Agora, usaremos a função fa () do pacote psych, que recebeu os seguintes argumentos principais:</p>
+<ul>
+<li><p>r: a matriz de correlação</p></li>
+<li><p>nfactors: número de fatores a serem extraídos (padrão 1)</p></li>
+<li><p>girar: um dos vários métodos de rotação de matriz, como “varimax” ou “oblimin” ou “nenhum”</p></li>
+<li><p>fm: um dos vários métodos de fatoração, como pa (eixo principal) ou ml (probabilidade máxima)</p></li>
+</ul>
+<pre class="r"><code>matriznova &lt;- cor(variaveisX)
+solution &lt;- fa(r=matriznova, nfactors = 3, rotate = &quot;none&quot;, fm = &quot;pa&quot;) </code></pre>
+<pre><code>## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :
+## The estimated weights for the factor scores are probably incorrect. Try a
+## different factor score estimation method.</code></pre>
+<pre><code>## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An
+## ultra-Heywood case was detected. Examine the results carefully</code></pre>
+<pre class="r"><code>print(solution)</code></pre>
+<pre><code>## Factor Analysis using method =  pa
+## Call: fa(r = matriznova, nfactors = 3, rotate = &quot;none&quot;, fm = &quot;pa&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##     PA1   PA2   PA3   h2    u2 com
+## v1 0.62 -0.58  0.76 1.30 -0.30 2.8
+## v2 0.66 -0.18 -0.14 0.48  0.52 1.3
+## v3 0.50 -0.40  0.51 0.68  0.32 2.9
+## v4 0.95  0.17 -0.41 1.11 -0.11 1.4
+## v5 0.19  1.13  0.66 1.75 -0.75 1.7
+## v6 0.05  0.22  0.42 0.23  0.77 1.5
+## v7 0.43  0.40 -0.25 0.41  0.59 2.6
+## v8 0.84  0.14 -0.33 0.83  0.17 1.4
+## 
+##                        PA1  PA2  PA3
+## SS loadings           2.91 2.07 1.82
+## Proportion Var        0.36 0.26 0.23
+## Cumulative Var        0.36 0.62 0.85
+## Proportion Explained  0.43 0.30 0.27
+## Cumulative Proportion 0.43 0.73 1.00
+## 
+## Mean item complexity =  2
+## Test of the hypothesis that 3 factors are sufficient.
+## 
+## The degrees of freedom for the null model are  28  and the objective function was  7.55
+## The degrees of freedom for the model are 7  and the objective function was  0.4 
+## 
+## The root mean square of the residuals (RMSR) is  0.02 
+## The df corrected root mean square of the residuals is  0.05 
+## 
+## Fit based upon off diagonal values = 1</code></pre>
+<p>As comunalidades representam a quantia total de variância que uma variável original compartilha com todas as outras variáveis incluídas na análise.</p>
+<pre class="r"><code>comunalidades&lt;-solution$communality
+
+comunalidades</code></pre>
+<pre><code>##        v1        v2        v3        v4        v5        v6        v7        v8 
+## 1.3000542 0.4848989 0.6754432 1.1100137 1.7499719 0.2301372 0.4080891 0.8331344</code></pre>
+<p>Cargas fatoriais da matriz não-rotacionada</p>
+<pre class="r"><code>cargasfatoriais&lt;-print(solution$loadings)</code></pre>
+<pre><code>## 
+## Loadings:
+##    PA1    PA2    PA3   
+## v1  0.623 -0.581  0.758
+## v2  0.656 -0.184 -0.144
+## v3  0.502 -0.403  0.511
+## v4  0.953  0.170 -0.415
+## v5  0.194  1.131  0.659
+## v6         0.218  0.424
+## v7  0.434  0.398 -0.249
+## v8  0.837  0.144 -0.334
+## 
+##                  PA1   PA2   PA3
+## SS loadings    2.908 2.067 1.817
+## Proportion Var 0.363 0.258 0.227
+## Cumulative Var 0.363 0.622 0.849</code></pre>
+<pre class="r"><code>fa.diagram(solution)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p>Uma vez que uma solução inicial é obtida, as cargas são rotacionadas. A rotação de fator é usada para aumentar a interpretabilidade.</p>
+<div id="escolha-de-um-método-de-rotação" class="section level3">
+<h3>Escolha de um método de rotação</h3>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“Talvez a ferramenta mais importante na interpretação de fatores seja a rotação fatorial. O termo rotação significa exatamente o que sugere. Especificamente, os eixos de referência dos fatores são rotacionados em torno da origem até que alguma outra posição seja alcançada. Como anteriormente indicado, as soluções de fatores não-rotacionados extraem fatores na ordem de sua variância extraída. O primeiro fator tende a ser um fator geral com quase toda variável com carga significante, e explica a quantia maior de variância. O segundo fator e os seguintes são então baseados na quantia residual de variância. Cada fator explica porções sucessivamente menores de variância. O efeito final de rotacionar a matriz fatorial é redistribuir a variância dos primeiros fatores para os últimos com o objetivo de atingir um padrão fatorial mais simples e teoricamente mais significativo.” (Hair, et. alli, p. 116, 2009)
+</p>
+<p>A rotação é uma forma de maximizar cargas elevados e minimizar cargas baixas para que a estrutura mais simples possível seja obtida.</p>
+<p>Existem dois tipos de método de rotação, rotação ortogonal e oblíqua.</p>
+<p>Na rotação ortogonal, os fatores rotacionados permanecerão não correlacionados, enquanto na rotação oblíqua os fatores resultantes serão correlacionados.</p>
+<p>Existem vários métodos diferentes de rotação para cada tipo.</p>
+<p>O método ortogonal mais comum é chamado de rotação varimax.</p>
+<div id="rotação-ortogonal-varimax" class="section level4">
+<h4>Rotação Ortogonal Varimax</h4>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“Os mais populares métodos de rotação fatorial ortogonal, concentrando-se na simplificação das colunas em uma matriz fatorial. Geralmente considerado superior a outros métodos de rotação fatorial ortogonal para conseguir uma estrutura fatorial simplificada.” (Hair, et. alli, p. 102, 2009)
+</p>
+<p>Supondo que não haja correlação entre os fatores extraídos, faremos uma rotação varimax.</p>
+<pre class="r"><code>matriznova &lt;- cor(variaveisX)
+solucao1 &lt;- fa(r=matriznova, nfactors = 3, rotate = &quot;varimax&quot;, fm = &quot;pa&quot;)</code></pre>
+<pre><code>## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :
+## The estimated weights for the factor scores are probably incorrect. Try a
+## different factor score estimation method.</code></pre>
+<pre><code>## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An
+## ultra-Heywood case was detected. Examine the results carefully</code></pre>
+<pre class="r"><code>print(solucao1)</code></pre>
+<pre><code>## Factor Analysis using method =  pa
+## Call: fa(r = matriznova, nfactors = 3, rotate = &quot;varimax&quot;, fm = &quot;pa&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##      PA1   PA3   PA2   h2    u2 com
+## v1  0.05  1.13  0.10 1.30 -0.30 1.0
+## v2  0.58  0.35 -0.17 0.48  0.52 1.9
+## v3  0.10  0.81  0.06 0.68  0.32 1.0
+## v4  1.05  0.12 -0.05 1.11 -0.11 1.0
+## v5  0.18 -0.15  1.30 1.75 -0.75 1.1
+## v6 -0.08  0.17  0.44 0.23  0.77 1.4
+## v7  0.59 -0.17  0.18 0.41  0.59 1.4
+## v8  0.90  0.12 -0.03 0.83  0.17 1.0
+## 
+##                        PA1  PA3  PA2
+## SS loadings           2.64 2.18 1.97
+## Proportion Var        0.33 0.27 0.25
+## Cumulative Var        0.33 0.60 0.85
+## Proportion Explained  0.39 0.32 0.29
+## Cumulative Proportion 0.39 0.71 1.00
+## 
+## Mean item complexity =  1.2
+## Test of the hypothesis that 3 factors are sufficient.
+## 
+## The degrees of freedom for the null model are  28  and the objective function was  7.55
+## The degrees of freedom for the model are 7  and the objective function was  0.4 
+## 
+## The root mean square of the residuals (RMSR) is  0.02 
+## The df corrected root mean square of the residuals is  0.05 
+## 
+## Fit based upon off diagonal values = 1</code></pre>
+<p>Vamos ver o quanto as cargas fatoriais melhoram:</p>
+<pre class="r"><code>cargasrotvarimax&lt;-print(solucao1$loadings)</code></pre>
+<pre><code>## 
+## Loadings:
+##    PA1    PA3    PA2   
+## v1         1.135       
+## v2  0.578  0.347 -0.175
+## v3  0.102  0.813       
+## v4  1.046  0.117       
+## v5  0.180 -0.151  1.302
+## v6         0.166  0.442
+## v7  0.587 -0.174  0.182
+## v8  0.904  0.125       
+## 
+##                  PA1   PA3   PA2
+## SS loadings    2.641 2.179 1.971
+## Proportion Var 0.330 0.272 0.246
+## Cumulative Var 0.330 0.603 0.849</code></pre>
+<p>A partir da saída acima, podemos ver que, ao aplicar a rotação varimax, as cargas de componentes são muito claros.</p>
+<pre class="r"><code>fa.diagram(solucao1)</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p>As caixas retangulares são as variáveis observadas e as ovais são os fatores não observados. As setas retas são as cargas, a correlação entre o fator e a (s) variável (s) observada (s).</p>
+<p><strong>Identifique qual item pertence a qual fator</strong></p>
+<p>A carga do fator pode ser classificada com base em sua magnitude.</p>
+<ul>
+<li>0,50 ou mais - Praticamente significativo</li>
+<li>0,40 a 0,49 - Mais importante</li>
+<li>0,30 a 0,39 - nível mínimo de consideração</li>
+</ul>
+<p>Então temos as variáveis pertencentes ao primeiro fator:</p>
+<ul>
+<li>v(4) Novos concorrentes</li>
+<li>v(8) Estabilidade econômica</li>
+<li>v(7) Câmbio</li>
+<li>v(2) Crescimento do PIB</li>
+</ul>
+<p>O segundo fator agrupa as seguintes variáveis:</p>
+<ul>
+<li>v(5) Diversidade de produtos</li>
+<li>v(6) Controle de despesas</li>
+</ul>
+<p>No terceiro temos:</p>
+<ul>
+<li>v(1) Automação</li>
+<li>v(3) Parceria com os fornecedores</li>
+</ul>
+</div>
+</div>
+<div id="rotulando-os-fatores" class="section level3">
+<h3>Rotulando os fatores</h3>
+<p>Segundo Corrar e Paulo (p. 124-125, 2009) <em>“o primeiro fator pode ser denominado de”Mercado“. É composto por variáveis externas à empresa e que possuem diferentes graus de interferência no negócio. A empresa pode elaborar sistemas de informação para monitorar o nível de interferência de cada variável em suas atividades, e em seguida, com base em um histórico, iniciar projeções de resultado baseando-se em simulações de variáveis. A empresa também pode escolher um dos indicadores dentre os que compõem este fator para monitorá-lo.”</em></p>
+<p><em>“O segundo fator pode ser denominado de”Produção“. Este está diretamente associado à capacidade da empresa em encontrar um equilíbrio entre a diversidade de produtos postos à disposição do cliente e o controle do nível de despesas (ou custos) associados à produtos. Este fator chama a atenção para dois pontos críticos no mercado de calçados populares: o custo de produção e até que ponto o público-alvo é sensível à diversificação da produção. A empresa deve despender esforços para conhecer seu público-alvo e simular demandas diferenciadas para identificar os pontos ótimos de capacidade de produção e diversificação.”</em></p>
+<p><em>“O terceiro fator é comoposto pelos indicadores automação e parceria com fornecedores, como mencionamos. Esse fator é muito interessante e pode ser entendido de diversas formas. Denominaremos esse fator de”Estratégias de Fabricação“. Basicamente, o que ele informa é que o mercado de calçados ou as empresas calçadistas se preocupam com a definição do formato que o processo de fabricação possui. A empresa precisa definir qual será a participação dos fornecedores no processo de fabricação. As estratégias envolvendo fornecedores são muitas e vão desde o simples fornecimento de matéria-prima, passando pelo repasse de parte do processo de produção, podendo chegar ao extremo de terceirização de todo o processo produtivo. Tendo a”estratégia de fabricação" como fio condutor das decisões, a empresa define o seu grau de automação fabril e, obviamente, levará em consideração o balanceamento entre despesas e diversidade de produtos comentados anteriormente.</em></p>
+<p><em>“Perceba-se que o objetivo da execução da AF neste caso foi o de gerar subsídios para análise da estrutura subjacente, fruto do relacionamento entre as variáveis associadas ao negócio de calçados.”</em></p>
+</div>
+<div id="rotação-oblíqua-oblimin" class="section level3">
+<h3>Rotação oblíqua (oblimin)</h3>
+<p>As rotações oblíquas são semelhantes às ortogonais, porém as oblíquas permitem fatores correlacionados em vez de manterem independência entre os fatores rotacionados. Porém, enquanto há várias escolhas entre abordagens ortogonais, há apenas escolhas limitadas na maioria dos pacotes estatísticos para rotações oblíquas.</p>
+<p>Os objetivos de simplificação são comparáveis aos métodos ortogonais, com a característica extra de fatores correlacionados. Com a possibilidade de fatores correlacionados, o pesquisador deve ter o cuidado extra de validar fatores rotacionados obliquamente, uma vez que eles têm uma maneira adicional (não-ortogonalidade) de se tornarem específicos à amostra e não-generalizáveis, particularmente com pequenas amostras ou pequenas proporções de casos por variáveis.</p>
+<p>Vamos comparar se os resultados da AF mudam muito quando utilizamos essa rotação:</p>
+<pre class="r"><code>#Rotacao obliqua (oblimin)
+matriznova &lt;- cor(variaveisX)
+solucao2 &lt;- fa(r=matriznova, nfactors = 3, rotate = &quot;oblimin&quot;, fm = &quot;pa&quot;)</code></pre>
+<pre><code>## maximum iteration exceeded</code></pre>
+<pre><code>## Loading required namespace: GPArotation</code></pre>
+<pre><code>## Warning in fa.stats(r = r, f = f, phi = phi, n.obs = n.obs, np.obs = np.obs, :
+## The estimated weights for the factor scores are probably incorrect. Try a
+## different factor score estimation method.</code></pre>
+<pre><code>## Warning in fac(r = r, nfactors = nfactors, n.obs = n.obs, rotate = rotate, : An
+## ultra-Heywood case was detected. Examine the results carefully</code></pre>
+<pre class="r"><code>print(solucao2)</code></pre>
+<pre><code>## Factor Analysis using method =  pa
+## Call: fa(r = matriznova, nfactors = 3, rotate = &quot;oblimin&quot;, fm = &quot;pa&quot;)
+## Standardized loadings (pattern matrix) based upon correlation matrix
+##      PA1   PA3   PA2   h2    u2 com
+## v1 -0.01  1.14  0.01 1.30 -0.30 1.0
+## v2  0.59  0.26 -0.17 0.48  0.52 1.6
+## v3  0.06  0.81  0.01 0.68  0.32 1.0
+## v4  1.05 -0.01  0.00 1.11 -0.11 1.0
+## v5  0.01  0.01  1.32 1.75 -0.75 1.0
+## v6 -0.15  0.24  0.43 0.23  0.77 1.9
+## v7  0.57 -0.21  0.23 0.41  0.59 1.6
+## v8  0.91  0.02  0.01 0.83  0.17 1.0
+## 
+##                        PA1  PA3  PA2
+## SS loadings           2.65 2.14 2.01
+## Proportion Var        0.33 0.27 0.25
+## Cumulative Var        0.33 0.60 0.85
+## Proportion Explained  0.39 0.31 0.30
+## Cumulative Proportion 0.39 0.70 1.00
+## 
+##  With factor correlations of 
+##      PA1   PA3   PA2
+## PA1 1.00  0.16  0.07
+## PA3 0.16  1.00 -0.04
+## PA2 0.07 -0.04  1.00
+## 
+## Mean item complexity =  1.3
+## Test of the hypothesis that 3 factors are sufficient.
+## 
+## The degrees of freedom for the null model are  28  and the objective function was  7.55
+## The degrees of freedom for the model are 7  and the objective function was  0.4 
+## 
+## The root mean square of the residuals (RMSR) is  0.02 
+## The df corrected root mean square of the residuals is  0.05 
+## 
+## Fit based upon off diagonal values = 1</code></pre>
+<p>Vamos ver as cargas fatoriais desse método rotacional:</p>
+<pre class="r"><code>cargasoblimin&lt;-print(solucao2$loadings)</code></pre>
+<pre><code>## 
+## Loadings:
+##    PA1    PA3    PA2   
+## v1         1.142       
+## v2  0.591  0.259 -0.169
+## v3         0.810       
+## v4  1.055              
+## v5                1.323
+## v6 -0.152  0.235  0.425
+## v7  0.573 -0.214  0.228
+## v8  0.909              
+## 
+##                  PA1   PA3   PA2
+## SS loadings    2.642 2.131 2.011
+## Proportion Var 0.330 0.266 0.251
+## Cumulative Var 0.330 0.597 0.848</code></pre>
+<p>A partir da saída acima, podemos ver que, ao aplicar a rotação varimax, os carregamentos de componentes são muito claros. Vamos comparar ambos os métodos de rotação nos gráficos:</p>
+<pre class="r"><code>varimax&lt;-fa.diagram(solucao1)
+varimax</code></pre>
+<pre><code>## NULL</code></pre>
+<pre class="r"><code>oblimin&lt;-fa.diagram(solucao2)
+oblimin</code></pre>
+<pre><code>## NULL</code></pre>
+<p><img src="ExercicioAnaliseFatorial_files/figure-html/figures-side-1.png" width="50%" /><img src="ExercicioAnaliseFatorial_files/figure-html/figures-side-2.png" width="50%" /></p>
+<p>Note que as mesmas cargas fatoriais são alocadas nos mesmos fatores para ambos os métodos de rotação.</p>
+<div id="exame-das-correlações-entre-os-fatores" class="section level4">
+<h4>Exame das correlações entre os fatores</h4>
+<p>Notamos que nossos fatores estão menos correlacionados a 16% (PA1 e PA3), 7% (PA2 e PA1) e -4% (PA2 e PA3) e lembramos que nossa escolha de rotação oblíqua permitiu o reconhecimento de bom relacionamento; portanto, nossa suposição de correlação entre os componentes durante a rotação oblíqua é violada.</p>
+</div>
+<div id="analise-a-confiabilidade-interna" class="section level4">
+<h4>Analise a confiabilidade interna</h4>
+<p>O alfa de Crombach é uma medida de consistência interna, isto é, quão intimamente relacionados um conjunto de itens são como um grupo.</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“Medida de confiabilidade que varia de 0 a 1, sendo os valores de 0,60 a 0,70 considerados o limite inferior de aceitabilidade.” (Hair et. alli, p. 100, 2009)
+</p>
+<p>O alfa de Cronbach é calculado combinando-se a pontuação de cada item da escala com a pontuação total de cada observação (geralmente respondentes de pesquisas individuais ou participantes do teste) e, em seguida, comparando-a com a variância para todas as pontuações de itens individuais. O alfa de Cronbach é uma função de</p>
+<ul>
+<li>número de itens em um teste</li>
+<li>covariância média entre pares de itens</li>
+<li>variação da pontuação total</li>
+</ul>
+<pre class="r"><code>library(psy)
+cronbach(variaveisX)</code></pre>
+<pre><code>## $sample.size
+## [1] 30
+## 
+## $number.of.items
+## [1] 8
+## 
+## $alpha
+## [1] 0.6952564</code></pre>
+<p>Se todos os itens da escala forem totalmente independentes uns dos outros (ou seja, não estão correlacionados ou não compartilham covariância), o alfa = 0; e,</p>
+<p>Se todos os itens tiverem covariâncias altas, então alfa se aproximará de 1 quanto mais os itens na escala se aproximarem do infinito.</p>
+<p>Um bom coeficiente alfa depende do seu conhecimento teórico da escala em questão.</p>
+<p>Muitas metodologias recomendam um coeficiente alfa mínimo entre 0,65 e 0,80; coeficientes alfa inferiores a 0,50 são geralmente inaceitáveis.</p>
+<p>A avaliação geral da confiabilidade desta medida é boa, uma vez que o valor absoluto do coeficiente alfa está acima de <span class="math inline">\(\pm\)</span> 0,6 ou <span class="math inline">\(|0,6952|\)</span></p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+<p>Uma vez que uma escala é considerada unidimensional, seu escore de confiabilidade, medido pelo alfa de Cronbach:</p>
+<ul>
+<li>Deve exceder uma referência de 0,70, apesar de um nível de 0,60 poder ser utilizado em pesquisa exploratória (Hair et alli, p. 127, 2009)</li>
+</ul>
+</p>
 <p> </p>
 <hr />
+</div>
+</div>
+</div>
 <div id="referências" class="section level2">
 <h2>Referências</h2>
-<p>Corrar, L.J., Paulo, E., <strong>Análise Multivariada: para os cursos de administração, ciências contábeis e economia</strong>, FIPECAFI, São Paulo, Ed. Atlas.</p>
+<p>Corrar, L.J., Paulo, E., <strong>Análise Multivariada: para os cursos de administração, ciências contábeis e economia</strong>, 2009, FIPECAFI, São Paulo, Ed. Atlas.</p>
+<p>Hair et. alli. <strong>Análise Multivariada de Dados.</strong>, 2009, 6a ed., Bookman, Porto Alegre.</p>
 </div>
 </div>
 
