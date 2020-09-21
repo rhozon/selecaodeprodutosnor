@@ -1,0 +1,227 @@
+---
+title: "Gráfico de superfície 3d interativo para regressão linear múltipla"
+author: "Rodrigo H. Ozon"
+date: "21/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+***
+
+&nbsp;
+
+#### Resumo
+
+
+<small>Este tutorial demonstra como gerar um gráfico de superfície de regressão linear múltipla interativa utilizando o R. Aqui neste exemplo peguei os dados do curso **"Introdução à Econometria utilizando o Excel"** com o intuito de estimular os estudantes a interagirem com os dados que analisamos durante o aprendizado.
+
+**Palavras-chave**: Gráfico 3D de regressão múltipla, interação, econometria, R</small>
+
+
+***
+
+![](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/introeconometriacapa.png?raw=true){ width=80% }
+
+***
+
+
+
+
+# Preliminares (dados do exemplo)
+
+Como vimos em nossas vídeo aulas de regressão linear múltipla, o gráfico de dispersão entre somente duas variáveis não atende quando precisamos inserir mais variáveis explicativas $X$ em nosso modelo.
+
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Dadas as estimativas de MQO para o modelo de regressão linear múltipla, vamos supor que precisássemos estimar o consumo de óleo para calefação em residências no inverno canadense. Vamos começar com um conjunto de dados obtido por uma amostra de 15 domicílios gerada por um projetista responsável por esta análise.
+
+Embora pudéssemos considerar muitas variáveis, por motivo de simplificação devemos avaliar somente duas variáveis explicativas nesse caso:
+
++ A temperatura atmosférica média diária (em graus Fahrenheit) durante o mês da coleta ($X_{1}$);
++ Quantidade de isolamento térmico da residência medida em polegadas ($X_{2}$)
+
+
+Como um gráfico tridimensional descreve com maior detalhe o comportamento da variável $Y$ (consumo de óleo) contra as outras duas explicativas (temperatura e isolamento) temos uma primeira inspeção visual das pistas para causa e efeito:
+</p>
+
+
+Se você consultar o e-book, na página 58, verá esse gráfico:
+
+![](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/superficieregressao.png?raw=true){ width=50% }
+
+Assim como no e-book, a imagem reproduzida acima, não nos permite interagir com o gráfico.  Aqui, neste breve tutorial, reproduziremos utilizando o R o passo a passo de como criamos esse gráfico de forma interativa e plenamente capaz ilustrar as relações entre essas três variáveis.
+
+# O que é o R ?
+
+R é um software livre para análise de dados. Foi desenvolvido em em 1996, com os professores de estatística Ross Ihaka e Robert Gentleman, da Universidade de Auckland que criaram uma nova linguagem computacional, similar a linguagem S desenvolvida por John Chambers.
+
+Já outros o definem assim:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+R é uma linguagem de programação estatística e gráfica que vem se especializando na manipulação, análise e visualização de dados, sendo atualmente considerada uma das melhores ferramentas para essa finalidade. A linguagem ainda possui como diferencial a facilidade no aprendizado, mesmo para aqueles que nunca tiveram contato anterior com programação. ([Didática Tech](https://didatica.tech/a-linguagem-r/))
+</p>
+
+# Porque utilizar o R ?
+
++ O R é um software gratuito com código aberto com uma linguagem acessível;
+
++ a sua expansão de uso é exponencial entre pesquisadores, engenheiros e estatísticos;
+
++ ele se reinventa constantemente através de novas aplicações (aproximadamente 15.000 pacotes);
+
++ é totalmente flexível, permitindo desenvolver facilmente funções e pacotes para facilitar o trabalho;
+
++ possui um enorme capacidade gráfica e interage com apps de BI (Microsoft Power BI, p. ex.)
+
++ Está disponível para diferentes plataformas: Windows, Linux e Mac
+
+
+Segundo o site [datascienceacademy:](http://datascienceacademy.com.br/blog/linguagem-r-por-que-e-hora-de-aprender/)
+
+<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+Uma imagem vale mais que 1000 palavras, certo? Mas apenas 10 palavras são necessárias para criar incríveis gráficos e imagens usando a linguagem R. A evolução e amadurecimento do R, tem levado grandes empresas como Oracle e Microsoft, a investirem seus bilionários recursos em pesquisa e desenvolvimento para aprimorar suas soluções analíticas utilizando o R como base. A linguagem R vem se tornando ainda o principal “idioma” de Cientistas e Analistas de Dados e está liderando a revolução proporcionada pelo Big Data Analytics.
+</p>
+
+Você pode baixar o R e o RStudio no site [http://cran.r-project.org/](http://cran.r-project.org/) e o RStudio em [https://rstudio.com/](https://rstudio.com/).
+
+Caso você queira trabalhar com o R na nuvem, recomendo que você crie uma conta no RStudio Cloud em [https://rstudio.com/products/cloud/](https://rstudio.com/products/cloud/)
+
+
+
+# Passo a passo no R
+
+Para criarmos o gráfico interativo aqui no HTML, utilizo o RMarkdown para com os seguintes pacotes:
+
+
+```{r message=FALSE}
+library(tidyverse)
+library(plotly)
+library(moderndive)
+```
+
+Após isso, carrego os dados direto do nosso repositório de datasets upado no GitHub:
+
+```{r message=FALSE}
+# Preprocessamento dos dados ---------------------------------------------------------
+
+oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
+
+str(oleo)
+```
+
+Em seguida, informo ao R para que as variáveis temperatura e quantidade de isolamento térmico sejam modificadas para numéricas:
+
+
+```{r message=FALSE}
+oleo<-oleo%>%
+  mutate(
+    temperatura=as.numeric(temperatura),
+    qtdisolamento=as.numeric(qtdisolamento))
+```
+
+Então defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
+
+```{r message=FALSE}
+# Definicao dos pontos das coordenadas --------------------------------------------
+# Obtenho os pontos das coordenadas para o 3D scatterplot
+x_valores <- oleo$temperatura %>% 
+  round(3)
+y_valores <- oleo$consumooleo %>% 
+  round(3)
+z_valores <- oleo$qtdisolamento %>% 
+  round(3)
+```
+
+Construo a definição da malha que cubrirá os eixos $x$ e $y$ do plano:
+
+```{r message=FALSE}
+# Defino o plano da regressao -------------------------------------------------
+# Construcao da malha dos elementos x e y
+x_grid <- seq(from = min(x_valores), to = max(x_valores), length = 50)
+y_grid <- seq(from = min(y_valores), to = max(y_valores), length = 50)
+```
+
+Então construo o eixo $z$, obtendo os valores da regressão linear múltipla estimada e seus coeficientes:
+
+
+```{r message=FALSE}
+# Construcao da malha do eixo z obtendo
+# 1) parametros alfa e beta estimados
+# 2) valores ajustados do produto externo de x_grid e y_grid
+# 3) extracao de z_grid (essa matriz precisa de dimensoes especificas)
+beta_chapeu <- oleo %>% 
+  lm(consumooleo ~ qtdisolamento + temperatura, data = .) %>% 
+  coef()
+valores_ajustados <- crossing(y_grid, x_grid) %>% 
+  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*y_grid)
+z_grid <- valores_ajustados %>% 
+  pull(z_grid) %>%
+  matrix(nrow = length(x_grid)) %>%
+  t()
+```
+
+Declaro os elementos de texto para cada ponto no plano:
+
+```{r message=FALSE}
+
+text_grid <- valores_ajustados %>% 
+  pull(z_grid) %>%
+  round(3) %>% 
+  as.character() %>% 
+  paste("Consumo de Oleo ", ., sep = "") %>% 
+  matrix(nrow = length(x_grid)) %>%
+  t()
+```
+
+Utilizo a função plot_ly do R para gerar a visualização:
+
+```{r message=FALSE}
+
+plot_ly() %>%
+  # 3D scatterplot:
+  add_markers(
+    x = x_valores,
+    y = y_valores,
+    z = z_valores,
+    marker = list(size = 5),
+    hoverinfo = 'text',
+    text = ~paste(
+      "Quantidade de Isolamento Termico ", z_valores, "<br>",
+      "Consumo de Oleo para Calefacao ", y_valores, "<br>",
+      "Temperatura atmosferica ", x_valores 
+    )
+  ) %>%
+  # Plano da regressao:
+  add_surface(
+    x = x_grid,
+    y = y_grid,
+    z = z_grid,
+    hoverinfo = 'text',
+    text = text_grid
+  ) %>%
+  # Nomes dos eixos e titulo:
+  layout(
+    title = "Superficie de Regressao 3d interativa",
+    scene = list(
+      zaxis = list(title = "y: consumooleo"),
+      yaxis = list(title = "x2: temperatura"),
+      xaxis = list(title = "x1: qtdisolamento")
+    )
+  )
+```
+
+&nbsp;
+
+***
+
+
+##### **Referências**
+
+OZON, R. H. **Introdução à Econometria com Excel**, Curso interativo disponibilizado em Udemy.com, nov./2020.

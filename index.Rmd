@@ -52,6 +52,13 @@ Tutoriais disponíveis:
 
 &nbsp;
 
+### *Gráfico 3D interativo para regressão linear múltipla*
+
++ Interaja com os dados de nosso exemplo de consumo de óleo para calefação do curso de Introdução à Econometria com Excel e veja como as relações entre três variáveis podem ser visualizadas.
+
+&nbsp;
+
+
 ### Introdução aos Processos Estocásticos: Cadeias de Markov
 
 + Comece a compreender alguns conceitos relacionados a processos aleatórios [em construção]
@@ -62,6 +69,12 @@ Tutoriais disponíveis:
 
 + Como a análise fatorial pode extrair informações agrupadas relevantes a respeito da condução ótima do negócio.
 
+
+
+
+
+
 ***
+
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
