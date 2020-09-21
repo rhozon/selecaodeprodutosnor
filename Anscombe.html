@@ -549,8 +549,7 @@ summarize(
     desvpady1=sd(y1),
     desvpady2=sd(y2),
     desvpady3=sd(y3),
-    desvpady4=sd(y4),
-    )</code></pre>
+    desvpady4=sd(y4),)</code></pre>
 <pre><code>## # A tibble: 1 x 8
 ##   desvpadx1 desvpadx2 desvpadx3 desvpadx4 desvpady1 desvpady2 desvpady3 desvpady4
 ##       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
@@ -626,13 +625,13 @@ geom_smooth(method = &quot;lm&quot;, se = FALSE)
 
 
 x1y1 #Diagrama de dispersão de Y1 contra X1</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>x2y2 #Diagrama de dispersão de Y2 contra X2</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-2.png" width="672" /></p>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
 <pre class="r"><code>x3y3 #Diagrama de dispersão de Y3 contra X3</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-3.png" width="672" /></p>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
 <pre class="r"><code>x4y4 #Diagrama de dispersão de Y4 contra X4</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-22-4.png" width="672" /></p>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-9-4.png" width="672" /></p>
 <p>Quando examinamos as linhas de ajuste de regressão, elas são iguais, mas os gráficos de dispersão são muito diferentes.</p>
 <ul>
 <li><p>No segundo gráfico (de cima pra baixo) um termo quadrático deve ser usado para y2 <em>versus</em> x2 porque há curvatura, portanto evidenciando claramente uma relação não-linear presente entre as variáveis.</p></li>
@@ -653,7 +652,7 @@ x4y4 &lt;- ggplot(data=ans,aes(x=x4,y=y4))+
         geom_point()+geom_line()+geom_smooth(method = &quot;lm&quot;)
 
 x1y1+x2y2+x3y3+x4y4</code></pre>
-<p><img src="Anscombe_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="Anscombe_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>Esses quatro gráficos lado a lado apresentam a linha azul como a reta de regressão via MQO ajustada e a faixa cinza ao seu redor o intervalo de confiança. Os pontos de dados em preto (e na linha preta que os liga) representam a relação entre os <span class="math inline">\(X^{&#39;}s\)</span> e <span class="math inline">\(Y^{&#39;}s\)</span>.</p>
 <p>O trabalho de Anscombe nos sugere que uma inspeção visual dos resíduos presentes em cada regressão pode fornecer uma melhor noção da função que explicaria tais relacionamentos com maior acurácia, diferentemente daqueles pesquisadores que se preocupam somente em se obter os coeficientes (regressores) e o coeficiente de determinação <span class="math inline">\(R^{2}\)</span> se esquecendo das armadilhas que as vezes a regressão nos impõe quando não se presta atenção na <em>inferência causal</em> entre as variáveis investigadas.</p>
 <p>Lembre-se da atenção e cuidados especiais em relação a confusão de que regressão implica causalidade! Em muitas situações a covariação entre variáveis é ilegítima, na medida em que a relação é na verdade causada por um terceiro fator, que não foi ou não pode ser mensurado.</p>

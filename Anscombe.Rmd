@@ -105,8 +105,7 @@ ans%>%
     desvpady1=sd(y1),
     desvpady2=sd(y2),
     desvpady3=sd(y3),
-    desvpady4=sd(y4),
-    )
+    desvpady4=sd(y4),)
 ```
 
 
