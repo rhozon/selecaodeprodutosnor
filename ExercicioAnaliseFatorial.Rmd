@@ -132,9 +132,10 @@ Neste teste se o valor $p> 0,05$ sabemos que a distribuição dos dados não é 
 
 Veremos mais nitidamente com os histogramas:
 
-```{r}
+```{r message=FALSE}
+library(plotly)
 par(mfrow=(c(2,2)))
-hist(dados$v1)
+hv1<-hist(dados$v1)
 hist(dados$v2)
 hist(dados$v3)
 hist(dados$v4)
@@ -142,6 +143,8 @@ hist(dados$v5)
 hist(dados$v6)
 hist(dados$v7)
 hist(dados$v8)
+
+ggplotly(hv1)
 ```
 
 

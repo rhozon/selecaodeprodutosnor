@@ -94,8 +94,116 @@ Você pode baixar o R e o RStudio no site [http://cran.r-project.org/](http://cr
 Caso você queira trabalhar com o R na nuvem, recomendo que você crie uma conta no RStudio Cloud em [https://rstudio.com/products/cloud/](https://rstudio.com/products/cloud/)
 
 
+# Carregando os dados de consumo de óleo para calefação
 
-# Passo a passo no R
+Carrego os dados direto do nosso repositório de datasets upado no GitHub:
+
+```{r message=FALSE}
+# Preprocessamento dos dados ---------------------------------------------------------
+
+oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
+
+str(oleo)
+```
+
+
+
+Em seguida, informo ao R para que as variáveis temperatura e quantidade de isolamento térmico sejam modificadas para numéricas:
+
+
+```{r message=FALSE}
+library(tidyverse)
+oleo<-oleo%>%
+  mutate(
+    temperatura=as.numeric(temperatura),
+    qtdisolamento=as.numeric(qtdisolamento),
+    estilo=as.numeric(estilo))
+```
+
+Veremos como o R interpreta as variáveis agora:
+
+```{r}
+str(oleo)
+```
+
+Vamos rodar os dois modelos de regressão linear múltipla com e sem a _dummie_ de estilo das casas:^[Lembre-se que _partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial_(...)]
+
+```{r message=FALSE}
+regr1 <- lm(consumooleo ~ qtdisolamento, data = oleo)
+regr2 <- lm(consumooleo ~ temperatura, data = oleo)
+regr3 <- lm(consumooleo ~ qtdisolamento+temperatura, data = oleo)
+regr4 <- lm(consumooleo ~ qtdisolamento+temperatura+estilo, data = oleo)
+
+```
+
+Vamos ver os resultados mais completos das regressões:
+
+&nbsp;
+
+```{r echo=FALSE, results='asis', message = FALSE}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(regr1, regr2, regr3, regr4, type="html", 
+          column.labels = c("regr1", "regr2", "regr3", "regr4"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+
+&nbsp;
+
+Agora vamos ver num gráfico da regressão ajustada (como se fosse no Excel), verificando 
+
+
+```{r message=FALSE , fig.width=3, fig.height=3}
+library(ggplot2)
+library(lattice)
+library(pdp)
+require(ggiraph)
+require(ggiraphExtra)
+require(plyr)
+
+a<-ggPredict(regr1,se=TRUE,interactive=TRUE)
+
+b<-ggPredict(regr2,se=TRUE,interactive=TRUE)
+
+c<-ggPredict(regr3,se=TRUE,interactive=TRUE)
+
+d<-ggPredict(regr4,se=TRUE,interactive=TRUE)
+
+a#Resultado da Regressao linear simples de Quantidade de Isolamento em Consumo de Oleo
+
+
+b#Resultado da Regressao de Temperatura em Consumo de Oleo
+
+c#Resultado da Regressao da Qtd Isolamento e Temperatura no Consumo de Oleo
+
+d#Resultado da Regressao c com a dummie de estilo
+
+```
+
+Mas ainda assim, está um pouco difícil a nossa interpretação dessas relações entre as variáveis de nosso modelo de previsão de consumo de óleo para calefação...
+
+
+```{r message=FALSE}
+library(plotly)
+plot_ly(data = oleo, z = ~ qtdisolamento, x = ~ temperatura, y = ~ consumooleo, color=~estilo, colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
+  add_markers( marker = list(size = 5)) 
+```
+
+
+```{r message=FALSE}
+library(plotly)
+# draw 3D scatterplot
+p <- plot_ly(data = oleo, z = ~ qtdisolamento, x = ~ temperatura, y = ~ consumooleo, opacity = 0.6) %>%
+  add_markers() 
+p
+```
+
+
+
+# Passo a passo no R para três variáveis num único gráfico
 
 Para criarmos o gráfico interativo aqui no HTML, utilizo o RMarkdown para com os seguintes pacotes:
 
@@ -106,27 +214,20 @@ library(plotly)
 library(moderndive)
 ```
 
-Após isso, carrego os dados direto do nosso repositório de datasets upado no GitHub:
 
-```{r message=FALSE}
-# Preprocessamento dos dados ---------------------------------------------------------
 
-oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
+Vamos utilizar o primeiro método de gerar o gráfico. Comecemos com a regressão linear múltipla de nosso modelo:
 
-str(oleo)
+```{r}
+hmod <- lm(consumooleo ~ qtdisolamento + temperatura, data = oleo)
+summary(hmod)$coef
 ```
 
-Em seguida, informo ao R para que as variáveis temperatura e quantidade de isolamento térmico sejam modificadas para numéricas:
 
 
-```{r message=FALSE}
-oleo<-oleo%>%
-  mutate(
-    temperatura=as.numeric(temperatura),
-    qtdisolamento=as.numeric(qtdisolamento))
-```
+# Gerando o gráfico 3D no R (passo a passo)
 
-Então defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
+Defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
 
 ```{r message=FALSE}
 # Definicao dos pontos das coordenadas --------------------------------------------
@@ -160,7 +261,7 @@ beta_chapeu <- oleo %>%
   lm(consumooleo ~ qtdisolamento + temperatura, data = .) %>% 
   coef()
 valores_ajustados <- crossing(y_grid, x_grid) %>% 
-  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*y_grid)
+  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*abs(y_grid))
 z_grid <- valores_ajustados %>% 
   pull(z_grid) %>%
   matrix(nrow = length(x_grid)) %>%
@@ -216,6 +317,16 @@ plot_ly() %>%
     )
   )
 ```
+
+
+
+
+
+
+
+
+
+
 
 &nbsp;
 

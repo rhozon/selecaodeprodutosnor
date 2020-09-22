@@ -81,7 +81,7 @@ ans
 Vamos resumir esses dados observando as médias aritméticas:
 
 ```{r}
-ans %>%
+medias<-ans %>%
 summarize(
   mediax1 = mean(x1),
   mediax2 = mean(x2),
@@ -91,12 +91,14 @@ summarize(
   mediay2 = mean(y2),
   mediay3 = mean(y3),
   mediay4 = mean(y4))
+
+t(medias)
 ```
 
 E da mesma maneira, veremos os desvios-padrão:
 
 ```{r}
-ans%>%
+desvios_padrao<-ans%>%
   summarize(
     desvpadx1=sd(x1),
     desvpadx2=sd(x2),
@@ -105,7 +107,10 @@ ans%>%
     desvpady1=sd(y1),
     desvpady2=sd(y2),
     desvpady3=sd(y3),
-    desvpady4=sd(y4),)
+    desvpady4=sd(y4))
+
+t(desvios_padrao)
+
 ```
 
 
@@ -128,7 +133,10 @@ regr2 <- lm(y2 ~ x2, data = ans)
 regr3 <- lm(y3 ~ x3, data = ans)
 regr4 <- lm(y4 ~ x4, data = ans)
 library(texreg)
-screenreg(list(regr1,regr2,regr3,regr4))
+
+
+screenreg(list(regr1,regr2,regr3,regr4)) #Resultado comparativo das quatro regressoes
+
 ```
 
 Veja como os coeficientes de regressão e o $R^{2}$ são idênticos em todos os conjuntos de dados para as regressões lineares simples de $Y$ em $X$.
@@ -140,10 +148,15 @@ Veja como os coeficientes de regressão e o $R^{2}$ são idênticos em todos os 
 Usamos a função ggplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e avaliar o nível de ajuste das reta de regressão estimada aos pontos:
 
 ```{r message=FALSE}
+library(plotly)
+library(ggpmisc)
 library(ggplot2)
+
+
 x1y1<- ggplot(ans, aes(x = x1, y = y1)) +
 geom_point() +
 geom_smooth(method = "lm", se = FALSE)
+
 
 x2y2<- ggplot(ans, aes(x = x2, y = y2)) +
 geom_point() +
@@ -153,21 +166,26 @@ x3y3<- ggplot(ans, aes(x = x3, y = y3)) +
 geom_point() +
 geom_smooth(method = "lm", se = FALSE)
 
+
 x4y4<- ggplot(ans, aes(x = x4, y = y4)) +
 geom_point() +
 geom_smooth(method = "lm", se = FALSE)
 
 
-x1y1 #Diagrama de dispersão de Y1 contra X1
+ggplotly(x1y1)#Diagrama de dispersão de Y1 contra X1
 
-x2y2 #Diagrama de dispersão de Y2 contra X2
+ggplotly(x2y2)#Diagrama de dispersão de Y2 contra X2
 
-x3y3 #Diagrama de dispersão de Y3 contra X3
+ggplotly(x3y3)#Diagrama de dispersão de Y3 contra X3
 
-x4y4 #Diagrama de dispersão de Y4 contra X4
-
+ggplotly(x4y4)#Diagrama de dispersão de Y4 contra X4
 ```
 
+```{r}
+ggscatter(mtcars, x = wt, y = mpg, add = reg.line) +
+  stat_cor(label.x = 3, label.y = 34) +
+  stat_regline_equation(label.x = 3, label.y = 32)
+```
 
 
 
@@ -196,7 +214,10 @@ x3y3 <- ggplot(data=ans,aes(x=x3,y=y3))+
 x4y4 <- ggplot(data=ans,aes(x=x4,y=y4))+
         geom_point()+geom_line()+geom_smooth(method = "lm")
 
-x1y1+x2y2+x3y3+x4y4
+ggplotly(x1y1) 
+ggplotly(x2y2)
+ggplotly(x3y3)
+ggplotly(x4y4)
 ```
 
 
@@ -214,7 +235,7 @@ Outra armadilha envolve o fato de que um modelo bem ajustado não significa nece
 
 &nbsp;
 
-<p style="font-family: times, serif; font-size:9pt; font-style:italic">
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
 "É eRRando que se aprende R." (Jônatan Tatsch)
 </p>
 
