@@ -106,27 +106,9 @@ oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Economet
 str(oleo)
 ```
 
+## Rodando as regressões para prever o consumo de óleo para calefação
 
-
-Em seguida, informo ao R para que as variáveis temperatura e quantidade de isolamento térmico sejam modificadas para numéricas:
-
-
-```{r message=FALSE}
-library(tidyverse)
-oleo<-oleo%>%
-  mutate(
-    temperatura=as.numeric(temperatura),
-    qtdisolamento=as.numeric(qtdisolamento),
-    estilo=as.numeric(estilo))
-```
-
-Veremos como o R interpreta as variáveis agora:
-
-```{r}
-str(oleo)
-```
-
-Vamos rodar os dois modelos de regressão linear múltipla com e sem a _dummie_ de estilo das casas:^[Lembre-se que _partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial_(...)]
+Vamos rodar os dois modelos de regressão linear múltipla com e sem a _dummie_ de estilo das casas: (Lembre-se que _"partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial"_(...))
 
 ```{r message=FALSE}
 regr1 <- lm(consumooleo ~ qtdisolamento, data = oleo)
@@ -174,7 +156,6 @@ d<-ggPredict(regr4,se=TRUE,interactive=TRUE)
 
 a#Resultado da Regressao linear simples de Quantidade de Isolamento em Consumo de Oleo
 
-
 b#Resultado da Regressao de Temperatura em Consumo de Oleo
 
 c#Resultado da Regressao da Qtd Isolamento e Temperatura no Consumo de Oleo
@@ -183,12 +164,14 @@ d#Resultado da Regressao c com a dummie de estilo
 
 ```
 
+Note que para os gráficos c, temos uma reta de regressão para cada nível de temperatura (em graus Fahrenheit) e no d, temos uma reta de regressão para cada estilo conforme temperatura. Perceba que os valores das inclinações não mudam, mas os valores dos interceptos sim (por quê ?).
+
 Mas ainda assim, está um pouco difícil a nossa interpretação dessas relações entre as variáveis de nosso modelo de previsão de consumo de óleo para calefação...
 
 
 ```{r message=FALSE}
 library(plotly)
-plot_ly(data = oleo, z = ~ qtdisolamento, x = ~ temperatura, y = ~ consumooleo, color=~estilo, colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
+plot_ly(data = oleo, z = ~ consumooleo, x = ~ temperatura, y = ~ qtdisolamento, color=~estilo, colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
   add_markers( marker = list(size = 5)) 
 ```
 
@@ -196,14 +179,13 @@ plot_ly(data = oleo, z = ~ qtdisolamento, x = ~ temperatura, y = ~ consumooleo, 
 ```{r message=FALSE}
 library(plotly)
 # draw 3D scatterplot
-p <- plot_ly(data = oleo, z = ~ qtdisolamento, x = ~ temperatura, y = ~ consumooleo, opacity = 0.6) %>%
+p <- plot_ly(data = oleo, z = ~ consumooleo, x = ~ temperatura, y = ~ qtdisolamento, opacity = 0.6) %>%
   add_markers() 
 p
 ```
 
 
-
-# Passo a passo no R para três variáveis num único gráfico
+# Gerando o gráfico 3D no R (passo a passo)
 
 Para criarmos o gráfico interativo aqui no HTML, utilizo o RMarkdown para com os seguintes pacotes:
 
@@ -214,19 +196,6 @@ library(plotly)
 library(moderndive)
 ```
 
-
-
-Vamos utilizar o primeiro método de gerar o gráfico. Comecemos com a regressão linear múltipla de nosso modelo:
-
-```{r}
-hmod <- lm(consumooleo ~ qtdisolamento + temperatura, data = oleo)
-summary(hmod)$coef
-```
-
-
-
-# Gerando o gráfico 3D no R (passo a passo)
-
 Defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
 
 ```{r message=FALSE}
@@ -234,9 +203,9 @@ Defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
 # Obtenho os pontos das coordenadas para o 3D scatterplot
 x_valores <- oleo$temperatura %>% 
   round(3)
-y_valores <- oleo$consumooleo %>% 
+y_valores <- oleo$qtdisolamento %>% 
   round(3)
-z_valores <- oleo$qtdisolamento %>% 
+z_valores <- oleo$consumooleo %>% 
   round(3)
 ```
 
@@ -257,11 +226,14 @@ Então construo o eixo $z$, obtendo os valores da regressão linear múltipla es
 # 1) parametros alfa e beta estimados
 # 2) valores ajustados do produto externo de x_grid e y_grid
 # 3) extracao de z_grid (essa matriz precisa de dimensoes especificas)
+
 beta_chapeu <- oleo %>% 
   lm(consumooleo ~ qtdisolamento + temperatura, data = .) %>% 
   coef()
+
 valores_ajustados <- crossing(y_grid, x_grid) %>% 
-  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*abs(y_grid))
+  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*y_grid)
+
 z_grid <- valores_ajustados %>% 
   pull(z_grid) %>%
   matrix(nrow = length(x_grid)) %>%
@@ -319,12 +291,219 @@ plot_ly() %>%
 ```
 
 
+# Mas e a _dummie_ de estilo colonial ? Como insiro ela no gráfico interativo ?
+
+
+Vamos utilizar um método mais simples para gerar esse gráfico. Inicialmente repassaremos a construção do gráfico acima (num outro estilo) em seguida iremos inserir uma outra superfície para representar a inclusão da _dummie_ de estilo. Comecemos com a regressão linear múltipla de nosso modelo:
+
+```{r message=FALSE}
+mod <- lm(consumooleo ~ temperatura + qtdisolamento, data = oleo)
+mod
+```
+
+
+Primeiro, crie um _range_ dos pares de valores possíveis das variáveis explicativas. Esse _range_ deve estar acima do intervalo real dos dados presentes em cada variável. Fizemos isso para você e armazenamos o resultado como um quadro de dados chamado range.
+
+```{r}
+range <- expand.grid(temperatura = seq(5, 90, by = 5), 
+                     qtdisolamento = seq(2, 15, by = 3))
+```
+
+Agora vamos ver como as explicativas se comportam no gráfico frente a dependente:
+
+```{r message=FALSE}
+padrao_explicativas <- ggplot(data = oleo, 
+                     aes(x = qtdisolamento, y = temperatura)) + 
+                     geom_point(aes(color = consumooleo)) + 
+                     theme_bw()
+
+ggplotly(padrao_explicativas)
+```
+
+Agora use a função augment() para criar um data.frame que contém os valores que o modelo produz para cada linha da seu range.
+
+```{r}
+estimativa <- broom::augment(mod, newdata = range)
+```
+
+Use geom_tile para ilustrar esses valores previstos no gráfico padrao_explicativas. Use aesthetic para preenchimento e defina alpha = 0.5.
+
+
+```{r}
+grafpreenchido<-padrao_explicativas + 
+            geom_tile(data = estimativa, aes(fill = .fitted), alpha = 0.5)
+
+ggplotly(grafpreenchido)
+```
+
+.fitted é o mesmo que estimado ou ajustado para onde você posicionar seu mouse no gráfico.
+
+
+Agora, para definirmos um plano para a superfície da regressão, precisamos rever nosso modelo regredido (sem a dummie):
+
+```{r}
+summary(mod)$coef
+```
+
+
+Usaremos add_surface() para desenhar um plano através da nuvem de pontos definindo z = ~ plano. [Veja a Wikipedia para a definição de um produto externo de matrizes](https://en.wikipedia.org/wiki/Outer_product). A seguir, usaremos a função outer() para calcular os valores do plano.
+
+```{r}
+range_x <- seq(5, 90, length = 70)#representa <min temperatura e >max temperatura
+range_y <- seq(2, 15, length = 70)#representa <min qtdisolamento e >max qtdisolamento
+
+plano <- outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
+         summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})
+```
+
+Lembrando que esses valores para as coordenadas $x$ e $y$ acima descritos são as mesmas definidas em nosso range anteriormente. É interessante que saibamos que os valores desses ranges precisam cobrir abaixo e acima dos limites inferiores dos valores mínimos e máximos para as variáveis contidas neles.
+
+Após delinearmos os valores do plano, podemos agora adicionar os valores regredidos de nosso modelo sem a _dummie_ como uma reta superfície:
+
+```{r}
+p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano, showscale = FALSE)
+```
+
+Agora que temos dois planos diferentes de superfície, inserimos o modelo completo com seus coeficientes:
+
+```{r}
+modI <- lm(consumooleo ~ temperatura + qtdisolamento + estilo, data = oleo)
+summary(modI)$coef
+```
+
+Então finalmente obtemos os valores dos planos (superfícies):
+
+```{r}
+plano0<-outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
+               summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})
+
+plano1<-outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
+               summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b +                                 summary(modI)$coef[4,1]})
+
+```
+
+Usando finalmente a função plot_ly para desenhar o gráfico de dispersão 3D para consumooleo como uma função de temperatura, qtdisolamento e estilo mapeando a variável $z$ para a resposta e as variáveis $x$ e $y$ para as variáveis explicativas. A quantidade de isolamento deve estar no eixo x e a temperatura deve estar no eixo y. Use a cor para representar o estilo.
+
+
+```{r}
+p <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
+  add_markers(color = ~estilo) 
+p
+```
+
+
+Então desenhamos os dois planos:
+
+```{r message=FALSE}
+p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano0, showscale = FALSE) %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano1, showscale = FALSE)
+```
+
+Vamos comparar os valores das regressões sem e com a dummie de estilo:
+
+
+```{r echo=FALSE, results='asis', message = FALSE}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(mod, modI, type="html", 
+          column.labels = c("mod", "modI"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+
+&nbsp;
+
+## Exercício proposto
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+*Para você que já é usuário do R, fica como exercício fazer esse gráfico com a variável estilo como factor (use mutate e as.factor) para transformá-la.
+</p>
+
+
+### Solução
+
+```{r message=FALSE}
+oleo<-oleo%>%
+  mutate(estilo=as.factor(estilo))
+
+str(oleo)
+
+```
+
+Nova regressão:
+
+```{r}
+modII<-lm(consumooleo ~ temperatura + qtdisolamento + estilo, data = oleo)
+summary(modII)$coef
+```
 
 
 
+Agora com os novos valores regredidos temos:
+
+```{r}
+range_x <- seq(5, 90, length = 70)#representa <min temperatura e >max temperatura
+range_y <- seq(2, 15, length = 70)#representa <min qtdisolamento e >max qtdisolamento
+
+planofator <- outer(range_x, range_y, function(a, b){summary(modII)$coef[1,1] + 
+    summary(modII)$coef[2,1]*a + summary(modII)$coef[3,1]*b})
+```
+
+Então inserimos na superficie:
 
 
+```{r}
+p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)
+```
 
+Ficou estranho....vamos criar a dummie com a condição sim=0 e não=1 ou simplesmente quali. Lembrando da condição que *"partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial (...)"*
+
+
+```{r}
+
+oleo<-oleo%>%
+mutate(dummie=ifelse(estilo==1,"Sim",
+                     ifelse(estilo==4,"Sim",
+                     ifelse(estilo==6,"Sim",
+                     ifelse(estilo==7,"Sim",
+                     ifelse(estilo==8,"Sim",
+                     ifelse(estilo==10,"Sim",
+                     ifelse(estilo==12,"Sim","Nao"))))))))
+
+str(oleo)
+
+oleo$dummie
+
+```
+
+Refazemos a regressão 
+
+```{r}
+modIII<-lm(consumooleo ~ temperatura + qtdisolamento + dummie, data = oleo)
+summary(modIII)$coef
+```
+
+Vamos inserir no gráfico
+
+```{r}
+p <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
+  add_markers(color = ~dummie) 
+p
+```
+
+
+```{r message=FALSE}
+
+fig <- plot_ly(z = ~plano0)
+fig <- fig %>% add_surface()
+
+fig
+```
 
 
 

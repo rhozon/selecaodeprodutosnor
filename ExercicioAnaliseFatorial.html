@@ -402,6 +402,9 @@ div.tocify {
     <li>
       <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
     </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -1482,7 +1485,8 @@ shapiro.test(dados$v1)</code></pre>
 ## W = 0.79314, p-value = 4.929e-05</code></pre>
 <p>Neste teste se o valor <span class="math inline">\(p&gt; 0,05\)</span> sabemos que a distribuição dos dados não é significativamente diferente da distribuição normal. Em outras palavras, podemos assumir a normalidade. Como vemos, nenhuma delas possui distribuição normal.</p>
 <p>Veremos mais nitidamente com os histogramas:</p>
-<pre class="r"><code>par(mfrow=(c(2,2)))
+<pre class="r"><code>library(plotly)
+par(mfrow=(c(2,2)))
 hist(dados$v1)
 hist(dados$v2)
 hist(dados$v3)
