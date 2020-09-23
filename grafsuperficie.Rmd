@@ -16,28 +16,28 @@ knitr::opts_chunk$set(echo = TRUE)
 ***
 
 &nbsp;
+<!-- Resumo ====================================================================== -->
 
-#### Resumo
+#### **Resumo**
 
+<!-- Resumo ====================================================================== -->
 
 <small>Este tutorial demonstra como gerar um gráfico de superfície de regressão linear múltipla interativa utilizando o R. Aqui neste exemplo peguei os dados do curso **"Introdução à Econometria utilizando o Excel"** com o intuito de estimular os estudantes a interagirem com os dados que analisamos durante o aprendizado.
 
 **Palavras-chave**: Gráfico 3D de regressão múltipla, interação, econometria, R</small>
 
-
 ***
 
+<center>
 ![](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/introeconometriacapa.png?raw=true){ width=80% }
+</center>
 
 ***
-
-
-
-
+<!-- ============================================================================= -->
 # Preliminares (dados do exemplo)
+<!-- ============================================================================= -->
 
 Como vimos em nossas vídeo aulas de regressão linear múltipla, o gráfico de dispersão entre somente duas variáveis não atende quando precisamos inserir mais variáveis explicativas $X$ em nosso modelo.
-
 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
 Dadas as estimativas de MQO para o modelo de regressão linear múltipla, vamos supor que precisássemos estimar o consumo de óleo para calefação em residências no inverno canadense. Vamos começar com um conjunto de dados obtido por uma amostra de 15 domicílios gerada por um projetista responsável por esta análise.
@@ -47,20 +47,49 @@ Embora pudéssemos considerar muitas variáveis, por motivo de simplificação d
 + A temperatura atmosférica média diária (em graus Fahrenheit) durante o mês da coleta ($X_{1}$);
 + Quantidade de isolamento térmico da residência medida em polegadas ($X_{2}$)
 
-
 Como um gráfico tridimensional descreve com maior detalhe o comportamento da variável $Y$ (consumo de óleo) contra as outras duas explicativas (temperatura e isolamento) temos uma primeira inspeção visual das pistas para causa e efeito:
 </p>
 
-
 Se você consultar o e-book, na página 58, verá esse gráfico:
 
+<center>
 ![](https://github.com/rhozon/Introdu-o-Econometria-com-Excel/blob/master/superficieregressao.png?raw=true){ width=50% }
+</center>
 
-Assim como no e-book, a imagem reproduzida acima, não nos permite interagir com o gráfico.  Aqui, neste breve tutorial, reproduziremos utilizando o R o passo a passo de como criamos esse gráfico de forma interativa e plenamente capaz ilustrar as relações entre essas três variáveis.
+Assim como no e-book, a imagem reproduzida acima, não nos permite interagir com o gráfico.  
 
+Você pode rodar esse script no RStudio caso deseje construí-lo e interagir com ele (somente no R):
+
+```{r chunk1}
+#library(car)
+#library(rgl)
+#library(tidyverse)
+#library(ggplot2)
+
+#oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
+
+#v1<-oleo$qtdisolamento
+#v2<-oleo$temperatura
+#y1<-oleo$consumooleo
+
+#scatter3d(x = v1, y = v2, z = y1)
+
+#str(oleo)
+
+#scatter3d(x = v1, y = v2, z = y1, groups = oleo$estilo,
+ #         xlab = "Quantidade de Isolamento",
+ #         ylab = "Temperatura",
+ #         zlab = "Consumo de oleo para Calefacao")
+```
+
+Aqui, neste breve tutorial, reproduziremos utilizando o R o passo a passo de como criamos esse tipo de gráfico, de forma interativa e plenamente capaz ilustrar as relações entre essas três variáveis.
+
+<!-- ============================================================================= -->
 # O que é o R ?
+<!-- ============================================================================= -->
 
-R é um software livre para análise de dados. Foi desenvolvido em em 1996, com os professores de estatística Ross Ihaka e Robert Gentleman, da Universidade de Auckland que criaram uma nova linguagem computacional, similar a linguagem S desenvolvida por John Chambers.
+
+R é um _software_ livre para análise de dados. Foi desenvolvido em em 1996, com os professores de estatística Ross Ihaka e Robert Gentleman, da Universidade de Auckland que criaram uma nova linguagem computacional, similar a linguagem S desenvolvida por John Chambers.
 
 Já outros o definem assim:
 
@@ -68,9 +97,12 @@ Já outros o definem assim:
 R é uma linguagem de programação estatística e gráfica que vem se especializando na manipulação, análise e visualização de dados, sendo atualmente considerada uma das melhores ferramentas para essa finalidade. A linguagem ainda possui como diferencial a facilidade no aprendizado, mesmo para aqueles que nunca tiveram contato anterior com programação. ([Didática Tech](https://didatica.tech/a-linguagem-r/))
 </p>
 
+<!-- ============================================================================= -->
 # Porque utilizar o R ?
+<!-- ============================================================================= -->
 
-+ O R é um software gratuito com código aberto com uma linguagem acessível;
+
++ O R é um _software_ gratuito com código aberto com uma linguagem acessível;
 
 + a sua expansão de uso é exponencial entre pesquisadores, engenheiros e estatísticos;
 
@@ -82,7 +114,6 @@ R é uma linguagem de programação estatística e gráfica que vem se especiali
 
 + Está disponível para diferentes plataformas: Windows, Linux e Mac
 
-
 Segundo o site [datascienceacademy:](http://datascienceacademy.com.br/blog/linguagem-r-por-que-e-hora-de-aprender/)
 
 <p style="font-family: times, serif; font-size:9pt; font-style:italic">
@@ -93,12 +124,13 @@ Você pode baixar o R e o RStudio no site [http://cran.r-project.org/](http://cr
 
 Caso você queira trabalhar com o R na nuvem, recomendo que você crie uma conta no RStudio Cloud em [https://rstudio.com/products/cloud/](https://rstudio.com/products/cloud/)
 
-
+<!-- ============================================================================= -->
 # Carregando os dados de consumo de óleo para calefação
+<!-- ============================================================================= -->
 
 Carrego os dados direto do nosso repositório de datasets upado no GitHub:
 
-```{r message=FALSE}
+```{r chunk2, message=FALSE}
 # Preprocessamento dos dados ---------------------------------------------------------
 
 oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
@@ -106,11 +138,26 @@ oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Economet
 str(oleo)
 ```
 
+Vamos observar o padrão de correlação das variáveis com um gráfico da matriz de correlação:
+
+```{r chunk3, message=FALSE}
+# Grafico da matriz de correlacao de todas as variaveis ------------------------------
+
+library(corrplot)
+
+M <- cor(oleo)
+corrplot(M, method = "number")
+```
+
+<!-- ============================================================================= -->
 ## Rodando as regressões para prever o consumo de óleo para calefação
+<!-- ============================================================================= -->
 
 Vamos rodar os dois modelos de regressão linear múltipla com e sem a _dummie_ de estilo das casas: (Lembre-se que _"partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial"_(...))
 
-```{r message=FALSE}
+```{r chunk4, message=FALSE}
+# Rodo 2 modelos de regressão simples e dois múltiplo --------------------------------
+
 regr1 <- lm(consumooleo ~ qtdisolamento, data = oleo)
 regr2 <- lm(consumooleo ~ temperatura, data = oleo)
 regr3 <- lm(consumooleo ~ qtdisolamento+temperatura, data = oleo)
@@ -118,11 +165,23 @@ regr4 <- lm(consumooleo ~ qtdisolamento+temperatura+estilo, data = oleo)
 
 ```
 
+Assim como na função corrplot, podemos obter o coeficiente de correlação múltipla de todas as variáveis é:
+
+```{r chunk5}
+# r multiplo de todas as variaveis de nosso dataset ----------------------------------
+
+sqrt(summary(regr4)$r.squared)
+
+
+```
+
+
 Vamos ver os resultados mais completos das regressões:
 
 &nbsp;
 
-```{r echo=FALSE, results='asis', message = FALSE}
+<center>
+```{r chunk 6, echo=FALSE, message=FALSE, results='asis'}
 #http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
 library(stargazer)
 stargazer(regr1, regr2, regr3, regr4, type="html", 
@@ -132,13 +191,14 @@ stargazer(regr1, regr2, regr3, regr4, type="html",
           notes.append = FALSE, 
           header=FALSE) 
 ```
+</center>
 
 &nbsp;
 
-Agora vamos ver num gráfico da regressão ajustada (como se fosse no Excel), verificando 
+Agora vamos ver num gráfico da regressão ajustada (como se fosse no Excel), verificando cada relação entre as variáveis como estimado pelas regressões acima:
 
 
-```{r message=FALSE , fig.width=3, fig.height=3}
+```{r chunk7, message=FALSE, fig.width=6, fig.height=3}
 library(ggplot2)
 library(lattice)
 library(pdp)
@@ -154,13 +214,13 @@ c<-ggPredict(regr3,se=TRUE,interactive=TRUE)
 
 d<-ggPredict(regr4,se=TRUE,interactive=TRUE)
 
-a#Resultado da Regressao linear simples de Quantidade de Isolamento em Consumo de Oleo
+a # Resultado da Regressao linear simples de Quantidade de Isolamento em Consumo de Oleo
 
-b#Resultado da Regressao de Temperatura em Consumo de Oleo
+b # Resultado da Regressao de Temperatura em Consumo de Oleo --------------------------
 
-c#Resultado da Regressao da Qtd Isolamento e Temperatura no Consumo de Oleo
+c # Resultado da Regressao da Qtd Isolamento e Temperatura no Consumo de Oleo ---------
 
-d#Resultado da Regressao c com a dummie de estilo
+d # Resultado da Regressao c com a dummie de estilo -----------------------------------
 
 ```
 
@@ -168,243 +228,128 @@ Note que para os gráficos c, temos uma reta de regressão para cada nível de t
 
 Mas ainda assim, está um pouco difícil a nossa interpretação dessas relações entre as variáveis de nosso modelo de previsão de consumo de óleo para calefação...
 
+<!-- ============================================================================= -->
+# Construção da superfície de regressão num gráfico 3D interativo no R
+<!-- ============================================================================= -->
 
-```{r message=FALSE}
-library(plotly)
-plot_ly(data = oleo, z = ~ consumooleo, x = ~ temperatura, y = ~ qtdisolamento, color=~estilo, colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
-  add_markers( marker = list(size = 5)) 
-```
+[Caso você queira um script pronto adapte esse aqui](https://gist.github.com/rudeboybert/9905f44013c18d6add279cf13ab8e398) 
 
+Mas, vamos utilizar um método mais simples para gerar esse gráfico.
 
-```{r message=FALSE}
-library(plotly)
-# draw 3D scatterplot
-p <- plot_ly(data = oleo, z = ~ consumooleo, x = ~ temperatura, y = ~ qtdisolamento, opacity = 0.6) %>%
-  add_markers() 
+```{r chunk8, message=FALSE}
+
+library(plotly) # Pacote para utilizar a funcao plot_ly para graficos interativos via RMarkdown
+
+p<-plot_ly(data = oleo, z = ~ consumooleo, x = ~ temperatura, y = ~ qtdisolamento, color=~estilo, colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
+           add_markers(x = ~ temperatura,
+                       y = ~ qtdisolamento,
+                       z = ~ consumooleo, #No eixo z sempre coloque a variavel dependente
+                       marker = list(size = 5),
+                       hoverinfo = 'text',
+                       text = ~paste(
+                       "Consumo de Oleo para Calefacao", consumooleo, "<br>",
+                       "Quantidade de Isolamento Termico ", qtdisolamento, "<br>",
+                       "Temperatura atmosferica ", temperatura))
+                        
+
 p
 ```
 
+Inicialmente repassaremos a construção do gráfico acima (num outro estilo) em seguida iremos inserir uma outra superfície para representar a inclusão da _dummie_ de estilo. Comecemos com a regressão linear múltipla de nosso modelo, para vermos os coeficientes:
 
-# Gerando o gráfico 3D no R (passo a passo)
-
-Para criarmos o gráfico interativo aqui no HTML, utilizo o RMarkdown para com os seguintes pacotes:
-
-
-```{r message=FALSE}
-library(tidyverse)
-library(plotly)
-library(moderndive)
-```
-
-Defino os eixos tridimensionais nas coordenadas $x,y,z$ para o gráfico:
-
-```{r message=FALSE}
-# Definicao dos pontos das coordenadas --------------------------------------------
-# Obtenho os pontos das coordenadas para o 3D scatterplot
-x_valores <- oleo$temperatura %>% 
-  round(3)
-y_valores <- oleo$qtdisolamento %>% 
-  round(3)
-z_valores <- oleo$consumooleo %>% 
-  round(3)
-```
-
-Construo a definição da malha que cubrirá os eixos $x$ e $y$ do plano:
-
-```{r message=FALSE}
-# Defino o plano da regressao -------------------------------------------------
-# Construcao da malha dos elementos x e y
-x_grid <- seq(from = min(x_valores), to = max(x_valores), length = 50)
-y_grid <- seq(from = min(y_valores), to = max(y_valores), length = 50)
-```
-
-Então construo o eixo $z$, obtendo os valores da regressão linear múltipla estimada e seus coeficientes:
-
-
-```{r message=FALSE}
-# Construcao da malha do eixo z obtendo
-# 1) parametros alfa e beta estimados
-# 2) valores ajustados do produto externo de x_grid e y_grid
-# 3) extracao de z_grid (essa matriz precisa de dimensoes especificas)
-
-beta_chapeu <- oleo %>% 
-  lm(consumooleo ~ qtdisolamento + temperatura, data = .) %>% 
-  coef()
-
-valores_ajustados <- crossing(y_grid, x_grid) %>% 
-  mutate(z_grid = beta_chapeu[1] + beta_chapeu[2]*x_grid + beta_chapeu[3]*y_grid)
-
-z_grid <- valores_ajustados %>% 
-  pull(z_grid) %>%
-  matrix(nrow = length(x_grid)) %>%
-  t()
-```
-
-Declaro os elementos de texto para cada ponto no plano:
-
-```{r message=FALSE}
-
-text_grid <- valores_ajustados %>% 
-  pull(z_grid) %>%
-  round(3) %>% 
-  as.character() %>% 
-  paste("Consumo de Oleo ", ., sep = "") %>% 
-  matrix(nrow = length(x_grid)) %>%
-  t()
-```
-
-Utilizo a função plot_ly do R para gerar a visualização:
-
-```{r message=FALSE}
-
-plot_ly() %>%
-  # 3D scatterplot:
-  add_markers(
-    x = x_valores,
-    y = y_valores,
-    z = z_valores,
-    marker = list(size = 5),
-    hoverinfo = 'text',
-    text = ~paste(
-      "Quantidade de Isolamento Termico ", z_valores, "<br>",
-      "Consumo de Oleo para Calefacao ", y_valores, "<br>",
-      "Temperatura atmosferica ", x_valores 
-    )
-  ) %>%
-  # Plano da regressao:
-  add_surface(
-    x = x_grid,
-    y = y_grid,
-    z = z_grid,
-    hoverinfo = 'text',
-    text = text_grid
-  ) %>%
-  # Nomes dos eixos e titulo:
-  layout(
-    title = "Superficie de Regressao 3d interativa",
-    scene = list(
-      zaxis = list(title = "y: consumooleo"),
-      yaxis = list(title = "x2: temperatura"),
-      xaxis = list(title = "x1: qtdisolamento")
-    )
-  )
-```
-
-
-# Mas e a _dummie_ de estilo colonial ? Como insiro ela no gráfico interativo ?
-
-
-Vamos utilizar um método mais simples para gerar esse gráfico. Inicialmente repassaremos a construção do gráfico acima (num outro estilo) em seguida iremos inserir uma outra superfície para representar a inclusão da _dummie_ de estilo. Comecemos com a regressão linear múltipla de nosso modelo:
-
-```{r message=FALSE}
+```{r chunk9, message=FALSE}
 mod <- lm(consumooleo ~ temperatura + qtdisolamento, data = oleo)
 mod
 ```
 
+Primeiro, criamos um _range_ dos pares de valores possíveis das variáveis explicativas. Esse _range_ deve estar acima do intervalo real dos dados presentes em cada variável. Fizemos isso para armazenarmos o resultado como um objeto de dados chamado range.
 
-Primeiro, crie um _range_ dos pares de valores possíveis das variáveis explicativas. Esse _range_ deve estar acima do intervalo real dos dados presentes em cada variável. Fizemos isso para você e armazenamos o resultado como um quadro de dados chamado range.
-
-```{r}
-range <- expand.grid(temperatura = seq(5, 90, by = 5), 
+```{r chunk10}
+range <- expand.grid(temperatura = seq(5, 90, by = 5), #valor abaixo do min e acima do max
                      qtdisolamento = seq(2, 15, by = 3))
 ```
 
 Agora vamos ver como as explicativas se comportam no gráfico frente a dependente:
 
-```{r message=FALSE}
+```{r chunk11, message=FALSE}
 padrao_explicativas <- ggplot(data = oleo, 
-                     aes(x = qtdisolamento, y = temperatura)) + 
-                     geom_point(aes(color = consumooleo)) + 
-                     theme_bw()
+                              aes(x = qtdisolamento, y = temperatura)) + #aqui no grafico coloquei a temperatura no eixo vertical para facilitar a visualizacao
+                              geom_point(aes(color = consumooleo)) + 
+                              theme_bw()
 
 ggplotly(padrao_explicativas)
 ```
 
-Agora use a função augment() para criar um data.frame que contém os valores que o modelo produz para cada linha da seu range.
+Agora use a função augment() para criar um data.frame que contém os valores que o modelo produz para cada linha da seu _range_.
 
-```{r}
+```{r chunk12}
 estimativa <- broom::augment(mod, newdata = range)
 ```
 
 Use geom_tile para ilustrar esses valores previstos no gráfico padrao_explicativas. Use aesthetic para preenchimento e defina alpha = 0.5.
 
-
-```{r}
+```{r chunk13}
 grafpreenchido<-padrao_explicativas + 
-            geom_tile(data = estimativa, aes(fill = .fitted), alpha = 0.5)
+                geom_tile(data = estimativa, aes(fill = .fitted), alpha = 0.5)
 
 ggplotly(grafpreenchido)
 ```
 
 .fitted é o mesmo que estimado ou ajustado para onde você posicionar seu mouse no gráfico.
 
+Agora, para definirmos um plano para a superfície da regressão, precisamos rever nosso modelo regredido (sem a _dummie_):
 
-Agora, para definirmos um plano para a superfície da regressão, precisamos rever nosso modelo regredido (sem a dummie):
-
-```{r}
+```{r chunk14}
 summary(mod)$coef
 ```
 
+Usaremos add_surface() para desenhar um plano através da nuvem de pontos definindo z = ~ plano. [Veja a Wikipedia para a definição de um produto externo de vetores](https://en.wikipedia.org/wiki/Outer_product) [veja o artigo traduzido](https://pt.wikipedia.org/wiki/Produto_vetorial). A seguir, usaremos a função outer() para calcular os valores do plano.
 
-Usaremos add_surface() para desenhar um plano através da nuvem de pontos definindo z = ~ plano. [Veja a Wikipedia para a definição de um produto externo de matrizes](https://en.wikipedia.org/wiki/Outer_product). A seguir, usaremos a função outer() para calcular os valores do plano.
+```{r chunk15}
 
-```{r}
-range_x <- seq(5, 90, length = 70)#representa <min temperatura e >max temperatura
-range_y <- seq(2, 15, length = 70)#representa <min qtdisolamento e >max qtdisolamento
+range_x <- seq(from = min(oleo$temperatura)-0.5*min(oleo$temperatura), to = max(oleo$temperatura)+0.5*max(oleo$temperatura), length = 70)# representa <min temperatura e >max temperatura
+
+range_y <- seq(from = min(oleo$qtdisolamento)-0.5*min(oleo$qtdisolamento), to = max(oleo$qtdisolamento)+0.5*max(oleo$qtdisolamento), length = 70)# representa <min qtdisolamento e >max qtdisolamento
 
 plano <- outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
-         summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})
+         summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})# representa os coeficientes estimados da regressao
 ```
 
 Lembrando que esses valores para as coordenadas $x$ e $y$ acima descritos são as mesmas definidas em nosso range anteriormente. É interessante que saibamos que os valores desses ranges precisam cobrir abaixo e acima dos limites inferiores dos valores mínimos e máximos para as variáveis contidas neles.
 
 Após delinearmos os valores do plano, podemos agora adicionar os valores regredidos de nosso modelo sem a _dummie_ como uma reta superfície:
 
-```{r}
-p %>%
-  add_surface(x = ~range_x, y = ~range_y, z = ~plano, showscale = FALSE)
+```{r chunk16, message=FALSE}
+# Grafico 3D das tres variaveis e seu relacionamento----------------------------------
+
+p<-p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano, showscale = FALSE)%>%
+  # Nomes dos eixos:
+  layout(
+    title = "Grafico 3D da superficie de regressao",
+    scene = list(
+      zaxis = list(title = "Consumo de Oleo para Calefacao"),
+      yaxis = list(title = "Temperatura Atmosferica"),
+      xaxis = list(title = "Quantidade de Isolamento Termico")))
 ```
+
+<!-- ============================================================================= -->
+## Inserindo a _dummie_ de estilo das casas
+<!-- ============================================================================= -->
 
 Agora que temos dois planos diferentes de superfície, inserimos o modelo completo com seus coeficientes:
 
-```{r}
+```{r chunk17}
 modI <- lm(consumooleo ~ temperatura + qtdisolamento + estilo, data = oleo)
 summary(modI)$coef
 ```
 
-Então finalmente obtemos os valores dos planos (superfícies):
+Vamos comparar os valores das regressões sem e com a _dummie_ de estilo:
 
-```{r}
-plano0<-outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
-               summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})
+&nbsp;
 
-plano1<-outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
-               summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b +                                 summary(modI)$coef[4,1]})
-
-```
-
-Usando finalmente a função plot_ly para desenhar o gráfico de dispersão 3D para consumooleo como uma função de temperatura, qtdisolamento e estilo mapeando a variável $z$ para a resposta e as variáveis $x$ e $y$ para as variáveis explicativas. A quantidade de isolamento deve estar no eixo x e a temperatura deve estar no eixo y. Use a cor para representar o estilo.
-
-
-```{r}
-p <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
-  add_markers(color = ~estilo) 
-p
-```
-
-
-Então desenhamos os dois planos:
-
-```{r message=FALSE}
-p %>%
-  add_surface(x = ~range_x, y = ~range_y, z = ~plano0, showscale = FALSE) %>%
-  add_surface(x = ~range_x, y = ~range_y, z = ~plano1, showscale = FALSE)
-```
-
-Vamos comparar os valores das regressões sem e com a dummie de estilo:
-
-
-```{r echo=FALSE, results='asis', message = FALSE}
+<center>
+```{r chunk18, echo=FALSE, results='asis', message = FALSE}
 #http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
 library(stargazer)
 stargazer(mod, modI, type="html", 
@@ -414,19 +359,75 @@ stargazer(mod, modI, type="html",
           notes.append = FALSE, 
           header=FALSE) 
 ```
+</center>
 
 &nbsp;
 
+Então finalmente obtemos os valores dos planos (superfícies):
+
+```{r chunk20}
+# Os valores de plano (regressao mod) representados pelas retas de MQO serao utilizados como valores de superficie de curva no grafico
+
+#plano<-outer(range_x, range_y, function(a, b){summary(mod)$coef[1,1] + 
+#             summary(mod)$coef[2,1]*a + summary(mod)$coef[3,1]*b})
+
+plano1<-outer(range_x, range_y, 
+              function(a, b){summary(mod)$coef[1,1] +summary(mod)$coef[2,1]*a +                                    summary(mod)$coef[3,1]*b + summary(modI)$coef[4,1] })
+
+```
+
+Note que o objeto plano1 representa uma equação de regressão com os coeficientes de $\widehat{\alpha}$ e $\widehat{\beta}_{1}\mbox{temperatura}+\widehat{\beta}_{2}\mbox{qtdisolamento}$ da regressão mod, ou seja, sem a inclusão da _dummie_ de estilo colonial das casas.
+
+
+Usando finalmente a função plot_ly para desenhar o gráfico de dispersão 3D para consumooleo como uma função de temperatura, qtdisolamento e estilo mapeando a variável $z$ para a resposta e as variáveis $x$ e $y$ para as variáveis explicativas. A quantidade de isolamento deve estar no eixo x e a temperatura deve estar no eixo $y$. Use a cor para representar o estilo.
+
+```{r chunk21}
+grafdummie <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
+  add_markers(color = ~estilo)%>%
+  layout(
+    title = "Superficie de Regressao 3D",
+    scene = list(
+      zaxis = list(title = "Consumo de Oleo para Calefacao"),
+      yaxis = list(title = "Temperatura Atmosferica"),
+      xaxis = list(title = "Quantidade de Isolamento Termico")))
+
+grafdummie
+```
+
+Então desenhamos os dois planos:
+
+```{r chunk22, message=FALSE}
+p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano, showscale = FALSE) 
+
+p2<-p%>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano1, showscale = FALSE)
+
+p2
+```
+
+Quando inserimos uma curva sobre a outra, como as distâncias são extremamente pequenas fica difícil a visualização no gráfico. Note ao passar o mouse trace1 e trace2.
+
+
+
+
+&nbsp;
+
+<!-- ============================================================================= -->
 ## Exercício proposto
+<!-- ============================================================================= -->
+
 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
 *Para você que já é usuário do R, fica como exercício fazer esse gráfico com a variável estilo como factor (use mutate e as.factor) para transformá-la.
 </p>
 
-
+<!-- ============================================================================= -->
 ### Solução
+<!-- ============================================================================= -->
 
-```{r message=FALSE}
+
+```{r chunk23, message=FALSE}
 oleo<-oleo%>%
   mutate(estilo=as.factor(estilo))
 
@@ -436,35 +437,57 @@ str(oleo)
 
 Nova regressão:
 
-```{r}
+```{r chunk24}
 modII<-lm(consumooleo ~ temperatura + qtdisolamento + estilo, data = oleo)
 summary(modII)$coef
 ```
 
+Comparando os modelos de regressão até agora, temos:
+
+&nbsp;
+
+<center>
+```{r echo=FALSE, results='asis', message = FALSE}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(mod, modI, modII, type="html", 
+          column.labels = c("mod", "modI", "modII"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+</center>
+
+&nbsp;
+
+Repare como o valor de $F$ reduz substancialmente neste modelo, e ainda com coeficientes sem significância estatística.
 
 
 Agora com os novos valores regredidos temos:
 
-```{r}
+```{r chunk25}
 range_x <- seq(5, 90, length = 70)#representa <min temperatura e >max temperatura
+
 range_y <- seq(2, 15, length = 70)#representa <min qtdisolamento e >max qtdisolamento
 
 planofator <- outer(range_x, range_y, function(a, b){summary(modII)$coef[1,1] + 
-    summary(modII)$coef[2,1]*a + summary(modII)$coef[3,1]*b})
+    summary(modII)$coef[2,1]*a + summary(modII)$coef[3,1]*b}+ summary(modII)$coef[4,1]+ summary(modII)$coef[5,1]+ summary(modII)$coef[6,1]+ summary(modII)$coef[7,1]+ summary(modII)$coef[8,1]+ summary(modII)$coef[9,1]+ summary(modII)$coef[10,1])
 ```
 
 Então inserimos na superficie:
 
 
-```{r}
-p %>%
-  add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)
+```{r chunk26}
+p3<-p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)       
+p3
 ```
 
-Ficou estranho....vamos criar a dummie com a condição sim=0 e não=1 ou simplesmente quali. Lembrando da condição que *"partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial (...)"*
+Ficou estranho, pois a superfície abaixo do gráfico inicial da regressão mod, se ajustou melhor a nuvem de pontos (veja trace2 e trace1). Vamos criar a dummie com a condição sim=0 e não=1 ou simplesmente quali. Lembrando da condição que *"partindo de uma amostra de 15 casas, nas quais as casas de números 1, 4, 6, 7, 8, 10 e 12 são em estilo colonial (...)"*
 
 
-```{r}
+```{r chunk27}
 
 oleo<-oleo%>%
 mutate(dummie=ifelse(estilo==1,"Sim",
@@ -476,42 +499,89 @@ mutate(dummie=ifelse(estilo==1,"Sim",
                      ifelse(estilo==12,"Sim","Nao"))))))))
 
 str(oleo)
-
-oleo$dummie
-
 ```
 
 Refazemos a regressão 
 
-```{r}
+```{r chunk28}
 modIII<-lm(consumooleo ~ temperatura + qtdisolamento + dummie, data = oleo)
 summary(modIII)$coef
 ```
 
-Vamos inserir no gráfico
+Então comparamos novamente os modelos:
+
+
+&nbsp;
+
+<center>
+```{r echo=FALSE, results='asis', message = FALSE}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(mod, modI, modII, modIII, type="html", 
+          column.labels = c("mod", "modI", "modII", "modIII"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+</center>
+
+&nbsp;
+
+A nossa _dummie_ sim e não, ainda não apresentou significância. O valor de $F$ subiu em relação ao modelo anterior.
+
+Agora construiremos o plano da reta para compararmos graficamente o ajuste:
 
 ```{r}
-p <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
-  add_markers(color = ~dummie) 
-p
+planomodIII <- outer(range_x, range_y, function(a, b){summary(modIII)$coef[1,1] + 
+    summary(modIII)$coef[2,1]*a + summary(modIII)$coef[3,1]*b}+ summary(modIII)$coef[4,1])
 ```
 
 
-```{r message=FALSE}
+Vamos inserir no gráfico todas as retas estimadas
 
-fig <- plot_ly(z = ~plano0)
-fig <- fig %>% add_surface()
-
-fig
+```{r chunk29}
+p %>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~plano1, showscale = FALSE)%>%
+  add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)%>% 
+  add_surface(x = ~range_x, y = ~range_y, z = ~planomodIII, showscale = FALSE)  
 ```
 
+
+Usando os critérios de Akaike e BIC (Schwarz Bayesian Information Criterion) temos a seleção do melhor modelo
+
+```{r}
+
+aic<-AIC(mod, modI, modII, modIII)
+
+bic<-BIC(mod, modI, modII ,modIII)
+```
+
+O modelo com menor valor de AIC ou BIC seria aquele de melhor ajuste.
+
+Vamos ajustar os resultados em ordem do maior para o menor:
+
+```{r}
+aic
+
+bic
+
+```
+
+
+Note que ambos os critérios não selecionam o modelo inicial (mod) como o de melhor ajuste estatístico, mas eles escolhem o modI e modII. 
+
+Fica a pergunta, para você querido aluno...Usando qual critério você escolheria o modelo mais próximo da realidade nesse caso ? Você se orientaria pelas curvas ajustadas aos gráficos (planos ou superfícies) ou você se basearia simplesmente nos critérios de $R^{2}$, AIC ou BIC, teste F ?
+
+Abraços e bons estudos!
 
 
 &nbsp;
 
 ***
 
-
+<!-- ============================================================================= -->
 ##### **Referências**
+<!-- ============================================================================= -->
 
 OZON, R. H. **Introdução à Econometria com Excel**, Curso interativo disponibilizado em Udemy.com, nov./2020.
