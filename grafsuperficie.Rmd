@@ -37,16 +37,25 @@ knitr::opts_chunk$set(echo = TRUE)
 # Preliminares (dados do exemplo)
 <!-- ============================================================================= -->
 
-Como vimos em nossas vídeo aulas de regressão linear múltipla, o gráfico de dispersão entre somente duas variáveis não atende quando precisamos inserir mais variáveis explicativas $X$ em nosso modelo.
+Como vimos em nossas vídeo aulas de regressão linear múltipla, o gráfico de dispersão entre somente duas variáveis não atende com clareza quando precisamos inserir mais variáveis explicativas $X$ em nosso modelo.
 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
-Dadas as estimativas de MQO para o modelo de regressão linear múltipla, vamos supor que precisássemos estimar o consumo de óleo para calefação em residências no inverno canadense. Vamos começar com um conjunto de dados obtido por uma amostra de 15 domicílios gerada por um projetista responsável por esta análise.
+Dadas as estimativas de MQO para o modelo de regressão linear múltipla, vamos supor que precisássemos estimar o **consumo de óleo para calefação** em residências no inverno canadense. Vamos começar com um conjunto de dados obtido por uma amostra de 15 domicílios gerada por um projetista responsável por esta análise.
+</p>
 
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
 Embora pudéssemos considerar muitas variáveis, por motivo de simplificação devemos avaliar somente duas variáveis explicativas nesse caso:
+</p>
 
-+ A temperatura atmosférica média diária (em graus Fahrenheit) durante o mês da coleta ($X_{1}$);
-+ Quantidade de isolamento térmico da residência medida em polegadas ($X_{2}$)
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+$\Rightarrow$ A temperatura atmosférica média diária (em graus Fahrenheit) durante o mês da coleta ($X_{1}$);
+</p>
 
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">   
+$\Rightarrow$ Quantidade de isolamento térmico da residência medida em polegadas ($X_{2}$)
+</p>
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
 Como um gráfico tridimensional descreve com maior detalhe o comportamento da variável $Y$ (consumo de óleo) contra as outras duas explicativas (temperatura e isolamento) temos uma primeira inspeção visual das pistas para causa e efeito:
 </p>
 
@@ -236,7 +245,7 @@ Mas ainda assim, está um pouco difícil a nossa interpretação dessas relaçõ
 
 Mas, vamos utilizar um método mais simples para gerar esse gráfico.
 
-```{r chunk8, message=FALSE}
+```{r chunk8, warning=FALSE, message=FALSE}
 
 library(plotly) # Pacote para utilizar a funcao plot_ly para graficos interativos via RMarkdown
 
@@ -381,7 +390,7 @@ Note que o objeto plano1 representa uma equação de regressão com os coeficien
 
 Usando finalmente a função plot_ly para desenhar o gráfico de dispersão 3D para consumooleo como uma função de temperatura, qtdisolamento e estilo mapeando a variável $z$ para a resposta e as variáveis $x$ e $y$ para as variáveis explicativas. A quantidade de isolamento deve estar no eixo x e a temperatura deve estar no eixo $y$. Use a cor para representar o estilo.
 
-```{r chunk21}
+```{r chunk21, message=FALSE, warning=FALSE}
 grafdummie <- plot_ly(data = oleo, z = ~consumooleo, x = ~qtdisolamento, y = ~temperatura, opacity = 0.6) %>%
   add_markers(color = ~estilo)%>%
   layout(
@@ -396,7 +405,7 @@ grafdummie
 
 Então desenhamos os dois planos:
 
-```{r chunk22, message=FALSE}
+```{r chunk22, message=FALSE, warning=FALSE}
 p %>%
   add_surface(x = ~range_x, y = ~range_y, z = ~plano, showscale = FALSE) 
 
@@ -472,13 +481,13 @@ range_x <- seq(5, 90, length = 70)#representa <min temperatura e >max temperatur
 range_y <- seq(2, 15, length = 70)#representa <min qtdisolamento e >max qtdisolamento
 
 planofator <- outer(range_x, range_y, function(a, b){summary(modII)$coef[1,1] + 
-    summary(modII)$coef[2,1]*a + summary(modII)$coef[3,1]*b}+ summary(modII)$coef[4,1]+ summary(modII)$coef[5,1]+ summary(modII)$coef[6,1]+ summary(modII)$coef[7,1]+ summary(modII)$coef[8,1]+ summary(modII)$coef[9,1]+ summary(modII)$coef[10,1])
+    summary(modII)$coef[2,1]*a + summary(modII)$coef[3,1]*b+ summary(modII)$coef[4,1]+ summary(modII)$coef[5,1]+ summary(modII)$coef[6,1]+ summary(modII)$coef[7,1]+ summary(modII)$coef[8,1]+ summary(modII)$coef[9,1]+ summary(modII)$coef[10,1]})
 ```
 
 Então inserimos na superficie:
 
 
-```{r chunk26}
+```{r chunk26, warning=FALSE, message=FALSE}
 p3<-p %>%
   add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)       
 p3
@@ -534,13 +543,13 @@ Agora construiremos o plano da reta para compararmos graficamente o ajuste:
 
 ```{r}
 planomodIII <- outer(range_x, range_y, function(a, b){summary(modIII)$coef[1,1] + 
-    summary(modIII)$coef[2,1]*a + summary(modIII)$coef[3,1]*b}+ summary(modIII)$coef[4,1])
+    summary(modIII)$coef[2,1]*a + summary(modIII)$coef[3,1]*b+ summary(modIII)$coef[4,1]})
 ```
 
 
 Vamos inserir no gráfico todas as retas estimadas
 
-```{r chunk29}
+```{r chunk29, message=FALSE, warning=FALSE}
 p %>%
   add_surface(x = ~range_x, y = ~range_y, z = ~plano1, showscale = FALSE)%>%
   add_surface(x = ~range_x, y = ~range_y, z = ~planofator, showscale = FALSE)%>% 
@@ -575,6 +584,17 @@ Fica a pergunta, para você querido aluno...Usando qual critério você escolher
 
 Abraços e bons estudos!
 
+***
+
+#### **Exercício complementar**
+
+Vamos comparar o resultado de um modelo de regressão logística gaussiano para esses dados contra as regressões ajustadas anteriormente.
+
+Utilize como exercício a função glm do R com a opção de family=gaussian(), regredindo como variável dependente o Consumo de Óleo para Calefação contra Quantidade de Isolamento Térmico + Temperatura Atmosférica + Estilo das casas.
+
+Compare os resultados com o modelo linear (utilize BIC e AIC) e plote o gráfico tridimensional com os dois planos comparativamente.
+
+[Minha recomendação de tutorial para rodar a regressão logística é esse aqui](https://smolski.github.io/livroavancado/reglog.html)
 
 &nbsp;
 
