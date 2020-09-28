@@ -1,0 +1,700 @@
+---
+title: "Redes econômicas: Teoria de Redes na Economia usando R"
+author: "Rodrigo H. Ozon"
+date: "21/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<!-- ================================================================================= -->
+
+***
+
+#### **Resumo**
+
+Segundo o professor pesquisador, José Carlos Cavalcanti, do departamento de Economia da UFPE:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"As Economias de Rede são aquelas que se originam na produção de bens e serviços de rede, e marcadamente dos bens e serviços de Tecnologias de Informação e Comunicação- TIC’s. Os mercados que incluem bens e serviços tais como telefones, e-mail, Internet, hardware de computadores, software de computadores (e de celulares, palms, PDAs-personal digital assistants), tocadores de música, vídeo players, vídeo movies, serviços bancários, serviços de aerolinhas, serviços legais, e muitos mais, são denominados de bens e serviços em rede."
+</p>
+
+Particularmente, gostei também da definição de Jackson, p. 18, 2014:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"Economists cannot ignore that many human decisions are made in the context of, and shapped by, networks of interactions. The variety of settings in wich networks analyses are providing deep insights is already substantial and continues to expand, including: development economics, labor markets, risk sharing, local public good adoption, marketing, international trade, financial markets, and political economy. As such, it is inevitable that economic research on social networks will continue to grow and become part of an economist´s basic toolbox.
+</p>
+
+
+#### **Introdução**
+
+Um aspecto da ciência de dados é a diversidade de tipos de dados. Normalmente os dados que nós estamos a examinar tem medidas relacionadas a uma unidade de análise - altura e peso de um pessoa, por exemplo. Em dados de rede, enfatizamos as conexões entre as unidades de análise - Fulano e Beltrano falam um com o outro?
+
+Refletindo sobre a crescente importância do estudo das redes na economia, Jackson (2014, p. 3-4) escreve:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+... "enquanto os economistas se esforçam para construir melhores modelos de comportamento humano, eles não podem ignorar que os humanos são fundamentalmente uma espécie social com padrões de interação que moldam seus comportamentos. ... Em última análise, toda a rede de relacionamentos - quão densa é, se alguns os grupos são segregados, quem se senta em posições centrais - afeta como as informações se espalham e como as pessoas se comportam."
+</p>
+
+
+O R tem um rico conjunto de pacotes para análise de rede. O pacote igraph (Csardi e Nepusz 2006) é um dos pacotes líderes. Estaremos usando os pacotes tidygraph (Pedersen 2019) e ggnetwork (Briatte 2016) aqui; ambos têm uma abordagem tidyverse (Wickham 2017) para a análise de rede. O tidygraph pacote baseia-se no pacote igraph (Csardi and Nepusz 2006). o pacote intergraph (Bojanowski 2015) é útil na conversão de objetos de rede que funcionam com pacotes diferentes na R. Por enquanto, vamos carregar o tidyverse e pacotes tidygraph.
+
+```{r message=FALSE}
+library(tidyverse)
+library(tidygraph)
+```
+
+A biblioteca plotly fornece interatividade aos gráficos gerados pelo pacote ggplot2 em documentos html gerados via RMarkdown:
+
+```{r message=FALSE}
+library(plotly)
+```
+
+
+## Um exemplo simples com dados criados
+
+Começamos com um exemplo hipotético simples. Temos um conjunto de pessoas que conversam entre si. João e Maria falam um com o outro - o gráfico não é direcionado - João é o a primeira pessoa no vetor 'de' e Maria é a primeira pessoa no vetor 'para'.
+
+
+```{r}
+
+de <- c("João","Douglas","Maria","Paulo","Sônia","Sônia")
+para <- c("Maria","Maria","Ana","Ana","Paulo","João")
+```
+
+Na mesma toada do pacote tidyverse do R, adicionaremos elementos de rede e criamos uma tibble chamada no1:
+
+```{r}
+
+no1 <- tibble(de,para)
+str(no1)
+
+class(no1)
+ 
+no1
+```
+
+
+
+A tibble no1 é uma tibble usual, ou seja, um tipo de conjunto de dados.
+
+Os diferentes pacotes para redes no R usam objetos diferentes. Faremos uma série de operações começando com o objeto no1. Antes de passarmos para o específico código, pode ser útil fornecer uma visão geral:
+
+1. no1 é uma tibble/dataframe. Usamos a função tbl_graph para converter isso para:
+
+2. Fale, que é um tbl_graph. Usamos a função asNetwork para converter isto para:
+
+3. Fale_n, que é uma rede. Usamos a função ggnetwork para converter isto para:
+
+4. Fale_g, que é um dataframe. Observe que este dataframe tem informações que irão
+permitir plotagem. Usamos a função ggplot para converter isso para:
+
+5. Fale_GG, que é um ggplot, e nos dá um gráfico do gráfico da rede.
+
+
+Voltando ao no1, usamos a função tbl_graph do tidygraph pacote para convertê-lo em um objeto que armazena informações sobre nós (aqui João, Douglas etc.) e as extremidades (se uma pessoa fala com outra):
+
+```{r}
+
+Fale <- tbl_graph(edges = no1,directed = FALSE)
+Fale
+
+class(Fale)
+```
+Para esclarecer: tbl_graph converteu a tibble no1 no objeto Fale, que é um tbl_graph, e que tem 6 nós (João, Maria etc.) e 6 arestas (conexões entre os nós).
+
+Usamos activate para colocar o nó ou os dados das extremidades em jogo. Vamos trazer as extremidades em jogo:
+
+
+```{r}
+Fale %>%
+activate(edges) %>%
+as_tibble()
+
+class(Fale)
+```
+
+Compare a saída acima com a abaixo, onde os nós são ativados:
+
+
+```{r}
+Fale %>%
+activate(nodes) %>%
+as_tibble()
+
+class(Fale)
+```
+
+
+Agora usaremos o pacote ggnetwork para plotar nossa pequena rede. Nós precisamos
+para primeiro converter o objeto Talk em um objeto de rede que ggnetwork possa se referenciar. O pacote intergraph nos ajuda a converter objetos, sua função asNetwork
+muda o objeto Fale.
+
+```{r}
+library(intergraph)
+Fale_n <- asNetwork(Fale)
+Fale_n
+
+class(Fale_n)
+```
+
+
+Agora ggnetwork irá converter Fale_n em um dataframe, que tem informações o que facilitará a plotagem por ggplot:
+
+```{r}
+library(ggnetwork)
+Fale_g <- ggnetwork(Fale_n)
+class(Fale_g)
+```
+
+Vemos que a função ggnetwork criou um dataframe que pode ser usado para traçar a rede usando o pacote ggplot2. Alguns newgeoms — geom_edges, geom_nodes, e geom_nodetext—nos ajuda a plot os nós, extremidades e textos sobre os nós. 
+
+```{r}
+Fale_GG <- ggplot(Fale_g, aes(x,y, xend = xend, yend = yend)) +
+                  geom_edges(color = "lightgrey") +
+                  geom_nodes(alpha = 0.6, size = 5) +
+                  geom_nodetext(aes(label = vertex.names),
+                  col = "blue") +
+                  theme_blank()
+
+Fale_GG
+
+class(Fale_GG)
+```
+
+Nosso gráfico inicial da rede não é muito claro. Pode exigir algum esforço
+para obter a visualização correta das redes. Dependendo do contexto e do tamanho do
+gráfico, podemos usar geoms diferentes para obter um gráfico que ilumina. Nós criamos nosso própria função que podemos usar repetidamente, e que nos dá um gráfico mais claro, embora é adequado para redes que não são grandes.
+
+
+```{r}
+ggredeplot <- function(Rede = Bali) {
+Rede <- ggnetwork(Rede, layout ="kamadakawai")
+ggplot(Rede, aes(x,y, xend = xend,yend = yend)) +
+                geom_edges(col = "tomato") +
+
+geom_nodetext_repel(aes(label = vertex.names),
+                        col = "black", size = 3) +
+theme_blank()
+}
+
+#apos criada a funcao, usamos ela pra plotar
+ggredeplot(Fale_n)
+```
+
+***
+
+##### **Exercício sugerido**
+
+Crie e plote uma pequena rede, onde Tim fala com José, Kim fala com José e Jane, e Jane fala com José. Você pode começar com:
+
+```{r}
+#dica
+
+#de <- c("Kim", "Tim", "Kim", "José")
+#para <- c("José", "José", "Jane", "Jane")
+```
+
+
+## A rede Medici
+
+Agora representamos graficamente uma rede de casamentos entre famílias proeminentes em Florença, que foi pesquisado por Padgett e Ansell (1993, p. 1260), que analisou o “_início Ascensão de Cosimo de 'Medici no século 15 na Florença renascentista._”
+
+Padgett e Ansell (1993, p. 1260) enfocou “_a estrutura e o surgimento sequencial do casamento, redes econômicas e de clientelismo que constituíram a política Mediceana, usada por Cosimo em 1434 para assumir o renascimento do Estado florentino._" Os dados estão no pacote netrankr (Schoch 2017).
+
+```{r}
+library(netrankr)
+data("florentine_m")
+class(florentine_m)
+```
+
+Convertemos florentine_m em flor e depois em flor_g:
+
+
+```{r}
+flor <- as_tbl_graph(florentine_m)
+class(flor)
+
+flor_g <- asNetwork(flor)
+class(flor_g)
+```
+
+Agora traçamos a rede de casamento florentino, usando a função ggnetplot que criamos na seção anterior. Diferentes famílias são exibidas (nós), junto com seus relacionamentos por meio de casamentos.
+
+```{r}
+ggredeplot(flor_g)
+```
+
+Agora calculamos um índice de centralidade, usando uma medida simples, com a função centrality_degree. Degree conta o número de arestas que sair de um determinado nó. A família Ginori tem um nó saindo dela, então grau um. Usaremos essa medida ao longo desse tutorial. Nosso código está relacionado as linhas do código tidyverse.
+
+
+```{r}
+flor2 <- flor %>%
+activate(nodes) %>%
+mutate(degree = centrality_degree())
+```
+
+Extraímos os dados de riqueza e grau por família e organizamos os dados por grau:
+
+
+
+```{r}
+flor3 <- as_tibble(flor2) %>%
+arrange(-degree)
+class(flor3)
+
+flor3
+```
+
+Podemos plotar a relação entre riqueza e grau usando o objeto flor3 que criamos acima. Usamos o pacote ggrepel (Slowikowski 2019) para obter rótulos legais e organizados.
+
+```{r}
+library(ggrepel)
+grafflor3<-ggplot(flor3, aes(x= wealth, y = degree, label = name)) +
+                  geom_point() +
+# posiciona os nomes adequadamente
+                  geom_text_repel()
+
+grafflor3
+
+ggplotly(grafflor3)
+```
+
+
+Grau _versus_ riqueza de diferentes famílias em Florença. Observe a alta riqueza e grau da família Medici.
+
+Vemos que a família Medici tinha alto grau e riqueza. A família Medici tinha menos riqueza do que os Strozzi, mas tinha um grau superior.
+
+
+***
+
+# A rede terrorista de Bali
+
+Agora traçamos outra rede, a rede terrorista de Bali. Koschade (2006) realizou uma análise de rede social do Jemaah Islamiyah (uma organização militante armada) célula que foi responsável pelos atentados de Bali em 2002, em que 202 pessoas foram mortas.
+
+Células terroristas trabalham em segredo e quem fala com quem é uma característica fundamental de como eles trabalham. Essa análise ajuda a entender seu funcionamento.
+Os dados de Bali são um objeto de rede, disponível no pacote UserNetR (Luke 2018).
+
+[Você pode baixar o arquivo de dados aqui](https://github.com/DougLuke/UserNetR/blob/master/data/Bali.rda?raw=true)
+
+```{r}
+#library(UserNetR)
+#data("Bali")
+#class(Bali)
+## [1] "network"
+
+
+```
+
+
+
+
+
+Convertemos a rede em um tbl_graph:
+
+```{r}
+#Bali_t <- as_tbl_graph(Bali)
+#Bali_t
+```
+
+
+Existem 17 nós e 63 arestas. Nós plotamos a rede com a função ggnetplot que criamos.
+
+```{r}
+#ggnetplot(Bali)
+```
+
+Samudra (o comandante de campo) estava no centro da rede, com a maior interação com os outros. 
+
+Agora traçamos a rede com nós classificados pelo papel do membro; isso nos dá uma visão geral maior em comparação à figura anterior. O Team Lima foi o grupo de apoio da operação.
+
+```{r}
+#Bali_g <- ggnetwork(Bali) 
+
+#ggplot(Bali_g, aes(x,y, xend = xend, yend = yend)) +
+             #     geom_edges(col = "tomato",
+            #      alpha = 0.6) +
+            #      geom_nodetext_repel(aes(label = role), size = 3) +
+           #       theme_blank()
+```
+
+***
+
+# Simulando a formação de uma rede
+
+Como as redes se formam? Dois modelos diferentes de formação de rede, que resultam em
+muito diferentes tipos de redes, são:
+
+1: Modelo de Erdos Renyi de redes aleatórias onde dois nós se conectam ou não com uma determinada probabilidade, aleatoriamente, e;
+
+2: Modelo de Barabasi e Albert onde as redes se formam ao longo do tempo e a cada novo nó prefere se conectar a nós bem conectados.
+
+Agora traçamos algumas simulações de redes. Primeiro consideramos um Erdos Renyi simulação, onde o número de nós é ne a probabilidade de uma borda conectar quaisquer dois vértices são p. De acordo com Barabasi e Bonabeau (2003, p. 62), “_Em 1959,
+com o objetivo de descrever as redes vistas nas comunicações e nas ciências da vida, Erdos e Renyi sugeriu que tais sistemas poderiam ser efetivamente modelados conectando
+seus nós com links colocados aleatoriamente._"
+
+```{r}
+rg <- play_erdos_renyi(n = 30, p = 0.2, directed = FALSE)
+
+class(rg)
+
+rg2 <- rg %>%
+activate(nodes) %>%
+mutate(Deg = centrality_degree())
+
+rg3 <- rg2 %>%
+activate(nodes) %>%
+as_tibble
+```
+
+
+Plotamos a distribuição de grau emergente da simulação Erdos Renyi. A distribuição é em forma de sino.
+
+```{r}
+grafrg3<-ggplot(rg3, aes(x = Deg)) +
+geom_bar()
+
+ggplotly(grafrg3)
+```
+
+O código abaixo plota a rede:
+
+```{r}
+rg_g <- asNetwork(rg2)
+rg_g <- ggnetwork(rg_g, layout ="kamadakawai")
+
+grafrg_g<-ggplot(rg_g, aes(x,y, xend = xend, yend = yend)) +
+geom_edges(col = "tomato") +
+geom_nodes(aes(size = Deg),
+alpha = 0.4, #size = 1, 
+col= "black") +
+theme_blank()
+
+ggplotly(grafrg_g)
+```
+
+Barabasi e Albert (1999) propuseram um modelo baseado no conceito de anexo preferencial. Um novo nó que se junta a uma rede vai preferir ligar-se a nós que são
+mais conectados. Eles escreveram (1999, p. 509), “_Sistemas tão diversos quanto redes genéticas ou a World Wide Web são melhor descritos como redes com topologia complexa. Uma propriedade comum de muitas redes grandes é que as conectividades do vértice seguem uma distribuição de lei de potência sem escala. Este recurso foi considerado uma consequência de dois mecanismos genéricos: (i) as redes se expandem continuamente pela adição de novos vértices, e (ii) novos vértices se anexam preferencialmente a sites que já estão bem conectado._"
+
+Agora traçamos gráficos relacionados à simulação de tal modelo de formação de rede.
+
+
+```{r}
+ba <- play_barabasi_albert(n = 30, power = 1, directed = FALSE)
+
+class(ba)
+
+ba2 <- ba %>%
+activate(nodes) %>%
+mutate(Deg = centrality_degree())
+
+ba3 <- ba2 %>%
+activate(nodes) %>%
+as_tibble
+```
+
+
+```{r}
+ggrg3 <- ggplot(rg3, aes(x = Deg)) + 
+  geom_bar()
+ggba3 <- ggplot(ba3, aes(x = Deg)) +
+  geom_bar()
+
+library(gridExtra)
+
+grid.arrange(ggrg3, ggba3, ncol = 2)
+
+
+```
+
+
+A Figura a seguir contrasta a distribuição de grau das redes originadas dos modelos de Erdos Renyi e Barabasi Albert.
+
+```{r}
+ba_g <- asNetwork(ba2)
+ba_g <- ggnetwork(ba_g, layout ="kamadakawai")
+```
+
+Distribuição de graus para Erdos Renyi (esquerda) e Barabasi Albert (direita). No primeiro, nós são conectados por arestas aleatoriamente e com uma determinada probabilidade; no último, conforme a rede cresce, um novo nó tem mais probabilidade de se anexar a um nó que está bem conectado
+
+
+```{r}
+ggrg <- ggplot(rg_g, aes(x,y, xend = xend, yend = yend)) +
+geom_edges(col = "tomato") +
+geom_nodes(aes(size = Deg),
+alpha = 0.4, #size = 1,
+col = "black") +
+theme_blank()
+
+ggplotly(ggrg)
+
+ggba <- ggplot(ba_g, aes(x,y, xend = xend, yend = yend)) +
+geom_edges(col = "tomato") +
+geom_nodes(aes(size = Deg),
+alpha = 0.4 , #size = betw,
+col = "black") +
+theme_blank()
+#geom_nodetext(aes(label = vertex.names),
+#col = "black", size = 5) +
+
+ggplotly(ggba)
+
+grid.arrange(ggrg, ggba, ncol = 2)
+```
+
+Diagrama de rede para Erdos Renyi (à esquerda) e Barabasi Albert (à direita). No primeiro, nós são conectados por arestas aleatoriamente e com uma determinada probabilidade; no último, conforme a rede cresce, um novo nó tem mais probabilidade de se anexar a um nó que está bem conectado.
+
+
+O modelo Barabasi e Albert nos dá uma distribuição de graus muito diferente e gráfico de rede. O modelo de distribuição de grau de Barabasi e Albert é positivamente enviesado.
+
+
+***
+
+#### **Exercício proposto**
+
+Tente executar a simulação para o modelo de Barabasi e Albert com n = 500. O que você observa?
+
+***
+
+# A rede de produção de bens elétricos automotivos 
+
+Amighini e Gorgoni (2014) estudaram a reorganização internacional da produção automotiva.
+
+A produção de automóveis usa fontes de componentes muito dispersas geograficamente. Dados relacionados a um dos componentes da produção automotiva em 2016, elétrico e
+as peças elétricas, ELEnet16, estão disponíveis no pacote ITNR (Smith 2018).
+
+```{r}
+library(tidygraph)
+library(ITNr)
+data("ELEnet16")
+class(ELEnet16)
+```
+
+
+usamos então tidygraph
+
+```{r}
+ELE <- as_tbl_graph(ELEnet16)
+class(ELE)
+
+summary(ELE)
+```
+
+Vamos traçar a rede, mas primeiro temos que fazer alguma troca de dados.
+
+```{r}
+library(ggnetwork)
+
+ELE_n <- asNetwork(ELE)
+ELE_g <- ggnetwork(ELE_n)
+
+str(ELE_g$regionNAME)
+
+ELE_g <- ELE_g %>%
+mutate(nome_regiao = factor(regionNAME))
+
+library(tidyverse)
+
+ELE_g <- ELE_g %>%
+mutate(nome_regiao = fct_recode(nome_regiao,
+"Sub-SahAfr" =
+"Sub-Saharan Africa (all income levels)",
+"mEast&NAf" =
+"Middle East & North Africa (all income levels)",
+"LatAm&Car" =
+"Latin America & Caribbean (all income levels)",
+"Eur&CAsia" =
+"Europe & Central Asia (all income levels)",
+"EAsia&Pac" =
+"East Asia & Pacific (all income levels)" ))
+```
+
+
+```{r message=FALSE}
+
+g<-ggplot(ELE_g, aes(x,y, xend = xend, yend = yend, col = nome_regiao)) +
+geom_edges(color = "grey70") +
+geom_nodes(alpha = 0.6, size = 5) +
+theme_blank() +
+theme(legend.position = "right") +
+scale_colour_brewer(palette = "Dark2")
+
+
+
+ggplotly(g)
+```
+
+O diagrama da rede de produção automática apóia a observação por Amighini e Gorgoni (2014, p. 923) que a produção de automóveis é _“uma das mais atividades geograficamente fragmentadas no setor manufatureiro, com produção processos divididos em diferentes fases realizados em diferentes países.”_ Argumentando por a relevância de uma abordagem de rede, eles escrevem, _“Abordagens tradicionais (como modelos gravitacionais) consideram apenas a relação entre os países i e j, assumindo que isso é independente de qualquer outra relação i e j estabelecer com outros países."_
+
+Agora calculamos uma medida de graus externos ponderada. Os pesos das bordas são a proporção do comércio global.
+
+
+```{r}
+ELE2 <- ELE %>%
+activate(nodes) %>%
+mutate(outdeg = centrality_degree(weights =
+weight, mode = "out")) %>%
+as_tibble()
+```
+
+Listamos os 10 principais países em medida de graus externos ponderados
+
+```{r}
+ELE3 <- ELE2 %>%
+select("name","regionNAME","outdeg") %>%
+arrange(-outdeg)
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(ELE3)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+```
+
+Os dados de 2016 mostram que China, Coreia e Japão foram os três primeiros países
+na medida outdegree valorizada. Amighini e Gorgoni (2014) estimaram que o os três principais países em 1998 foram Alemanha, EUA e França; em 2008 os três primeiros
+países foram China, Alemanha e Japão. Verificamos nossos cálculos com o em funções no ITNr.
+
+
+```{r}
+ITN3 <- ITNcentrality(ELEnet16) %>%
+as_tibble() %>%
+arrange(-Weighted.Out.Degree)
+
+kbl(cbind(ITN3)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+
+
+```
+
+Plotamos a distribuição graus externos ponderada; é positivamente distorcida.
+
+```{r}
+
+grafELE2<-ggplot(ELE2, aes(x = outdeg)) +
+geom_histogram(bins = 30)
+
+ggplotly(grafELE2)
+
+```
+
+Vamos agora representar graficamente a distribuição de grau externo ponderada (outdeg) por região.
+
+```{r}
+ELE2 <- ELE2 %>%
+mutate(region_name = factor(regionNAME))
+
+library(tidyverse)
+
+ELE2 <- ELE2 %>%
+mutate(region_name = fct_recode(region_name,
+"Sub-SahAf" =
+"Sub-Saharan Africa (all income levels)",
+"mEast&NAf" =
+"Middle East & North Africa (all income levels)",
+"LatAm&Car" =
+"Latin America & Caribbean (all income levels)",
+"Eur&CAsia" =
+"Europe & Central Asia (all income levels)",
+"EAsia&Pac" =
+"East Asia & Pacific (all income levels)" ))
+
+
+grafregiao<-ggplot(ELE2, aes(x = region_name, y = outdeg)) +
+geom_boxplot() +
+coord_flip()
+
+ggplotly(grafregiao)
+
+```
+
+Distribuição grau externo ponderada por região da rede de produtos elétricos automotivos 2016
+
+A distribuição de graus da região mostra a importância do Leste Asiático e da
+Pacífico, América do Norte e Europa e Ásia Central.
+
+
+#### **Para continuar aprendendo**
+
+O curso de Scott Page (sem data) sobre Model Thinking tem palestras curtas muito claras sobre redes. 
+
++ Barabasi (2016) tem um vídeo maravilhoso: [As redes estão por toda parte.](https://www.youtube.com/watch?v=c867FlzxZ9Y) 
+
+<center>
+```{r echo=FALSE}
+#https://ijlyttle.github.io/vembedr/
+#install.packages("vembedr")
+library(htmltools)
+library(vembedr)
+
+embed_url("https://www.youtube.com/watch?v=c867FlzxZ9Y")
+```
+</center>
+
+&nbsp;
+
++ [Jackson's (2014) possui um artigo que vincula redes a comportamentos econômicos.](http://www2.econ.iastate.edu/tesfatsi/NetworksSurvey.MJackson.JEP2014.pdf) 
+
+
+
++ [Douglas Luke (2015) forneceu um guia detalhado e claro para usar R para análise de rede.](https://book4you.org/book/2629286/2c47de)
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+***
+
+&nbsp;
+
+#### **Referências**
+
+Barabasi, A. 2016. **_Networks are everywhere._** [https://www.youtube.com/watch?v=c867FlzxZ9Y](https://www.youtube.com/watch?v=c867FlzxZ9Y).
+
+Barabasi, A.-L., and R. Albert. 1999. **_Emergence of scaling in random networks._** Science 286:509–512.
+
+Barabasi, A.-L., and E. Bonabeau. 2003. **_Scale-Free networks._** Scientific American 288: 60–69.
+
+Bojanowski, M. 2015. **_intergraph: Coercion routines for network data objects_**. R Package Version 2.0-2. [http://mbojan.github.io/intergraph](http://mbojan.github.io/intergraph)
+
+Briatte, F. 2016. **_ggnetwork: Geometries to plot networks with ’ggplot2’._** R Package Version (5): 1. [https://CRAN.R-project.org/package=ggnetwork](https://CRAN.R-project.org/package=ggnetwork).
+
+Csardi, G., and T. Nepusz. 2006. **_The igraph software package for complex network research._** InterJournal Complex Systems 1695: 2006. [http://igraph.org](http://igraph.org).
+
+
+Jackson, M.O. 2008. **_Social and Economic Networks._** Princeton: Princeton University Press.
+
+Jackson, M.O. 2014. **_Networks in the understanding of economic behaviors._** Journal of Economic Perspectives 28 (4): 3–22.
+
+Padgett, J.F., and C.K. Ansell. 1993. AJS 98 (6): 1259–1319.
+
+Pedersen, T.L. 2019. **_tidygraph: A tidy API for graph manipulation._** R Package Version 1 (1): 2. [https://CRAN.R-project.org/package=tidygraph](https://CRAN.R-project.org/package=tidygraph).
+
+Schoch, D. 2017. **_netrankr: An R package to analyze partial rankings in networks._**
+
+Koschade, S. 2006. **_A social network analysis of jemaah islamiyah: the applications to counterterrorism and intelligence_**. Studies in Conflict and Terrorism 29: 559–575.
+
+Luke, D. 2015. **_A user’s guide to network analysis in R_**. Berlin: Springer.
+
+Luke, D. 2018. **_UserNetR: data sets for a user’s guide to network analysis in R_**. R Package Version
+2: 26.
+
+Smith, M. 2018. ITNr: **_Analysis of the international trade network_**. R Package Version (3): [https://CRAN.R-project.org/package=ITNr.](https://CRAN.R-project.org/package=ITNr)
+
+Wickham, H. 2017. **_tidyverse: easily install and load the ’Tidyverse’._** R Package Version 1 (2): 1. [https://CRAN.R-project.org/package=tidyverse](https://CRAN.R-project.org/package=tidyverse).

@@ -75,6 +75,7 @@ Você pode rodar esse script no RStudio caso deseje construí-lo e interagir com
 #library(rgl)
 #library(tidyverse)
 #library(ggplot2)
+#library(readxl)
 
 #oleo<-read.csv(file="https://raw.githubusercontent.com/rhozon/Introdu-o-Econometria-com-Excel/master/proR.csv",head=TRUE,sep=";")
 

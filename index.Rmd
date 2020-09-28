@@ -76,8 +76,11 @@ Tutoriais disponíveis:
 
 + Veja como é simples de criar uma árvore de decisão para antes de ajustar um modelo de regressão aos seus dados.
 
+&nbsp;
 
+### Redes econômicas: Teoria de Redes na Economia usando R
 
++ Como mapeamos numa visão data-driven as relações estabelecidas de redes econômicas ? Será que a Economia é interligada como as cadeias produtivas em seus nós e ramificações ?
 ***
 
 
