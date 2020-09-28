@@ -33,7 +33,9 @@ navbar:
         - text: "Análise de Componentes Principais e Fatorial"
           href: ExercicioAnaliseFatorial.html 
         - text: "Gráfico 3D interativo para regressão múltipla"
-          href: grafsuperficie.html           
+          href: grafsuperficie.html        
+        - text: "Árvores de Decisão para modelos de regressão"
+          href: arvorededecisao.html   
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

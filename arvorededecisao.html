@@ -1,0 +1,7735 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+
+<title>Intro as Árvores de Decisão no R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Intro as Árvores de Decisão no R</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">21/09/2020</h4>
+
+</div>
+
+
+<!-- link para construcao dos graficos de superficie https://ademos.people.uic.edu/Chapter24.html -->
+<hr />
+<div id="o-que-é-uma-árvore-de-decisão" class="section level2">
+<h2>O que é uma árvore de decisão ?</h2>
+<p><small>Uma árvore de decisão é uma ferramenta que constrói modelos de regressão na forma de uma estrutura de árvore. As árvores de decisão assumem a forma de um gráfico que ilustra os resultados possíveis de diferentes decisões com base em uma variedade de parâmetros. As árvores de decisão dividem os dados em subconjuntos cada vez menores, normalmente usados para aprendizado de máquina e mineração de dados e são baseados em algoritmos de aprendizado de máquina. As árvores de decisão também são conhecidas como particionamento recursivo.</p>
+<p><strong>Palavras-chave:</strong> Árvores de decisão, econometria.</small></p>
+<hr />
+<p> </p>
+<!-- ============================================================================= -->
+</div>
+<div id="o-algoritmo-como-funcionam-as-árvores-de-decisão" class="section level2">
+<h2>O Algoritmo: Como funcionam as árvores de decisão** <!-- ============================================================================= --></h2>
+<ul>
+<li>As árvores de decisão são baseadas em um algoritmo chamado ID3 criado por JR Quinlan</li>
+<li>ID3 emprega entropia e ganho de informação para criar uma árvore de decisão</li>
+<li><strong>entropia:</strong> é um processo de cima para baixo que divide os dados em subconjuntos que consistem em pontos de dados homogêneos. Se uma amostra é completamente homogênea, a entropia é zero; se a amostra é completamente dividida, a entropia é um.</li>
+<li><strong>ganho de informação:</strong> a diminuição da entropia após o conjunto de dados ser dividido em um atributo / parâmetro. As árvores de decisão fazem divisões com base em quais atributos geram o maior ganho de informação, o que resulta nos subconjuntos mais homogêneos. Os valores de entropia são calculados para cada parâmetro inserido no modelo de árvore, para cada decisão, o parâmetro com o maior ganho de informação é selecionado. Em seguida, o processo é repetido.</li>
+</ul>
+<!-- ============================================================================= -->
+</div>
+<div id="componentes-da-árvore-de-decisão" class="section level2">
+<h2>Componentes da árvore de decisão</h2>
+<!-- ============================================================================= -->
+<p>As árvores de decisão são compostas por duas partes: nós e folhas.</p>
+<ul>
+<li><p>Nós: representam um teste de decisão, examine uma única variável e mova para outro nó com base no resultado</p></li>
+<li><p>Folhas: representam o resultado da decisão.</p></li>
+</ul>
+<div id="o-que-posso-fazer-com-uma-árvore-de-decisão" class="section level3">
+<h3>O que posso fazer com uma árvore de decisão ?</h3>
+<p>As árvores de decisão são úteis para fazer várias previsões. Por exemplo, para prever se um e-mail é SPAM ou não, para prever resultados de saúde, para prever a qual grupo um indivíduo pertence com base em uma variedade de fatores que são especificados no modelo de árvore de decisão.</p>
+</div>
+<div id="vantagens" class="section level3">
+<h3>Vantagens</h3>
+<ul>
+<li>simples de entender e interpretar</li>
+<li>ajudar a determinar os resultados esperados de vários cenários</li>
+<li>ajuda a determinar os melhores e os piores valores para diferentes cenários</li>
+<li>pode ser combinado com outras técnicas de decisão</li>
+<li>requerem um grau relativamente baixo de preparação de dados</li>
+<li>pode acomodar dados ausentes</li>
+<li>baixa sensibilidade a outliers</li>
+<li>baixo impacto das relações não lineares entre os parâmetros</li>
+<li>pode lidar com variáveis categóricas e numéricas</li>
+<li>pode traduzir os resultados da árvore de decisão em “regras de decisão”</li>
+</ul>
+</div>
+<div id="desvantagens" class="section level3">
+<h3>Desvantagens</h3>
+<ul>
+<li>para variáveis categóricas, mais níveis da variável cria mais tendência/viés da árvore de decisão em relação a essa variável</li>
+<li>se a árvore for super ajustada aos dados, os resultados podem ser preditores fracos</li>
+</ul>
+</div>
+</div>
+<div id="o-pacote-party-do-r" class="section level1">
+<h1>O Pacote party do R</h1>
+<p>O pacote que usaremos para criar árvores de decisão é chamado de ‘party’. É seguro dizer que você vai se divertir criando árvores de decisão.</p>
+<p>Para instalar o pacote, use a sintaxe abaixo. Também usaremos os pacotes plyr e readr para alguma estruturação do conjunto de dados.</p>
+<pre class="r"><code>library(party)
+library(plyr)
+library(readr)</code></pre>
+<p>Para criar árvores de decisão, usaremos a função ctree() do pacote ‘party’. Para obter mais informações sobre a função ctree(), você pode usar a sintaxe abaixo.</p>
+<pre class="r"><code>?ctree()</code></pre>
+<div id="uma-breve-visão-da-função-ctree" class="section level2">
+<h2>Uma breve visão da função ctree()</h2>
+<p>A função ctree() é usada para criar árvores de inferência condicional. Os principais componentes desta função são fórmulas e dados. Outros componentes incluem subconjunto, pesos, controles, xtrafo, ytrafo e scores (pontuações).</p>
+<p><strong>argumentos</strong></p>
+<ul>
+<li><p>fórmula: refere-se ao modelo de decisão que estamos usando para fazer previsões. De forma semelhante à ANOVA e aos modelos de regressão em R, a fórmula terá a forma de resultado ~ fator1 + fator2 + … fator (n): onde o resultado é a variável que estamos tentando prever, e cada um dos fatores é a base para os nós de decisão.</p></li>
+<li><p>data: informa a função de qual conjunto de dados extrair as variáveis listadas no modelo.</p></li>
+<li><p>subconjunto: é um complemento opcional que especifica um subconjunto de observações a ser usado no processo de adaptação. Deve ser usado se você não quiser ajustar o modelo a todo o conjunto de dados.</p></li>
+<li><p>pesos: é um vetor opcional que fornece valores ponderados que podem ser usados no processo de ajuste do modelo. Só pode consistir em inteiros não negativos.</p></li>
+</ul>
+<p><strong>sintaxe básica</strong></p>
+<p>ctree(fórmula, dados)</p>
+</div>
+</div>
+<div id="um-exemplo-prático-o-dataset-de-ofertas-de-produtos" class="section level1">
+<h1>Um exemplo prático: o <em>dataset</em> de ofertas de produtos</h1>
+<p>Esse conjunto de dados apresenta as variáveis relacionadas a coleta de pesquisa feita para identificação de potenciais novos clientes de um determinado novo produto a ser oferecido. Vamos inspecionar ele antes de mais nada:</p>
+<pre class="r"><code>library(readxl)
+  
+url&lt;-&quot;https://github.com/rhozon/datasets/blob/master/ofertas.xlsx?raw=true&quot;
+ofertas &lt;- tempfile()
+download.file(url, ofertas, mode=&quot;wb&quot;)
+ofertas&lt;-read_excel(path = ofertas, sheet = 1)
+
+str(ofertas)</code></pre>
+<pre><code>## tibble [500 x 4] (S3: tbl_df/tbl/data.frame)
+##  $ Futuro Cliente     : chr [1:500] &quot;sim&quot; &quot;não&quot; &quot;sim&quot; &quot;não&quot; ...
+##  $ Idade              : chr [1:500] &quot;44.0&quot; &quot;86.0&quot; &quot;17.0&quot; &quot;57.0&quot; ...
+##  $ Sexo               : chr [1:500] &quot;masculino&quot; &quot;feminino&quot; &quot;feminino&quot; &quot;feminino&quot; ...
+##  $ Método de Pagamento: chr [1:500] &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; ...</code></pre>
+<pre class="r"><code>library(knitr)
+library(kableExtra)
+
+kbl(cbind(ofertas)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;800px&quot;, height = &quot;200px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:800px; ">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Futuro Cliente
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Idade
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Sexo
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Método de Pagamento
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+86.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+57.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+78.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+80.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+91.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+57.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+57.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+55.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+90.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+34.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+57.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+90.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+70.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+74.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+76.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+79.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+34.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+76.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+18.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+59.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+91.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+84.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+78.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+85.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+65.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+36.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+80.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+75.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+68.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+66.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+72.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+18.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+75.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+91.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+55.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+82.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+81.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+69.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+55.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+72.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+78.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+84.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+75.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+65.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+75.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+82.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+66.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+81.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+34.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+18.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+59.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+59.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+60.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+82.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+57.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+55.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+69.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+72.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+80.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+72.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+70.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+79.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+69.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+51.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+54.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+90.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+62.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+48.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+73.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+79.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+23.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+75.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+78.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+52.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+58.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+82.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+76.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+61.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+47.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+44.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+34.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+36.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+31.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+30.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+70.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+25.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+79.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+84.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+24.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+20.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+26.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+41.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+60.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+71.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+29.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+19.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+38.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+22.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+53.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+36.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+21.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+56.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+28.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+60.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+35.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+80.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+55.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+42.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+32.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+63.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+34.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+49.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+27.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+60.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+67.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+43.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+85.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+45.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+17.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+40.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+60.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+37.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+46.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cheque
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+39.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+50.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+72.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sim
+</td>
+<td style="text-align:left;">
+33.0
+</td>
+<td style="text-align:left;">
+masculino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+77.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+dinheiro
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+não
+</td>
+<td style="text-align:left;">
+64.0
+</td>
+<td style="text-align:left;">
+feminino
+</td>
+<td style="text-align:left;">
+cartão de crédito
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p> </p>
+<p>Vamos renomear as variáveis para o R ler sem problemas:</p>
+<pre class="r"><code>library(tidyverse)
+ofertas&lt;-ofertas%&gt;%
+  rename(futurocliente=&#39;Futuro Cliente&#39;, metpgto= &#39;Método de Pagamento&#39;)
+
+str(ofertas)</code></pre>
+<pre><code>## tibble [500 x 4] (S3: tbl_df/tbl/data.frame)
+##  $ futurocliente: chr [1:500] &quot;sim&quot; &quot;não&quot; &quot;sim&quot; &quot;não&quot; ...
+##  $ Idade        : chr [1:500] &quot;44.0&quot; &quot;86.0&quot; &quot;17.0&quot; &quot;57.0&quot; ...
+##  $ Sexo         : chr [1:500] &quot;masculino&quot; &quot;feminino&quot; &quot;feminino&quot; &quot;feminino&quot; ...
+##  $ metpgto      : chr [1:500] &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; &quot;cartão de crédito&quot; ...</code></pre>
+<p>Agora transformaremos as variáveis como fatores para o R ler:</p>
+<pre class="r"><code>ofertas&lt;-ofertas%&gt;%
+  mutate(futurocliente=as.factor(futurocliente),
+         metpgto=as.factor(metpgto),
+         Idade=as.integer(Idade),
+         Sexo=as.factor(Sexo))
+
+str(ofertas)</code></pre>
+<pre><code>## tibble [500 x 4] (S3: tbl_df/tbl/data.frame)
+##  $ futurocliente: Factor w/ 2 levels &quot;não&quot;,&quot;sim&quot;: 2 1 2 1 1 1 1 2 1 2 ...
+##  $ Idade        : int [1:500] 44 86 17 57 48 39 78 38 80 33 ...
+##  $ Sexo         : Factor w/ 2 levels &quot;feminino&quot;,&quot;masculino&quot;: 2 1 1 1 1 1 2 2 2 2 ...
+##  $ metpgto      : Factor w/ 3 levels &quot;cartão de crédito&quot;,..: 1 1 1 1 1 1 1 1 2 1 ...</code></pre>
+<p>Note que a única variável que mudamos para inteira (discreta) é a Idade dos respondentes da pesquisa. Como exercício rode a árvore de decisão a seguir com essa variável como um fator e veja a implicação.</p>
+<p>Agora construimos a árvore de decisão sendo que a variável final; que é a que se refere a ser um cliente ou não será a dependente aqui.</p>
+<pre class="r"><code>arvore1&lt;-ctree(futurocliente~Idade,data=ofertas)
+plot(arvore1)</code></pre>
+<p><img src="arvorededecisao_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="interpretando-a-árvore-de-decisão" class="section level1">
+<h1>Interpretando a árvore de decisão</h1>
+<p>Para entender o que a árvore de decisão está dizendo, queremos começar com a raiz da árvore (o primeiro nó de decisão). Olhando para o primeiro nó de decisão, sabemos que a variável pela qual a decisão é determinada é a Idade dos respondentes. Existem duas folhas ou ramificações desse nó: primeiro, se as idades forem menor ou iguais a 35 anos, elas cairão no grupo de sim e não com uma proporção em um pouco mais de 80% de chance de se tornarem clientes se as idades forem também menores ou iguais aos 31 anos. Essa razão de chance de se tornar cliente dimunui neste mesmo nó se a faixa etária for dos 31 aos 35 anos na ordem dos quase 60%.</p>
+<p>Este primeiro grupo, indicado pelo primeiro gráfico do lado esquerdo, nos diz que existem 143 pessoas com idades menores ou iguais aos 31 anos. Já no nó 4 ao lado temos um grupo com um total de 39 indivíduos com idades maiores aos 31 anos de idade e até os 35 que reduzem a razão de chance de se tornarem clientes em relação ao nó 3 ao seu lado esquerdo (da casa de um pouco acima dos 80% de chance para algo um pouco abaixo dos 60%)</p>
+<p>Em seguida, passamos para o segundo nó. Novamente, a variável pela qual a decisão é determinada é se será um futuro cliente sim ou não. As duas folhas aqui são menores ou iguais a 72 ou maiores que 35 anos de idade. Note que se o indivíduo tiver uma faixa de idades entre os 35 e menos que 72 anos, existirá uma proporção de um pouco menos de 40% de chance de ser cliente, o que não ocorre com aqueles que tem mais de 72 anos, sendo um grupo passível de ser descartado dessa possibilidade.</p>
+<p>Somente com essa variável explicativa aqui considerada, concluímos então que o grupo de indivíduos com menos de 35 anos e numa maior proporção naquela faixa menor aos 31 anos apresenta uma maior chance de se tornar cliente 143 pessoas.</p>
+<div id="outra-árvore" class="section level2">
+<h2>Outra árvore</h2>
+<p>Podemos visualizar o modelo a ser construído, observando a relação entre a variável a ser prevista em função de uma única explicativa, caso a caso, para compararmos suas proporções e ao final montarmos uma árvore completa.</p>
+<p>Veremos como a árvore se comporta quando desejamos ver o sexo para a chance de ser futuro cliente:</p>
+<pre class="r"><code>arvore2&lt;-ctree(futurocliente~Sexo,data=ofertas)
+
+plot(arvore2)</code></pre>
+<p><img src="arvorededecisao_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Fica fácil vermos que os homens tem mais chance de se tornarem futuros clientes do que as mulheres (temos quase 80% contra somente quase outros 20% das mulheres).</p>
+<div id="a-opção-de-método-de-pagamento" class="section level3">
+<h3>A opção de método de pagamento</h3>
+<p>Vamos ver como fica a questão da razão de chance pela escolha de método de pagamento somente:</p>
+<pre class="r"><code>arvore3&lt;-ctree(futurocliente~metpgto,data=ofertas)
+plot(arvore3)</code></pre>
+<p><img src="arvorededecisao_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Como a visualização acima é autoexplicativa, a interpretação segue o mesmo princípio do exercício anterior.</p>
+</div>
+</div>
+</div>
+<div id="a-árvore-de-decisão-com-todas-as-variáveis" class="section level1">
+<h1>A árvore de decisão com todas as variáveis</h1>
+<pre class="r"><code>arvorecompleta&lt;-ctree(futurocliente~Idade+Sexo+metpgto,data=ofertas)
+plot(arvorecompleta)</code></pre>
+<p><img src="arvorededecisao_files/figure-html/unnamed-chunk-9-1.png" width="1152" /></p>
+<p>As barras em escuro são as proporções de Sim e as claras as dos Nãos. Assim, vemos que o maior quantitativo de escolha das pessoas são:</p>
+<ul>
+<li><p>Indivíduos do sexo masculino que pagam com cartão de crédito e que tem menos de 72 anos de idade: veja n=169;</p></li>
+<li><p>O segundo maior grupo entra naquele das pessoas do sexo feminino com mais de 30 anos de idade e que ainda não são potenciais futuros clientes: veja n=162</p></li>
+<li><p>Interessante notarmos que o grupo de pessoas do sexo masculino que optam por pagar com cheque ou dinheiro e que tem menos de 35 anos refletem uma parcela significativa de potenciais futuros clientes: veja o nó 4, n=37.</p></li>
+</ul>
+</div>
+<div id="como-evitar-o-sobreajuste-da-árvore-de-decisão" class="section level1">
+<h1>Como evitar o sobreajuste da árvore de decisão</h1>
+<p>Existem duas abordagens para evitar o ajuste excessivo de uma árvore de decisão aos seus dados.</p>
+<p><strong>pré-poda</strong>: evita que a árvore cresça mais cedo, antes que os dados de treinamento sejam perfeitamente classificados</p>
+<p><strong>pós-poda</strong>: ou pós-poda, a árvore está perfeitamente classificada e, depois de criada, podar ou aparar a árvore</p>
+<p>O pós-corte é a abordagem mais comum porque muitas vezes é difícil estimar quando parar de crescer a árvore. O importante é definir os critérios que determinam o tamanho final correto da árvore.</p>
+<p><strong>conjunto de validação</strong>: use um conjunto de dados diferente, diferente do conjunto de treinamento, para avaliar os nós pós-corte da árvore de decisão. Freqüentemente, o conjunto de dados é dividido em dois conjuntos de dados, o conjunto de treinamento e o conjunto de validação. A árvore de decisão é construída no conjunto de treinamento, então qualquer pós-corte é feito no conjunto de validação.</p>
+<p><strong>teste estatístico</strong>: crie a árvore de decisão usando o conjunto de treinamento e, em seguida, aplique testes estatísticos (estimativa de erro ou qui-quadrado) para determinar se a poda ou expansão de um nó produz uma melhoria além do conjunto de treinamento. Para obter mais informações sobre esses testes estatísticos, consulte “Dados de sobreajuste” na seção de referências a seguir.</p>
+<hr />
+<div id="referências" class="section level4">
+<h4><strong>Referências</strong></h4>
+<p><a href="https://web.cs.ucdavis.edu/~vemuri/classes/ecs271/Decision%20Tree%20Rules%20&amp;%20Pruning.htm">Decision Tree Rules &amp; Pruning, UC Davis, USA</a></p>
+<p><a href="https://www.rdocumentation.org/packages/partykit/versions/1.2-9/topics/ctree">Partykit R package, in RDocumentation</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

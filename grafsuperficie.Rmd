@@ -12,6 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+<!-- link para construcao dos graficos de superficie https://stat-ata-asu.github.io/MultipleAndLogisticRegression/multiple-regression.html -->
 
 ***
 
