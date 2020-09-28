@@ -1,0 +1,406 @@
+---
+title: "Intro as Árvores de Decisão no R"
+author: "Rodrigo H. Ozon"
+date: "21/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<!-- link para construcao dos graficos de superficie https://ademos.people.uic.edu/Chapter24.html -->
+
+***
+
+## O que é uma árvore de decisão ?
+
+<small>Uma árvore de decisão é uma ferramenta que constrói modelos de regressão na forma de uma estrutura de árvore. As árvores de decisão assumem a forma de um gráfico que ilustra os resultados possíveis de diferentes decisões com base em uma variedade de parâmetros. As árvores de decisão dividem os dados em subconjuntos cada vez menores, normalmente usados para aprendizado de máquina e mineração de dados e são baseados em algoritmos de aprendizado de máquina. As árvores de decisão também são conhecidas como particionamento recursivo.
+
+**Palavras-chave:** Árvores de decisão, econometria.</small>  
+
+
+***
+
+&nbsp;
+
+<!-- ============================================================================= -->
+## O Algoritmo: Como funcionam as árvores de decisão**
+<!-- ============================================================================= -->
+
+
++ As árvores de decisão são baseadas em um algoritmo chamado ID3 criado por JR Quinlan
++ ID3 emprega entropia e ganho de informação para criar uma árvore de decisão
++ **entropia:** é um processo de cima para baixo que divide os dados em subconjuntos que consistem em pontos de dados homogêneos. Se uma amostra é completamente homogênea, a entropia é zero; se a amostra é completamente dividida, a entropia é um.
++ **ganho de informação:** a diminuição da entropia após o conjunto de dados ser dividido em um atributo / parâmetro. As árvores de decisão fazem divisões com base em quais atributos geram o maior ganho de informação, o que resulta nos subconjuntos mais homogêneos. Os valores de entropia são calculados para cada parâmetro inserido no modelo de árvore, para cada decisão, o parâmetro com o maior ganho de informação é selecionado. Em seguida, o processo é repetido.
+
+<!-- ============================================================================= -->
+## Componentes da árvore de decisão
+<!-- ============================================================================= -->
+
+
+As árvores de decisão são compostas por duas partes: nós e folhas.
+
++ Nós: representam um teste de decisão, examine uma única variável e mova para outro nó com base no resultado
+
++ Folhas: representam o resultado da decisão.
+
+### O que posso fazer com uma árvore de decisão ?
+
+As árvores de decisão são úteis para fazer várias previsões. Por exemplo, para prever se um e-mail é SPAM ou não, para prever resultados de saúde, para prever a qual grupo um indivíduo pertence com base em uma variedade de fatores que são especificados no modelo de árvore de decisão.
+
+### Vantagens
+
++ simples de entender e interpretar
++ ajudar a determinar os resultados esperados de vários cenários
++ ajuda a determinar os melhores e os piores valores para diferentes cenários
++ pode ser combinado com outras técnicas de decisão
++ requerem um grau relativamente baixo de preparação de dados
++ pode acomodar dados ausentes
++ baixa sensibilidade a outliers
++ baixo impacto das relações não lineares entre os parâmetros
++ pode lidar com variáveis categóricas e numéricas
++ pode traduzir os resultados da árvore de decisão em "regras de decisão"
+
+### Desvantagens
+
++ para variáveis categóricas, mais níveis da variável cria mais tendência/viés da árvore de decisão em relação a essa variável
++ se a árvore for super ajustada aos dados, os resultados podem ser preditores fracos
+
+
+# O Pacote party do R
+
+O pacote que usaremos para criar árvores de decisão é chamado de 'party'. É seguro dizer que você vai se divertir criando árvores de decisão.
+
+Para instalar o pacote, use a sintaxe abaixo. Também usaremos os pacotes plyr e readr para alguma estruturação do conjunto de dados.
+
+```{r message=FALSE}
+library(party)
+library(plyr)
+library(readr)
+```
+
+Para criar árvores de decisão, usaremos a função ctree() do pacote 'party'. Para obter mais informações sobre a função ctree(), você pode usar a sintaxe abaixo.
+
+```{r message=FALSE}
+?ctree()
+
+```
+
+## Uma breve visão da função ctree()
+
+A função ctree() é usada para criar árvores de inferência condicional. Os principais componentes desta função são fórmulas e dados. Outros componentes incluem subconjunto, pesos, controles, xtrafo, ytrafo e scores (pontuações).
+
+**argumentos**
+
++ fórmula: refere-se ao modelo de decisão que estamos usando para fazer previsões. De forma semelhante à ANOVA e aos modelos de regressão em R, a fórmula terá a forma de resultado ~ fator1 + fator2 + ... fator (n): onde o resultado é a variável que estamos tentando prever, e cada um dos fatores é a base para os nós de decisão.
+
++ data: informa a função de qual conjunto de dados extrair as variáveis listadas no modelo.
+
++ subconjunto: é um complemento opcional que especifica um subconjunto de observações a ser usado no processo de adaptação. Deve ser usado se você não quiser ajustar o modelo a todo o conjunto de dados.
+
++ pesos: é um vetor opcional que fornece valores ponderados que podem ser usados no processo de ajuste do modelo. Só pode consistir em inteiros não negativos.
+
+**sintaxe básica**
+
+ctree(fórmula, dados)
+
+# Um exemplo prático: o _dataset_ de ofertas de produtos 
+
+Esse conjunto de dados apresenta as variáveis relacionadas a coleta de pesquisa feita para identificação de potenciais novos clientes de um determinado novo produto a ser oferecido. Vamos inspecionar ele antes de mais nada:
+
+```{r message=FALSE, warning=FALSE}
+
+library(readxl)
+  
+url<-"https://github.com/rhozon/datasets/blob/master/ofertas.xlsx?raw=true"
+ofertas <- tempfile()
+download.file(url, ofertas, mode="wb")
+ofertas<-read_excel(path = ofertas, sheet = 1)
+
+str(ofertas)
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(ofertas)) %>%
+  kable_paper() %>%
+  scroll_box(width = "800px", height = "200px")
+```
+
+
+&nbsp;
+
+
+Vamos renomear as variáveis para o R ler sem problemas:
+
+```{r message=FALSE}
+library(tidyverse)
+ofertas<-ofertas%>%
+  rename(futurocliente='Futuro Cliente', metpgto= 'Método de Pagamento')
+
+str(ofertas)
+```
+
+Agora transformaremos as variáveis como fatores para o R ler:
+
+```{r}
+ofertas<-ofertas%>%
+  mutate(futurocliente=as.factor(futurocliente),
+         metpgto=as.factor(metpgto),
+         Idade=as.integer(Idade),
+         Sexo=as.factor(Sexo))
+
+str(ofertas)
+```
+
+
+Note que a única variável que mudamos para inteira (discreta) é a Idade dos respondentes da pesquisa. Como exercício rode a árvore de decisão a seguir com essa variável como um fator e veja a implicação.
+
+Agora construimos a árvore de decisão sendo que a variável final; que é a que se refere a ser um cliente ou não será a dependente aqui.
+
+
+
+```{r}
+arvore1<-ctree(futurocliente~Idade,data=ofertas)
+plot(arvore1)
+```
+
+# Interpretando a árvore de decisão
+
+Para entender o que a árvore de decisão está dizendo, queremos começar com a raiz da árvore (o primeiro nó de decisão). Olhando para o primeiro nó de decisão, sabemos que a variável pela qual a decisão é determinada é a Idade dos respondentes. Existem duas folhas ou ramificações desse nó: primeiro, se as idades forem menor ou iguais a 35 anos, elas cairão no grupo de sim e não com uma proporção em um pouco mais de 80% de chance de se tornarem clientes se as idades forem também menores ou iguais aos 31 anos. Essa razão de chance de se tornar cliente dimunui neste mesmo nó se a faixa etária for dos 31 aos 35 anos na ordem dos quase 60%.
+
+Este primeiro grupo, indicado pelo primeiro gráfico do lado esquerdo, nos diz que existem 143 pessoas com idades menores ou iguais aos 31 anos. Já no nó 4 ao lado temos um grupo com um total de 39 indivíduos com idades maiores aos 31 anos de idade e até os 35 que reduzem a razão de chance de se tornarem clientes em relação ao nó 3 ao seu lado esquerdo (da casa de um pouco acima dos 80% de chance para algo um pouco abaixo dos 60%) 
+
+Em seguida, passamos para o segundo nó. Novamente, a variável pela qual a decisão é determinada é se será um futuro cliente sim ou não. As duas folhas aqui são menores ou iguais a 72 ou maiores que 35 anos de idade. Note que se o indivíduo tiver uma faixa de idades entre os 35 e menos que 72 anos, existirá uma proporção de um pouco menos de 40% de chance de ser cliente, o que não ocorre com aqueles que tem mais de 72 anos, sendo um grupo passível de ser descartado dessa possibilidade.
+
+Somente com essa variável explicativa aqui considerada, concluímos então que o grupo de indivíduos com menos de 35 anos e numa maior proporção naquela faixa menor aos 31 anos apresenta uma maior chance de se tornar cliente 143 pessoas.
+
+## Outra árvore
+
+Podemos visualizar o modelo a ser construído, observando a relação entre a variável a ser prevista em função de uma única explicativa, caso a caso, para compararmos suas proporções e ao final montarmos uma árvore completa.
+
+Veremos como a árvore se comporta quando desejamos ver o sexo para a chance de ser futuro cliente:
+
+```{r message=FALSE}
+arvore2<-ctree(futurocliente~Sexo,data=ofertas)
+
+plot(arvore2)
+```
+
+Fica fácil vermos que os homens tem mais chance de se tornarem futuros clientes do que as mulheres (temos quase 80% contra somente quase outros 20% das mulheres).
+
+### A opção de método de pagamento
+
+Vamos ver como fica a questão da razão de chance pela escolha de método de pagamento somente:
+
+```{r message=FALSE}
+arvore3<-ctree(futurocliente~metpgto,data=ofertas)
+plot(arvore3)
+
+```
+
+Como a visualização acima é autoexplicativa, a interpretação segue o mesmo princípio do exercício anterior.
+
+# A árvore de decisão com todas as variáveis
+
+```{r message=FALSE, fig.width=12,fig.height=12}
+arvorecompleta<-ctree(futurocliente~Idade+Sexo+metpgto,data=ofertas)
+plot(arvorecompleta)
+```
+
+
+As barras em escuro são as proporções de Sim e as claras as dos Nãos. Assim, vemos que o maior quantitativo de escolha das pessoas são:
+
++ Indivíduos do sexo masculino que pagam com cartão de crédito e que tem menos de 72 anos de idade: veja n=169;
+
++ O segundo maior grupo entra naquele das pessoas do sexo feminino com mais de 30 anos de idade e que ainda não são potenciais futuros clientes: veja n=162
+
++ Interessante notarmos que o grupo de pessoas do sexo masculino que optam por pagar com cheque ou dinheiro e que tem menos de 35 anos refletem uma parcela significativa de potenciais futuros clientes: veja o nó 4, n=37.
+
+
+
+
+# Como evitar o sobreajuste da árvore de decisão
+
+Existem duas abordagens para evitar o ajuste excessivo de uma árvore de decisão aos seus dados.
+
+**pré-poda**: evita que a árvore cresça mais cedo, antes que os dados de treinamento sejam perfeitamente classificados
+
+**pós-poda**: ou pós-poda, a árvore está perfeitamente classificada e, depois de criada, podar ou aparar a árvore
+
+O pós-corte é a abordagem mais comum porque muitas vezes é difícil estimar quando parar de crescer a árvore. O importante é definir os critérios que determinam o tamanho final correto da árvore.
+
+**conjunto de validação**: use um conjunto de dados diferente, diferente do conjunto de treinamento, para avaliar os nós pós-corte da árvore de decisão. Freqüentemente, o conjunto de dados é dividido em dois conjuntos de dados, o conjunto de treinamento e o conjunto de validação. A árvore de decisão é construída no conjunto de treinamento, então qualquer pós-corte é feito no conjunto de validação.
+
+**teste estatístico**: crie a árvore de decisão usando o conjunto de treinamento e, em seguida, aplique testes estatísticos (estimativa de erro ou qui-quadrado) para determinar se a poda ou expansão de um nó produz uma melhoria além do conjunto de treinamento. Para obter mais informações sobre esses testes estatísticos, consulte “Dados de sobreajuste” na seção de referências a seguir.
+
+
+***
+
+#### **Referências**
+
+
+[Decision Tree Rules & Pruning, UC Davis, USA](https://web.cs.ucdavis.edu/~vemuri/classes/ecs271/Decision%20Tree%20Rules%20&%20Pruning.htm)
+
+[Partykit R package, in RDocumentation](https://www.rdocumentation.org/packages/partykit/versions/1.2-9/topics/ctree)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

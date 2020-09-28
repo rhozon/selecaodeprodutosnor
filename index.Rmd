@@ -70,7 +70,11 @@ Tutoriais disponíveis:
 + Como a análise fatorial pode extrair informações agrupadas relevantes a respeito da condução ótima do negócio.
 
 
+&nbsp;
 
+### Árvores de Decisão para modelos de regressão
+
++ Veja como é simples de criar uma árvore de decisão para antes de ajustar um modelo de regressão aos seus dados.
 
 
 
