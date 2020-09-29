@@ -31,15 +31,16 @@ Particularmente, gostei também da definição de Jackson, p. 18, 2014:
 "Economists cannot ignore that many human decisions are made in the context of, and shapped by, networks of interactions. The variety of settings in wich networks analyses are providing deep insights is already substantial and continues to expand, including: development economics, labor markets, risk sharing, local public good adoption, marketing, international trade, financial markets, and political economy. As such, it is inevitable that economic research on social networks will continue to grow and become part of an economist´s basic toolbox.
 </p>
 
+***
 
 #### **Introdução**
 
 Um aspecto da ciência de dados é a diversidade de tipos de dados. Normalmente os dados que nós estamos a examinar tem medidas relacionadas a uma unidade de análise - altura e peso de um pessoa, por exemplo. Em dados de rede, enfatizamos as conexões entre as unidades de análise - Fulano e Beltrano falam um com o outro?
 
-Refletindo sobre a crescente importância do estudo das redes na economia, Jackson (2014, p. 3-4) escreve:
+Refletindo sobre a crescente importância do estudo das redes na economia, traduzo a contribuição de Jackson (2014, p. 3-4):
 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
-... "enquanto os economistas se esforçam para construir melhores modelos de comportamento humano, eles não podem ignorar que os humanos são fundamentalmente uma espécie social com padrões de interação que moldam seus comportamentos. ... Em última análise, toda a rede de relacionamentos - quão densa é, se alguns os grupos são segregados, quem se senta em posições centrais - afeta como as informações se espalham e como as pessoas se comportam."
+"...enquanto os economistas se esforçam para construir melhores modelos de comportamento humano, eles não podem ignorar que os humanos são fundamentalmente uma espécie social com padrões de interação que moldam seus comportamentos. ... Em última análise, toda a rede de relacionamentos - quão densa é, se alguns os grupos são segregados, quem se senta em posições centrais - afeta como as informações se espalham e como as pessoas se comportam."
 </p>
 
 
@@ -545,7 +546,7 @@ as_tibble()
 
 Listamos os 10 principais países em medida de graus externos ponderados
 
-```{r}
+```{r message=FALSE}
 ELE3 <- ELE2 %>%
 select("name","regionNAME","outdeg") %>%
 arrange(-outdeg)
@@ -621,6 +622,8 @@ Distribuição grau externo ponderada por região da rede de produtos elétricos
 A distribuição de graus da região mostra a importância do Leste Asiático e da
 Pacífico, América do Norte e Europa e Ásia Central.
 
+
+***
 
 #### **Para continuar aprendendo**
 

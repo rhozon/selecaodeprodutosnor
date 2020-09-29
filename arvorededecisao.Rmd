@@ -250,66 +250,299 @@ O pós-corte é a abordagem mais comum porque muitas vezes é difícil estimar q
 [Partykit R package, in RDocumentation](https://www.rdocumentation.org/packages/partykit/versions/1.2-9/topics/ctree)
 
 
+***
+
+# Das árvores para random forests
+
+Varian (2014) aponta a crescente disponibilidade de uma grande quantidade de dados sobre transações econômicas por causa dos computadores. Ele escreve (p. 3):
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+‘Técnicas de machine learning ... podem permitir maneiras mais eficazes de modelar relacionamentos complexos.
+… Meu conselho padrão para estudantes de graduação hoje em dia é ir para a ciência da computação departamento e fazer um curso de machine learning'.
+</p>
+
+Breiman (2001, p. 199) escreve: 
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"Existem duas culturas no uso de estatísticas modelagem para chegar a conclusões de dados. Supõe-se que os dados são gerados por um determinado modelo de dados estocástico. O outro usa modelos algorítmicos e trata o mecanismo de dados como desconhecido. ... Se nosso objetivo como campo é usar dados para resolver problemas,
+então precisamos nos afastar da dependência exclusiva de modelos de dados e adotar um
+conjunto de ferramentas mais diversificado."
+</p>
+
+Árvores são uma técnica computacionalmente intensiva não paramétrica para predição,
+em que o espaço do preditor é dividido recursivamente em regiões. As árvores são facilmente interpretáveis, mas podem ser instáveis. Uma maneira de melhorar a previsão é combinar as árvores.
+
+Primeiro temos uma ideia das árvores e depois consideramos as random forests.
+
+Biau e Scornet (p. 197) endossam nossa atenção às random forests: 
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"O algoritmo aleatório random forests, proposto por L. Breiman em 2001, tem sido extremamente bem sucedido como um propósito geral de classificação e método de regressão. A abordagem, que combina várias árvores de decisão aleatórias e agrega suas previsões por média, tem mostrado excelente desempenho em configurações onde o número de variáveis é muito maior do que o número de observações. Além disso, é versátil o suficiente para ser aplicado a problemas de grande escala, é facilmente adaptado a várias tarefas de aprendizagem ad hoc, e retorna medidas de importância variável".
+</p>
 
 
+## Exemplo simples de árvore com dados sintéticos
+
+Criamos alguns dados sintéticos e, em seguida, plotamos para ver seus recursos.
+
+```{r message=FALSE}
+x.tree <- c(rep(1:5,20), rep(6:10,20), rep(11:15,20))
+y.tree <- c(rep(c(0,1,0,0,1),20), rep(c(1,0,1,1,1),20), rep(c(0,0,0,0,1),20))
+xy.tree <- data.frame(x.tree, y.tree)
+
+library(tidyverse)
+# plotando os dados
+graf1<-ggplot(xy.tree, aes(x = x.tree, y = y.tree)) +
+geom_jitter(height = 0.1, width = 0.1) +
+geom_smooth()
+
+library(plotly)
+
+ggplotly(graf1)
+
+```
+
+A relação entre y.tree e x.tree é muito não linear. Nós vamos agora ajuste uma árvore de classificação aos dados. Usamos o pacote rpart (Therneau e Atkinson 2019). Usamos a mesma sintaxe que usamos para regressão.
+
+```{r message=FALSE}
+library(rpart)
+xy.tree_t <- rpart(y.tree ~ x.tree, data = xy.tree, method = "class")
+class(xy.tree_t)
+```
 
 
+Agora usamos o pacote rpart.plot (Milborrow 2019) para plotar a árvore que nós encaixamos.
+
+```{r}
+library(rpart.plot)
+prp(xy.tree_t, extra = 1)
+```
+
+A Figura acima é o gráfico da árvore de classificação. Ele prevê que y.tree será um
+ou zero dependendo do valor de x.tree; nós descemos a árvore de acordo com o valor
+de x.tree. Se x.tree for 9, por exemplo, começamos no topo, x.tree não é maior que ou
+igual a 11, então descemos a árvore para a direita. Na próxima etapa, x.tree (= 9) é
+não inferior a 5, então, novamente, descemos para a direita. x.tree (= 9) não é menor que 8, então vamos para a direita. A previsão é que y.tree para x.tree = 9 é 1. Had
+x.tree tinha 8 ou 10 teríamos seguido o mesmo caminho descendo a árvore. tem
+60 observações com x.árvore = 8, 9 ou 10, e todas têm um valor de y.árvore de 1.
+Vemos agora um exemplo relativo ao arsênico em poços em Bangladesh.
+
+# Exemplo: arsênico em Wells em Bangladesh
+
+Apresentamos um exemplo onde temos uma resposta binária, e economistas iriam
+geralmente usar regressão logística nesta situação. Ajustaremos uma regressão logística, então uma árvore para os mesmos dados, para que possamos conectar a árvore a um método mais familiar.
+
+Gelman e Hill (2017) apresentam um exemplo de arsênico em poços em Bangladesh.
+
+Nesta região, alguns poços possuem altos níveis de arsênio, que é um veneno cumulativo. Uma equipe de pesquisa mediu o nível de arsênico e rotulou os poços; depois eles voltou alguns anos depois para ver quem havia mudado para um poço mais seguro conduzindo uma pesquisa.
+
+Usaremos o exemplo para ilustração e, portanto, nos concentramos nas seguintes variáveis:
+
+(1) _switch_: se a casa mudou ou não, (2) _dist_: a distância em
+metros até o poço seguro mais próximo conhecido e (3) _arsenic_: o nível de arsênico do bem do entrevistado.
+
+[Baixe os dados aqui](https://raw.githubusercontent.com/pymc-devs/pymc3/master/pymc3/examples/data/wells.dat)
+
+```{r message=FALSE}
+library(utf8)
+wells<-read.csv(file="https://raw.githubusercontent.com/rhozon/datasets/master/wells1.csv",head=TRUE,sep=";")
+
+str(wells)
+
+wells<-wells%>%
+  select(-X,-X.1,-X.2)
+
+str(wells)
+```
+
+Ajustamos uma regressão logística de distância de ativação e arsênico.
+
+```{r message=FALSE}
+fit <- glm(switch ~ dist + arsenic, family = binomial( link = logit), data = wells)
+
+summary(fit)
+```
+
+O pacote visreg (Breheny e Burchett 2017) é especialmente útil para plotagem
+regressões não lineares.
+
+```{r}
+library(visreg)
+visreg(fit,"dist",
+scale = "response")
+```
+
+```{r}
+visreg(fit,"arsenic",
+scale = "response")
+```
 
 
+As regressões logísticas das figuras acima estão nas linhas do que é esperado.
+
+Na primeira figura, a probabilidade prevista de comutação cai de cerca de 0,6, quando a distância está perto de zero, a cerca de 0,1 quando a distância é cerca de 275. Na figura seguinte, a probabilidade de comutação aumenta de cerca de 0,5 quando o arsênio está perto de zero para cerca de 0,95 quando o arsênico está perto de 8.
+
+Agora ajustamos uma árvore de classificação.
+
+```{r}
+library(rpart)
+Bang <- rpart(switch ~ dist + arsenic, data = wells, method = "class")
+library(rpart.plot)
+prp(Bang, extra = 1)
+```
 
 
+Na figura acima vemos a árvore de classificação. No topo, temos uma divisão no arsênico menos de 1,1. Se não, e se a distância for menor que 82, então prevemos que a mudança Ocorreria. Se o arsênio não for menor que 1,1 e a distância for maior ou igual a 82, a comutação não ocorrerá.
 
 
+Se o arsênico for menor que 0,56, a previsão é de não troca. Uma árvore como a da figura acima é facilmente interpretável. Usamos um gráfico de dispersão de arsênio versus distância e plotamos as diferentes regiões em o espaço do preditor correspondente às divisões da árvore de classificação.
 
 
+```{r}
+ggplot(wells, aes(x = dist, y = arsenic, colour = factor(switch))) +
+geom_point() +
+geom_hline(yintercept = 1.1) +
+geom_hline(yintercept = 0.56) +
+geom_vline(xintercept = 69) +
+geom_vline(xintercept = 82)
+```
+
+# Exemplo: Lei de divulgação de hipoteca residencial
+
+Nesta seção, primeiro ajustaremos uma árvore de classificação e, em seguida, aplicaremos a random forest método. Embora a saída de uma árvore seja facilmente interpretável, em geral, um floresta dará previsões mais precisas.
+
+Varian (2014, p.14) resumiu o método do random forest:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Random forests is a technique that uses multiple trees.Atypical procedure uses the following steps.
+
+1. Choose a bootstrap sample of the observations and start to grow a tree.
+2. At each node of the tree, choose a random sample of the predictors to make the next
+decision. Do not prune the trees.
+3. Repeat this process many times to grow a forest of trees.
+4. In order to determine the classification of a new observation, have each tree make a classification and use a majority vote for the final prediction.
+</p>
+
+Agora vemos como podemos prever se os candidatos a hipotecas em Boston seriam:
+
+negou (negação variável);
+
+empréstimos hipotecários ou não, com base em vários preditores.
+
+Os dados estão disponíveis no pacote Ecdat.
+
+```{r message=FALSE}
+library(Ecdat)
+data(Hdma)
+names(Hdma)[11] <- "condo"
+set.seed(111)
+```
+
+```{r}
+library(tidyverse)
+hdma <- Hdma %>%
+na.omit()
+glimpse(hdma)
+```
+
+ntão ajustamos uma árvore de decisão:
+
+```{r}
+
+library(rpart)
+hm.tree <- rpart(deny ~., data = hdma, method = "class")
+```
+
+Agora plotamos a árvore de classificação:
+
+```{r}
+library(rpart.plot)
+prp(hm.tree, extra = 1)
+```
+
+A divisão superior na árvore é da variável dmi - seguro hipotecário negado. o
+próxima variável na árvore é pbcr (registro de crédito malparado), seguido por dir (razão da dívida de pagamentos em relação ao rendimento total) e ccs (pontuação de crédito ao consumidor).
+
+Agora usamos o algoritmo de random forest
+
+```{r message=FALSE}
+library(randomForest)
+set.seed(1234)
+rf.fit <- randomForest(deny ~ ., data = hdma, importance = TRUE)
+rf.fit
+
+```
 
 
+Na saída, vemos que 500 árvores foram ajustadas e 3 variáveis foram testadas em cada
+Dividido. Uma característica das random forests é que existe um tipo embutido de validação de as previsões feitas. Uma vez que as amostras de bootstrap são usadas para cultivar árvores, algumas amostras estão fora do saco e não são usados. Na saída, vemos que a taxa de erro fora da bolsa é 9,45%. É muito mais fácil ajustar um modelo aos dados de amostra; o mais difícil é para um modelo para ajustar os dados fora da amostra.
+
+É a ênfase na precisão preditiva que é a marca registrada das random forests
+e métodos relacionados. Breiman escreve:
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+The most obvious way to see how well the model box emulates nature’s box is this: put a case x down nature’s box getting an output y. Similarly, put the same case x down the model box getting an output y’. The closeness of y and y’ is a measure of how good the emulation is. For a data model, this translates as: fit the parameters in your model by using the data, then, using the model, predict the data and see how good the prediction is.
+</p>
+
+Podemos obter previsões da random forest com:
+
+```{r}
+hdma$random_forest_prediction <- predict(rf.fit)
+```
 
 
+Os próprios dados contêm a variável deny, ou seja, esta é a saída da caixa da natureza (em Palavras de Breiman na citação acima). Fazemos um gráfico de dispersão das previsões de a random forest versus a saída da caixa da natureza. A Figura plotada a seguir é a contrapartida gráfica da Matriz de confusão relatada na saída da random forest acima.
+
+```{r}
+ggplot(hdma, aes(y = random_forest_prediction, x = deny)) +
+geom_jitter(height = 0.2, width = 0.2)
+```
 
 
+Varian (2014, p. 15) escreveu: 
 
 
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"Um defeito das random forests é que elas são um pouco caixa preta - eles não oferecem resumos simples de relacionamentos nos dados. ... No entanto, random forests podem determinar quais variáveis são "importantes" nas previsões no sentido de contribuir com as maiores melhorias na precisão da previsão."
+</p>
+
+```{r}
+varImpPlot(rf.fit, type = 1)
+```
 
 
+Obtemos medidas de importância variável na figura acima com base na diminuição média de precisão nas previsões sobre as amostras fora do conjunto quando uma determinada variável é excluída do modelo. As três variáveis mais importantes são dmi, dir e hir.
+
+***
+
+# Recomendações adicionais
+
+Varian (2014) é um bom artigo, apresentando aprendizado de máquina e cobrindo árvores e random forests e motivando o economista a aprender os truques do aprendizado de máquina.
+
+James et al. (2013) explicam árvores e random forests de forma muito clara. O pdf de seu livro pode ser baixado do site do livro.
 
 
+***
 
+### Referências
 
+Berk, R.A. 2008. **_Statistical learning from a regression perspective._** New York: Springer.
 
+Biau, G., and E. Scornet. 2016. **_A random forest guided tour._** TEST 25 (2): 197–227. https://doi. org/10.1007/s11749-016-0481-7.
 
+Breheny, P., andW. Burchett. 2017. **_Visualization of regression models using visreg._** The R Journal 9: 56–71.
 
+Breiman, L. 2001. **_Statistical modeling: The two cultures._** Statistical Science 16 (3): 199–231.
 
+Gelman A., and J. Hill. 2006. **_Data Analysis Using Regression and Multilevel/HierarchicalModels._** New York: Cambridge University Press.
 
+James, W.D., T. Hastie, and R. Tibshirani. 2013. **_An introduction to statistical learning with applications in R._** New York: Springer.
 
+Milborrow, S. 2019. **_rpart.plot: Plot ’rpart’ models: An enhanced version of ’plot.rpart’._** R package version 3.0.8. https://CRAN.R-project.org/package=rpart.plot.
 
+Therneau T, and B. Atkinson. (2019) **_rpart: Recursive partitioning and regression trees._** R package version 4.1-15. https://CRAN.R-project.org/package=rpart.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Varian, H.R.2014. **_Big data: New tricks for econometrics._** Journal of Economic Perspectives 28 (2): 3–28.
 
 
 

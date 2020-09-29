@@ -29,7 +29,7 @@ Usamos os dados fornecidos pelo [xlstat.com](https://bookdown.org/content/1340/w
 
 [Você deve baixar os dados em meu repositório do Github aqui (sorvetesxls.xlsx)](https://github.com/rhozon/datasets/blob/master/sorvetesxls.xlsx?raw=true)
 
-```{r}
+```{r message=FALSE}
 library(readxl)
 
 url<-"https://github.com/rhozon/datasets/blob/master/sorvetesxls.xlsx?raw=true"
@@ -46,7 +46,7 @@ str(sorvetesxls)
 
 Este dataset está organizado de forma que as avaliações que cada respondente fez foi inserida nas colunas. Vamos corrigir isso:
 
-```{r}
+```{r message=FALSE}
 library(dplyr)
 library(tidyr)
 sorvetesxls <- sorvetesxls %>% 
@@ -88,7 +88,7 @@ A função doe (projeto de experimentos) do pacote radiant nos ajudará a decidi
 
 A discussão a seguir da função doe é baseada na discussão da Radiant sobre essa função.
 
-```{r}
+```{r message=FALSE}
 #install.packages("radiant")
 library(radiant)
 ```
@@ -96,7 +96,7 @@ library(radiant)
 Para usar a doe, precisamos inserir as informações sobre nossos atributos e seus níveis de uma maneira específica:
 
 
-```{r}
+```{r message=FALSE}
 # atributo1, atributo2, etc. sao vetores com um elemento no qual fornecemos 
 #primeiro o nome do atributo seguido por um ponto e virgula e depois fornecemos
 #todos os niveis dos atributos separados por ponto e virgula
@@ -114,7 +114,7 @@ atributos <- c(atributo1, atributo2, atributo3, atributo4)
 
 Agora podemos pedir possíveis projetos experimentais:
 
-```{r}
+```{r message=FALSE}
 summary(doe(atributos, seed = 123)) # Seed: fixa o gerador de numeros aleatorios
 ```
 
@@ -126,7 +126,7 @@ As linhas representam projetos experimentais com diferentes números de Trials o
 Idealmente, procuramos projetos balanceados com alta D-efficiency (acima de 0,80 é considerado razoável). Temos dois candidatos, um delineamento experimental com 60 perfis, que é apenas o delineamento fatorial completo ou um delineamento com 30 perfis. Vamos dar uma olhada no design com 30 perfis:
 
 
-```{r}
+```{r message=FALSE}
 summary(doe(atributos, seed = 123, trials = 30))
 ```
 
@@ -134,7 +134,7 @@ Em Projeto fatorial parcial (ou projeto fatorial fracionário), encontramos os p
 
 Um design possível com apenas 10 perfis seria desbalanceado e teria a seguinte aparência:
 
-```{r}
+```{r message=FALSE}
 summary(doe(atributos, seed = 123, trials = 10))
 ```
 
@@ -147,7 +147,7 @@ Observe que os perfis não são exatamente iguais aos da experiência usada para
 
 Embora alguns *softwares* exijam que você primeiro crie variáveis fictícias representando os níveis de atributo e execute uma regressão, o *Radiant* não exige que você faça isso. Você pode simplesmente usar os atributos (cada um com vários níveis) como variáveis. Primeiro, faremos uma análise conjunta dos dados de um respondente (indivíduo 1):
 
-```{r}
+```{r message=FALSE}
 respondente1 <- sorvetesxls %>% 
   filter(Respondente == "Individuo 1")
 
@@ -172,7 +172,7 @@ E então vemos facilmente que essa pessoa desfrutaria de um sorvete com baixo te
 
 Observe que os resultados da regressão conjunta são simplesmente os resultados de uma regressão linear múltipla:
 
-```{r}
+```{r message=FALSE}
 # Execute essa regressao se estiver interessado em aprender qual preditor eh 
 #significativo ou qual eh o R quadrado do modelo geral.
 
@@ -185,7 +185,7 @@ Finalmente, os pesos de importância nos dizem com que intensidade cada atributo
 
 Prever as classificações (utilidades) dos diferentes sorvetes é muito fácil no R. Primeiro, verifique se temos um conjunto de dados com os diferentes perfis que foram testados:
 
-```{r}
+```{r message=FALSE}
 perfis <- sorvetesxls %>% 
   filter(Respondente == "Individuo 1") %>% 
   select(Sabor,Embalagem,Calorias,Procedencia)
@@ -193,13 +193,13 @@ perfis <- sorvetesxls %>%
 
 Em seguida, pedimos à função predict para prever as classificações dos perfis com base na função de regressão:
 
-```{r}
+```{r message=FALSE}
 predict(anconjunta_respondente1, perfis)
 ```
 
 A classificação prevista é mais alta para sorvetes de manga, orgânicos com pouca gordura e em um waffle caseiro. Mas essas são previsões para sorvetes que o entrevistado realmente classificou. Se quiséssemos saber qual sorvete o entrevistado mais gostava, poderíamos apenas olhar para as classificações observadas (em vez das previstas). É mais interessante obter previsões para sorvetes que o entrevistado não avaliou. Para isso, precisamos dos perfis para todos os sorvetes possíveis. Podemos criar esses perfis com a função expand.grid. A função expand.grid usa dois ou mais vetores e cria todas as combinações possíveis de elementos desses vetores:
 
-```{r}
+```{r message=FALSE}
 Sabor <- c("Framboesa","Chocolate","Manga","Morango","Baunilha")
 Procedencia <- c("Organico","Nao organico")
 
@@ -208,7 +208,7 @@ expand.grid(Sabor, Procedencia)
 
 Vamos fazer isso para todos os nossos níveis de atributo:
 
-```{r}
+```{r message=FALSE}
 # existe uma maneira mais facil de obter niveis de atributo 
 #do que criar os vetores manualmente:
 
@@ -243,7 +243,7 @@ Mesma conclusão que a da seção anterior: essa pessoa desfrutaria de um sorvet
 
 Agora, vamos realizar a análise conjunta no conjunto de dados completo para ter uma idéia de quais sorvetes os 15 entrevistados, em média, gostaram mais e qual a importância de cada atributo:
 
-```{r}
+```{r message=FALSE}
 conjunta_tdsrespondentes <- conjoint(sorvetesxls,
                                      rvar = "Nota", 
                                      evar = c("Sabor",
@@ -269,7 +269,7 @@ Os pesos de importância nos dizem com que intensidade cada atributo determina a
 
 Vamos prever as classificações de todos os sorvetes possíveis:
 
-```{r}
+```{r message=FALSE}
 predict(conjunta_tdsrespondentes, tds.perfis) %>% # verifique as secoes
 # anteriores para tds.perfis
 
@@ -283,7 +283,7 @@ Mesmas conclusões de antes: prevemos que, em média, as pessoas mais gostariam 
 
 Digamos que criamos um pequeno número de sorvetes e queremos estimar a participação de mercado de cada um desses sorvetes. Digamos que selecionamos os quatro perfis a seguir:
 
-```{r}
+```{r message=FALSE}
 # use slice() para selecionar as linhas 
 
 perfis.mercado <- tds.perfis %>% 
@@ -307,7 +307,7 @@ predict(conjunta_tdsrespondentes, perfis.mercado) %>%
 
 O sorvete de morango com baixo teor de gordura e não orgânico em um cone tem a classificação mais alta prevista entre todos os entrevistados. Mas isso não nos diz ainda qual será a participação de mercado de cada um dos quatro perfis. Para isso, precisamos saber, para cada participante, qual perfil ele escolheria. Em outras palavras, precisamos prever as classificações para cada indivíduo separadamente:
 
-```{r}
+```{r message=FALSE}
 # mesmo modelo de antes, mas agora adicione por = "Respondente"
 conjunta_porrespondente <- conjoint(sorvetesxls,
                                     rvar = "Nota", 
@@ -324,7 +324,7 @@ predict(conjunta_porrespondente, perfis.mercado) %>%
 
 Vamos reter para cada indivíduo apenas seu perfil mais bem classificado. Podemos fazer isso agrupando por entrevistado e adicionando uma variável denominada ranking que nos dirá o ranking de perfis, com base na classificação prevista, para cada entrevistado:
 
-```{r}
+```{r message=FALSE}
 maior_nota <- predict(conjunta_porrespondente, perfis.mercado) %>% 
   group_by(Respondente) %>% 
   mutate(ranking = rank(Prediction))
@@ -346,7 +346,7 @@ maior_nota
 
 Agora podemos estimar a participação de mercado:
 
-```{r}
+```{r message=FALSE}
 market_share <- maior_nota %>% 
   group_by(Sabor, Embalagem, Calorias, Procedencia) %>% 
   summarize(count = n()) %>% 

@@ -397,6 +397,18 @@ div.tocify {
     <li>
       <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
     </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -485,16 +497,8 @@ str(sorvetesxls)</code></pre>
 ##  $ Individuo 14: num [1:10] 10 1 9 6 5 4 7 3 8 2
 ##  $ Individuo 15: num [1:10] 5 7 3 10 9 4 2 1 6 8</code></pre>
 <p>Este dataset está organizado de forma que as avaliações que cada respondente fez foi inserida nas colunas. Vamos corrigir isso:</p>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(tidyr)
+<pre class="r"><code>library(dplyr)
+library(tidyr)
 sorvetesxls &lt;- sorvetesxls %&gt;% 
   gather(Respondente, Nota, starts_with(&quot;Individuo&quot;)) %&gt;% 
   
@@ -542,36 +546,6 @@ sorvetesxls</code></pre>
 <p>A discussão a seguir da função doe é baseada na discussão da Radiant sobre essa função.</p>
 <pre class="r"><code>#install.packages(&quot;radiant&quot;)
 library(radiant)</code></pre>
-<pre><code>## Loading required package: radiant.data</code></pre>
-<pre><code>## Loading required package: magrittr</code></pre>
-<pre><code>## 
-## Attaching package: &#39;magrittr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
-## 
-##     extract</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
-<pre><code>## Loading required package: lubridate</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre><code>## 
-## Attaching package: &#39;radiant.data&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:lubridate&#39;:
-## 
-##     month, wday</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     diamonds</code></pre>
-<pre><code>## The following object is masked from &#39;package:base&#39;:
-## 
-##     date</code></pre>
-<pre><code>## Loading required package: radiant.design</code></pre>
-<pre><code>## Loading required package: mvtnorm</code></pre>
-<pre><code>## Loading required package: radiant.basics</code></pre>
-<pre><code>## Loading required package: radiant.model</code></pre>
-<pre><code>## Loading required package: radiant.multivariate</code></pre>
 <p>Para usar a doe, precisamos inserir as informações sobre nossos atributos e seus níveis de uma maneira específica:</p>
 <pre class="r"><code># atributo1, atributo2, etc. sao vetores com um elemento no qual fornecemos 
 #primeiro o nome do atributo seguido por um ponto e virgula e depois fornecemos
@@ -1538,9 +1512,9 @@ maior_nota</code></pre>
 <pre class="r"><code>market_share &lt;- maior_nota %&gt;% 
   group_by(Sabor, Embalagem, Calorias, Procedencia) %&gt;% 
   summarize(count = n()) %&gt;% 
-  arrange(desc(count))</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;Sabor&#39;, &#39;Embalagem&#39;, &#39;Calorias&#39; (override with `.groups` argument)</code></pre>
-<pre class="r"><code>market_share</code></pre>
+  arrange(desc(count))
+
+market_share</code></pre>
 <pre><code>## # A tibble: 4 x 5
 ## # Groups:   Sabor, Embalagem, Calorias [4]
 ##   Sabor     Embalagem Calorias      Procedencia  count
