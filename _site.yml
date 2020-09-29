@@ -37,7 +37,10 @@ navbar:
         - text: "Árvores de Decisão para modelos de regressão"
           href: arvorededecisao.html   
         - text: "Redes econômicas: Teoria de Redes na Economia usando R"
-          href: economiaderedes.html   
+          href: economiaderedes.html  
+        - text: "Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)"
+          href: cotacoes.html          
+
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

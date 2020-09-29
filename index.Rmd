@@ -81,6 +81,17 @@ Tutoriais disponíveis:
 ### Redes econômicas: Teoria de Redes na Economia usando R
 
 + Como mapeamos numa visão data-driven as relações estabelecidas de redes econômicas ? Será que a Economia é interligada como as cadeias produtivas em seus nós e ramificações ?
+
+&nbsp;
+
+### Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)
+
++ Veja como é possível criar uma aplicação web com análise automatizada em R em tempo real praticamente. (delay desde o último fechamento de pregão)
+
+
+
+
+
 ***
 
 
