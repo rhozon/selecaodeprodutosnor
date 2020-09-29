@@ -88,6 +88,8 @@ Tutoriais disponíveis:
 
 + Veja como é possível criar uma aplicação web com análise automatizada em R em tempo real praticamente. (delay desde o último fechamento de pregão)
 
++ Conheça também a News Impact Curve de Engle & NG, que capta os efeitos simétricos e assimétricos na volatilidade dos preços de ativos financeiros.
+
 
 
 
