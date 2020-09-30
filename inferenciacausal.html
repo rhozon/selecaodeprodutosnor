@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+
+<title>Inferência Causal na Economia</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Inferência Causal na Economia</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">21/09/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<hr />
+<div id="resumo" class="section level4">
+<h4><strong>Resumo</strong></h4>
+<p><small>Este tutorial busca aplicar alguns dos conceitos de inferência causal em problemas econômicos reais e simulados, utilizando o software R, demonstrando e apresentando suas enormes vantagens em relação ao <em>data science</em>, <em>machine learning</em> e até mesmo o <em>deep learning</em>.</p>
+<p>Como a Economia trata de buscar respostas para problemas mais complexos (e interessantes), vamos <em>“muito além do simples ajuste de curvas”</em> <a href="https://www.youtube.com/watch?v=2EhRT2mOXm8">(parafraseando o prof. Josh Angrist aqui)</a></p>
+<p><strong>Palavras-chave:</strong> Inferência Causal, Diff and Diff, Econometria </small></p>
+<hr />
+</div>
+<div id="introdução" class="section level1">
+<h1>Introdução</h1>
+<p>Podemos estar interessados em questões causais e não causais:</p>
+<ul>
+<li><em>Descritivo</em> como a renda varia entre as ocupações ?</li>
+<li><em>Previsão</em> de qual será o preço do petróleo bruto no próximo ano ?</li>
+<li><em>Causa</em> se mudarmos a proporção de alunos para professores, as pontuações de aprendizagem melhoram ?</li>
+</ul>
+<p>Se estivermos interessados na resposta às questões causais, gostaríamos de usar inferência. Livros de estatística e econometria costumam variar em quão explícitos são no tratamento da causalidade. A inferência causal é de grande relevância na ev olução do programa, um domínio que, de acordo com Abadie e Cattaneo (2018, p. 466), é “<em>Expandindo as ciências sociais, biomédicas e comportamentais que estudam o efeito de intervenções políticas. As políticas de interesse são frequentemente programas governamentais, como intervenções ativas do mercado de trabalho ou programas de combate à pobreza</em>”.</p>
+<p>O maravilhoso livro de Morgan andWinship (2014) Counterfactuals and Causal Inference tem a seguinte citação de Gary King na contracapa: “<em>Tenho aprendido mais sobre inferência causal nas últimas décadas do que a soma total de tudo que tinha sido aprendido sobre isso em toda a história registrada</em>”. No seu livro Morgan e Winship’s fazem uso de duas abordagens para inferência causal: (1) resultados potenciais, ou contrafactuais e (2) gráficos causais. Eles argumentam que estes são complementares, e usar ambos, como fazem autores como Abadie e Catteneo (2018); e essa é a visão que nós veremos neste tutorial/artigo.</p>
+</div>
+<div id="gráficos-causais-e-resultados-potenciais" class="section level1">
+<h1>Gráficos causais e resultados potenciais</h1>
+<p>Para ilustrar os gráficos causais e as abordagens de resultados potenciais, consideramos um caso de alguns indivíduos que sofrem de dores nas costas. Eles podem levar um remédio para aliviar sua dor.</p>
+<p>Denotamos dor por <span class="math inline">\(D\)</span> e medicina por <span class="math inline">\(M\)</span>, e os indivíduos são indexados por <span class="math inline">\(i\)</span>. queremos examinar o efeito de <span class="math inline">\(D\)</span> em <span class="math inline">\(P\)</span>. <span class="math inline">\(D\)</span> é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir <span class="math inline">\(D\)</span> aleatoriamente a diferentes indivíduos.</p>
+<p>Usaremos o modelo causal estrutural de Pearl et al. (2016) como uma estrutura para compreender a inferência causal em relação a <span class="math inline">\(D\)</span>. O modelo causal estrutural consiste de um gráfico causal e respectivas equações estruturais que mostram nossas suposições sobre o fenômeno. Aqui, o gráfico causal é <span class="math inline">\(D\Rightarrow M\)</span> e a equação estrutural é (assumimos linearidade para simplificar; a abordagem de Pearl não requer a suposição de linearidade) <span class="math inline">\(D=\beta_{0}+\beta_{M}M+U_{D}\)</span>.</p>
+<p>Como M é atribuído aleatoriamente, ele é independente de <span class="math inline">\(U_D\)</span>. <span class="math inline">\(U_D\)</span> captura as outras causas ou fontes de variação em <span class="math inline">\(D\)</span>. A equação estrutural, neste caso, tem uma linha para <span class="math inline">\(M\)</span> e uma linha ou componente para <span class="math inline">\(U_D\)</span>. Faremos agora uma simulação. Nós assumimos que <span class="math inline">\(\beta_{0}=10\)</span>, <span class="math inline">\(\beta_{M}=-3\)</span> e <span class="math inline">\(U_M\sim N(0,1)\)</span></p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages -------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.3     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>set.seed(22)
+beta0 &lt;- 10
+betaM &lt;- -3
+num &lt;- 400
+U_D &lt;- rnorm(num)</code></pre>
+<p>Geramos o conjunto de dados Meds, que contém as variáveis M, D, U_D.</p>
+<pre class="r"><code>set.seed(3)
+M &lt;- sample(c(0,1), num, replace = T)
+Indiv &lt;- 1:num
+D &lt;- beta0 + betaM * M + U_D
+Meds &lt;- tibble(Indiv, M, U_D, D)
+
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(round(head(Meds),2))) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;600px&quot;, height = &quot;200px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px; ">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Indiv
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+M
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+U_D
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+D
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-0.51
+</td>
+<td style="text-align:right;">
+9.49
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.49
+</td>
+<td style="text-align:right;">
+9.49
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.01
+</td>
+<td style="text-align:right;">
+8.01
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.29
+</td>
+<td style="text-align:right;">
+10.29
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+-0.21
+</td>
+<td style="text-align:right;">
+6.79
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.86
+</td>
+<td style="text-align:right;">
+8.86
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><span class="math display">\[
+M\rightarrow D
+\]</span></p>
+<p><span class="math display">\[
+P=\beta_0+\beta_1M+U_D
+\]</span> Vemos nos dados gerados que o indivíduo 1 é atribuído a M = 0, ou seja, está no grupo de controle. Observamos que o valor de D para pessoa um, quando atribuído M = 0 é 9,49. No caso do indivíduo 2, o valor de D para a pessoa dois, quando atribuído M = 1 é 9,49.</p>
+<p>Denotamos o resultado potencial para um indivíduo neste caso por <span class="math inline">\(D_{i}(m)\)</span> onde <span class="math inline">\(i\)</span> indexa o indivíduo em é 0 ou 1, dependendo do valor atribuído de M.</p>
+<p>A Figura 10.3 mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.</p>
+<p>Aqui, <span class="math inline">\(P_{1} (0) = 9,49\,\, e\,\, P_{2} (1) = 9,49\)</span>. O efeito causal para um indivíduo é: <span class="math inline">\(P_{i}(1) - P_{i}(0)\)</span>.</p>
+<p>Infelizmente, e isso é chamado de dilema fundamental da inferência causal, nós não observamos ambos os resultados potenciais para um indivíduo. Portanto, não observamos neste caso o valor da dor para a pessoa 1 se caso ela tivesse recebido o medicamento, e a pessoa 2 com dor teria experimentado se ela não tivesse recebido o medicamento. Não observamos o contrafactual.</p>
+<p>Temos que nos contentar com um efeito de tratamento médio, a diferença entre a dor vivenciada pelo grupo de controle e pelo grupo de tratamento, que estimamos a seguir. Rodamos uma regressão de D em M: <span class="math inline">\(D = r_0 + r_{1}M + e\)</span>, sendo a equação de regressão.</p>
+<p>A equação de regressão é diferente da equação estrutural. Neste caso, <span class="math inline">\(r_1\)</span> irá dar-nos uma estimativa próxima do valor verdadeiro, ou do parâmetro estrutural, <span class="math inline">\(\beta_{M}\)</span>; isto não é necessariamente o caso de um coeficiente de regressão nos dar uma boa estimativa do efeito causal.</p>
+<pre class="r"><code>modd &lt;- lm(D ~ M, data = Meds)
+
+summary(modd)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = D ~ M, data = Meds)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.5576 -0.6693 -0.0477  0.6869  3.3169 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  9.99212    0.07108  140.58   &lt;2e-16 ***
+## M           -3.10158    0.09978  -31.09   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9976 on 398 degrees of freedom
+## Multiple R-squared:  0.7083, Adjusted R-squared:  0.7075 
+## F-statistic: 966.3 on 1 and 398 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p><span class="math display">\[
+M|m\rightarrow D(m)
+\]</span> Contrafatuais e resultados potenciais. Quando o valor de M é definido como m, D tem um potencial resultado denotado por D(m)</p>
+<p>O coeficiente estimado (−3,1) está próximo do valor de <span class="math inline">\(\beta M (−3)\)</span></p>
+<center>
+<p>[EM CONSTRUÇÃO …]</p>
+</center>
+<hr />
+<div id="referências" class="section level3">
+<h3>Referências</h3>
+<p>Abadie,A., M.D. Catteneo. 2018. <em>Econometric methods for program evaluation</em>. Annual Review of Economics 10: 465–503.</p>
+<p>Angrist, J.D., J. Pischke. 2015. <em>Mastering ‘metrics - The path from cause to effect</em>. Princeton: Princeton University Press.</p>
+<p>Pearl, J., M. Glymour, and N.P. Jewell. 2016. <em>Causal inference in statistics: A primer.</em> New York: Wiley.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

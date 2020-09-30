@@ -1,0 +1,230 @@
+---
+title: "Inferência Causal na Economia"
+author: "Rodrigo H. Ozon"
+date: "21/09/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+<!-- ================================================================================= -->
+
+***
+
+#### **Resumo**
+
+<small>Este tutorial busca aplicar alguns dos conceitos de inferência causal em problemas econômicos reais e simulados, utilizando o software R, demonstrando e apresentando suas enormes vantagens em relação ao _data science_, _machine learning_ e até mesmo o _deep learning_.
+
+Como a Economia trata de buscar respostas para problemas mais complexos (e interessantes), vamos _"muito além do simples ajuste de curvas"_ [(parafraseando o prof. Josh Angrist aqui)](https://www.youtube.com/watch?v=2EhRT2mOXm8)
+
+**Palavras-chave:** Inferência Causal, Diff and Diff, Econometria
+</small>
+
+
+***
+
+# Introdução
+
+
+Podemos estar interessados em questões causais e não causais:
+
++ *Descritivo* como a renda varia entre as ocupações ?
++ *Previsão* de qual será o preço do petróleo bruto no próximo ano ?
++ *Causa* se mudarmos a proporção de alunos para professores, as pontuações de aprendizagem melhoram ?
+
+Se estivermos interessados na resposta às questões causais, gostaríamos de usar
+inferência. Livros de estatística e econometria costumam variar em quão explícitos são
+no tratamento da causalidade. A inferência causal é de grande relevância na ev olução do programa, um domínio que, de acordo com Abadie e Cattaneo (2018, p. 466), é
+"_Expandindo as ciências sociais, biomédicas e comportamentais que estudam o efeito de
+intervenções políticas. As políticas de interesse são frequentemente programas governamentais, como intervenções ativas do mercado de trabalho ou programas de combate à pobreza_”.
+
+O maravilhoso livro de Morgan andWinship (2014) Counterfactuals and Causal Inference
+tem a seguinte citação de Gary King na contracapa: "_Tenho aprendido mais sobre inferência causal nas últimas décadas do que a soma total de tudo que tinha sido aprendido sobre isso em toda a história registrada_". No seu livro Morgan e Winship’s
+fazem uso de duas abordagens para inferência causal: (1) resultados potenciais, ou
+contrafactuais e (2) gráficos causais. Eles argumentam que estes são complementares,
+e usar ambos, como fazem autores como Abadie e Catteneo (2018); e essa é a visão que nós veremos neste tutorial/artigo.
+
+# Gráficos causais e resultados potenciais
+
+Para ilustrar os gráficos causais e as abordagens de resultados potenciais, consideramos um caso de alguns indivíduos que sofrem de dores nas costas. Eles podem levar um remédio para aliviar sua dor.
+
+Denotamos dor por $D$ e medicina por $M$, e os indivíduos são indexados por $i$.
+queremos examinar o efeito de $D$ em $P$. $D$ é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir $D$ aleatoriamente a diferentes indivíduos.
+
+Usaremos o modelo causal estrutural de Pearl et al. (2016) como uma estrutura para
+compreender a inferência causal em relação a $D$. O modelo causal estrutural consiste
+de um gráfico causal e respectivas equações estruturais que mostram nossas suposições
+sobre o fenômeno. Aqui, o gráfico causal é $D\Rightarrow M$ e a equação estrutural
+é (assumimos linearidade para simplificar; a abordagem de Pearl não requer a suposição
+de linearidade) $D=\beta_{0}+\beta_{M}M+U_{D}$.
+
+Como M é atribuído aleatoriamente, ele é independente de $U_D$. $U_D$ captura as outras causas ou fontes de variação em $D$. A equação estrutural, neste caso, tem uma linha para $M$ e uma linha ou componente para $U_D$. Faremos agora uma simulação. Nós assumimos que $\beta_{0}=10$, $\beta_{M}=-3$ e $U_M\sim N(0,1)$
+
+
+```{r}
+library(tidyverse)
+set.seed(22)
+beta0 <- 10
+betaM <- -3
+num <- 400
+U_D <- rnorm(num)
+```
+
+Geramos o conjunto de dados Meds, que contém as variáveis M, D, U_D.
+
+```{r message=FALSE}
+set.seed(3)
+M <- sample(c(0,1), num, replace = T)
+Indiv <- 1:num
+D <- beta0 + betaM * M + U_D
+Meds <- tibble(Indiv, M, U_D, D)
+
+
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(round(head(Meds),2))) %>%
+  kable_paper() %>%
+  scroll_box(width = "600px", height = "200px")
+
+
+```
+
+
+$$
+M\rightarrow D
+$$
+
+$$
+P=\beta_0+\beta_1M+U_D
+$$
+Vemos nos dados gerados que o indivíduo 1 é atribuído a M = 0, ou seja, está no
+grupo de controle. Observamos que o valor de D para pessoa um, quando atribuído M = 0
+é 9,49. No caso do indivíduo 2, o valor de D para a pessoa dois, quando atribuído M
+= 1 é 9,49.
+
+Denotamos o resultado potencial para um indivíduo neste caso por $D_{i}(m)$ onde $i$
+indexa o indivíduo em é 0 ou 1, dependendo do valor atribuído de M.
+
+A Figura 10.3 mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.
+
+Aqui, $P_{1} (0) = 9,49\,\, e\,\, P_{2} (1) = 9,49$. O efeito causal para um indivíduo é: $P_{i}(1) - P_{i}(0)$.
+
+
+Infelizmente, e isso é chamado de dilema fundamental da inferência causal, nós não observamos ambos os resultados potenciais para um indivíduo. Portanto, não observamos neste caso o valor da dor para a pessoa 1 se caso ela tivesse recebido o medicamento, e a pessoa 2 com dor teria experimentado se ela não tivesse recebido o medicamento. Não observamos o contrafactual.
+
+
+Temos que nos contentar com um efeito de tratamento médio, a diferença entre a dor
+vivenciada pelo grupo de controle e pelo grupo de tratamento, que estimamos a seguir.
+Rodamos uma regressão de D em M: $D = r_0 + r_{1}M + e$, sendo a equação de regressão.
+
+A equação de regressão é diferente da equação estrutural. Neste caso, $r_1$ irá
+dar-nos uma estimativa próxima do valor verdadeiro, ou do parâmetro estrutural, $\beta_{M}$; isto não é necessariamente o caso de um coeficiente de regressão nos dar uma boa estimativa do efeito causal.
+
+```{r}
+
+modd <- lm(D ~ M, data = Meds)
+
+summary(modd)
+```
+
+
+$$
+M|m\rightarrow D(m)
+$$
+Contrafatuais e resultados potenciais. Quando o valor de M é definido como m, D tem um potencial resultado denotado por D(m)
+
+
+O coeficiente estimado (−3,1) está próximo do valor de $\beta M (−3)$
+
+
+<center>
+
+[EM CONSTRUÇÃO ...]
+
+</center>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***
+
+### Referências
+
+Abadie,A., M.D. Catteneo. 2018. *Econometric methods for program evaluation*. Annual Review of Economics 10: 465–503.
+
+Angrist, J.D., J. Pischke. 2015. *Mastering ‘metrics - The path from cause to effect*. Princeton: Princeton University Press.
+
+Pearl, J., M. Glymour, and N.P. Jewell. 2016. *Causal inference in statistics: A primer.* New York: Wiley.

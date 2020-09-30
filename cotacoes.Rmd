@@ -9,6 +9,7 @@ output:
 params:
   symbol1: PBR
   symbol2: VALE
+  symbol3: ^BVSP
 ---
 
 <!-- https://bookdown.org/ccolonescu/RPoE4/time-varying-volatility-and-arch-models.html -->
@@ -36,50 +37,131 @@ library(dygraphs)
 
 ativo1 <- getSymbols(params$symbol1, auto.assign = FALSE,
                     from = "2018-01-01", end = Sys.Date())
+
 ativo2 <- getSymbols(params$symbol2, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+ativo3 <- getSymbols(params$symbol3, auto.assign = FALSE,
                     from = "2018-01-01", end = Sys.Date())
 ```
 
 
-Esse relatório capta dinamicamente as cotações de dois ativos
+Esse relatório capta dinamicamente as cotações de tres ativos
   
 * ``r params$symbol1`` Petrobras
 * ``r params$symbol2`` Vale
+* ``r params$symbol3`` Indice Bovespa
 
 Os dados são originários do [Yahoo finance](http://finance.yahoo.com). As séries temporais se iniciam em 01/01/2018 e terminam no último valor de fechamento quase que em _real time_.
 
 Navegue nele para ver a aplicação de modelos econométricos de volatilidade condicional para os dados da VALE.
 
-### ``r params$symbol1`` price
+Iniciamos observando o caso da maior estatal brasileira, a petrolífera Petrobras:
+
+
+### ``r params$symbol1`` Preço de Fechamento do pregão
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
 dygraph(Cl(ativo1))
 ```
 
-### ``r params$symbol1`` volume
+### ``r params$symbol1`` Volume negociado
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
 dygraph(Vo(ativo1))
 ```
 
+A Operação Lava Jato é um conjunto de investigações, algumas controversas, em andamento pela Polícia Federal do Brasil, que cumpriu mais de mil mandados de busca e apreensão, de prisão temporária, de prisão preventiva e de condução coercitiva, visando apurar um esquema de lavagem de dinheiro que movimentou bilhões de reais em propina. 
 
-A Operação Lava Jato é um conjunto de investigações, algumas controversas, em andamento pela Polícia Federal do Brasil, que cumpriu mais de mil mandados de busca e apreensão, de prisão temporária, de prisão preventiva e de condução coercitiva, visando apurar um esquema de lavagem de dinheiro que movimentou bilhões de reais em propina. A operação teve início em 17 de março de 2014 e conta com 71 fases operacionais autorizadas, entre outros, pelo então juiz Sérgio Moro, durante as quais prenderam-se e condenaram-se mais de cem pessoas. Investiga crimes de corrupção ativa e passiva, gestão fraudulenta, lavagem de dinheiro, organização criminosa, obstrução da justiça, operação fraudulenta de câmbio e recebimento de vantagem indevida. A Lava Jato foi apontada por críticos como uma das causas da crise político-econômica de 2014 no país. De acordo com investigações e delações premiadas, estavam envolvidos em corrupção membros administrativos da empresa estatal petrolífera Petrobras, políticos dos maiores partidos do Brasil, incluindo presidentes da República, presidentes da Câmara dos Deputados e do Senado Federal e governadores de estados, além de empresários de grandes empresas brasileiras. A Polícia Federal considera-a a maior investigação de corrupção da história do país.
+A operação teve início em 17 de março de 2014 e conta com 71 fases operacionais autorizadas, entre outros, pelo então juiz Sérgio Moro, durante as quais prenderam-se e condenaram-se mais de cem pessoas. Investiga crimes de corrupção ativa e passiva, gestão fraudulenta, lavagem de dinheiro, organização criminosa, obstrução da justiça, operação fraudulenta de câmbio e recebimento de vantagem indevida. A Lava Jato foi apontada por críticos como uma das causas da crise político-econômica de 2014 no país. De acordo com investigações e delações premiadas, estavam envolvidos em corrupção membros administrativos da empresa estatal petrolífera Petrobras, políticos dos maiores partidos do Brasil, incluindo presidentes da República, presidentes da Câmara dos Deputados e do Senado Federal e governadores de estados, além de empresários de grandes empresas brasileiras. A Polícia Federal considera-a a maior investigação de corrupção da história do país.
 
 
-### ``r params$symbol2`` price
+***
 
-```{r echo = FALSE, fig.width=9,fig.height=3}
-dygraph(Cl(ativo2)) 
-```
-
-### ``r params$symbol2`` volume
+### ``r params$symbol3`` Preço de Fechamento do pregão
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
-dygraph(Vo(ativo2)) 
+presAnnotation <- function(dygraph, x, text) {
+  dygraph %>%
+    dyAnnotation(x, text, attachAtBottom = TRUE, width = 100, height=20)
+}
+
+dygraph(Cl(ativo3))%>%
+   dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
+presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
+  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+  dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
+presAnnotation("2020-03-02", text = "Corona Day")%>%   
+  dyShading(from = "2020-03-02", to = "2020-04-27")
+  
+```
+
+### ``r params$symbol3`` Volume negociado
+
+```{r echo = FALSE, fig.width=9,fig.height=3}
+presAnnotation <- function(dygraph, x, text) {
+  dygraph %>%
+    dyAnnotation(x, text, attachAtBottom = TRUE, width = 100, height=20)
+}
+dygraph(Vo(ativo3))%>%
+ dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
+presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
+  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+  dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
+presAnnotation("2020-03-02", text = "Corona Day")%>%   
+  dyShading(from = "2020-03-02", to = "2020-04-27")
+```
+
+O índice bovespa, também chamado de IBOV, é o principal indicador médio de desempenho do mercado de ações no Brasil.
+
+É chamado o “termômetro do mercado de ações”. Se um investidor quer saber como está sua carteira de ações, ele compara com o desempenho do índice bovespa. Se ele está melhor, pior ou com desempenho similar ao do índice.
+
+Formado pela composição de ações das empresas com maior liquidez e maior volume financeiro negociado de todo o volume de negócios da bolsa.
+
+
+
+***
+
+
+### ``r params$symbol2`` Preço de Fechamento do pregão
+
+```{r echo = FALSE, fig.width=9,fig.height=3}
+presAnnotation <- function(dygraph, x, text) {
+  dygraph %>%
+    dyAnnotation(x, text, attachAtBottom = TRUE, width = 300, height=20)
+}
+dygraph(Cl(ativo2))%>% 
+dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
+presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
+  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+  
+dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
+presAnnotation("2020-03-02", text = "Corona Day")%>%   
+  dyShading(from = "2020-03-02", to = "2020-04-27")
 ```
 
 
-O rompimento de barragem em Brumadinho em 25 de janeiro de 2019 foi o maior acidente de trabalho no Brasil em perda de vidas humanas e o segundo maior desastre industrial do século. Foi um dos maiores desastres ambientais da mineração do país, depois do rompimento de barragem em Mariana.
+### ``r params$symbol2`` Volume negociado
+
+```{r echo = FALSE, fig.width=9,fig.height=3}
+
+presAnnotation <- function(dygraph, x, text) {
+  dygraph %>%
+    dyAnnotation(x, text, attachAtBottom = TRUE, width = 300, height=20)
+}
+
+
+dygraph(Vo(ativo2))%>%
+  dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
+presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
+  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+  dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
+presAnnotation("2020-03-02", text = "Corona Day")%>%   
+  dyShading(from = "2020-03-02", to = "2020-04-27")
+```
+
+
+O rompimento de barragem em Brumadinho em **25 de janeiro de 2019** foi o maior acidente de trabalho no Brasil em perda de vidas humanas e o segundo maior desastre industrial do século. Foi um dos maiores desastres ambientais da mineração do país, depois do rompimento de barragem em Mariana.
 
 Controlada pela Vale S.A., a barragem de rejeitos denominada barragem da Mina Córrego do Feijão, era classificada como de "baixo risco" e "alto potencial de danos" pela empresa. Acumulando os rejeitos de um mina de ferro, ficava no ribeirão Ferro-Carvão, na região de Córrego do Feijão, no município de Brumadinho, estado de Minas Gerais.
 
@@ -139,6 +221,17 @@ ativo2[1:10,] # Gero as primeiras 10 linhas do dataset
 Cl(ativo2) # Gero os dados para aqueles que desejem baixar por aqui
 
 Vo(ativo2) # Gero os dados para aqueles que desejem baixar por aqui
+
+# Voce pode usar o seguinte comando para exportar esse dataset 
+
+write.csv(ativo2, file="VALE.csv")
+
+
+library(xlsx)
+write.xlsx(ativo2, file="VALE.xlsx")
+
+#https://www.guru99.com/r-exporting-data.html#1 
+
 ```
 
 Após vermos os precos de fechamento e volume, obtenho o log retorno dos precos 
@@ -148,14 +241,31 @@ Após vermos os precos de fechamento e volume, obtenho o log retorno dos precos
 
 dlnVALEclose <- diff(log(Cl(ativo2)), lag=1) #ln(Pt/Pt-1)
 
-dygraph(dlnVALEclose) #Grafico dos retornos
+dlnVALEclose<-dlnVALEclose[-1,]
+
+
+presAnnotation <- function(dygraph, x, text) {
+  dygraph %>%
+    dyAnnotation(x, text, attachAtBottom = TRUE, width = 300, height=20)
+}
+
+dygraph(dlnVALEclose, main = "Retornos logarítmicos dos preços de fechamento VALE")%>%
+   dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
+presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
+  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+  dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
+presAnnotation("2020-03-02", text = "Corona Day")%>%   
+  dyShading(from = "2020-03-02", to = "2020-04-27")
+  #Grafico dos retornos
 ```
 
 Agora observo o padrão da distribuição dos log retornos:
 
-```{r, fig.width=9,fig.height=3}
+```{r, fig.width=9,fig.height=5, message=FALSE}
 hist(dlnVALEclose, main="", breaks=20, freq=FALSE, col="grey")
+lines(density(dlnVALEclose, adjust=2, col = "blue"))
 ```
+
 
 Vamos iniciar carregando os pacotes necessários do R:
 
@@ -185,7 +295,9 @@ library(dynlm)
 
 rTS <- ts(dlnVALEclose) # A funcao ts eh o mesmo que timeseries
 
-#plot.ts(rTS)
+plot.ts(ativo2$VALE.Close) # Serie temporal de valor de fechamento da VALE
+
+plot.ts(rTS) # Serie de retornos logaritmizados da VALE
 
 ```
 

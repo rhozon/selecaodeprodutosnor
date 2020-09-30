@@ -32,6 +32,13 @@ Tutoriais disponíveis:
 
 &nbsp;
 
+### *Inferência Causal na Economia*
+
++ [Como a Ciência da Economia e em especial as contribuições da Econometria e seu abissal diferencial em relação ao data science, machine learning e até mesmo o deep learning!](https://www.youtube.com/watch?v=2EhRT2mOXm8)
+
+
+&nbsp;
+
 ### *A importância da análise de resíduos na regressão: O clássico trabalho de Anscombe (1973)*
 
 &nbsp;
