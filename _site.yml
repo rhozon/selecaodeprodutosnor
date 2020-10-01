@@ -43,7 +43,7 @@ navbar:
         - text: "Inferência Causal na Economia"
           href: inferenciacausal.html  
         - text: "Variáveis Instrumentais e Inferência Causal"
-          href: variaveisinstrumentais.html 
+          href: varinstrumentais.html 
 
   right:
     - icon: fa-question fa-lg
