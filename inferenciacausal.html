@@ -414,6 +414,9 @@ div.tocify {
     <li>
       <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
     </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -463,12 +466,37 @@ div.tocify {
 <div id="resumo" class="section level4">
 <h4><strong>Resumo</strong></h4>
 <p><small>Este tutorial busca aplicar alguns dos conceitos de inferência causal em problemas econômicos reais e simulados, utilizando o software R, demonstrando e apresentando suas enormes vantagens em relação ao <em>data science</em>, <em>machine learning</em> e até mesmo o <em>deep learning</em>.</p>
+<p><a href="https://www.coursera.org/learn/causal-inference">A inspiração de escrevê-lo veio ao cursar no coursera.org o ead fornecido pela Columbia University in the City of New York, encabeçado pelo prof. Michael E. Sobel.</a></p>
 <p>Como a Economia trata de buscar respostas para problemas mais complexos (e interessantes), vamos <em>“muito além do simples ajuste de curvas”</em> <a href="https://www.youtube.com/watch?v=2EhRT2mOXm8">(parafraseando o prof. Josh Angrist aqui)</a></p>
 <p><strong>Palavras-chave:</strong> Inferência Causal, Diff and Diff, Econometria </small></p>
 <hr />
+<p> </p>
 </div>
 <div id="introdução" class="section level1">
 <h1>Introdução</h1>
+<hr />
+<p>Quero começar esse tutorial, destacando a principal diferença da Econometria para o <em>Data Science</em> e demais técnicas e métodos. Enfatizo muito aqui o prof. Josh Angrist:</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+"Eu diria que a principal diferença é a abordagem do problema da previsão.
+</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Os cientistas de dados geralmente se preocupam com as abordagens do tipo de ajuste de curva para a previsão. Portanto, qualquer modelo que se adapte bem aos dados servirá. Se é uma experiência passada, podemos estar interessados em usá-la para extrapolar para o futuro.
+</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Grande parte da agenda de ciência de dados está ligada aos problemas de marketing de alguém. Você está tentando descobrir quem comprará algo, quem tomará alguma ação. A econometria, na minha opinião, lida com uma classe de problemas mais difícil.
+</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Econometristas estão mais preocupados com relacionamentos causais. Em outras palavras, se manipularmos algo, por exemplo, seguro de saúde ou política monetária, como será o mundo em resposta a essa mudança? <a href="https://mru.org/courses/mastering-econometrics/whats-difference-between-econometrics-and-data-science">Josh Angrist in Mastering Econometrics</a>
+</p>
+<p>Como prof. do MIT, o pesquisador Josh Angrist é muito reconhecido no meio científico, sendo muitas vezes citado pelo grande microeconomista e ex-presidente do Google, Hall Varian, p. ex. Veremos sua entrevista onde ele expõe suas contribuições:</p>
+<p> </p>
+<center>
+<iframe src="https://www.youtube.com/embed/2EhRT2mOXm8" width="420" height="315" frameborder="0" allowfullscreen=""></iframe>
+</center>
+<p> </p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“É somente através da econometria, a ciência de dados original, que você pode conhecer o caminho da causa ao efeito.” (Angrist, 2008)
+</p>
 <p>Podemos estar interessados em questões causais e não causais:</p>
 <ul>
 <li><em>Descritivo</em> como a renda varia entre as ocupações ?</li>
@@ -476,7 +504,7 @@ div.tocify {
 <li><em>Causa</em> se mudarmos a proporção de alunos para professores, as pontuações de aprendizagem melhoram ?</li>
 </ul>
 <p>Se estivermos interessados na resposta às questões causais, gostaríamos de usar inferência. Livros de estatística e econometria costumam variar em quão explícitos são no tratamento da causalidade. A inferência causal é de grande relevância na ev olução do programa, um domínio que, de acordo com Abadie e Cattaneo (2018, p. 466), é “<em>Expandindo as ciências sociais, biomédicas e comportamentais que estudam o efeito de intervenções políticas. As políticas de interesse são frequentemente programas governamentais, como intervenções ativas do mercado de trabalho ou programas de combate à pobreza</em>”.</p>
-<p>O maravilhoso livro de Morgan andWinship (2014) Counterfactuals and Causal Inference tem a seguinte citação de Gary King na contracapa: “<em>Tenho aprendido mais sobre inferência causal nas últimas décadas do que a soma total de tudo que tinha sido aprendido sobre isso em toda a história registrada</em>”. No seu livro Morgan e Winship’s fazem uso de duas abordagens para inferência causal: (1) resultados potenciais, ou contrafactuais e (2) gráficos causais. Eles argumentam que estes são complementares, e usar ambos, como fazem autores como Abadie e Catteneo (2018); e essa é a visão que nós veremos neste tutorial/artigo.</p>
+<p>O maravilhoso livro de Morgan e Winship (2014) <em>Counterfactuals and Causal Inference</em> tem a seguinte citação de Gary King na contracapa: “<em>Tenho aprendido mais sobre inferência causal nas últimas décadas do que a soma total de tudo que tinha sido aprendido sobre isso em toda a história registrada</em>”. Em seu livro Morgan e Winship’s fazem uso de duas abordagens para inferência causal: (1) resultados potenciais, ou contrafactuais e (2) gráficos causais. Eles argumentam que estes são complementares, e usar ambos, como fazem autores como Abadie e Catteneo (2018) p. ex.; e essa é a forma que nós veremos neste tutorial/artigo.</p>
 </div>
 <div id="gráficos-causais-e-resultados-potenciais" class="section level1">
 <h1>Gráficos causais e resultados potenciais</h1>
@@ -484,16 +512,8 @@ div.tocify {
 <p>Denotamos dor por <span class="math inline">\(D\)</span> e medicina por <span class="math inline">\(M\)</span>, e os indivíduos são indexados por <span class="math inline">\(i\)</span>. queremos examinar o efeito de <span class="math inline">\(D\)</span> em <span class="math inline">\(P\)</span>. <span class="math inline">\(D\)</span> é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir <span class="math inline">\(D\)</span> aleatoriamente a diferentes indivíduos.</p>
 <p>Usaremos o modelo causal estrutural de Pearl et al. (2016) como uma estrutura para compreender a inferência causal em relação a <span class="math inline">\(D\)</span>. O modelo causal estrutural consiste de um gráfico causal e respectivas equações estruturais que mostram nossas suposições sobre o fenômeno. Aqui, o gráfico causal é <span class="math inline">\(D\Rightarrow M\)</span> e a equação estrutural é (assumimos linearidade para simplificar; a abordagem de Pearl não requer a suposição de linearidade) <span class="math inline">\(D=\beta_{0}+\beta_{M}M+U_{D}\)</span>.</p>
 <p>Como M é atribuído aleatoriamente, ele é independente de <span class="math inline">\(U_D\)</span>. <span class="math inline">\(U_D\)</span> captura as outras causas ou fontes de variação em <span class="math inline">\(D\)</span>. A equação estrutural, neste caso, tem uma linha para <span class="math inline">\(M\)</span> e uma linha ou componente para <span class="math inline">\(U_D\)</span>. Faremos agora uma simulação. Nós assumimos que <span class="math inline">\(\beta_{0}=10\)</span>, <span class="math inline">\(\beta_{M}=-3\)</span> e <span class="math inline">\(U_M\sim N(0,1)\)</span></p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages -------------------------------------------------- tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
-## v tibble  3.0.3     v dplyr   1.0.2
-## v tidyr   1.1.2     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.5.0</code></pre>
-<pre><code>## -- Conflicts ----------------------------------------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>set.seed(22)
+<pre class="r"><code>library(tidyverse)
+set.seed(22)
 beta0 &lt;- 10
 betaM &lt;- -3
 num &lt;- 400
@@ -511,8 +531,9 @@ library(kableExtra)
 
 kbl(cbind(round(head(Meds),2))) %&gt;%
   kable_paper() %&gt;%
-  scroll_box(width = &quot;600px&quot;, height = &quot;200px&quot;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px; ">
+  scroll_box(width = &quot;200px&quot;, height = &quot;200px&quot;)%&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:200px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
 <table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
@@ -618,14 +639,12 @@ D
 </tbody>
 </table>
 </div>
-<p><span class="math display">\[
-M\rightarrow D
-\]</span></p>
-<p><span class="math display">\[
-P=\beta_0+\beta_1M+U_D
-\]</span> Vemos nos dados gerados que o indivíduo 1 é atribuído a M = 0, ou seja, está no grupo de controle. Observamos que o valor de D para pessoa um, quando atribuído M = 0 é 9,49. No caso do indivíduo 2, o valor de D para a pessoa dois, quando atribuído M = 1 é 9,49.</p>
+<p> </p>
+<p><span class="math inline">\(M\rightarrow D\)</span></p>
+<p><span class="math inline">\(P=\beta_0+\beta_1M+U_D\)</span></p>
+<p>Vemos nos dados gerados que o indivíduo 1 é atribuído a M = 0, ou seja, está no grupo de controle. Observamos que o valor de D para pessoa um, quando atribuído M = 0 é 9,49. No caso do indivíduo 2, o valor de D para a pessoa dois, quando atribuído M = 1 é 9,49.</p>
 <p>Denotamos o resultado potencial para um indivíduo neste caso por <span class="math inline">\(D_{i}(m)\)</span> onde <span class="math inline">\(i\)</span> indexa o indivíduo em é 0 ou 1, dependendo do valor atribuído de M.</p>
-<p>A Figura 10.3 mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.</p>
+<p>A Figura a seguir mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.</p>
 <p>Aqui, <span class="math inline">\(P_{1} (0) = 9,49\,\, e\,\, P_{2} (1) = 9,49\)</span>. O efeito causal para um indivíduo é: <span class="math inline">\(P_{i}(1) - P_{i}(0)\)</span>.</p>
 <p>Infelizmente, e isso é chamado de dilema fundamental da inferência causal, nós não observamos ambos os resultados potenciais para um indivíduo. Portanto, não observamos neste caso o valor da dor para a pessoa 1 se caso ela tivesse recebido o medicamento, e a pessoa 2 com dor teria experimentado se ela não tivesse recebido o medicamento. Não observamos o contrafactual.</p>
 <p>Temos que nos contentar com um efeito de tratamento médio, a diferença entre a dor vivenciada pelo grupo de controle e pelo grupo de tratamento, que estimamos a seguir. Rodamos uma regressão de D em M: <span class="math inline">\(D = r_0 + r_{1}M + e\)</span>, sendo a equação de regressão.</p>
@@ -655,15 +674,3632 @@ summary(modd)</code></pre>
 M|m\rightarrow D(m)
 \]</span> Contrafatuais e resultados potenciais. Quando o valor de M é definido como m, D tem um potencial resultado denotado por D(m)</p>
 <p>O coeficiente estimado (−3,1) está próximo do valor de <span class="math inline">\(\beta M (−3)\)</span></p>
+<!-- parei em 10.2.2 Randomized Assignment of Treatment (Causal Graphs) -->
+</div>
+<div id="atribuição-aleatória-de-tratamento-gráficos-causais" class="section level1">
+<h1>Atribuição aleatória de tratamento (gráficos causais)</h1>
+<p>Na ausência de atribuição aleatória de tratamento, o nível de medicamento e dor pode ser influenciado por uma variável de confusão. Tentativas de atribuição aleatória de garantir que os grupos de tratamento e controle diferem apenas no que diz respeito ao tratamento, tanto no que diz respeito às variáveis observadas como não observadas.</p>
+<p>Uma vez que R faz a atribuição aleatória determina o valor de M, ou M é definido por R, o link entre C e M está quebrado. C não atua mais como um fator de confusão.</p>
 <center>
-<p>[EM CONSTRUÇÃO …]</p>
+<img src="https://github.com/rhozon/Introdu-o-Econometria-com-Excel/raw/master/cmd.png" style="width:30.0%" />
 </center>
+<p> </p>
+<p>Na ausência de atribuição aleatória de M, uma variável C pode ser uma causa comum de M e D, e será uma variável de confusão.</p>
+<center>
+<p><img src="https://github.com/rhozon/Introdu-o-Econometria-com-Excel/raw/master/cmd1.png" style="width:30.0%" /></p>
+</center>
+<p> </p>
+<p>Uma vez que R (atribuição aleatória) determina o valor de M, ou M é definido por R, o link entre C e M está quebrado. C não atua mais como um fator de confusão</p>
+<p><small><strong>Tabela 1:</strong> Resultados potenciais do paciente no exemplo médico perfeito de Rubin</small></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(Y_{po1}\)</span></th>
+<th><span class="math inline">\(Y_{po0}\)</span></th>
+<th><span class="math inline">\(Eff\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>14.00</td>
+<td>13.00</td>
+<td>1.00</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0.00</td>
+<td>6.00</td>
+<td>-6.00</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1.00</td>
+<td>4.00</td>
+<td>-3.00</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>2.00</td>
+<td>5.00</td>
+<td>-3.00</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>3.00</td>
+<td>6.00</td>
+<td>-3.00</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>1.00</td>
+<td>6.00</td>
+<td>-5.00</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>10.00</td>
+<td>8.00</td>
+<td>2.00</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>9.00</td>
+<td>8.00</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="atribuição-aleatória-de-tratamento-resultados-potenciais" class="section level1">
+<h1>Atribuição aleatória de tratamento (resultados potenciais)</h1>
+<p>Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, uma cirurgia, que afeta os anos vividos. Deixe Y(0) denotar o resultado potencial sem cirurgia, e Y(1) denotar o resultado potencial com a cirurgia. Para codificação no software R, usamos Y_po0, e Y_po1, respectivamente.</p>
+<p>Nós inserimos os dados.</p>
+<pre class="r"><code>Y_po0 &lt;- c(13,6,4,5,6,6,8,8)
+Y_po0</code></pre>
+<pre><code>## [1] 13  6  4  5  6  6  8  8</code></pre>
+<pre class="r"><code>Y_po1 &lt;- c(14,0,1,2,3,1,10,9)
+Y_po1</code></pre>
+<pre><code>## [1] 14  0  1  2  3  1 10  9</code></pre>
+<pre class="r"><code>Eff &lt;- Y_po1 - Y_po0</code></pre>
+<p>Então criamos um dataframe:</p>
+<pre class="r"><code>surg &lt;- data.frame(Y_po1, Y_po0, Eff)</code></pre>
+<p>Imprimimos os dados para o exemplo médico perfeito (tabela 1 acima)</p>
+<pre class="r"><code>library(knitr)
+library(kableExtra)
+
+kbl(cbind(surg)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;200px&quot;, height = &quot;200px&quot;)%&gt;%
+   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:200px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Y_po1
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Y_po0
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Eff
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+-6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+-3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+-5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Neste exemplo, os efeitos variam muito entre as 8 pessoas que são candidatas para cirurgia.</p>
+<p><small><strong>Tabela 2:</strong> Médias</small></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>Variável</th>
+<th>Média</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Eff</td>
+<td>-2</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Y_po0</td>
+<td>7</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Y_po1</td>
+<td>5</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><small><strong>Tabela 3:</strong> Atribuição de tratamento e resultados observados</small></p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>D</th>
+<th>Yi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1.00</td>
+<td>14.00</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>1.00</td>
+<td>0.00</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>1.00</td>
+<td>2.00</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>0.00</td>
+<td>6.00</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>0.00</td>
+<td>6.00</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>0.00</td>
+<td>8.00</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>0.00</td>
+<td>8.00</td>
+</tr>
+</tbody>
+</table>
+<p>O verdadeiro efeito causal médio é -2 (Tabela 2). Observe que não podemos observar ambos os resultados potenciais.</p>
+<p>Denotando tratamento por Di, observaremos Yi(0) para a <span class="math inline">\(i-\)</span>ésima pessoa se Di = 0, e da mesma forma para Yi(1). Se denotarmos Y observado para a iª pessoa por Yi, temos</p>
+<p><span class="math display">\[
+Yi=Di\times Yi(1) + (1-Di)\times Yi(0)
+\]</span></p>
+<p>Considere a seguinte atribuição de tratamento:</p>
+<pre class="r"><code>D &lt;- c(rep(1,4), rep(0,4))</code></pre>
+<p>Os Ys observados com esta atribuição de tratamento são (Tabela 3):</p>
+<pre class="r"><code>Yi &lt;- D*Y_po1 + (1-D)*Y_po0
+surg_D &lt;- data.frame(D,Yi)
+
+
+kbl(cbind(surg_D)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;200px&quot;, height = &quot;200px&quot;)%&gt;%
+   kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:200px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+D
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Yi
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre class="r"><code># Atribuição de tratamento e resultados observados</code></pre>
+<p>Estimamos a diferença de médias entre os grupos de tratamento e controle:</p>
+<pre class="r"><code>lm(Yi ~ D)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Yi ~ D)
+## 
+## Coefficients:
+## (Intercept)            D  
+##        7.00        -2.75</code></pre>
+<p>Vemos que com esta atribuição de tratamento particular D, o efeito de tratamento médio é -2,75.</p>
+<p>Podemos randomizar a atribuição com:</p>
+<pre class="r"><code>sample(D, replace = FALSE)</code></pre>
+<pre><code>## [1] 0 0 0 1 0 1 1 1</code></pre>
+<pre class="r"><code>Atribuicao &lt;- sample(D, replace = FALSE)
+Atribuicao</code></pre>
+<pre><code>## [1] 1 0 1 0 0 0 1 1</code></pre>
+<p>Então, o que acontecerá se randomizarmos a atribuição? Nós olhamos para a distribuição de amostragem do efeito estimado usando um loop.</p>
+<pre class="r"><code>iter &lt;- 70
+efeito.medio &lt;- numeric(iter)
+for(i in 1: iter) {
+Atribuicao &lt;- sample(D, replace = FALSE)
+Resultado &lt;- Atribuicao*Y_po1 + (1 - Atribuicao)*Y_po0
+mod_r &lt;- lm(Resultado ~ Atribuicao)
+efeito.medio[i] &lt;- mod_r$coeff[2]
+}
+round(mean(efeito.medio),2)</code></pre>
+<pre><code>## [1] -1.91</code></pre>
+<p>A média dos diferentes efeitos estimados está próxima do verdadeiro efeito médio (-2). Nós traçamos a distribuição da amostra.</p>
+<pre class="r"><code>pdoc &lt;- data.frame(efeito.medio)
+ggplot(pdoc, aes(y = efeito.medio)) +
+geom_boxplot() +
+coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-16-1.png" width="864" /></p>
+<p>O boxplot acima mostra a distribuição amostral dos efeitos estimados; o histograma abaixo mostra que a distribuição tem lacunas (<em>gaps</em>) e vários picos.</p>
+<pre class="r"><code>ggplot(pdoc, aes(x = efeito.medio)) +
+geom_histogram(fill = &quot;grey50&quot;) +
+geom_vline(xintercept = quantile(efeito.medio, probs = c(0.25,0.5,0.75)),
+linetype = &quot;dashed&quot;)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-17-1.png" width="864" /></p>
+<div id="exercício-sugerido" class="section level3">
+<h3>Exercício sugerido</h3>
+<p>Um médico perfeito, ou um médico com conhecimento perfeito dos resultados potenciais, atribuiria a cirurgia apenas aos pacientes que se beneficiarão com isso. (Claro, se o médico tivesse um conhecimento tão perfeito, não precisaríamos estudar os efeitos da cirurgia nas pessoas.) Qual será o efeito médio da cirurgia se o médico perfeito designar cirurgia ?</p>
+</div>
+</div>
+<div id="ajuste-covariante" class="section level1">
+<h1>Ajuste covariante</h1>
+<p>Quais co-variáveis ajustar? Os gráficos causais são chamados de gráficos acíclicos direcionados (DAGS).</p>
+<p>De acordo com Elwert (2013, p. 246), “<em>DAGS são representações visuais de suposições causais.</em>” … DAGS são ferramentas rigorosas com regras formais para derivar provas matemáticas. E ainda, em muitas situações, o uso de DAGs na prática requer apenas treinamento formal modesto e algum treinamento elementar de probabilidade. DAGs são portanto, extremamente eficazes para apresentar lições duramente conquistadas de metodologia de pesquisa moderna em uma linguagem compreensível para pesquisadores aplicados. “<em>Os gráficos causais são particularmente úteis para esclarecer questões de ajuste covariante</em>”. Se <span class="math inline">\(x\)</span> causa <span class="math inline">\(y\)</span> e uma terceira variável está presente, devemos ajustar para a terceira variável em uma regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x\)</span>? Usamos simulação para responder à pergunta e considerar três casos:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math inline">\(y1\)</span> ← causa comum → <span class="math inline">\(x1\)</span>. Aqui, a causa comum variável causa tanto <span class="math inline">\(y1\)</span> e <span class="math inline">\(x1\)</span>.</li>
+<li><span class="math inline">\(y2\)</span> ← intermediário ← <span class="math inline">\(x2\)</span>. Aqui <span class="math inline">\(x2\)</span> causa <span class="math inline">\(y2\)</span> por meio do intermediário variável.</li>
+<li><span class="math inline">\(y3\)</span> → colisor ← <span class="math inline">\(x3\)</span>. Aqui, <span class="math inline">\(x3\)</span> e <span class="math inline">\(y3\)</span> causam o colisor.</li>
+</ol>
+<p>Alguns exemplos de possível causa comum, variáveis intermediárias e de colisor são:</p>
+<ol style="list-style-type: decimal">
+<li>Causa comum. <em>Mais assassinatos</em> ← <em>Hora</em> → <em>Mais antibióticos</em>.</li>
+<li>Intermediário. <em>Doença cardíaca</em> ← <em>Colesterol</em> ← <em>Comer comida de baixa qualidade nutricional ou superprocessada.</em></li>
+<li>Colisor. <em>Bateria descarregada</em> → <em>carro não liga</em> ← <em>Sem gasolina</em>.</li>
+</ol>
+<p>Nós podemos até acreditar nesses mecanismos, eles podem ou não ser verdadeiros. Agora nos voltamos para a simulação, começando com o cenário de causa comum: <span class="math inline">\(y1\)</span> ← causa.comum → <span class="math inline">\(x1\)</span>.</p>
+<pre class="r"><code>causa.comum &lt;- runif(100, min = 10, max = 20)
+x1 &lt;- 2 * causa.comum + rnorm(100,0,0.5)
+y1 &lt;- 2 * causa.comum + rnorm(100,0,0.5)</code></pre>
+<p>Regredimos (1) y1 em x1 e (2) y1 em x1 e a causa comum.</p>
+<pre class="r"><code>m1 &lt;- lm(y1 ~ x1)
+m2 &lt;- lm(y1 ~ x1 + causa.comum)</code></pre>
+<p>Os resultados são:</p>
+<p> </p>
+<center>
+<p><small><strong>Tabela 4:</strong> Causa comum (o efeito verdadeiro de x1 em y1 é 1)</small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+y1
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+m1
+</td>
+<td>
+m2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-0.265
+</td>
+<td>
+-0.386
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.354)
+</td>
+<td>
+(0.261)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x1
+</td>
+<td>
+1.005<sup>***</sup>
+</td>
+<td>
+0.055
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.012)
+</td>
+<td>
+(0.104)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+causa.comum
+</td>
+<td>
+</td>
+<td>
+1.916<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.209)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+100
+</td>
+<td>
+100
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.986
+</td>
+<td>
+0.993
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.986
+</td>
+<td>
+0.993
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.653 (df = 98)
+</td>
+<td>
+0.480 (df = 97)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+7,067.465<sup>***</sup> (df = 1; 98)
+</td>
+<td>
+6,575.653<sup>***</sup> (df = 2; 97)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>Geramos dados para o cenário de variável intermediária: <span class="math inline">\(y2\)</span> ← <em>inter</em> ← <span class="math inline">\(x2\)</span></p>
+<pre class="r"><code>x2 &lt;- runif(100,min=10,max=20)
+inter &lt;- 2 * x2 + rnorm(100,0,0.5)
+y2 &lt;- 2 * inter + rnorm(100,0,0.5)
+inter1 &lt;- lm(y2 ~ x2)
+inter2 &lt;- lm(y2 ~ x2 + inter)</code></pre>
+<center>
+<p><small><strong>Tabela 5:</strong> Variável intermediária (o verdadeiro efeito de <span class="math inline">\(x2\)</span> em <span class="math inline">\(y2\)</span> é 4)</small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+y2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+inter1
+</td>
+<td>
+inter2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+-0.638
+</td>
+<td>
+0.027
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.523)
+</td>
+<td>
+(0.266)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x2
+</td>
+<td>
+4.062<sup>***</sup>
+</td>
+<td>
+0.338
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.034)
+</td>
+<td>
+(0.219)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+inter
+</td>
+<td>
+</td>
+<td>
+1.832<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.107)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+100
+</td>
+<td>
+100
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.993
+</td>
+<td>
+0.998
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.993
+</td>
+<td>
+0.998
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.999 (df = 98)
+</td>
+<td>
+0.502 (df = 97)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+13,998.850<sup>***</sup> (df = 1; 98)
+</td>
+<td>
+27,913.830<sup>***</sup> (df = 2; 97)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>Nesse cenário, não devemos criar controle para a variável intermediária (Tabela 5).</p>
+<div id="exercício-proposto" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Depois de gerar <span class="math inline">\(y2\)</span>, <span class="math inline">\(x2\)</span> e inter com o código acima, regredida <span class="math inline">\(y2\)</span> em <span class="math inline">\(x2\)</span>, e <span class="math inline">\(y2\)</span> em <span class="math inline">\(x2\)</span> e inter. O que você observa ?</p>
+<hr />
+<p>Voltemo-nos agora para o cenário <em>colisor</em></p>
+<p><span class="math inline">\(y\)</span> → <em>colisor</em> ← <span class="math inline">\(x\)</span></p>
+<pre class="r"><code>x3 &lt;- rnorm(100)
+y3 &lt;- rnorm(100)
+colisor &lt;- 4 * y3 + 4 * x3 + 0.3 * rnorm(100)</code></pre>
+<p><span class="math inline">\(y\)</span> → <em>colisor</em> ← <span class="math inline">\(x\)</span></p>
+<pre class="r"><code>m5 &lt;- lm(y3 ~ x3)
+m6 &lt;- lm(y3 ~ x3 + colisor)</code></pre>
+<center>
+<p><small><strong>Tabela 6:</strong> Colisor (o verdadeiro efeito de <span class="math inline">\(x3\)</span> em <span class="math inline">\(y3\)</span> é 0)</small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+y3
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+m5
+</td>
+<td>
+m6
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.012
+</td>
+<td>
+-0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.099)
+</td>
+<td>
+(0.007)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x3
+</td>
+<td>
+0.100
+</td>
+<td>
+-1.003<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.114)
+</td>
+<td>
+(0.012)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+colisor
+</td>
+<td>
+</td>
+<td>
+0.248<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.002)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+100
+</td>
+<td>
+100
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.008
+</td>
+<td>
+0.995
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+-0.002
+</td>
+<td>
+0.994
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.990 (df = 98)
+</td>
+<td>
+0.073 (df = 97)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+0.766 (df = 1; 98)
+</td>
+<td>
+8,924.749<sup>***</sup> (df = 2; 97)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>No caso do colisor, não devemos criar controle para o colisor (Tabela 6).</p>
+<p>Vemos que ‘controlar’ nem sempre é bom.</p>
+<ul>
+<li><p><strong>Bom controle</strong> É bom controlar a causa comum.</p></li>
+<li><p><strong>Controle ruim</strong> O controle das variáveis intermediárias e do colisor é ruim.</p></li>
+</ul>
+<p>Autores como Gelman e Hill (2007) enfatizam que não devemos controlar as variáveis de pós-tratamento. Aqui, mostramos que devemos controlar apenas as variáveis que afetam <span class="math inline">\(x\)</span>, e não aquelas afetadas por <span class="math inline">\(x\)</span>. No caso de uma variável intermediária, nós podemos obter o efeito de <span class="math inline">\(y\)</span> no interior e no interior de <span class="math inline">\(x\)</span>, e a partir deles obter o efeito de <span class="math inline">\(y\)</span> em <span class="math inline">\(x\)</span>. Em certas situações, esta pode ser uma estratégia útil.</p>
+</div>
+</div>
+<div id="seleção-de-regressores-por-significância-estatística" class="section level1">
+<h1>Seleção de regressores por significância estatística</h1>
+<p>Esta seção procura iluminar o seguinte argumento de Freedman (1983, p. 152):</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“Quando as equações de regressão são usadas no trabalho empírico, a proporção de pontos de dados para parâmetros é frequentemente baixo; além disso, variáveis com pequenos coeficientes são frequentemente descartadas e as equações reestimadas sem eles. … Tais práticas podem distorcer os níveis de significância convencionais dos testes estatísticos. A existência desse efeito é bem conhecida, mas sua magnitude pode vir como um surpresa, mesmo para um estatístico experiente.”
+</p>
+<p>Iremos gerar uma variável aleatória <span class="math inline">\(y\)</span> e 10 regressores, nenhum dos quais são causalmente relacionado com <span class="math inline">\(y\)</span>.</p>
+<pre class="r"><code>set.seed(80)
+x1 &lt;- rnorm(30)
+x2 &lt;- rnorm(30)
+x3 &lt;- rnorm(30)
+x4 &lt;- rnorm(30)
+x5 &lt;- rnorm(30)
+x6 &lt;- rnorm(30)
+x7 &lt;- rnorm(30)
+x8 &lt;- rnorm(30)
+x9 &lt;- rnorm(30)
+x10 &lt;- rnorm(30)
+y &lt;- rnorm(30)
+mod1 &lt;- lm(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9 + x10)
+mod2 &lt;- lm(y ~ x2 + x10)</code></pre>
+<center>
+<p><small><strong>Tabela 7:</strong> Seleção pela significância estatística </small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+mod1
+</td>
+<td>
+mod2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.076
+</td>
+<td>
+0.024
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.167)
+</td>
+<td>
+(0.144)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x1
+</td>
+<td>
+0.087
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.215)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x2
+</td>
+<td>
+0.276
+</td>
+<td>
+0.222
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.189)
+</td>
+<td>
+(0.145)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x3
+</td>
+<td>
+0.063
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.147)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x4
+</td>
+<td>
+0.088
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.167)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x5
+</td>
+<td>
+0.022
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.155)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x6
+</td>
+<td>
+0.189
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.177)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x7
+</td>
+<td>
+0.193
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.211)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x8
+</td>
+<td>
+0.130
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.223)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x9
+</td>
+<td>
+-0.099
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.218)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x10
+</td>
+<td>
+-0.364<sup>**</sup>
+</td>
+<td>
+-0.365<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.133)
+</td>
+<td>
+(0.114)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+30
+</td>
+<td>
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.440
+</td>
+<td>
+0.325
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.146
+</td>
+<td>
+0.275
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.829 (df = 19)
+</td>
+<td>
+0.764 (df = 27)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+1.495 (df = 10; 19)
+</td>
+<td>
+6.501<sup>***</sup> (df = 2; 27)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>Embora <span class="math inline">\(y\)</span> não esteja relacionado a nenhuma variável <span class="math inline">\(x\)</span>, no Modelo 2 da Tabela 7, obtemos um alta significância estatística para o coeficiente de x10.</p>
+<p>Com base no Modelo 1 da Tabela 7, selecionamos os regressores x2 e x10:</p>
+<p>Embora <span class="math inline">\(y\)</span> não esteja relacionado a nenhuma variável <span class="math inline">\(x\)</span>, no Modelo 2 da Tabela 7, obtemos um alta significância estatística para o coeficiente de x10.</p>
+<div id="exercício-proposto-1" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Gere seus dados como acima, alterando o valor dentro set.seed() a 999. Execute uma regressão de <span class="math inline">\(y\)</span> nas 10 variáveis <span class="math inline">\(x\)</span>. Selecione os três <span class="math inline">\(xs\)</span> mais estatisticamente significativos e execute uma segunda regressão. O que você observa?</p>
+<hr />
+</div>
+<div id="exemplo-mulheres-como-policymakers" class="section level2">
+<h2>Exemplo: Mulheres como <em>policymakers</em></h2>
+<p>Duflo e Chattopadhyay (2004) estudaram o efeito de reservar posições de liderança em Conselhos de Aldeia na Índia sobre os tipos de projetos realizados por eles. Um subconjunto de seus dados é apresentado em Imai (2018), isso corresponde aos dados para Birbhum distrito no estado de West Bengal. Os dados podem ser acessados da seguinte forma (remova o símbolo de hash):</p>
+<pre class="r"><code>library(tidyverse)
+
+women&lt;-read.csv(file=&quot;https://raw.githubusercontent.com/kosukeimai/qss/master/UNCERTAINTY/women.csv&quot;, head=TRUE,sep=&quot;,&quot;)
+
+str(women)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    322 obs. of  6 variables:
+##  $ GP        : int  1 1 2 2 3 3 4 4 5 5 ...
+##  $ village   : int  2 1 2 1 2 1 2 1 2 1 ...
+##  $ reserved  : int  1 1 1 1 0 0 0 0 0 0 ...
+##  $ female    : int  1 1 1 1 0 0 0 0 0 0 ...
+##  $ irrigation: int  0 5 2 4 0 0 4 0 0 0 ...
+##  $ water     : int  10 0 2 31 0 0 7 12 28 0 ...</code></pre>
+<p>Já temos os dados em nosso computador, então lemos as variáveis no conjunto de dados women de interesse para nós são:</p>
+<ul>
+<li>Identificador <strong>GP</strong> para o Gram Panchayat.</li>
+<li>identificador de <strong>village</strong> para cada aldeia.</li>
+<li><strong>female</strong> se o GP tinha uma líder feminina ou não.</li>
+<li><strong>water</strong>; número de instalações de água potável novas ou reparadas na aldeia desde que a política de reserva começou.</li>
+</ul>
+<p>A reserva é feita por atribuição aleatória.</p>
+<pre class="r"><code>women %&gt;%
+group_by(reserved) %&gt;%
+summarize(count_res = n(),
+media_female = mean(female),
+media_water = mean(water))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   reserved count_res media_female media_water
+##      &lt;int&gt;     &lt;int&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1        0       214       0.0748        14.7
+## 2        1       108       1             24.0</code></pre>
+<p>A média de water no grupo de tratamento é 24 e no de controle é 15.</p>
+<pre class="r"><code>ggplot(women,aes(y = water, x = factor(reserved))) +
+geom_boxplot() +
+coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-30-1.png" width="864" /></p>
+<p>A Figura acima mostra que algumas das aldeias tratadas tinham níveis de água muito altos, uma característica da amostra que observamos graças aos boxplots.</p>
+<p>Os dados são agrupados, então incorporamos isso ao realizar a randomização inferência com o pacote ri2.</p>
+<pre class="r"><code>library(randomizr) # Para rodar a funcao declare_ra
+library(ri2) # Para a funcao conduct_ri
+
+dat &lt;- data.frame(Y = women$water, Z = women$reserved, cluster = women$GP)
+
+head(dat)</code></pre>
+<pre><code>##    Y Z cluster
+## 1 10 1       1
+## 2  0 1       1
+## 3  2 1       2
+## 4 31 1       2
+## 5  0 0       3
+## 6  0 0       3</code></pre>
+<pre class="r"><code>declaracao &lt;- with(dat, {declare_ra(clusters = cluster)} )
+
+declaracao</code></pre>
+<pre><code>## Random assignment procedure: Cluster random assignment 
+## Number of units: 322 
+## Number of clusters: 161
+## Number of treatment arms: 2 
+## The possible treatment categories are 0 and 1.
+## The number of possible random assignments is approximately infinite. 
+## The probabilities of assignment are constant across units: 
+## prob_0 prob_1 
+##    0.5    0.5</code></pre>
+<pre class="r"><code>ri2_resultado &lt;- conduct_ri(Y ~ Z, sharp_hypothesis = 0, declaration = declaracao, data = dat)
+
+summary(ri2_resultado)</code></pre>
+<pre><code>##   term estimate two_tailed_p_value
+## 1    Z 9.252423              0.014</code></pre>
+<pre class="r"><code>plot(ri2_resultado, main=&quot;Distribuição de inferência randômica para reservados&quot;)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-31-1.png" width="864" /></p>
+<p>Obtemos uma estimativa de 9,25 com um valor <span class="math inline">\(p\)</span> baixo de 0,015 (figura acima).</p>
+<p>Também usamos o pacote estimatr, e um modelo linear, e estimamos o cluster com erros padrão robustos. Os resultados do summary(mod_water_r) mostram os coeficientes e intervalos de confiança resultantes.</p>
+<pre class="r"><code>women$reserved &lt;- factor(women$reserved)
+
+library(estimatr)
+
+mod_water_r &lt;- lm_robust(water ~factor(reserved), clusters = GP, data = women)
+
+summary(mod_water_r)</code></pre>
+<pre><code>## 
+## Call:
+## lm_robust(formula = water ~ factor(reserved), data = women, clusters = GP)
+## 
+## Standard error type:  CR2 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value  Pr(&gt;|t|) CI Lower CI Upper    DF
+## (Intercept)         14.738      1.530   9.631 3.789e-16  11.7045    17.77 106.0
+## factor(reserved)1    9.252      5.065   1.827 7.054e-02  -0.7891    19.29 106.4
+## 
+## Multiple R-squared:  0.01688 ,   Adjusted R-squared:  0.0138 
+## F-statistic: 3.337 on 1 and 160 DF,  p-value: 0.06961</code></pre>
+</div>
+<div id="exemplo-programas-educacionais" class="section level2">
+<h2>Exemplo: Programas educacionais</h2>
+<p>Vemos os dados de um experimento realizado por volta de 1970, apresentado no e-book de Gelman e Hill (2007, p. 174-181). O resultado foi a leitura das pontuações dos testes e o tratamento foi a exposição a um programa de televisão educacional.</p>
+<ul>
+<li><p><a href="https://github.com/bgse-datascience-group8/Statistical-Modelling-and-Inference/blob/master/resources/Gelman%2C%20Hill-Data%20Analysis%20Using%20Regression%20(2007).pdf">Acesse o e-book aqui</a></p></li>
+<li><p><a href="https://stat.columbia.edu/~gelman/arm/software/">Você pode baixar o conjunto de dados completo desse e-book aqui</a></p></li>
+</ul>
+<pre class="r"><code>electric &lt;- read.table(file=&quot;https://raw.githubusercontent.com/rhozon/datasets/master/electric.dat&quot;, header = TRUE) 
+
+str(electric)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    96 obs. of  7 variables:
+##  $ City            : chr  &quot;F&quot; &quot;F&quot; &quot;F&quot; &quot;F&quot; ...
+##  $ Grade           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ treated.Pretest : num  13.8 16.5 18.5 8.8 15.3 15 19.4 15 11.8 16.4 ...
+##  $ treated.Posttest: num  48.9 70.5 89.7 44.2 77.5 84.7 78.9 86.8 60.8 75.7 ...
+##  $ control.Pretest : num  12.3 14.4 17.7 11.5 16.4 16.8 18.7 18.2 15.4 18.7 ...
+##  $ control.Posttest: num  52.3 55 80.4 47 69.7 74.1 72.7 97.3 74.1 76.3 ...
+##  $ Supplement.     : chr  &quot;S&quot; &quot;R&quot; &quot;S&quot; &quot;R&quot; ...</code></pre>
+<p>As principais variáveis no dataset eletric são:</p>
+<ul>
+<li><em>Grade</em>. Nota do aluno.</li>
+<li><em>treated.Pretest</em>. Pontuações do pré-teste dos alunos do grupo de tratamento.</li>
+<li><em>control.Pretest</em>. Pontuações do pré-teste dos alunos de controle.</li>
+<li><em>treated.Posttest</em>. Pontuações pós-teste dos alunos do grupo de tratamento.</li>
+<li><em>control.Posttest</em>. Pontuações pós-teste dos alunos de controle.</li>
+</ul>
+<p>Temos que discutir os dados, precisamos combinar as variáveis de pré-teste para o grupo de controle dos alunos, da mesma forma para o pós-teste, e criar um indicador para o tratamento.</p>
+<pre class="r"><code>post.test &lt;- c(electric$treated.Posttest, electric$control.Posttest)
+
+pre.test &lt;- c(electric$treated.Pretest, electric$control.Pretest)
+
+grade &lt;- rep(electric$Grade,2)
+
+grade &lt;- factor(grade)
+
+rep(c(1,0),rep(3,2))</code></pre>
+<pre><code>## [1] 1 1 1 0 0 0</code></pre>
+<pre class="r"><code>tratamento &lt;- rep(c(1,0), rep(length(electric$treated.Posttest),2))
+
+tratamento &lt;- factor(tratamento)
+
+n &lt;- length(post.test)
+
+elec &lt;- tibble(post.test, pre.test,grade,tratamento)
+
+elec</code></pre>
+<pre><code>## # A tibble: 192 x 4
+##    post.test pre.test grade tratamento
+##        &lt;dbl&gt;    &lt;dbl&gt; &lt;fct&gt; &lt;fct&gt;     
+##  1      48.9     13.8 1     1         
+##  2      70.5     16.5 1     1         
+##  3      89.7     18.5 1     1         
+##  4      44.2      8.8 1     1         
+##  5      77.5     15.3 1     1         
+##  6      84.7     15   1     1         
+##  7      78.9     19.4 1     1         
+##  8      86.8     15   1     1         
+##  9      60.8     11.8 1     1         
+## 10      75.7     16.4 1     1         
+## # ... with 182 more rows</code></pre>
+<p>Vamos focar na grade1, filtrando os dados:</p>
+<pre class="r"><code>library(tidyverse)
+elec_1 &lt;- elec %&gt;%
+filter(grade==1)</code></pre>
+<p>Nós plotamos boxplots de pontuações pós-teste do grupo de tratamento versus controle:</p>
+<pre class="r"><code>ggplot(elec_1, aes(y = post.test, x = tratamento)) +
+geom_boxplot() +
+coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-36-1.png" width="864" /></p>
+<p>Um gráfico de dispersão de pós-teste versus pré-teste funciona bem neste caso:</p>
+<pre class="r"><code>ggplot(elec_1, aes(x = pre.test, y = post.test, colour = tratamento)) +
+geom_point() +
+stat_smooth(method=lm, se = FALSE)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-37-1.png" width="864" /></p>
+<p>Como este é um experimento, não precisamos controlar as pontuações do pré-teste, mas incluir as pontuações do pré-teste, que nos fornecem estimativas mais precisas.</p>
+<pre class="r"><code>mod1.1 &lt;- lm(post.test ~ tratamento, data = elec_1)
+mod1.2 &lt;- lm(post.test ~ pre.test + tratamento, data= elec_1)</code></pre>
+<center>
+<p><small><strong>Tabela 8:</strong> Efeito do programa nas pontuações </small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+post.test
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+mod1.1
+</td>
+<td>
+mod1.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+68.790<sup>***</sup>
+</td>
+<td>
+-11.023
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(3.268)
+</td>
+<td>
+(8.786)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+pre.test
+</td>
+<td>
+</td>
+<td>
+5.108<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.550)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+tratamento1
+</td>
+<td>
+8.300<sup>*</sup>
+</td>
+<td>
+8.787<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(4.622)
+</td>
+<td>
+(2.612)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+42
+</td>
+<td>
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.075
+</td>
+<td>
+0.712
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.051
+</td>
+<td>
+0.697
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+14.978 (df = 40)
+</td>
+<td>
+8.461 (df = 39)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+3.224<sup>*</sup> (df = 1; 40)
+</td>
+<td>
+48.219<sup>***</sup> (df = 2; 39)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<div id="exercício-proposto-2" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Analise os dados para as grades 2 e 4. Como os resultados podem se comparar com aqueles do grau 1?</p>
+</div>
+</div>
+<div id="exemplo-estrela" class="section level2">
+<h2>Exemplo: Estrela</h2>
+<p>O projeto Star foi um grande experimento conduzido no Tennessee, nos Estados Unidos. Três tratamentos foram atribuídos em nível de sala de aula: turmas pequenas (13-17 alunos), classes regulares (22-25 alunos) e aulas regulares com um auxiliar que trabalharia com a professora. A análise aqui segue a apresentação na econometria do clássico livro de Hill et al. (2018), e se concentra no tratamento de pequenas classes em comparação com o grupo de controle de classes de tamanho regular.</p>
+<pre class="r"><code>library(tidyverse)
+#library(POE5Rdata)
+#data(star)
+
+#star&lt;-load(file=&quot;https://github.com/ccolonescu/POE5Rdata/blob/master/data/star.rda?raw=true&quot;)
+
+load(&quot;C:/Users/rodri/Downloads/star.rda&quot;)
+
+str(star)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    5786 obs. of  19 variables:
+##  $ id         : int  10133 10246 10263 10266 10275 10281 10282 10285 10286 10287 ...
+##  $ schid      : int  169280 218562 205492 257899 161176 189382 189382 201449 230612 128068 ...
+##  $ tchid      : int  16928003 21856202 20549204 25789904 16117602 18938204 18938203 20144901 23061203 12806803 ...
+##  $ tchexper   : int  7 8 3 12 2 7 14 4 6 11 ...
+##  $ absent     : int  5 28 2 10 3 2 7 8 2 17 ...
+##  $ readscore  : int  427 450 483 456 411 443 448 463 472 428 ...
+##  $ mathscore  : int  478 494 513 513 468 473 449 520 536 484 ...
+##  $ totalscore : int  905 944 996 969 879 916 897 983 1008 912 ...
+##  $ boy        : int  1 0 0 1 1 1 1 0 1 1 ...
+##  $ white_asian: int  0 1 0 1 1 1 1 1 1 1 ...
+##  $ black      : int  1 0 1 0 0 0 0 0 0 0 ...
+##  $ tchwhite   : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ tchmasters : int  0 1 0 1 0 1 1 1 1 0 ...
+##  $ freelunch  : int  0 0 1 0 0 0 1 1 0 0 ...
+##  $ schurban   : int  0 1 0 0 0 0 0 0 0 0 ...
+##  $ schrural   : int  0 0 0 1 1 0 0 1 1 1 ...
+##  $ small      : int  0 0 1 0 0 1 0 1 0 0 ...
+##  $ regular    : int  0 0 0 1 0 0 0 0 1 0 ...
+##  $ aide       : int  1 1 0 0 1 0 1 0 0 1 ...</code></pre>
+<p>As principais variáveis no dataset star são:</p>
+<ul>
+<li>totalscore. Leitura mais pontuação em matemática.</li>
+<li>small.. É 1 se o aluno foi designado para uma classe pequena.</li>
+<li>boy, white-asian, freelunch. Descritores do aluno.</li>
+<li>tchexper. Experiência do professor.</li>
+</ul>
+<p>Um dos tratamentos foi usar um auxiliar de ensino; nós ignoramos essas observações e focamos na comparação pequena versus regular.</p>
+<pre class="r"><code>star &lt;- star %&gt;%
+filter(aide == 0) %&gt;%
+dplyr::select(totalscore, small, tchexper, boy, freelunch, white_asian, schid) %&gt;%
+mutate(small_fac = ifelse(small == 1, &quot;small&quot;, &quot;regular&quot;), sch_fac = factor(schid))
+
+str(star)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    3743 obs. of  9 variables:
+##  $ totalscore : int  996 969 916 983 1008 862 900 934 857 1043 ...
+##  $ small      : int  1 0 1 1 0 0 1 0 0 1 ...
+##  $ tchexper   : int  3 12 7 4 6 12 6 10 18 7 ...
+##  $ boy        : int  0 1 1 0 1 1 0 0 1 1 ...
+##  $ freelunch  : int  1 0 0 1 0 0 1 0 0 0 ...
+##  $ white_asian: int  0 1 1 1 1 0 1 1 1 1 ...
+##  $ schid      : int  205492 257899 189382 201449 230612 169219 161176 168211 244831 189382 ...
+##  $ small_fac  : chr  &quot;small&quot; &quot;regular&quot; &quot;small&quot; &quot;small&quot; ...
+##  $ sch_fac    : Factor w/ 79 levels &quot;112038&quot;,&quot;123056&quot;,..: 37 74 25 30 49 16 8 14 70 25 ...</code></pre>
+<pre class="r"><code>star &lt;- as_tibble(star)</code></pre>
+<pre class="r"><code>star %&gt;%
+group_by(small_fac) %&gt;%
+summarize(mscore = mean(totalscore),
+          sdscore = sd(totalscore))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   small_fac mscore sdscore
+##   &lt;chr&gt;      &lt;dbl&gt;   &lt;dbl&gt;
+## 1 regular     918.    73.1
+## 2 small       932.    76.4</code></pre>
+<p>A pontuação média da turma regular foi 918, e da turma pequena foi 932.</p>
+<pre class="r"><code>ggplot(star, aes(x = small_fac, y = totalscore)) +
+geom_boxplot() +
+coord_flip()+
+  ggtitle(&quot;Boxplots de pontuação total para small e regular classes&quot;)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-43-1.png" width="864" /></p>
+<p>Na figura acima, vemos que a distribuição da pontuação total muda para a direita para o grupo de alunos em turmas pequenas. Também vemos que, em nossa amostra, os valores discrepantes mais baixos não estão lá nas classes pequenas, que notamos graças aos boxplots.</p>
+<p>Podemos ver como as diferentes covariáveis variam entre as classes regulares e pequenas.</p>
+<pre class="r"><code>star %&gt;%
+group_by(small_fac) %&gt;%
+summarize(mboy = mean(boy),
+          mlunch = mean(freelunch),
+          mw_a = mean(white_asian),
+          mexper = mean(tchexper))</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##   small_fac  mboy mlunch  mw_a mexper
+##   &lt;chr&gt;     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 regular   0.513  0.474 0.681   9.07
+## 2 small     0.515  0.472 0.685   9.00</code></pre>
+<p>As diferenças nas médias covariáveis entre os grupos tratamento e de controle são pequenas. O pacote cobalt (Greifer 2019) nos ajuda a avaliar o equilíbrio covariável</p>
+<pre class="r"><code>library(cobalt)
+
+love.plot(small ~ boy + freelunch + white_asian + tchexper, data = star, stars = &quot;std&quot;)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-45-1.png" width="864" /></p>
+<p>Podemos realizar um teste formal de equilíbrio da seguinte forma, usando um modelo de probabilidade linear (Hill et al. 2018).</p>
+<pre class="r"><code>mod_star_check &lt;- lm(small ~ boy + white_asian + tchexper + freelunch, data = star)
+mod_star_1 &lt;- lm(totalscore ~ small_fac, data = star)
+mod_star_2 &lt;- lm(totalscore ~ small_fac + boy + freelunch + white_asian, data = star)
+mod_star_3 &lt;- lm(totalscore ~ small_fac + boy + freelunch + white_asian + tchexper, data = star)</code></pre>
+<center>
+<p><small><strong>Tabela 9:</strong> Checando o balanço </small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="1" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+small
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+mod
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.466<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.025)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+boy
+</td>
+<td>
+0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.016)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+white_asian
+</td>
+<td>
+0.004
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.020)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+tchexper
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.001)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+freelunch
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.018)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+3,743
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.0001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+-0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.499 (df = 3738)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+0.059 (df = 4; 3738)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>O efeito de pequenas classes (cerca de 14 no modelo 1 e modelo 2 na Tabela 9) é estável nas três especificações. No modelo 3, obtemos uma estimativa maior e com mais precisão.</p>
+<pre class="r"><code>summary(mod_star_1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = totalscore ~ small_fac, data = star)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -283.04  -52.94   -6.94   44.96  321.06 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     918.043      1.667 550.664  &lt; 2e-16 ***
+## small_facsmall   13.899      2.447   5.681 1.44e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 74.65 on 3741 degrees of freedom
+## Multiple R-squared:  0.008553,   Adjusted R-squared:  0.008288 
+## F-statistic: 32.27 on 1 and 3741 DF,  p-value: 1.441e-08</code></pre>
+<pre class="r"><code>summary(mod_star_2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = totalscore ~ small_fac + boy + freelunch + white_asian, 
+##     data = star)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -261.453  -50.276   -7.276   43.613  308.546 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     933.694      3.315 281.676  &lt; 2e-16 ***
+## small_facsmall   13.815      2.341   5.901 3.94e-09 ***
+## boy             -15.637      2.337  -6.690 2.56e-11 ***
+## freelunch       -34.187      2.602 -13.141  &lt; 2e-16 ***
+## white_asian      12.582      2.792   4.507 6.79e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 71.43 on 3738 degrees of freedom
+## Multiple R-squared:  0.0929, Adjusted R-squared:  0.09192 
+## F-statistic:  95.7 on 4 and 3738 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(mod_star_3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = totalscore ~ small_fac + boy + freelunch + white_asian + 
+##     tchexper, data = star)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -257.244  -50.394   -7.404   42.987  305.371 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    927.6196     3.7575 246.871  &lt; 2e-16 ***
+## small_facsmall  13.8695     2.3379   5.932 3.25e-09 ***
+## boy            -15.3448     2.3354  -6.571 5.70e-11 ***
+## freelunch      -33.7879     2.6005 -12.993  &lt; 2e-16 ***
+## white_asian     11.6497     2.8012   4.159 3.27e-05 ***
+## tchexper         0.7025     0.2057   3.416 0.000643 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 71.33 on 3737 degrees of freedom
+## Multiple R-squared:  0.09572,    Adjusted R-squared:  0.09451 
+## F-statistic: 79.11 on 5 and 3737 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Os detalhes do <em>matching</em> podem ser um tanto técnicos e, portanto, contamos com dados simulados para que tenhamos intuição sobre a correspondência.</p>
+</div>
+<div id="exemplo-simples-com-dados-sintéticos" class="section level2">
+<h2>Exemplo simples com dados sintéticos</h2>
+<p>A ideia básica do <em>matching</em> é bastante intuitiva. Vemos um pequeno exemplo simulado.</p>
+<p>Suponha que x, uma variável binária e w, sejam as causas de y. Também w afeta y de forma não linear.</p>
+<p>Nós geramos os dados:</p>
+<pre class="r"><code>library(tidyverse)
+
+x &lt;- c(rep(0,6),rep(1,6))
+w &lt;- c(30,18,20,10,10,17,20,18,10,10,17,3)
+y &lt;- (10 * x) + w + (0.2 * w^2) + (3 * (rnorm(12,1,1)))
+wsq &lt;- w^2
+dat_mat &lt;- data.frame(y,x,w,wsq)
+
+dat_mat</code></pre>
+<pre><code>##            y x  w wsq
+## 1  209.71838 0 30 900
+## 2   85.25929 0 18 324
+## 3  104.45271 0 20 400
+## 4   35.66945 0 10 100
+## 5   35.02797 0 10 100
+## 6   82.84312 0 17 289
+## 7  112.61365 1 20 400
+## 8   99.10631 1 18 324
+## 9   40.88302 1 10 100
+## 10  43.64064 1 10 100
+## 11  88.69373 1 17 289
+## 12  18.04402 1  3   9</code></pre>
+<p>Observe em dat_mat que a primeira observação tem um valor de w = 30, com x = 0 e o 12º tem o valor w = 3. Essa falta de sobreposição pode ser vista no gráfico abaixo:</p>
+<pre class="r"><code>ggplot(dat_mat, aes(x = w, y = y,
+shape = factor(x),
+linetype = factor(x))) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE, col = &quot;black&quot;)+
+  ggtitle(&quot;Gráfico de dispersão de y versus w, dados incomparáveis&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-50-1.png" width="864" /></p>
+<p>Então rodamos três regressões diferentes:</p>
+<pre class="r"><code>modelo1 &lt;- lm(y ~ x + w + wsq, data = dat_mat)
+modelo2 &lt;- lm(y ~ x + w, data = dat_mat)
+modelo3 &lt;- lm(y ~ x , data = dat_mat)</code></pre>
+<center>
+<p><small><strong>Tabela 10:</strong> Efeito da omissão de w e wsq (Efeito verdadeiro de x em y=10) </small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="3">
+y
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+modelo1
+</td>
+<td>
+modelo2
+</td>
+<td>
+modelo3
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+<td>
+(3)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+2.181
+</td>
+<td>
+-36.624<sup>**</sup>
+</td>
+<td>
+92.162<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(2.701)
+</td>
+<td>
+(11.858)
+</td>
+<td>
+(21.512)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+x
+</td>
+<td>
+8.627<sup>***</sup>
+</td>
+<td>
+8.118
+</td>
+<td>
+-24.998
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.243)
+</td>
+<td>
+(8.120)
+</td>
+<td>
+(30.423)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+w
+</td>
+<td>
+1.500<sup>***</sup>
+</td>
+<td>
+7.359<sup>***</sup>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.316)
+</td>
+<td>
+(0.603)
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+wsq
+</td>
+<td>
+0.181<sup>***</sup>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.009)
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+12
+</td>
+<td>
+12
+</td>
+<td>
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.999
+</td>
+<td>
+0.947
+</td>
+<td>
+0.063
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.998
+</td>
+<td>
+0.935
+</td>
+<td>
+-0.030
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+2.029 (df = 8)
+</td>
+<td>
+13.257 (df = 9)
+</td>
+<td>
+52.694 (df = 10)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+2,397.247<sup>***</sup> (df = 3; 8)
+</td>
+<td>
+79.834<sup>***</sup> (df = 2; 9)
+</td>
+<td>
+0.675 (df = 1; 10)
+</td>
+</tr>
+<tr>
+<td colspan="4" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="3" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>Se regredirmos y em x, w e wsq, nossa estimativa do efeito de y em x está perto da estimativa verdadeira (Tabela 10). Mesmo regredir y em x e w nos dá uma estimativa razoável. Mas a regressão simples de y em x fornece uma estimativa muito enviesada. Agora usamos correspondência exata para combinar observações para as quais x = 0 com observações para as quais x = 1 com exatamente o mesmo ws. Nós usamos o Pacote MatchIt e matchit(), com método = “exact”.</p>
+<pre class="r"><code>library(MatchIt)
+match.1 &lt;- matchit(x ~ w, data = dat_mat, method = &quot;exact&quot;, replace = FALSE)
+match.1</code></pre>
+<pre><code>## 
+## Call: 
+## matchit(formula = x ~ w, data = dat_mat, method = &quot;exact&quot;, replace = FALSE)
+## 
+## Exact Subclasses: 4
+## 
+## Sample sizes:
+##           Control Treated
+## All             6       6
+## Matched         5       5
+## Unmatched       1       1</code></pre>
+<p>A correspondência exata levou a 5 das observações do grupo de tratamento sendo controles correspondidas; Eu fui incomparável.</p>
+<p>A função love.plot no pacote cobalt traça o equilíbrio da covariável antes e após o matching:</p>
+<pre class="r"><code>library(cobalt)
+love.plot(match.1, stars = &quot;std&quot;)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-54-1.png" width="864" /></p>
+<p>Agora extraímos os dados correspondentes.</p>
+<pre class="r"><code>match_dat &lt;- match.data(match.1)
+match_dat</code></pre>
+<pre><code>##            y x  w wsq weights subclass
+## 2   85.25929 0 18 324       1        2
+## 3  104.45271 0 20 400       1        1
+## 4   35.66945 0 10 100       1        3
+## 5   35.02797 0 10 100       1        3
+## 6   82.84312 0 17 289       1        4
+## 7  112.61365 1 20 400       1        1
+## 8   99.10631 1 18 324       1        2
+## 9   40.88302 1 10 100       1        3
+## 10  43.64064 1 10 100       1        3
+## 11  88.69373 1 17 289       1        4</code></pre>
+<p>Executamos as mesmas regressões que executamos anteriormente. Com a correspondência exata, a estimativa nas especificações de regressão é a mesma:</p>
+<pre class="r"><code>mod_matched1 &lt;- lm(y ~ x + w + wsq, data = match_dat)
+mod_matched2 &lt;- lm(y ~ x + w, data = match_dat)
+mod_matched3 &lt;- lm(y ~ x , data = match_dat)
+
+summary(mod_matched1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x + w + wsq, data = match_dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3592 -0.5689  0.3158  0.9326  2.1509 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -13.99381   15.59647  -0.897 0.404152    
+## x             8.33696    1.30456   6.391 0.000691 ***
+## w             3.81798    2.32772   1.640 0.152070    
+## wsq           0.10459    0.08015   1.305 0.239707    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.063 on 6 degrees of freedom
+## Multiple R-squared:  0.997,  Adjusted R-squared:  0.9955 
+## F-statistic:   661 on 3 and 6 DF,  p-value: 5.999e-08</code></pre>
+<pre class="r"><code>summary(mod_matched2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x + w, data = match_dat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.9378 -1.2714  0.7595  1.3523  1.5723 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -34.0822     2.6309 -12.954 3.80e-06 ***
+## x             8.3370     1.3685   6.092 0.000495 ***
+## w             6.8488     0.1631  41.991 1.13e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.164 on 7 degrees of freedom
+## Multiple R-squared:  0.9961, Adjusted R-squared:  0.995 
+## F-statistic: 900.2 on 2 and 7 DF,  p-value: 3.615e-09</code></pre>
+<pre class="r"><code>summary(mod_matched3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x, data = match_dat)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -36.10 -33.26  12.95  20.74  35.80 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)   68.651     14.395   4.769  0.00141 **
+## x              8.337     20.357   0.410  0.69289   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 32.19 on 8 degrees of freedom
+## Multiple R-squared:  0.02053,    Adjusted R-squared:  -0.1019 
+## F-statistic: 0.1677 on 1 and 8 DF,  p-value: 0.6929</code></pre>
+<pre class="r"><code>ggplot(match_dat, aes(x = w, y = y, shape = factor(x), linetype = factor(x))) +
+geom_point() +
+geom_smooth(method = &quot;lm&quot;, se = FALSE, col = &quot;black&quot;)+
+  ggtitle(&quot;Gráfico de dispersão de y contra w depois de combinar&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-57-1.png" width="864" /></p>
+<p>Podemos comparar nossa figura anterior com os dados incomparáveis do gráfico inicial dessa seção. Ho et al. (2011) defendem a correspondência como um método não paramétrico para reduzir a dependência do modelo.</p>
+</div>
+<div id="exemplo-programa-de-treinamento-de-mão-de-obra" class="section level2">
+<h2>Exemplo: Programa de Treinamento de Mão de Obra</h2>
+<p>Lalonde (1986) mostrou que a avaliação experimental e econométrica (com dados observacionais) de um programa de treinamento de mão-de-obra - o National Supported Work Demonstração - chegou a diferentes conclusões. No entanto, Dehejia andWahba (1999) subsequentemente usado correspondência; eles mostraram que um estudo observacional poderia chegar com os resultados do estudo experimental. Trabalharemos com a versão dos dados disponíveis no pacote MatchIt.</p>
+<pre class="r"><code>data(lalonde, package = &quot;MatchIt&quot;)
+#l1 &lt;- read.csv(&quot;l1.csv&quot;)
+#write.csv(l1,&quot;l1.csv&quot;)
+str(lalonde)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    614 obs. of  10 variables:
+##  $ treat   : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ age     : int  37 22 30 27 33 22 23 32 22 33 ...
+##  $ educ    : int  11 9 12 11 8 9 12 11 16 12 ...
+##  $ black   : int  1 0 1 1 1 1 1 1 1 0 ...
+##  $ hispan  : int  0 1 0 0 0 0 0 0 0 0 ...
+##  $ married : int  1 0 0 0 0 0 0 0 0 1 ...
+##  $ nodegree: int  1 1 0 1 1 1 0 1 0 0 ...
+##  $ re74    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ re75    : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ re78    : num  9930 3596 24909 7506 290 ...</code></pre>
+<p>A variável de resultado são os ganhos em 1978, re78. O tratamento é treat. Existem covariáveis demográficas e ganhos anteriores em 1974 re74 e 1975 re75. Renomeamos lalonde para economizar digitação.</p>
+<pre class="r"><code>l1 &lt;- lalonde
+
+love.plot(treat ~ age + educ + black + hispan + married + nodegree + re74 + re75, data = l1, stars=&quot;std&quot;)</code></pre>
+<pre><code>## Note: &#39;s.d.denom&#39; not specified; assuming pooled.</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-59-1.png" width="864" /></p>
+<p>As covariáveis são desequilibradas, especialmente black e re74</p>
+<pre class="r"><code>mod_la1 &lt;- lm(re78 ~ treat, data = l1)
+mod_la2 &lt;- lm(re78 ~ treat + age + educ + black + hispan + married +
+nodegree + re74 + re75, data = l1)
+
+summary(mod_la1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = re78 ~ treat, data = l1)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -6984  -6349  -2048   4100  53959 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   6984.2      360.7  19.362   &lt;2e-16 ***
+## treat         -635.0      657.1  -0.966    0.334    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7471 on 612 degrees of freedom
+## Multiple R-squared:  0.001524,   Adjusted R-squared:  -0.0001079 
+## F-statistic: 0.9338 on 1 and 612 DF,  p-value: 0.3342</code></pre>
+<pre class="r"><code>summary(mod_la2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = re78 ~ treat + age + educ + black + hispan + married + 
+##     nodegree + re74 + re75, data = l1)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -13595  -4894  -1662   3929  54570 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  6.651e+01  2.437e+03   0.027   0.9782    
+## treat        1.548e+03  7.813e+02   1.982   0.0480 *  
+## age          1.298e+01  3.249e+01   0.399   0.6897    
+## educ         4.039e+02  1.589e+02   2.542   0.0113 *  
+## black       -1.241e+03  7.688e+02  -1.614   0.1071    
+## hispan       4.989e+02  9.419e+02   0.530   0.5966    
+## married      4.066e+02  6.955e+02   0.585   0.5590    
+## nodegree     2.598e+02  8.474e+02   0.307   0.7593    
+## re74         2.964e-01  5.827e-02   5.086 4.89e-07 ***
+## re75         2.315e-01  1.046e-01   2.213   0.0273 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6948 on 604 degrees of freedom
+## Multiple R-squared:  0.1478, Adjusted R-squared:  0.1351 
+## F-statistic: 11.64 on 9 and 604 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>set.seed(123)
+match.l1 &lt;- matchit(treat ~ age + educ + black + hispan + married +
+nodegree + re74 + re75,
+data = l1, method = &quot;genetic&quot;,
+replace = FALSE, pop.size = 50, print = 0)#, caliper = 0.4)</code></pre>
+<pre><code>## Loading required namespace: rgenoud</code></pre>
+<pre class="r"><code>#print = 0)
+match.l1</code></pre>
+<pre><code>## 
+## Call: 
+## matchit(formula = treat ~ age + educ + black + hispan + married + 
+##     nodegree + re74 + re75, data = l1, method = &quot;genetic&quot;, replace = FALSE, 
+##     pop.size = 50, print = 0)
+## 
+## Sample sizes:
+##           Control Treated
+## All           429     185
+## Matched       185     185
+## Unmatched     244       0
+## Discarded       0       0</code></pre>
+<p>Todas as 185 observações tratadas foram combinadas</p>
+<pre class="r"><code>love.plot(match.l1, stars =&quot;std&quot;)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-62-1.png" width="864" /></p>
+<p>O equilíbrio da covariada melhorou após a correspondência</p>
+<pre class="r"><code>match_dat &lt;- match.data(match.l1)</code></pre>
+<pre class="r"><code>ggplot(l1, aes(x = factor(treat), y = re78)) +
+geom_boxplot() + coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-64-1.png" width="864" /></p>
+<pre class="r"><code>ggplot(match_dat, aes(x = factor(treat), y = re78)) +
+geom_boxplot() + coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-65-1.png" width="864" /></p>
+<p>Nos dados não combinados, a mediana e os valores do 75º percentil de re78 são maiores no grupo de controle, o oposto é verdadeiro em dados combinados. Além disso, observe os outliers nos grupos tratamento e de controle.</p>
+<pre class="r"><code>mod_la_match1 &lt;- lm(re78 ~ treat, data = match_dat)
+mod_la_match2 &lt;- lm(re78 ~ treat + age + educ + black + hispan +
+married + nodegree + re74 + re75, data = match_dat)
+
+summary(mod_la_match1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = re78 ~ treat, data = match_dat)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+##  -6349  -5593  -2218   3162  53959 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   5593.3      532.6  10.502   &lt;2e-16 ***
+## treat          755.9      753.2   1.004    0.316    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 7244 on 368 degrees of freedom
+## Multiple R-squared:  0.002729,   Adjusted R-squared:  1.917e-05 
+## F-statistic: 1.007 on 1 and 368 DF,  p-value: 0.3163</code></pre>
+<pre class="r"><code>summary(mod_la_match2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = re78 ~ treat + age + educ + black + hispan + married + 
+##     nodegree + re74 + re75, data = match_dat)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -11887  -5009  -1646   3598  54055 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept) -1.151e+03  3.321e+03  -0.346  0.72918   
+## treat        1.220e+03  8.143e+02   1.499  0.13485   
+## age          7.891e+00  4.390e+01   0.180  0.85746   
+## educ         5.975e+02  2.186e+02   2.734  0.00657 **
+## black       -1.140e+03  9.101e+02  -1.252  0.21122   
+## hispan       2.782e+02  1.679e+03   0.166  0.86853   
+## married      9.406e+02  1.012e+03   0.930  0.35314   
+## nodegree     7.929e+01  1.132e+03   0.070  0.94420   
+## re74         3.221e-02  1.010e-01   0.319  0.75006   
+## re75         3.506e-01  1.618e-01   2.167  0.03089 * 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 6995 on 360 degrees of freedom
+## Multiple R-squared:  0.09041,    Adjusted R-squared:  0.06767 
+## F-statistic: 3.976 on 9 and 360 DF,  p-value: 7.465e-05</code></pre>
+<p>Nos resultados gerados, vemos que com os dados correspondentes, obtemos um efeito de tratamento de 756 estimando a diferença de médias. Recebemos uma estimativa de 1220, uma vez que incluímos os grupos de controle na regressão.</p>
+<!--parei em analise de sensibilidade -->
+</div>
+<div id="análise-de-sensibilidade" class="section level2">
+<h2>Análise de Sensibilidade</h2>
+<p>Em um experimento, o tratamento é atribuído aleatoriamente. Como resultado da atribuição aleatória, unidades de tratamento e controle são balanceadas em relação às covariáveis observadas e não observadas.</p>
+<p>Em um estudo observacional, por outro lado, o tratamento não é atribuído aleatoriamente. Combinamos para trazer equilíbrio entre as unidades de tratamento e controle com respeito às covariáveis observadas; mas covariáveis não observadas podem estar influenciando o tratamento.</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Embora não possamos observar o que não é observado, podemos conduzir uma análise de sensibilidade. O seguinte parágrafo de Rosenbaum (2005, p. 1809) resume a análise de sensibilidade:
+</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+The sensitivity analysis imagines that in the population before matching or stratification, subjects are assigned to treatment or control independently with unkown probabilities. Specifically, two subjectswho look the same at baseline before treatment—that is, two subjectswith the same observed covariates—may nonetheless differ in terms of unobserved covariates, so that one subject has an odds of treatment that is up to <span class="math inline">\(\Gamma\)</span> ≥ 1 greater than the odds for another subject. In the simplest randomized experiment, everyone has the same chance of receiving the treatment, so <span class="math inline">\(\Gamma\)</span> = 1. If <span class="math inline">\(\Gamma\)</span> = 2 in an observational study, one subject might be twice as likely as another to receive the treatment because of unobserved pre-treatment differences.
+</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+The sensitivity analysis asks how much hidden bias can be present—that is, how large can <span class="math inline">\(\Gamma\)</span> be—before the qualitative conclusions of the study begin to change. A study is highly sensitive to hidden bias if the conclusions change for <span class="math inline">\(\Gamma\)</span> just barely larger than 1, and it is insensitive if the conclusions change only for quite large values of <span class="math inline">\(\Gamma\)</span>.
+</p>
+<p>O pacote rbounds (Keele 2014) baseia-se no pacote Matching para fazer a correspondência genética e, em seguida, realiza uma análise de sensibilidade. Faremos isso para o dados lalonde no pacote MatchIt que analisamos anteriormente.</p>
+<p>Precisamos fornecer os dados ao Matching em um determinado formato. Y abaixo é para o resultado, Tr para tratamento, X para covariáveis.</p>
+<pre class="r"><code>library(rbounds)</code></pre>
+<pre><code>## Loading required package: Matching</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre><code>## ## 
+## ##  Matching (Version 4.9-7, Build Date: 2020-02-05)
+## ##  See http://sekhon.berkeley.edu/matching for additional documentation.
+## ##  Please cite software as:
+## ##   Jasjeet S. Sekhon. 2011. ``Multivariate and Propensity Score Matching
+## ##   Software with Automated Balance Optimization: The Matching package for R.&#39;&#39;
+## ##   Journal of Statistical Software, 42(7): 1-52. 
+## ##</code></pre>
+<pre class="r"><code>Y &lt;- l1$re78
+Tr &lt;- l1$treat #o tratamento 
+X &lt;- cbind(l1$age, l1$educ, l1$black, l1$hispan, l1$married, l1$nodegree, l1$re74, l1$re75)
+BalanceMat &lt;- cbind(l1$age, I(l1$age^2), l1$educ, I(l1$educ^2), l1$black, l1$hispan, l1$married, l1$nodegree, l1$re74 , I(l1$re74^2), l1$re75, I(l1$re75^2), I(l1$re74*l1$re75), I(l1$age*l1$nodegree), I(l1$educ*l1$re74), I(l1$educ*75))</code></pre>
+<p>A função GenMatch() realiza a correspondência genética</p>
+<pre class="r"><code>#Pesos geneticos
+gen1 &lt;- GenMatch(Tr=Tr, X=X, BalanceMat=BalanceMat, pop.size=50, data.type.int=FALSE, print=0, replace=FALSE)
+
+#Match
+mgen1 &lt;- Match(Y=Y, Tr=Tr, X=X, Weight.matrix=gen1, replace=FALSE)
+
+summary(mgen1)</code></pre>
+<pre><code>## 
+## Estimate...  618.4 
+## SE.........  704.89 
+## T-stat.....  0.8773 
+## p.val......  0.38032 
+## 
+## Original number of observations..............  614 
+## Original number of treated obs...............  185 
+## Matched number of observations...............  185 
+## Matched number of observations  (unweighted).  185</code></pre>
+<p>A diferença de estimativa de médias fornecida pelo Matching é 765, com um Erro Padrão de Abadie-Imbens Erro padrão do de 699. A função psens() fornece uma análise de sensibilidade:</p>
+<p>se Gamma() mudar, como o valor <span class="math inline">\(p\)</span> do Rank assinado de Wilcoxon muda? Até com Gama = 1, o valor p está bem acima de 0,05 ou 0,1. Existe uma grande sensibilidade a um possível viés oculto devido a covariáveis ausentes.</p>
+<pre class="r"><code>psens(mgen1, Gamma = 1.5, GammaInc = 0.1)</code></pre>
+<pre><code>## 
+##  Rosenbaum Sensitivity Test for Wilcoxon Signed Rank P-Value 
+##  
+## Unconfounded estimate ....  0.2475 
+## 
+##  Gamma Lower bound Upper bound
+##    1.0      0.2475      0.2475
+##    1.1      0.1108      0.4428
+##    1.2      0.0430      0.6358
+##    1.3      0.0148      0.7880
+##    1.4      0.0046      0.8887
+##    1.5      0.0013      0.9465
+## 
+##  Note: Gamma is Odds of Differential Assignment To
+##  Treatment Due to Unobserved Factors 
+## </code></pre>
+<p>O hlsens() fornece uma análise de sensibilidade para a estimativa de ponto Hodges-Lehmann. Com um baixo gama de 1,1, o limite inferior e o limite superior são -0,017 e 547, respectivamente.</p>
+<pre class="r"><code>hlsens(mgen1, Gamma = 1.5, GammaInc = 0.1)</code></pre>
+<pre><code>## 
+##  Rosenbaum Sensitivity Test for Hodges-Lehmann Point Estimate 
+##  
+## Unconfounded estimate ....  515.3107 
+## 
+##  Gamma Lower bound Upper bound
+##    1.0     515.310      515.31
+##    1.1      63.911      750.61
+##    1.2    -211.390     1114.80
+##    1.3    -522.990     1399.80
+##    1.4    -762.590     1611.60
+##    1.5    -985.390     1845.80
+## 
+##  Note: Gamma is Odds of Differential Assignment To
+##  Treatment Due to Unobserved Factors 
+## </code></pre>
+</div>
+<div id="exemplo-exposição-ao-chumbo" class="section level2">
+<h2>Exemplo: Exposição ao chumbo</h2>
+<p>Rosenbaum (2017, p. 216) escreveu:</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Matching may use technical tools to balance many observed covariates, x, but it leaves in its wake a simple structure, perhaps matched pairs, in which treated and control groups are readily seen to be comparable in terms of each measured covariate.With concerns about the measured covariates removed from the picture, our attention turns to the challenging issues that determine whether or not an observational study is convincing.
+</p>
+<p>A exposição de um pai ao chumbo no trabalho afeta seus filhos? Que tipo de comparações vai lançar luz sobre isso? No exemplo apresentado em Rosenbaum (2017), o pais trabalharam em uma fábrica de baterias em Oklahoma.</p>
+<p>Os dados estão no pacote DOS e as observações já estão combinadas.</p>
+<pre class="r"><code>data(lead, package = &quot;DOS&quot;)
+head(lead)</code></pre>
+<pre><code>##   control exposed level  hyg    both dif
+## 1      13      14  high good high.ok   1
+## 2      16      13  high good high.ok  -3
+## 3      11      25  high good high.ok  14
+## 4      18      41  high  mod high.ok  23
+## 5      24      18  high  mod high.ok  -6
+## 6       7      49  high  mod high.ok  42</code></pre>
+<p>Nossa primeira comparação é de crianças cujos pais trabalharam na fábrica de baterias com crianças combinadas de controle.</p>
+<pre class="r"><code>child_lead &lt;- c(lead$control, lead$exposed)
+treat &lt;- c(rep(&quot;control&quot;,33), rep(&quot;exposed&quot;,33))
+child_lead_dat &lt;- data.frame(child_lead, treat)
+ggplot(child_lead_dat, aes(x = treat, y = child_lead)) +
+geom_boxplot() +
+ylim(0,80) +
+coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-72-1.png" width="864" /></p>
+<p>A Figura acima mostra que a distribuição dos níveis de chumbo é muito maior para as crianças expostas.</p>
+<p>Nossa segunda comparação é de crianças cujos pais tiveram diferentes níveis de exposição para liderar na fábrica da bateria.</p>
+<pre class="r"><code>library(forcats)
+llevel &lt;- c(&quot;low&quot;, &quot;medium&quot;, &quot;high&quot;)
+lead$F_level &lt;- factor(lead$level, levels = llevel)</code></pre>
+<pre class="r"><code>ggplot(lead, aes(x = F_level, y = exposed)) +
+geom_boxplot() +
+ylim(0,80) + coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-74-1.png" width="864" /></p>
+<p>Crianças cujos pais tinham níveis mais altos de exposição tinham níveis mais altos de chumbo.</p>
+<p>Nossa terceira comparação é entre as crianças do grupo de controle separadas com base na exposição do pai da criança no grupo de tratamento.</p>
+<pre class="r"><code>ggplot(lead, aes(x = F_level, y = control)) +
+geom_boxplot() +
+ylim(0,80) + coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-75-1.png" width="864" /></p>
+<p>Finalmente pegamos crianças cujos pais tiveram alta exposição, e dentro deste grupo, comparamos as crianças com base na higiene do pai.</p>
+<pre class="r"><code>lead$Hyg &lt;- ifelse(lead$hyg == &quot;poor&quot;, &quot;poor&quot;, &quot;ok&quot;)
+lead %&gt;%
+filter(F_level == &quot;high&quot;) %&gt;%
+ggplot(aes(x = Hyg, y = exposed)) +
+geom_boxplot() +
+ylim(0,80) + coord_flip()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-76-1.png" width="864" /></p>
+<p>A Figura acima mostra que as crianças cujos pais tinham higiene pior tiveram maior níveis de chumbo.</p>
+</div>
+<div id="exemplo-compensação-por-lesões" class="section level2">
+<h2>Exemplo: Compensação por Lesões</h2>
+<p>Examinamos o efeito das leis de compensação do trabalhador no tempo que um trabalhador esteve fora do trabalho após lesão/acidente de trabalho. Este estudo de Meyer, Viscusi e Durbin (1995) é discutido em Rosenbaum (2017). Em julho de 1980, o Kentucky aumentou seu benefício máximo de 131 para 217 dólares por semana. Este aumento afetou apenas os trabalhadores que eram acima do limite anterior - ganhadores de níveis mais altos.</p>
+<pre class="r"><code>library(wooldridge)
+data(injury)
+str(injury)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    7150 obs. of  30 variables:
+##  $ durat   : num  1 1 84 4 1 1 7 2 175 60 ...
+##  $ afchnge : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ highearn: int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ male    : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ married : int  0 1 1 1 1 1 1 1 1 1 ...
+##  $ hosp    : int  1 0 1 1 0 0 0 1 1 1 ...
+##  $ indust  : int  3 3 3 3 3 3 3 3 3 3 ...
+##  $ injtype : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ age     : int  26 31 37 31 23 34 35 45 41 33 ...
+##  $ prewage : num  405 644 398 528 529 ...
+##  $ totmed  : num  1188 361 8964 1100 373 ...
+##  $ injdes  : int  1010 1404 1032 1940 1940 1425 1110 1207 1425 1010 ...
+##  $ benefit : num  247 247 247 247 212 ...
+##  $ ky      : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ mi      : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ldurat  : num  0 0 4.43 1.39 0 ...
+##  $ afhigh  : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ lprewage: num  6 6.47 5.99 6.27 6.27 ...
+##  $ lage    : num  3.26 3.43 3.61 3.43 3.14 ...
+##  $ ltotmed : num  7.08 5.89 9.1 7 5.92 ...
+##  $ head    : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ neck    : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ upextr  : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ trunk   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ lowback : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ lowextr : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ occdis  : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ manuf   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ construc: int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ highlpre: num  6 6.47 5.99 6.27 6.27 ...
+##  - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<p>Removemos as observações com os missings:</p>
+<pre class="r"><code>injury &lt;- injury %&gt;%
+na.omit()</code></pre>
+<p>Subconjuntos dos ganhadores (indenizados) de níveis mais elevados que estavam em Kentucky.</p>
+<pre class="r"><code># subset highearners
+library(tidyverse)
+    library(lubridate)
+inj_ky_h &lt;- injury %&gt;%
+filter(ky == 1, highearn == 1)</code></pre>
+<p>Subamostra dos ganhadores de níveis mais baixos</p>
+<pre class="r"><code>inj_ky_l &lt;- injury %&gt;%
+filter(ky == 1, highearn == 0)</code></pre>
+<p>A variável afchnge é uma variável dummy para observações após a mudança de política. Nós combinamos os dados.</p>
+<pre class="r"><code>match.ky.h &lt;- matchit(afchnge ~ male + married + hosp + indust + injtype + age + lprewage, data = inj_ky_h, method = &quot;genetic&quot;, replace = FALSE, pop.size = 50, print = 0)
+
+match.ky.h</code></pre>
+<pre><code>## 
+## Call: 
+## matchit(formula = afchnge ~ male + married + hosp + indust + 
+##     injtype + age + lprewage, data = inj_ky_h, method = &quot;genetic&quot;, 
+##     replace = FALSE, pop.size = 50, print = 0)
+## 
+## Sample sizes:
+##           Control Treated
+## All          1128    1103
+## Matched      1103    1103
+## Unmatched      25       0
+## Discarded       0       0</code></pre>
+<p>Todas as 103 observações tratadas estão correspondidas.</p>
+<pre class="r"><code>#library(precrec)
+#love.plot(match.ky.h, stars =&quot;std&quot;)
+
+# Erro: `data` must be a data frame, or other object coercible by `fortify()`, not an S3 object with class matchit</code></pre>
+<p>Nós comparamos o log de duração entre os grupos antes e depois dos dados grupos combinados.</p>
+<pre class="r"><code>#ggplot(match.ky.h, aes(y = ldurat, x = factor(afchnge))) +
+#geom_boxplot() +
+#coord_flip()</code></pre>
+<pre class="r"><code>#match_dat_ky_h %&gt;%
+#group_by(afchnge) %&gt;%
+#summarize(mean_ld = mean(ldurat), median_ld = median(ldurat))</code></pre>
+<p>A média de ldurat antes era 1,39, depois era 1,61.</p>
+<p>Usamos o pacote rbounds para estimar as diferenças nas médias depois e antes do grupo.</p>
+<pre class="r"><code>#attach(match_dat_ky_h)
+#Y &lt;- ldurat
+#Tr &lt;- afchnge
+#X &lt;- cbind(male, married, hosp, indust, injtype, age, lprewage)
+#gen1 &lt;- GenMatch(Tr = Tr, X = X, pop.size = 50, print = 0)
+#mgen1 &lt;- Match(Y = Y, Tr = Tr, X = X, Weight.matrix = gen1, replace = FALSE)
+#summary(mgen1)</code></pre>
+<p>Obtemos uma estimativa de 0,25 com um erro padrão de 0,05.</p>
+<pre class="r"><code>#psens(mgen1, Gamma = 1.5, GammaInc = 0.1)</code></pre>
+<p>Em Gama = 1,3, o valor <span class="math inline">\(p\)</span> excede 0,05 na análise de sensibilidade.</p>
+<pre class="r"><code>#hlsens(mgen1, Gamma = 1.5, GammaInc = 0.1)</code></pre>
+<p>A estimativa H-L é 0,25 em Gama = 0 e o limite cruza zero em Gama = 1,3.</p>
+<p>Rosenbaum chama as contrapartes de baixa renda; eles não são afetados pela mudança nas leis de compensação, para que possamos verificar nossos resultados para pessoas de alta renda avaliando se o tempo que os trabalhadores de baixa renda ficaram fora do trabalho aumenta ou não.</p>
+<div id="exercício-proposto-3" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Faça uma análise semelhante para as pessoas de baixa renda (temos os dados já filtrados para os valores acima para obter inj_ky_l).</p>
+</div>
+</div>
+</div>
+<div id="descontinuidade-na-regressão" class="section level1">
+<h1>Descontinuidade na regressão</h1>
+<p>Em um projeto de descontinuidade de regressão, a atribuição de tratamento depende de um valor de corte de uma variável. Usamos esse conhecimento da atribuição de tratamento para estimar o efeito causal.</p>
+<div id="exemplo-simples-com-dados-sintéticos-1" class="section level2">
+<h2>Exemplo simples com dados sintéticos</h2>
+<p>Faremos uma simulação; então criaremos alguns dados sintéticos.</p>
+<pre class="r"><code>library(tidyverse)
+set.seed(12)
+tamanho_amostra &lt;- 1000</code></pre>
+<p>A variável running, run, é desenhada a partir de uma distribuição uniforme.</p>
+<pre class="r"><code>run &lt;- runif(tamanho_amostra, min = 10, max = 50)</code></pre>
+<p>A variável de tratamento, treat, é igual a 0 se a execução for $&lt;$20, caso contrário, treat = 1.</p>
+<pre class="r"><code># tratamento, pontodecorte = 20
+treat &lt;- ifelse(run &lt; 20,0,1)</code></pre>
+<p>O resultado é dado por: outcome = 10 treat - 0,4run + ruído</p>
+<pre class="r"><code># outcome
+outcome &lt;- 10 * treat - 0.4 * run + 3 * rnorm(tamanho_amostra)</code></pre>
+<p>Criamos um dataframe com essas variáveis:</p>
+<pre class="r"><code>rd_data &lt;- data.frame(treat = factor(treat), run, outcome)</code></pre>
+<p>Então plotamos os dados</p>
+<pre class="r"><code>ggplot(rd_data) +
+geom_point(aes(x = run, y = outcome, shape = treat), col = &quot;grey60&quot;) + geom_smooth(aes(x = run, y = outcome, linetype = treat),
+col = &quot;black&quot;) + geom_vline(xintercept = 20)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-93-1.png" width="672" /></p>
+<p>Vemos que há um salto claro no ponto de corte.</p>
+<p>Regredir a variável de resultado no tratamento e a variável em execução nos dá estimativa próxima do efeito verdadeiro (10).</p>
+<pre class="r"><code>lm(outcome ~ treat + run)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = outcome ~ treat + run)
+## 
+## Coefficients:
+## (Intercept)        treat          run  
+##     -0.3362       9.8786      -0.3855</code></pre>
+</div>
+<div id="exemplo-idade-mínima-legal-para-beber" class="section level2">
+<h2>Exemplo: Idade mínima legal para beber</h2>
+<p>Agora trabalhamos com o código R para analisar os dados relativos ao consumo mínimo de idade legal (MLDA) apresentado em Angrist e Pischke (2015). A MLDA de 21 afetou taxas de mortalidade nos Estados Unidos ?</p>
+<pre class="r"><code># lendo os dados de exemplo do Stata
+library(foreign)
+#mlda=read.dta(&quot;AEJfigs.dta&quot;)
+
+mlda&lt;-read.dta(file=&quot;http://masteringmetrics.com/wp-content/uploads/2015/01/AEJfigs.dta&quot;)
+
+str(mlda)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    50 obs. of  19 variables:
+##  $ agecell            : num  19.1 19.2 19.2 19.3 19.4 ...
+##  $ all                : num  92.8 95.1 92.1 88.4 88.7 ...
+##  $ allfitted          : num  91.7 91.9 92 92.2 92.3 ...
+##  $ internal           : num  16.6 18.3 18.9 16.1 17.4 ...
+##  $ internalfitted     : num  16.7 16.9 17.1 17.3 17.4 ...
+##  $ external           : num  76.2 76.8 73.2 72.3 71.3 ...
+##  $ externalfitted     : num  75 75 75 74.9 74.9 ...
+##  $ alcohol            : num  0.639 0.677 0.866 0.867 1.019 ...
+##  $ alcoholfitted      : num  0.794 0.838 0.878 0.915 0.949 ...
+##  $ homicide           : num  16.3 16.9 15.2 16.7 14.9 ...
+##  $ homicidefitted     : num  16.3 16.3 16.3 16.3 16.3 ...
+##  $ suicide            : num  11.2 12.2 11.7 11.3 11 ...
+##  $ suicidefitted      : num  11.6 11.6 11.6 11.6 11.6 ...
+##  $ mva                : num  35.8 35.6 34.2 32.3 32.7 ...
+##  $ mvafitted          : num  34.8 34.6 34.4 34.3 34.1 ...
+##  $ drugs              : num  3.87 3.24 3.2 3.28 3.55 ...
+##  $ drugsfitted        : num  3.45 3.47 3.49 3.51 3.54 ...
+##  $ externalother      : num  8.53 8.66 8.51 8.26 8.42 ...
+##  $ externalotherfitted: num  8.39 8.53 8.66 8.79 8.9 ...
+##  - attr(*, &quot;datalabel&quot;)= chr &quot;&quot;
+##  - attr(*, &quot;time.stamp&quot;)= chr &quot; 6 Aug 2012 14:44&quot;
+##  - attr(*, &quot;formats&quot;)= chr [1:19] &quot;%9.0g&quot; &quot;%9.0g&quot; &quot;%9.0g&quot; &quot;%9.0g&quot; ...
+##  - attr(*, &quot;types&quot;)= int [1:19] 254 254 254 254 254 254 254 254 254 254 ...
+##  - attr(*, &quot;val.labels&quot;)= chr [1:19] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+##  - attr(*, &quot;var.labels&quot;)= chr [1:19] &quot;Age Cell&quot; &quot;All&quot; &quot;All Fitted&quot; &quot;Internal&quot; ...
+##  - attr(*, &quot;version&quot;)= int 12</code></pre>
+<p>Temos dados sobre todas as taxas de mortalidade por todas as causas e idade em meses. Criamos uma variável fictícia para maiores de 21 anos.</p>
+<pre class="r"><code>mlda$over21 = mlda$agecell&gt;=21</code></pre>
+<p>Então plotamos os dados</p>
+<pre class="r"><code>library(ggplot2)
+age3=ggplot(mlda, aes(x = agecell, y = all,colour=over21)) +
+geom_point() +
+geom_vline(xintercept=21)
+age3</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-97-1.png" width="864" /></p>
+<p>Nós adicionamos smooth(). Independentemente do tipo, temos um efeito claro do idade mínima legal para beber.</p>
+<pre class="r"><code>age4=age3 + stat_smooth(method = &quot;lm&quot;) +
+stat_smooth(method = &quot;loess&quot;)
+age4</code></pre>
+<pre><code>## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+
+## Warning: Removed 2 rows containing non-finite values (stat_smooth).</code></pre>
+<pre><code>## Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-98-1.png" width="864" /></p>
+<p>Agora usamos um dos pacotes especializados do R para descontinuidade de regressão, rddtools (Stigler e Quast 2015).</p>
+<pre class="r"><code>library(rddtools)</code></pre>
+<p>Removemos dados faltantes:</p>
+<pre class="r"><code>mlda &lt;- mlda %&gt;%
+na.omit()</code></pre>
+<p>Temos que declarar os dados para regressão com descontinuidades:</p>
+<pre class="r"><code>rd_data_2 &lt;- rdd_data(y = all, x=agecell, data=mlda, cutpoint=21 )
+
+summary(rd_data_2)</code></pre>
+<pre><code>## ### rdd_data object ###
+## 
+## Cutpoint: 21
+## Type: Sharp 
+## Sample size: 
+##  -Full : 48 
+##  -Left : 24 
+##  -Right: 24
+## Covariates: no</code></pre>
+<p>Primeiro usamos uma regressão paramétrica para estimar o efeito do tratamento.</p>
+<pre class="r"><code>reg_para &lt;- rdd_reg_lm(rd_data_2, order=1)
+reg_para</code></pre>
+<pre><code>## ### RDD regression: parametric ###
+##  Polynomial order:  1 
+##  Slopes:  separate 
+##  Number of obs: 48 (left: 24, right: 24)
+## 
+##  Coefficient:
+##   Estimate Std. Error t value  Pr(&gt;|t|)    
+## D   7.6627     1.3187  5.8108 6.398e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Temos uma estimativa de 7,7. Nós plotamos a linha de regressão paramétrica</p>
+<pre class="r"><code>plot(reg_para)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-103-1.png" width="864" /></p>
+<div id="exercício-proposto-4" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Altere a ordem do polinômio no código acima, e então rode a regressão novamente.</p>
+<hr />
+<p>Agora usamos uma regressão não paramétrica; primeiro obtemos o bandwidth ideal.</p>
+<pre class="r"><code>bw_ik &lt;- rdd_bw_ik(rd_data_2)
+bw_ik</code></pre>
+<pre><code>##    h_opt 
+## 1.558202</code></pre>
+<p>Em seguida, estimamos e plotamos a regressão não paramétrica</p>
+<pre class="r"><code>reg_nonpara &lt;- rdd_reg_np(rdd_object=rd_data_2, bw=bw_ik)
+reg_nonpara</code></pre>
+<pre><code>## ### RDD regression: nonparametric local linear###
+##  Bandwidth:  1.558202 
+##  Number of obs: 38 (left: 19, right: 19)
+## 
+##  Coefficient:
+##   Estimate Std. Error z value  Pr(&gt;|z|)    
+## D   9.1894     1.7371  5.2902 1.222e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Fazemos testes de placebo e sensibilidade</p>
+<pre class="r"><code>plotPlacebo(reg_nonpara)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-106-1.png" width="864" /></p>
+<p>A figura acima mostra que usar pontos de corte diferentes de 21 não nos dá um efeito estatísticamente significativo.</p>
+<pre class="r"><code>plotSensi(reg_nonpara, from=0.05, to=3, by=0.15)</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-107-1.png" width="864" /></p>
+<p>Isso nos mostra que os resultados não são sensíveis ao bandwidth.</p>
+</div>
+</div>
+</div>
+<div id="diferenças-em-diferenças-diff-and-diff" class="section level1">
+<h1>Diferenças em Diferenças (Diff and Diff)</h1>
+<p>O método diferença-em-diferença é freqüentemente usado para análise de políticas. Nós usamos primeiro um exemplo de Wooldridge (2013) para se ter a ideia básica.</p>
+<div id="exemplo-taxa-de-rejeição-e-treinamento" class="section level2">
+<h2>Exemplo: Taxa de rejeição e treinamento</h2>
+<p>Neste exemplo, o resultado é a taxa de sucateamento (quantos itens defeituosos devem ser jogados fora) em empresas de manufatura em Michigan durante 1987 e 1988. O tratamento é o recebimento de uma bolsa para treinamento profissional.</p>
+<p>Podemos escrever a taxa de refugo para 1988 como:</p>
+<p><span class="math inline">\(scrap_{1988} = \beta_{0} + \delta_{0}1 + β_{1}grant_{i1988} + a_{i} + u_{i1988}\)</span></p>
+<p>onde <span class="math inline">\(i\)</span> denota a empresa e <span class="math inline">\(a_i\)</span> é um fator específico da empresa. A taxa de refugo para 1987 é:</p>
+<p><span class="math inline">\(scrap_{1987} = β_{0} + β_{1}grant_{i1987} + a_{i} + u_{i1987}\)</span></p>
+<p>A diferença nas taxas de refugo entre 1988 e 1987 é:</p>
+<p><span class="math inline">\(scrap_{1988} − scrap_{1987} = \Delta scrap_{i} = δ_{0} + β1\Delta grant_{i} + \Delta u_i\)</span></p>
+<p>A diferenciação nos ajuda a remover o efeito de confusão <span class="math inline">\(a_{i}\)</span>. Os dados estão no pacote wooldridge.</p>
+<pre class="r"><code>library(wooldridge)
+data(&quot;jtrain&quot;)</code></pre>
+<p>Removemos os dados do ano de 1989.</p>
+<pre class="r"><code>jtrain &lt;- jtrain %&gt;%
+filter(year != 1989)</code></pre>
+<p>Usaremos o pacote plm, que trata dos dados do painel.</p>
+<pre class="r"><code>library(plm)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plm&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     between, lag, lead</code></pre>
+<pre class="r"><code>jtrain_p &lt;- pdata.frame(jtrain,
+index = c(&quot;fcode&quot;,&quot;year&quot;))</code></pre>
+<p>Usamos a função diff() para obter diferenças.</p>
+<pre class="r"><code>jtrain_p$scrap_d &lt;-
+diff(jtrain_p$scrap)
+jtrain_p$grant_d &lt;-
+diff(jtrain_p$grant)</code></pre>
+<p>Estimamos o efeito da concessão na sucata/descarte.</p>
+<pre class="r"><code>mod_did &lt;- lm(scrap_d ~ grant_d, data = jtrain_p)
+
+summary(mod_did)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = scrap_d ~ grant_d, data = jtrain_p)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -9.4363 -0.0638  0.5437  0.8283  5.5637 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept)  -0.5637     0.4049  -1.392    0.170
+## grant_d      -0.7394     0.6826  -1.083    0.284
+## 
+## Residual standard error: 2.396 on 52 degrees of freedom
+##   (260 observations deleted due to missingness)
+## Multiple R-squared:  0.02207,    Adjusted R-squared:  0.003261 
+## F-statistic: 1.173 on 1 and 52 DF,  p-value: 0.2837</code></pre>
+<p>Obtemos uma estimativa estatisticamente insignificante de -0,74</p>
+</div>
+<div id="simulação" class="section level2">
+<h2>Simulação</h2>
+<p>Na subseção anterior, presumimos que havia um efeito fixo que era um causa comum do resultado e do tratamento. Chamemos este caso de A. Diferenciando removemos o efeito fixo.</p>
+<p>No entanto, e se o valor inicial do resultado afetar o valor atual do resultado e o tratamento? Vamos chamar este caso B. Podemos controlar para o valor do resultado. Mas não sabemos se os dados são gerados por um processo consistente com o caso A ou caso B. Portanto, usamos simulação para ver o que acontece quando diferimos ou controlamos para valores iniciais no caso A e no caso B. Geramos dados para o caso A. Temos um resultado no período 0 que é uma função linear “fixa” e um prazo de erro:</p>
+<p><span class="math inline">\(y_0 = fixed + u_{y0}\)</span></p>
+<p>Então, no período 1, temos um tratamento que é determinado por:</p>
+<p><span class="math inline">\(treat = 1,\,\, if : fixed &lt; 0,\,\, else = 0\)</span></p>
+<p>O tratamento tem um efeito eff, que afeta o resultado além de fixo.</p>
+<p><span class="math inline">\(y_{1} = fixed + eff ∗ treat + u_{y1}\)</span></p>
+<p>Geramos os dados sintéticos com o seguinte código:</p>
+<pre class="r"><code>ss &lt;- 3000 # tamanho da amostra
+eff &lt;- 3 # efeito= 3
+fixed &lt;- rnorm(ss) # normal aleatoria
+treat &lt;- ifelse(fixed &lt; 0,1,0)
+uy1 &lt;- rnorm(ss)
+uy0 &lt;- rnorm(ss)
+y1 &lt;- fixed + eff * treat + uy1
+y0 &lt;- fixed + uy0</code></pre>
+<p>Em m_d1, estimamos a diferença das médias. Em m_d2 nós controlamos para o valor inicial de y, y0. Em m_d3, usamos diferença em diferença.</p>
+<pre class="r"><code># diferenca das medias
+m_d1 &lt;- lm(y1 ~ treat)
+
+# controle para y0
+m_d2 &lt;- lm(y1 ~ y0 + treat)
+
+# diff in diff
+m_d3 &lt;- lm(I(y1 - y0) ~ treat)
+
+summary(m_d1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y1 ~ treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.7192 -0.8056 -0.0178  0.7892  3.7765 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.78434    0.02996   26.18   &lt;2e-16 ***
+## treat        1.39844    0.04257   32.85   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.166 on 2998 degrees of freedom
+## Multiple R-squared:  0.2647, Adjusted R-squared:  0.2644 
+## F-statistic:  1079 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(m_d2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y1 ~ y0 + treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.6623 -0.7696 -0.0003  0.7878  3.5449 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.57250    0.03194   17.92   &lt;2e-16 ***
+## y0           0.26948    0.01746   15.43   &lt;2e-16 ***
+## treat        1.80825    0.04883   37.03   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.122 on 2997 degrees of freedom
+## Multiple R-squared:  0.3188, Adjusted R-squared:  0.3183 
+## F-statistic: 701.3 on 2 and 2997 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(m_d3)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = I(y1 - y0) ~ treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.3709 -0.9510 -0.0254  0.9808  4.5890 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -0.001787   0.036292  -0.049    0.961    
+## treat        2.919204   0.051566  56.611   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.412 on 2998 degrees of freedom
+## Multiple R-squared:  0.5167, Adjusted R-squared:  0.5165 
+## F-statistic:  3205 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Nos resultados acima gerados, o Modelo 3 (diferença-em-diferença) chega perto do efeito verdadeiro. O modelo 2 (controlando para o valor inicial) nos dá uma subestimativa, e o modelo 1 (diferença das médias) está mais longe do verdadeiro efeito.</p>
+<p>Geramos dados para o caso B. Temos um resultado no período 0 que é uma variável aleatória:</p>
+<p><span class="math inline">\(y_0 = u_{y0}\)</span></p>
+<p>O resultado inicial influencia o tratamento:</p>
+<p><span class="math inline">\(treat = 1,\,\, if : y_0 &lt; 2.5,\,\ else = 0\)</span></p>
+<p>No período 1, o tratamento tem um efeito <span class="math inline">\(eff\)</span>, que afeta o resultado além do valor do resultado inicial.</p>
+<p><span class="math inline">\(y_1 = beta ∗ y_0 + eff ∗ treat + u_{y1}\)</span></p>
+<p>Geramos os dados sintéticos com o seguinte código:</p>
+<pre class="r"><code>ss &lt;- 3000
+eff &lt;- 3
+y0 &lt;- runif(ss, min = 1, max = 4)
+treat &lt;- ifelse(y0 &lt; 2.5,1,0)
+uy1 &lt;- rnorm(ss)
+uy0 &lt;- rnorm(ss)
+y1 &lt;- 0.3 * y0 + eff * treat + uy1</code></pre>
+<pre class="r"><code># diferenca nas medias
+m_d4 &lt;- lm(y1 ~ treat)
+# controlando para y0
+m_d5 &lt;- lm(y1 ~ y0 + treat)
+# diff in diff
+m_d6 &lt;- lm(I(y1 - y0) ~ treat)
+
+summary(m_d4)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y1 ~ treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.3086 -0.6552 -0.0159  0.6784  3.3876 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.97677    0.02622   37.26   &lt;2e-16 ***
+## treat        2.54720    0.03688   69.07   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.01 on 2998 degrees of freedom
+## Multiple R-squared:  0.6141, Adjusted R-squared:  0.614 
+## F-statistic:  4771 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(m_d5)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y1 ~ y0 + treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.2243 -0.6510 -0.0230  0.6704  3.2899 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.12662    0.14090   0.899    0.369    
+## y0           0.26186    0.04265   6.140 9.36e-10 ***
+## treat        2.93816    0.07347  39.989  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.004 on 2997 degrees of freedom
+## Multiple R-squared:  0.6189, Adjusted R-squared:  0.6186 
+## F-statistic:  2433 on 2 and 2997 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(m_d6)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = I(y1 - y0) ~ treat)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.7441 -0.7081  0.0005  0.7316  3.2438 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -2.26979    0.02732  -83.07   &lt;2e-16 ***
+## treat        4.04023    0.03844  105.11   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.053 on 2998 degrees of freedom
+## Multiple R-squared:  0.7866, Adjusted R-squared:  0.7865 
+## F-statistic: 1.105e+04 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Nos resultados acima gerados, vemos que a diferença em diferença nos dá uma superestimativa, modelo 2 (controlando para o valor inicial) é próximo e a diferença simples nas médias é uma grande subestimação. Então, vemos que a diferença-em-diferença tem uma suposição crucial, que o tratamento e grupo de controle têm tendências paralelas. Isso pode ser examinado graficamente. Portanto, como na descontinuidade da regressão, o exame gráfico pode nos ajudar a julgar a validade da diferença-em-diferença em um determinado contexto.</p>
+</div>
+<div id="exemplo-bancos-de-negócios" class="section level2">
+<h2>Exemplo: bancos de negócios</h2>
+<p>Neste exemplo de Angrist e Pischke (2015), examinamos o papel da política monetária, durante a Grande Depressão em diferentes distritos do sistema do Federal Reserve dos EUA. Comparamos o efeito de empréstimos fáceis para bancos em dificuldades, conforme praticado pelo Atlanta Fed, que administrava o Sexto Distrito, à política restritiva do St. Louis Fed que dirigia o Oitavo Distrito. A variável de resultado é o número de bancos em atividade.</p>
+<p>O grupo de tratamento é o sexto distrito e o grupo de controle é o oitavo distrito. Recebemos os dados:</p>
+<pre class="r"><code># install.packages(&quot;devtools&quot;)
+#devtools::install_github(&quot;jrnold/masteringmetrics&quot;, subdir = &quot;masteringmetrics&quot;)
+
+#data(&quot;banks&quot;, package = &quot;masteringmetrics&quot;)</code></pre>
+<p><a href="https://github.com/jjchern/mmdata/blob/master/data/banks.rda?raw=true">Baixe os dados aqui</a></p>
+<p>Então carregue localmente:</p>
+<pre class="r"><code>load(&quot;C:/Users/rodri/Downloads/banks.rda&quot;)
+
+str(banks)</code></pre>
+<pre><code>## tibble [1,878 x 9] (S3: tbl_df/tbl/data.frame)
+##  $ date   : int [1:1878] 10775 10776 10777 10778 10779 10780 10781 10782 10783 10784 ...
+##  $ weekday: chr [1:1878] &quot;Monday&quot; &quot;Tuesday&quot; &quot;Wednesday&quot; &quot;Thursday&quot; ...
+##  $ day    : int [1:1878] 1 2 3 4 5 6 7 8 9 10 ...
+##  $ month  : int [1:1878] 7 7 7 7 7 7 7 7 7 7 ...
+##  $ year   : int [1:1878] 1929 1929 1929 1929 1929 1929 1929 1929 1929 1929 ...
+##  $ bib6   : int [1:1878] 141 141 141 141 141 141 141 141 141 141 ...
+##  $ bio6   : int [1:1878] 141 141 141 141 141 141 141 141 141 141 ...
+##  $ bib8   : int [1:1878] 169 169 169 169 169 169 169 169 169 169 ...
+##  $ bio8   : int [1:1878] 169 169 169 169 169 169 169 169 169 169 ...</code></pre>
+<p>Calculamos o número médio de bancos em atividade a cada ano diariamente e nos distritos 6 e 8.</p>
+<pre class="r"><code>library(tidyverse)
+bankag &lt;- banks %&gt;%
+group_by(year) %&gt;%
+summarize(bib6m=mean(bib6),
+          bib8m=mean(bib8))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>head(bankag)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##    year bib6m bib8m
+##   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1  1929  141   170.
+## 2  1930  136.  165.
+## 3  1931  120.  132.
+## 4  1932  113.  120.
+## 5  1933  105.  112.
+## 6  1934  102   110.</code></pre>
+<p>Empilhamos, ou reunimos, os bancos em atividade para o sexto e o oitavo distritos em um coluna.</p>
+<pre class="r"><code>bankag2 &lt;- gather(bankag,
+&quot;bty&quot;,&quot;num&quot;,2:3)</code></pre>
+<p>Filtramos pelos anos 1930 e 1931.</p>
+<pre class="r"><code>bankag3 &lt;- filter(bankag2, year == 1930 | year == 1931)
+bankag3</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##    year bty     num
+##   &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;
+## 1  1930 bib6m  136.
+## 2  1931 bib6m  120.
+## 3  1930 bib8m  165.
+## 4  1931 bib8m  132.</code></pre>
+<p>Traçamos os bancos em atividade em 1930 e 1931. Nossa diferença-indiferença a estimativa é = (120 - 136) - (132 - 165) = −16 - (−33) = 17.</p>
+<pre class="r"><code>ggplot(bankag3, aes(x=year, y=num,colour=bty)) +
+geom_line()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-122-1.png" width="864" /></p>
+<p>Podemos explorar a suposição de tendências paralelas; Esse gráfico mostra que as tendências são de fato paralelas antes de 1930 e depois de 1931.</p>
+<pre class="r"><code>ggplot(bankag2, aes(x=year,y=log(num),colour=bty)) +
+geom_line()</code></pre>
+<p><img src="inferenciacausal_files/figure-html/unnamed-chunk-123-1.png" width="864" /></p>
+<p> </p>
 <hr />
 <div id="referências" class="section level3">
 <h3>Referências</h3>
-<p>Abadie,A., M.D. Catteneo. 2018. <em>Econometric methods for program evaluation</em>. Annual Review of Economics 10: 465–503.</p>
-<p>Angrist, J.D., J. Pischke. 2015. <em>Mastering ‘metrics - The path from cause to effect</em>. Princeton: Princeton University Press.</p>
-<p>Pearl, J., M. Glymour, and N.P. Jewell. 2016. <em>Causal inference in statistics: A primer.</em> New York: Wiley.</p>
+<p>Abadie,A., M.D. Catteneo. 2018. <em><strong>Econometric methods for program evaluation</strong>.</em> Annual Review of Economics 10: 465–503.</p>
+<p>Angrist, J.D., J. Pischke. 2015. <em><strong>Mastering ‘metrics - The path from cause to effect</strong>.</em> Princeton: Princeton University Press.</p>
+<p>Elwert, F. 2013. _**Graphical causal models. In Handbook of causal analysis for social research,_** ed. S.L. Morgan, 245–274. New York: Springer.</p>
+<p>Freedman, D.A. 1983. _<strong>A note on screening regression equations. The American Statistician_</strong> 37 (2): 152–155.</p>
+<p>Greifer, N. 2019. _<strong>cobalt: Covariate balance tables and plots_</strong>. R package version 3.8.0. <a href="https://CRAN" class="uri">https://CRAN</a>. R-project.org/package=cobalt.</p>
+<p>Hill, R.C., W.E. Griffiths, and G.C. Lim. 2018. _<strong>Principles of econometrics._</strong> New York: Wiley.</p>
+<p>Kahneman, D. 2011. _<strong>Thinking, fast and slow._</strong> London: Penguin Books.</p>
+<p>Pearl, J., M. Glymour, and N.P. Jewell. 2016. <em><strong>Causal inference in statistics: A primer.</strong></em> New York: Wiley.</p>
+<p>Rosenbaum, P. 2005. _**Sensitivity analysis in observational studies. In Encyclopedia of statistics in behavioural science,_** ed. B.S. Everitt, D.C. Howell, 1809–1814. New York: Wiley.</p>
+<p>Rosenbaum, P. 2017. _<strong>Observation and experiment - An introduction to causal inference._</strong> London: Harvard University Press.</p>
+<p>Rubin, D.B. 2008. <em><strong>Statistical inference for causal effects, with emphasis on applications in epidemiology and medical statistics.</strong></em> <em>In Handbook of Statistics</em>, vol. 27, ed. C.R. Rao, J.P. Miller, D.C. Rao. 2008. Amsterdam: Elsevier.</p>
+<p>Stigler, M., and B. Quast. 2015. _<strong>rddtools: Toolbox for Regression Discontinuity Design (‘RDD’)._</strong> R package version 0.4.0. <a href="https://CRAN.R-project.org/package=rddtools" class="uri">https://CRAN.R-project.org/package=rddtools</a>.</p>
+</div>
 </div>
 </div>
 

@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+<meta name="date" content="2020-01-10" />
+
+<title>Variáveis Instrumentais e Inferência Causal</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="variaveisinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Variáveis Instrumentais e Inferência Causal</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">01/10/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<hr />
+<div id="resumo" class="section level4">
+<h4><strong>Resumo</strong></h4>
+<p><small> Como uma segunda fase do tutorial de Inferência Causal escrito aqui no site, continuo explicando o papel das variáveis instrumentais dentro dela.</p>
+<p>Este tutorial busca aplicar alguns dos conceitos de inferência causal em problemas econômicos reais e simulados, utilizando o software R, demonstrando e apresentando suas enormes vantagens em relação ao <em>data science</em>, <em>machine learning</em> e até mesmo o <em>deep learning</em>.</p>
+<p><a href="https://www.coursera.org/learn/causal-inference">A inspiração de escrevê-lo veio ao cursar no coursera.org o ead fornecido pela Columbia University in the City of New York, encabeçado pelo prof. Michael E. Sobel.</a></p>
+<p>Como a Economia trata de buscar respostas para problemas mais complexos (e interessantes), vamos <em>“muito além do simples ajuste de curvas”</em> <a href="https://www.youtube.com/watch?v=2EhRT2mOXm8">(parafraseando o prof. Josh Angrist aqui)</a></p>
+<p><strong>Palavras-chave:</strong> Inferência Causal, Diff and Diff, Econometria </small></p>
+<hr />
+<p> </p>
+<p>Antes de começar a ler este artigo, comece assistindo o prof. Angrist explicando a diferença da Econometria para o Data Science e por qual motivo a Econometria trata de resolver problemas mais complexos e difíceis do que o DS.</p>
+<p> </p>
+<center>
+<iframe src="https://www.youtube.com/embed/2EhRT2mOXm8" width="420" height="315" frameborder="0" allowfullscreen=""></iframe>
+</center>
+<p> </p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“É somente através da econometria, a ciência de dados original, que você pode conhecer o caminho da causa ao efeito.” (Angrist, 2008)
+</p>
+</div>
+<div id="variáveis-instrumentais" class="section level1">
+<h1>Variáveis Instrumentais</h1>
+<p>Se <span class="math inline">\(y = β_0 + β_1x + e\)</span> e <span class="math inline">\(cov (x, e) = 0\)</span>, então uma regressão de <span class="math inline">\(y\)</span> em <span class="math inline">\(x\)</span> não nos dará uma estimativa não enviesada de <span class="math inline">\(β_1\)</span>.</p>
+<p>Porém, se houver uma variável <span class="math inline">\(z\)</span> que afeta <span class="math inline">\(x\)</span>, de forma que <span class="math inline">\(cov (z, x) = 0\)</span> e <span class="math inline">\(cov (z, e) = 0\)</span>, então podemos usar <span class="math inline">\(z\)</span> como uma variável instrumental. <span class="math inline">\(β_1 = cov (z, y) / cov (z, x)\)</span> no caso simples acima.</p>
+<div id="simulação" class="section level2">
+<h2>Simulação</h2>
+<p>Simulamos dados onde:</p>
+<p>U → X, U → Y; IV é necessário se U for uma variável não observável.</p>
+<p>X → Y</p>
+<p>Z → X</p>
+<p>O tamanho da amostra e a força do efeito de Z em X desempenham um papel fundamental na IV.</p>
+<p>Geramos os dados (nota <span class="math inline">\(β_X = 1\)</span>):</p>
+<pre class="r"><code>library(tidyverse)
+library(AER)
+sample_size = 300
+coef_Z = 0.9
+viol = 0
+Z &lt;- runif(sample_size,
+min = 1, max = 5)
+U &lt;- runif(sample_size,
+min = 1, max = 5) + viol*Z
+X &lt;- U + rnorm(sample_size) + coef_Z *Z
+Y &lt;- U + X + rnorm(sample_size)</code></pre>
+<pre class="r"><code>mod1OLS &lt;- lm(Y ~ X)
+mod2OLS &lt;- lm(Y ~ X + U)</code></pre>
+<p> </p>
+<center>
+<p><small><strong>Tabela 1:</strong> Resultados via MQO de Y (verdadeiro efeito de X é 1)</small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+Y
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+mod1OLS
+</td>
+<td>
+mod2OLS
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.604<sup>**</sup>
+</td>
+<td>
+-0.032
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.247)
+</td>
+<td>
+(0.198)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+X
+</td>
+<td>
+1.384<sup>***</sup>
+</td>
+<td>
+1.028<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.042)
+</td>
+<td>
+(0.042)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+U
+</td>
+<td>
+</td>
+<td>
+0.904<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.065)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+300
+</td>
+<td>
+300
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.783
+</td>
+<td>
+0.869
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.782
+</td>
+<td>
+0.868
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.297 (df = 298)
+</td>
+<td>
+1.011 (df = 297)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+1,076.413<sup>***</sup> (df = 1; 298)
+</td>
+<td>
+982.717<sup>***</sup> (df = 2; 297)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>A Tabela 1 acima, mostra que no Modelo 1, com U não observado, obtemos um viés, estatisticamente significativo, na estimativa de <span class="math inline">\(β_X\)</span>. Se observamos U, então controlando para isso dá um estimativa não enviesada de <span class="math inline">\(β_X\)</span> (Modelo 2). Agora usamos regressão de variáveis instrumentais.</p>
+<pre class="r"><code>library(AER)
+ModIV &lt;- ivreg(Y ~ X | Z)</code></pre>
+<p> </p>
+<center>
+<p><small><strong>Tabela 2:</strong> Resultados IV (instrumental var.) para Y (verdadeiro efeito de X é 1)</small></p>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="1" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+Y
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+ModIV
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+2.935<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.501)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+X
+</td>
+<td>
+0.967<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.088)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+300
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.712
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.711
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+1.495 (df = 298)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>A Tabela 2 mostra que a regressão da variável instrumental (IV) nos dá uma visão imparcial da estimativa de <span class="math inline">\(β_X\)</span>.</p>
+<p>Agora criamos uma função para realizar simulações IV.</p>
+<pre class="r"><code>IVsamD &lt;- function(sample_size,
+coef_Z,viol = 0) {
+num_loops = 300
+OLS1 &lt;- numeric(num_loops)
+OLS2 &lt;- numeric(num_loops)
+IV &lt;- numeric(num_loops)
+for (i in 1: num_loops) {
+U &lt;- runif(sample_size,
+min = 1, max = 5)
+Uy &lt;- rnorm(sample_size)
+Z &lt;- runif(sample_size,
+min = 1, max = 5) + viol*Uy
+X &lt;- U + rnorm(sample_size) + coef_Z *Z
+Y &lt;- U + X + Uy
+OLS1[i] &lt;- summary(lm(Y ~ X))$coef[2]
+OLS2[i] &lt;- summary(lm(Y ~ X + U))$coef[2]
+IV[i] &lt;- summary(ivreg(Y ~ X | Z))$coef[2]
+}
+reg_IV &lt;- tibble(OLS1,OLS2,IV)
+
+reg_IV
+
+library(tidyr)
+reg_IV_s &lt;- reg_IV %&gt;%
+gather(Estimator,value,OLS1:IV)
+reg_IV_s
+
+library(ggplot2)
+ggplot(reg_IV_s, aes(value, colour = Estimator)) +
+geom_density() +
+xlim(c(-1,2)) +
+geom_vline(xintercept = 1, lty = 2)
+}</code></pre>
+<p>Agora usamos a função IV.</p>
+<pre class="r"><code>IVsamD(sample_size = 30,
+coef_Z = 1, viol = 0)</code></pre>
+<p><img src="varinstrumentais_files/figure-html/unnamed-chunk-8-1.png" width="864" /></p>
+<p>A distribuição de amostragem IV tem maior propagação, embora consistente</p>
+<div id="exercício-proposto" class="section level3">
+<h3>Exercício proposto</h3>
+<p>Copie o código para a função de simulação IV. Tente os seguintes cenários (eles são escritos como comentários de código R; você tem que remover o hash):</p>
+<hr />
+</div>
+</div>
+<div id="exemplo-demanda-por-cigarros" class="section level2">
+<h2>Exemplo: demanda por cigarros</h2>
+<p>A política pública freqüentemente visa reduzir o tabagismo devido aos seus efeitos na saúde. Se impostos são usados para restringir o fumo, surge a pergunta - como o consumo será afetado?</p>
+<p>Este exemplo é de Stock e Watson (2011). Vamos trabalhar com dados sobre cigarros no pacote AER e renomear para conveniência. Os dados são para os estados dos EUA, para os anos de 1985 e 1995.</p>
+<pre class="r"><code>library(AER)
+data(&quot;CigarettesSW&quot;, package = &quot;AER&quot;)
+# renomeamos o dataset
+Cig &lt;- CigarettesSW</code></pre>
+<p>Temos dados sobre as vendas anuais per capita de cigarros em maços, maços e preços, preço, e o índice de preços ao consumidor, cpi.</p>
+<pre class="r"><code>library(ggplot2)
+ggplot(Cig, aes(x=log(packs), y=log(price/cpi))) +
+geom_point() +
+stat_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="varinstrumentais_files/figure-html/unnamed-chunk-10-1.png" width="864" /></p>
+<p>Estaremos removendo efeitos fixos por diferenciação e usaremos instrumentos estimativa de variáveis nos dados diferenciados.</p>
+<p>Criamos novas variáveis com a função mutate. Abaixo, convertemos nosso preço, renda e variáveis fiscais em termos reais.</p>
+<pre class="r"><code>Cig &lt;-Cig %&gt;%
+mutate(rprice = price/cpi)
+
+Cig &lt;-Cig %&gt;%
+mutate(rincome = income/population/cpi)
+
+Cig &lt;-Cig %&gt;%
+mutate(rtaxs=(taxs-tax)/cpi)
+
+Cig &lt;-Cig %&gt;%
+mutate(rtax=tax/cpi)</code></pre>
+<p>Criamos datasets separados para os anos de 1985 e 1995 com o filtro de dados do R.</p>
+<pre class="r"><code>Cig85 &lt;- Cig %&gt;%
+filter(year==1985)
+
+Cig95 &lt;- Cig %&gt;%
+filter(year==1995)</code></pre>
+<p>A função transmute funciona como a mutate, mas não acrescenta aos outros dados. Nós retiramos variáveis para 1985 e 1995, e então calculamos a diferença.</p>
+<pre class="r"><code>pack_85 &lt;- Cig85 %&gt;%
+transmute(pack_85 = log(packs))
+
+pack_95 &lt;- Cig95 %&gt;%
+transmute(pack_95=log(packs))
+# Diferenca de 1995 e 1985
+pack_diff &lt;- pack_95$pack_95 - pack_85$pack_85</code></pre>
+<p>Na última linha, pegamos uma diferença de longo prazo no número de maços de cigarro entre 1995 e 1985; estaremos estudando a elasticidade de longo prazo. Fazemos cálculos de preço:</p>
+<pre class="r"><code>rprice85 &lt;-Cig85 %&gt;%
+transmute(rprice85 = log(rprice))
+
+rprice95 &lt;-Cig95 %&gt;%
+transmute(rprice95 = log(rprice))
+
+rpricediff &lt;- rprice95$rprice95 -rprice85$rprice85</code></pre>
+<p>Para renda e impostos</p>
+<pre class="r"><code>i85 &lt;-Cig85 %&gt;%
+transmute(i85 = log(rincome))
+
+i95 &lt;-Cig95 %&gt;%
+transmute(i95 = log(rincome))
+
+idiff &lt;- i95$i95 - i85$i85
+
+ts85 &lt;-Cig85 %&gt;%
+transmute(ts85 = rtaxs)
+
+ts95 &lt;-Cig95 %&gt;%
+transmute(ts95 = rtaxs)
+
+tsdiff &lt;- ts95$ts95 - ts85$ts85
+
+t85 &lt;-Cig85 %&gt;%
+transmute(t85 = rtax)
+
+t95 &lt;-Cig95 %&gt;%
+transmute(t95 = rtax)
+
+tdiff &lt;- t95$t95 - t85$t85</code></pre>
+<p>A variável dependente é a quantidade de cigarros, que é regredida no preço (endógena) e renda (exógena); o instrumento são os impostos gerais sobre vendas. Todas as variáveis são diferenças entre 1995 e 1985.</p>
+<pre class="r"><code>library(estimatr)
+hc1 &lt;- function(x) vcovHC(x, type = &quot;HC1&quot;)
+mod1 &lt;- iv_robust(pack_diff ~ rpricediff +idiff| idiff + tsdiff,diagnostics = TRUE)
+mod2 &lt;- iv_robust(pack_diff ~ rpricediff +idiff| idiff + tdiff)
+mod3 &lt;- iv_robust(pack_diff ~ rpricediff +idiff| idiff + tsdiff+ tdiff, diagnostics = TRUE)</code></pre>
+<pre class="r"><code># Resultados das regressoes via VI
+summary(mod1)</code></pre>
+<pre><code>## 
+## Call:
+## iv_robust(formula = pack_diff ~ rpricediff + idiff | idiff + 
+##     tsdiff, diagnostics = TRUE)
+## 
+## Standard error type:  HC2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value  Pr(&gt;|t|) CI Lower CI Upper DF
+## (Intercept)   -0.118    0.07007  -1.683 9.923e-02  -0.2591  0.02318 45
+## rpricediff    -0.938    0.21356  -4.392 6.739e-05  -1.3681 -0.50788 45
+## idiff          0.526    0.35001   1.503 1.399e-01  -0.1790  1.23093 45
+## 
+## Multiple R-squared:  0.5499 ,    Adjusted R-squared:  0.5299 
+## F-statistic: 11.59 on 2 and 45 DF,  p-value: 8.73e-05
+## 
+## Diagnostics:
+##                  numdf dendf  value p.value    
+## Weak instruments     1    45 32.015   1e-06 ***
+## Wu-Hausman           1    44  0.534   0.469    
+## Overidentifying      0    NA     NA      NA    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary(mod2)</code></pre>
+<pre><code>## 
+## Call:
+## iv_robust(formula = pack_diff ~ rpricediff + idiff | idiff + 
+##     tdiff)
+## 
+## Standard error type:  HC2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value  Pr(&gt;|t|) CI Lower CI Upper DF
+## (Intercept) -0.01705    0.07097 -0.2402 8.112e-01  -0.1600   0.1259 45
+## rpricediff  -1.34251    0.24565 -5.4652 1.928e-06  -1.8373  -0.8478 45
+## idiff        0.42815    0.30800  1.3901 1.713e-01  -0.1922   1.0485 45
+## 
+## Multiple R-squared:  0.5197 ,    Adjusted R-squared:  0.4983 
+## F-statistic: 18.04 on 2 and 45 DF,  p-value: 1.768e-06</code></pre>
+<pre class="r"><code>summary(mod3)</code></pre>
+<pre><code>## 
+## Call:
+## iv_robust(formula = pack_diff ~ rpricediff + idiff | idiff + 
+##     tsdiff + tdiff, diagnostics = TRUE)
+## 
+## Standard error type:  HC2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value  Pr(&gt;|t|) CI Lower CI Upper DF
+## (Intercept)   -0.052    0.06511 -0.7987 4.287e-01  -0.1831  0.07914 45
+## rpricediff    -1.202    0.20850 -5.7669 6.919e-07  -1.6223 -0.78246 45
+## idiff          0.462    0.31855  1.4504 1.539e-01  -0.1796  1.10362 45
+## 
+## Multiple R-squared:  0.5466 ,    Adjusted R-squared:  0.5264 
+## F-statistic: 19.12 on 2 and 45 DF,  p-value: 9.792e-07
+## 
+## Diagnostics:
+##                  numdf dendf  value p.value    
+## Weak instruments     2    44 86.395 5.8e-16 ***
+## Wu-Hausman           1    44  5.505  0.0235 *  
+## Overidentifying      1    NA  4.085  0.0433 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>As estimativas das VIs acima são apresentadas completamente pelo summary() do R. Conduzimos o teste de superidentificação para validade de instrumentos; no modelo 3, temos dois instrumentos.</p>
+<p>A hipótese nula de que ambos os instrumentos são exógenos é rejeitada no nível de 5%. Stock e Watson (2011, p. 448) defendem o Modelo 1. Eles argumentam:</p>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+“Nós achamos que o caso para a exogeneidade do imposto geral sobre vendas é mais forte do que para o imposto específico do cigarro, porque o processo político pode vincular mudanças no imposto específico sobre o cigarro às mudanças no mercado de cigarros e na política de tabagismo”.
+</p>
+<p>A estatística F para o Modelo 1 está boa.</p>
+<p>A elasticidade de longo prazo é de cerca de -0,9, o que é um tanto elástica.</p>
+</div>
+</div>
+<div id="para-continuar-estudando" class="section level1">
+<h1>Para continuar estudando</h1>
+<p>Para entender os experimentos e a abordagem de resultados potenciais, Rosenbaum (2017), para compreensão de gráficos causais, Pearl et al. (2016), para avaliação do programa, Josselin e Le Maux (2017), para métodos econométricos para inferência causal explicado com muito humor, Angrist e Pischke (2015). Para ir mais longe Morgan e Winship (2014), Abadie e Catteneo (2018), Manski e Pepper (2018).</p>
+<p> </p>
+<hr />
+<div id="referências" class="section level3">
+<h3>Referências</h3>
+<p>Abadie,A., andM.D. Catteneo. 2018. _<strong>Econometric methods for program evaluation._</strong> Annual Review of Economics 10: 465–503.</p>
+<p>Angrist, J.D., J. Pischke. 2015. <em><strong>Mastering ‘metrics - The path from cause to effect</strong>.</em> Princeton: Princeton University Press.</p>
+<p>Josselin, J.-M., and B. Le Maux. 2017. _<strong>Statistical tools for program evaluation: Methods and applications to economic policy, public health, and education._</strong> Berlin: Springer.</p>
+<p>Manski, C.F., and J.V. Pepper. 2018. _<strong>How do right-to-carry laws affect crime rates? Coping with ambiguity using bounded variation assumptions._</strong> Review of Economics and Statistics 100 (2): 232–244.</p>
+<p>Morgan, S.L., and C.Winship. 2014. _<strong>Counterfactuals and causal inference: Methods and principles for social research_</strong> (Analytical methods for social research). Cambridge: Cambridge University Press.</p>
+<p>Pearl, J., M. Glymour, and N.P. Jewell. 2016. _<strong>Causal inference in statistics: A primer._</strong> New York: Wiley.</p>
+<p>Rosenbaum, P. 2017. _<strong>Observation and experiment - An introduction to causal inference._</strong> London: Harvard University Press.</p>
+<p>Stock, J.H., and M.W. Watson. 2011. _<strong>Introduction to econometrics._</strong> Boston: Addison-Wesley.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

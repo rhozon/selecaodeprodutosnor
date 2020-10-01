@@ -263,7 +263,7 @@ Agora observo o padrão da distribuição dos log retornos:
 
 ```{r, fig.width=9,fig.height=5, message=FALSE}
 hist(dlnVALEclose, main="", breaks=20, freq=FALSE, col="grey")
-lines(density(dlnVALEclose, adjust=2, col = "blue"))
+lines(density(dlnVALEclose, adjust=2, col="blue"))
 ```
 
 
@@ -497,7 +497,7 @@ signbias(VALE.garch11.fit)
 ```
 
 
-Como apontado acima, o efeito de viés de significativo foi o que apresentou significância.
+Como apontado acima, o efeito de viés de negativo foi o que apresentou significância.
 
 
 ## Modelo EGARCH de Nelson
