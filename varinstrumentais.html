@@ -566,20 +566,20 @@ mod2OLS
 Constant
 </td>
 <td>
-0.604<sup>**</sup>
+0.708<sup>***</sup>
 </td>
 <td>
--0.032
+-0.033
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.247)
+(0.233)
 </td>
 <td>
-(0.198)
+(0.179)
 </td>
 </tr>
 <tr>
@@ -595,20 +595,20 @@ Constant
 X
 </td>
 <td>
-1.384<sup>***</sup>
+1.399<sup>***</sup>
 </td>
 <td>
-1.028<sup>***</sup>
+0.990<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.042)
+(0.040)
 </td>
 <td>
-(0.042)
+(0.039)
 </td>
 </tr>
 <tr>
@@ -626,7 +626,7 @@ U
 <td>
 </td>
 <td>
-0.904<sup>***</sup>
+1.034<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -635,7 +635,7 @@ U
 <td>
 </td>
 <td>
-(0.065)
+(0.066)
 </td>
 </tr>
 <tr>
@@ -666,10 +666,10 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.783
+0.804
 </td>
 <td>
-0.869
+0.893
 </td>
 </tr>
 <tr>
@@ -677,10 +677,10 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.782
+0.804
 </td>
 <td>
-0.868
+0.892
 </td>
 </tr>
 <tr>
@@ -688,10 +688,10 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.297 (df = 298)
+1.264 (df = 298)
 </td>
 <td>
-1.011 (df = 297)
+0.936 (df = 297)
 </td>
 </tr>
 <tr>
@@ -699,10 +699,10 @@ Residual Std. Error
 F Statistic
 </td>
 <td>
-1,076.413<sup>***</sup> (df = 1; 298)
+1,225.063<sup>***</sup> (df = 1; 298)
 </td>
 <td>
-982.717<sup>***</sup> (df = 2; 297)
+1,239.687<sup>***</sup> (df = 2; 297)
 </td>
 </tr>
 <tr>
@@ -767,14 +767,14 @@ ModIV
 Constant
 </td>
 <td>
-2.935<sup>***</sup>
+2.473<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.501)
+(0.437)
 </td>
 </tr>
 <tr>
@@ -788,14 +788,14 @@ Constant
 X
 </td>
 <td>
-0.967<sup>***</sup>
+1.080<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.088)
+(0.078)
 </td>
 </tr>
 <tr>
@@ -821,7 +821,7 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.712
+0.763
 </td>
 </tr>
 <tr>
@@ -829,7 +829,7 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.711
+0.762
 </td>
 </tr>
 <tr>
@@ -837,7 +837,7 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.495 (df = 298)
+1.393 (df = 298)
 </td>
 </tr>
 <tr>
@@ -893,6 +893,7 @@ geom_vline(xintercept = 1, lty = 2)
 <p>Agora usamos a função IV.</p>
 <pre class="r"><code>IVsamD(sample_size = 30,
 coef_Z = 1, viol = 0)</code></pre>
+<pre><code>## Warning: Removed 2 rows containing non-finite values (stat_density).</code></pre>
 <p><img src="varinstrumentais_files/figure-html/unnamed-chunk-8-1.png" width="864" /></p>
 <p>A distribuição de amostragem IV tem maior propagação, embora consistente</p>
 <div id="exercício-proposto" class="section level3">
