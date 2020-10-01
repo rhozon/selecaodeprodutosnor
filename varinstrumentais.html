@@ -417,7 +417,7 @@ div.tocify {
       <a href="inferenciacausal.html">Inferência Causal na Economia</a>
     </li>
     <li>
-      <a href="variaveisinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
     </li>
   </ul>
 </li>
@@ -566,17 +566,17 @@ mod2OLS
 Constant
 </td>
 <td>
-0.708<sup>***</sup>
+0.834<sup>***</sup>
 </td>
 <td>
--0.033
+0.112
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.233)
+(0.244)
 </td>
 <td>
 (0.179)
@@ -595,10 +595,10 @@ Constant
 X
 </td>
 <td>
-1.399<sup>***</sup>
+1.386<sup>***</sup>
 </td>
 <td>
-0.990<sup>***</sup>
+0.958<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -608,7 +608,7 @@ X
 (0.040)
 </td>
 <td>
-(0.039)
+(0.038)
 </td>
 </tr>
 <tr>
@@ -626,7 +626,7 @@ U
 <td>
 </td>
 <td>
-1.034<sup>***</sup>
+1.051<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -635,7 +635,7 @@ U
 <td>
 </td>
 <td>
-(0.066)
+(0.062)
 </td>
 </tr>
 <tr>
@@ -666,10 +666,10 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.804
+0.800
 </td>
 <td>
-0.893
+0.899
 </td>
 </tr>
 <tr>
@@ -677,10 +677,10 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.804
+0.799
 </td>
 <td>
-0.892
+0.898
 </td>
 </tr>
 <tr>
@@ -688,10 +688,10 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.264 (df = 298)
+1.367 (df = 298)
 </td>
 <td>
-0.936 (df = 297)
+0.974 (df = 297)
 </td>
 </tr>
 <tr>
@@ -699,10 +699,10 @@ Residual Std. Error
 F Statistic
 </td>
 <td>
-1,225.063<sup>***</sup> (df = 1; 298)
+1,191.295<sup>***</sup> (df = 1; 298)
 </td>
 <td>
-1,239.687<sup>***</sup> (df = 2; 297)
+1,317.727<sup>***</sup> (df = 2; 297)
 </td>
 </tr>
 <tr>
@@ -767,14 +767,14 @@ ModIV
 Constant
 </td>
 <td>
-2.473<sup>***</sup>
+2.713<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.437)
+(0.431)
 </td>
 </tr>
 <tr>
@@ -788,14 +788,14 @@ Constant
 X
 </td>
 <td>
-1.080<sup>***</sup>
+1.059<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.078)
+(0.073)
 </td>
 </tr>
 <tr>
@@ -821,7 +821,7 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.763
+0.755
 </td>
 </tr>
 <tr>
@@ -829,7 +829,7 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.762
+0.755
 </td>
 </tr>
 <tr>
@@ -837,7 +837,7 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.393 (df = 298)
+1.511 (df = 298)
 </td>
 </tr>
 <tr>
@@ -893,7 +893,6 @@ geom_vline(xintercept = 1, lty = 2)
 <p>Agora usamos a função IV.</p>
 <pre class="r"><code>IVsamD(sample_size = 30,
 coef_Z = 1, viol = 0)</code></pre>
-<pre><code>## Warning: Removed 2 rows containing non-finite values (stat_density).</code></pre>
 <p><img src="varinstrumentais_files/figure-html/unnamed-chunk-8-1.png" width="864" /></p>
 <p>A distribuição de amostragem IV tem maior propagação, embora consistente</p>
 <div id="exercício-proposto" class="section level3">
