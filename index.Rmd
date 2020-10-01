@@ -34,10 +34,14 @@ Tutoriais disponíveis:
 
 ### *Inferência Causal na Economia*
 
-+ [Como a Ciência da Economia e em especial as contribuições da Econometria e seu abissal diferencial em relação ao data science, machine learning e até mesmo o deep learning!](https://www.youtube.com/watch?v=2EhRT2mOXm8)
++ [Como a Ciência da Economia e em especial as contribuições da Econometria e seu abissal diferencial em relação ao data science, machine learning e até mesmo o deep learning, podem nos fornecer resultados mais coerentes para os nossos dados!](https://www.youtube.com/watch?v=2EhRT2mOXm8)
 
 
 &nbsp;
+
+### *Variáveis Instrumentais e Inferência Causal*
+
++ Artigo interessante para replicação em R para a demanda por cigarros e o uso do método de variáveis instrumentais numa abordagem de inferência causal.
 
 ### *A importância da análise de resíduos na regressão: O clássico trabalho de Anscombe (1973)*
 

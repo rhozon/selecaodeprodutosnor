@@ -39,7 +39,11 @@ navbar:
         - text: "Redes econômicas: Teoria de Redes na Economia usando R"
           href: economiaderedes.html  
         - text: "Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)"
-          href: cotacoes.html          
+          href: cotacoes.html      
+        - text: "Inferência Causal na Economia"
+          href: inferenciacausal.html  
+        - text: "Variáveis Instrumentais e Inferência Causal"
+          href: variaveisinstrumentais.html 
 
   right:
     - icon: fa-question fa-lg
