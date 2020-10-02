@@ -105,7 +105,7 @@ Tutoriais disponíveis:
 &nbsp;
 
 
-### *Painel comparativo do fluxo de salários de admissão no mercadp formal de trabalho brasileiro*
+### *Painel comparativo do fluxo de salários de admissão no mercado formal de trabalho brasileiro*
 
 + Veja qual o padrão de salário de admissão por perfil de empresa contratante por tipo de cargo ocupado no Brasil seus estados e municípios.
 

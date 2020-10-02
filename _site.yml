@@ -44,11 +44,11 @@ navbar:
           href: inferenciacausal.html  
         - text: "Variáveis Instrumentais e Inferência Causal"
           href: varinstrumentais.html 
-        - text: "Projeto Integrador de Ciência de Dados"
-          href: projetointegrador.html 
         - text: "Fluxo de Salarios Microdados CAGED"
           href: rmarkdownepowerbi.html           
-          
+        - text: "Projeto Integrador de Ciência de Dados"
+          href: projetointegrador.html 
+
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
