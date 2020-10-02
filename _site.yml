@@ -44,7 +44,7 @@ navbar:
           href: inferenciacausal.html  
         - text: "Variáveis Instrumentais e Inferência Causal"
           href: varinstrumentais.html 
-        - text: "PROJETO INTEGRADOR DE COMPETÊNCIAS EM CIÊNCIA DE DADOS I - 40h_Turma_05_102020"
+        - text: "Projeto Integrador de Ciência de Dados"
           href: projetointegrador.html 
   right:
     - icon: fa-question fa-lg
