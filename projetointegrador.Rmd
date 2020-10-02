@@ -59,7 +59,7 @@ knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
 
 Veja como eu criei um arquivo .pdf utilizando a prática de pesquisa reprodutível no R onde pode ser feito completamente de forma gratuita na plataforma Overleaf.com. Caso você queira ver um tutorial de como começar a integrar a linguagem $\LaTeX~$ com o R  [consulte esse artigo que eu postei no meu LinkeDin.](https://www.linkedin.com/pulse/pr%C3%A1tica-letrada-de-data-science-com-latex-e-r-rodrigo-hermont-ozon/?articleId=6668963881102172160)
 
-Como exercício criei essa página na web escrita em RMarkdown contendo as interatividades gráficas para os exercícios aqui propostos. [Caso tenha interesse, baixe esse documento no formato .pdf editado com a integração $\LaTeX~$+R aqui.](https://github.com/rhozon/Projeto-Integrador-CD/blob/main/Atividades__Projeto_Integrador_de_Compet_ncias_em_CD.pdf)</small>
+Como exercício criei essa página na web escrita em RMarkdown contendo as interatividades gráficas para os exercícios aqui propostos. [Caso tenha interesse, baixe esse documento no formato .pdf editado com a integração $\LaTeX~$+R aqui.](https://github.com/rhozon/Projeto-Integrador-CD/raw/main/Atividades__Projeto_Integrador_de_Compet_ncias_em_CD.pdf)</small>
 
 
 Se quiser, [visite meu repositório](https://github.com/rhozon/Projeto-Integrador-CD) onde subi os scripts:
