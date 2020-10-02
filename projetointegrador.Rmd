@@ -696,13 +696,23 @@ Vamos dar mais uma olhada no dataset:
 ```{r comment=FALSE, comment=NA, null_prefix=TRUE}
 # Suprimo algumas colunas pra printar a tabela com o comando do R
 
+tabela<-tabela%>%
+  mutate(IMC=round(IMC,1)) # Arredondo o IMC pra 1 casa apos a virgula
+
 tabelaselecionada<-tabela%>%
   select(Sexo,Idade,Altura,Peso,IMC,Situacao)
 
 tabelaselecionada
 ```
 
+Veja como a média dos IMCs se comparado com a tabela de situação e classificação se confirma. Não temos nenhum dos indivíduos dessa amostra como _outlier_ ou fora do padrão de peso considerado normal pela classificação.
 
+<center>
+![](https://rodolfoscatolon.com.br/wp-content/uploads/2015/03/imc-2.jpg)
+</center>
+
+
+Todavia, essa análise precisa ser avaliada com cautela, uma vez que o IMC não distingue com precisão indivíduos com mais massa muscular e baixo percentual de gordura, peso ósseo p. ex. Ou seja, o IMC não distingue massa magra de massa de gordura!
 
 ### Boxplot comparando a peso M, peso Fe peso geral no mesmo gráfico.
 
