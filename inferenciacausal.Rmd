@@ -90,10 +90,8 @@ Podemos estar interessados em questões causais e não causais:
 + *Causa* se mudarmos a proporção de alunos para professores, as pontuações de aprendizagem melhoram ?
 
 Se estivermos interessados na resposta às questões causais, gostaríamos de usar
-inferência. Livros de estatística e econometria costumam variar em quão explícitos são
-no tratamento da causalidade. A inferência causal é de grande relevância na ev olução do programa, um domínio que, de acordo com Abadie e Cattaneo (2018, p. 466), é
-"_Expandindo as ciências sociais, biomédicas e comportamentais que estudam o efeito de
-intervenções políticas. As políticas de interesse são frequentemente programas governamentais, como intervenções ativas do mercado de trabalho ou programas de combate à pobreza_”.
+inferência. Livros de estatística e econometria costumam variar em quão explícitos são no tratamento da causalidade. A inferência causal é de grande relevância na ev olução do programa, um domínio que, de acordo com Abadie e Cattaneo (2018, p. 466), é
+"_Expandindo as ciências sociais, biomédicas e comportamentais que estudam o efeito de intervenções políticas. As políticas de interesse são frequentemente programas governamentais, como intervenções ativas do mercado de trabalho ou programas de combate à pobreza_”.
 
 O maravilhoso livro de Morgan e Winship (2014) _Counterfactuals and Causal Inference_
 tem a seguinte citação de Gary King na contracapa: "_Tenho aprendido mais sobre inferência causal nas últimas décadas do que a soma total de tudo que tinha sido aprendido sobre isso em toda a história registrada_". Em seu livro Morgan e Winship’s
@@ -106,7 +104,7 @@ e usar ambos, como fazem autores como Abadie e Catteneo (2018) p. ex.; e essa é
 Para ilustrar os gráficos causais e as abordagens de resultados potenciais, consideramos um caso de alguns indivíduos que sofrem de dores nas costas. Eles podem levar um remédio para aliviar sua dor.
 
 Denotamos dor por $D$ e medicina por $M$, e os indivíduos são indexados por $i$.
-queremos examinar o efeito de $D$ em $P$. $D$ é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir $D$ aleatoriamente a diferentes indivíduos.
+queremos examinar o efeito de $D$ em $M$. $D$ é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir $D$ aleatoriamente a diferentes indivíduos.
 
 Usaremos o modelo causal estrutural de Pearl et al. (2016) como uma estrutura para
 compreender a inferência causal em relação a $D$. O modelo causal estrutural consiste
@@ -168,7 +166,7 @@ indexa o indivíduo em é 0 ou 1, dependendo do valor atribuído de M.
 
 A Figura a seguir mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.
 
-Aqui, $P_{1} (0) = 9,49\,\, e\,\, P_{2} (1) = 9,49$. O efeito causal para um indivíduo é: $P_{i}(1) - P_{i}(0)$.
+Aqui, $D_{1} (0) = 9,49\,\, e\,\, D_{2} (1) = 9,49$. O efeito causal para um indivíduo é: $D_{i}(1) - D_{i}(0)$.
 
 
 Infelizmente, e isso é chamado de dilema fundamental da inferência causal, nós não observamos ambos os resultados potenciais para um indivíduo. Portanto, não observamos neste caso o valor da dor para a pessoa 1 se caso ela tivesse recebido o medicamento, e a pessoa 2 com dor teria experimentado se ela não tivesse recebido o medicamento. Não observamos o contrafactual.
@@ -203,8 +201,7 @@ O coeficiente estimado (−3,1) está próximo do valor de $\beta M (−3)$
 # Atribuição aleatória de tratamento (gráficos causais)
 
 Na ausência de atribuição aleatória de tratamento, o nível de medicamento e dor
-pode ser influenciado por uma variável de confusão. Tentativas de atribuição aleatória
-de garantir que os grupos de tratamento e controle diferem apenas no que diz respeito ao tratamento, tanto no que diz respeito às variáveis observadas como não observadas.
+pode ser influenciado por uma variável de confusão. Tentativas de atribuição aleatória de garantir que os grupos de tratamento e controle diferem apenas no que diz respeito ao tratamento, tanto no que diz respeito às variáveis observadas como não observadas.
 
 Uma vez que R faz a atribuição aleatória determina o valor de M, ou M é definido por R, o link entre C e M está quebrado. C não atua mais como um fator de confusão.
 
@@ -232,7 +229,7 @@ Uma vez que R (atribuição aleatória) determina o valor de M, ou M é definido
 
 <small>**Tabela 1:** Resultados potenciais do paciente no exemplo médico perfeito de Rubin</small>
 
-|  |$Y_{po1}$|$Y_{po0}$|$Eff$|   
+|  |$Y_{Do1}$|$Y_{Do0}$|$Eff$|   
 |---|-------|-------|-------|
 | 1 | 14.00 | 13.00 | 1.00  |   
 | 2 | 0.00  | 6.00  | -6.00 |   
@@ -245,32 +242,33 @@ Uma vez que R (atribuição aleatória) determina o valor de M, ou M é definido
 
 # Atribuição aleatória de tratamento (resultados potenciais)
 
-Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, uma cirurgia, que afeta os anos vividos. Deixe Y(0) denotar o resultado potencial sem cirurgia, e Y(1) denotar o resultado potencial com a cirurgia. Para codificação no software R, usamos Y_po0, e Y_po1, respectivamente.
+Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, uma cirurgia, que afeta os anos vividos. Deixe Y(0) denotar o resultado potencial sem cirurgia, e Y(1) denotar o resultado potencial com a cirurgia. Para codificação no software R, usamos Y_Do0, e Y_Do1, respectivamente.
 
 Nós inserimos os dados.
 
 ```{r}
-Y_po0 <- c(13,6,4,5,6,6,8,8)
-Y_po0
+Y_Do0 <- c(13,6,4,5,6,6,8,8)
+Y_Do0
 
-Y_po1 <- c(14,0,1,2,3,1,10,9)
-Y_po1
+Y_Do1 <- c(14,0,1,2,3,1,10,9)
+Y_Do1
 ```
 
 
 ```{r}
-Eff <- Y_po1 - Y_po0
+Eff <- Y_Do1 - Y_Do0
 ```
 
 Então criamos um dataframe:
 
 ```{r}
-surg <- data.frame(Y_po1, Y_po0, Eff)
+surg <- data.frame(Y_Do1, Y_Do0, Eff)
 ```
 
 Imprimimos os dados para o exemplo médico perfeito (tabela 1 acima)
 
 ```{r echo=FALSE, include=FALSE}
+#chunk omitido
 library(xtable)
 sable <- xtable(surg, caption = "Patient potential outcomes in
 Rubin’s perfect doctor example")
@@ -279,6 +277,7 @@ print(sable, caption.placement = "top")
 
 
 ```{r echo=FALSE, include=FALSE}
+#chunk omitido
 library(skimr)
 library(xtable)
 skim1 <- surg %>%
@@ -306,8 +305,8 @@ para cirurgia.
 |   | Variável | Média |   |   |
 |---|----------|-------|---|---|
 | 1 | Eff      | -2    |   |   |
-| 2 | Y_po0    | 7     |   |   |
-| 3 | Y_po1    | 5     |   |   |
+| 2 | Y_Do0    | 7     |   |   |
+| 3 | Y_Do1    | 5     |   |   |
 
 <small>**Tabela 3:** Atribuição de tratamento e resultados observados</small>
 
@@ -342,7 +341,7 @@ D <- c(rep(1,4), rep(0,4))
 Os Ys observados com esta atribuição de tratamento são (Tabela 3):
 
 ```{r}
-Yi <- D*Y_po1 + (1-D)*Y_po0
+Yi <- D*Y_Do1 + (1-D)*Y_Do0
 surg_D <- data.frame(D,Yi)
 
 
@@ -360,8 +359,7 @@ Estimamos a diferença de médias entre os grupos de tratamento e controle:
 lm(Yi ~ D)
 ```
 
-Vemos que com esta atribuição de tratamento particular D, o efeito de tratamento médio
-é -2,75.
+Vemos que com esta atribuição de tratamento particular D, o efeito de tratamento médio é -2,75.
 
 Podemos randomizar a atribuição com:
 
@@ -372,7 +370,6 @@ Atribuicao <- sample(D, replace = FALSE)
 Atribuicao
 ```
 
-
 Então, o que acontecerá se randomizarmos a atribuição? Nós olhamos para a distribuição de amostragem do efeito estimado usando um loop.
 
 ```{r }
@@ -380,15 +377,14 @@ iter <- 70
 efeito.medio <- numeric(iter)
 for(i in 1: iter) {
 Atribuicao <- sample(D, replace = FALSE)
-Resultado <- Atribuicao*Y_po1 + (1 - Atribuicao)*Y_po0
+Resultado <- Atribuicao*Y_Do1 + (1 - Atribuicao)*Y_Do0
 mod_r <- lm(Resultado ~ Atribuicao)
 efeito.medio[i] <- mod_r$coeff[2]
 }
 round(mean(efeito.medio),2)
 ```
 
-A média dos diferentes efeitos estimados está próxima do verdadeiro efeito médio (-2).
-Nós traçamos a distribuição da amostra.
+A média dos diferentes efeitos estimados está próxima do verdadeiro efeito médio (-2). Traçaremos a distribuição da amostra.
 
 ```{r fig.width=9, fig.height=3}
 pdoc <- data.frame(efeito.medio)
@@ -1153,7 +1149,7 @@ Precisamos fornecer os dados ao Matching em um determinado formato. Y abaixo é 
 resultado, Tr para tratamento, X para covariáveis.
 
 
-```{r}
+```{r message=FALSE}
 library(rbounds)
 Y <- l1$re78
 Tr <- l1$treat #o tratamento 
@@ -1589,7 +1585,7 @@ filter(year != 1989)
 
 Usaremos o pacote plm, que trata dos dados do painel.
 
-```{r}
+```{r message=FALSE}
 library(plm)
 jtrain_p <- pdata.frame(jtrain,
 index = c("fcode","year"))
@@ -1599,10 +1595,8 @@ index = c("fcode","year"))
 Usamos a função diff() para obter diferenças.
 
 ```{r}
-jtrain_p$scrap_d <-
-diff(jtrain_p$scrap)
-jtrain_p$grant_d <-
-diff(jtrain_p$grant)
+jtrain_p$scrap_d <- diff(jtrain_p$scrap)
+jtrain_p$grant_d <- diff(jtrain_p$grant)
 ```
 
 
@@ -1616,6 +1610,7 @@ summary(mod_did)
 
 
 Obtemos uma estimativa estatisticamente insignificante de -0,74
+
 
 ## Simulação
 
@@ -1717,6 +1712,7 @@ summary(m_d6)
 
 
 Nos resultados acima gerados, vemos que a diferença em diferença nos dá uma superestimativa, modelo 2 (controlando para o valor inicial) é próximo e a diferença simples nas médias é uma grande subestimação.
+
 Então, vemos que a diferença-em-diferença tem uma suposição crucial, que o tratamento e grupo de controle têm tendências paralelas. Isso pode ser examinado graficamente.
 Portanto, como na descontinuidade da regressão, o exame gráfico pode nos ajudar a julgar a validade da diferença-em-diferença em um determinado contexto.
 

@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+<meta name="date" content="2020-01-10" />
+
+<title>Projeto Integrador de Ciência de Dados</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Projeto Integrador de Ciência de Dados</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">01/10/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<!-- ================================================================================= -->
+<hr />
+<div id="resumo" class="section level4">
+<h4><strong>Resumo</strong></h4>
+<p><small>Este documento apresenta a resolução dos exercícios do curso Tecnológico em Ciência de Dados da Universidade Cruzeiro do Sul virtual para a disciplina de Projeto Integrador de Competência em Ciência de Dados I.</p>
+<p>Veja como eu criei um arquivo .pdf utilizando a prática de pesquisa reprodutível no R onde pode ser feito completamente de forma gratuita na plataforma Overleaf.com. Caso você queira ver um tutorial de como começar a integrar a linguagem <span class="math inline">\(\LaTeX~\)</span> com o R <a href="https://www.linkedin.com/pulse/pr%C3%A1tica-letrada-de-data-science-com-latex-e-r-rodrigo-hermont-ozon/?articleId=6668963881102172160">consulte esse artigo que eu postei no meu LinkeDin.</a></p>
+<p>Como exercício criei essa página na web escrita em RMarkdown contendo as interatividades gráficas para os exercícios aqui propostos. <a href="https://github.com/rhozon/datasets/raw/master/Atividades__Projeto_Integrador_de_Compet_ncias_em_CD.pdf">Caso tenha interesse, baixe esse documento no formato .pdf editado com a integração <span class="math inline">\(\LaTeX~\)</span>+R aqui.</a></small></p>
+<p>Se quiser, <a href="https://rhozon.github.io/">visite meu repositório</a> onde subi os scripts:</p>
+<ul>
+<li><a href="https://rhozon.github.io/">do arquivo .Rtex compilado no Overleaf.com;</a></li>
+<li><a href="https://rhozon.github.io/">do arquivo .Rmd que você está lendo agora</a></li>
+</ul>
+<hr />
+<!-- ========================================================================= -->
+</div>
+<div id="introdução" class="section level1">
+<h1>Introdução</h1>
+<!-- ========================================================================= -->
+<p>A disciplina de projeto integrador de competências visa, além de sistematizar os conhecimentos adquiridos, também desenvolver atitudes e estratégias de pensamento focadas na resolução de problemas práticos das áreas de futura atuação dos alunos, bem como proporcionar a transversalidade disciplinar utilizada na prática profissional no dia a dia.</p>
+<p>Não obstante, é uma valiosa prática andragógica que oferece a necessária vivência do ambiente de trabalho, fundamental para o amadurecimento e mediante aplicação dos conhecimentos em situações reais, abordando sempre problemas de cunho rigorosamente prático.</p>
+<p>Além disso, é de fundamental importância a integração entre as disciplinas, pois, no exercício da profissão, o discente estará exposto a desafios que projetam-se transversalmente às disciplinas e é importante saber a qual domínio pertence a solução e em quantas etapas esses desafios se dividem até que se encontre a resposta e a execução em fases mais simples e de seu domínio.</p>
+<p>O objetivo é utilizar e evoluir em relação às novas competências recém adquiridas visando sua fixação e otimização no que tangem as seguintes disciplinas: Modelagem de Dados, Análise de Dados Exploratória e Linguagem de Banco de Dados.</p>
+<p>Em conformidade ao descrito, logo a seguir serão passadas uma série de leituras de reforço que necessitarão de sua atenção e esforço para recordar e se preparar para os desafios dispostos em nossa trilha de aprendizagem.</p>
+<p>Também é bom lembrar que a língua mundialmente falada em tecnologia da informação é Inglês, portanto, é importante você estar estudando esse idioma para evoluir profissionalmente nesse mercado. Claro, você pode utilizar o tradutor da Google, mas é importante praticar e dominar o idioma.</p>
+<p>Colocamos links com ferramentas e leituras, cujas indicações são:</p>
+<p>Para tanto utilizaremos a linguagem R mundialmente usada para manipulação estatística de dados. Isso com certeza ajudará a dar maior confiança em sua jornada.</p>
+<p>Caso você ainda não tenha instalado, vamos fazer isso, porque você vai utilizar para realizar os exercícios. Vamos lá então:</p>
+<p>Disponível em: <a href="https://www.r-project.org/">https://www.r-project.org/</a> aqui você encontra tudo sobre a linguagem e se quiser o direcionamento para baixar o instalador.</p>
+<p>Link para baixar o instalador direto: Disponível em: <a href="https://cran-r.c3sl.ufpr.br/">https://cran-r.c3sl.ufpr.br/</a>.</p>
+<p>Levamos em conta que talvez você ainda não esteja familiarizado com a linguagem, então resolvemos lhe dar um reforço: Aqui você encontra muita documentação oficial para te ajudar: disponível em: <a href="https://cran.r-project.org/manuals.html">https://cran.r-project.org/manuals.html</a></p>
+<p>Lembrando que apesar da linguagem de manipulação de dados R, temos que saber das fontes e de como as modelamos. Nesse tocante, a modelagem de dados é uma habilidade crucial para todo cientista de dados, esteja você fazendo projetos de pesquisa ou arquitetando um novo repositório para o armazenamento de dados em uma empresa. E, para isso, devemos lembrar que a modelagem de dados trata do processo de produzir um diagrama descritivo de relações entre vários tipos de informações que devem ser armazenadas em um banco de dados e cujo objetivo é criar o método mais eficiente de armazenar informações num banco de dados. Focaremos aqui no diagrama E-R (entidade/relacionamento), assim como a linguagem para manipulação de dados no banco de dados SQL, assim você poderá extrair e realizar junções de dados alvos para extração e submissão à linguagem R. Veja a leitura abaixo indicada na biblioteca virtual:</p>
+<p>Para modelagem de dados E-R e linguagem SQL, recomendo a leitura de: MEDEIROS, L.F. Banco de Dados: Princípios e Prática. Curitiba: Ed. Intersaberes. 2013. Disponível na biblioteca virtual da Pearsons em: (coloquei um link pra download direto, que funciona)</p>
+<p><a href="Acesse%20e%20baixe%20aqui">https://github.com/rhozon/SQL/raw/master/banco-de-dados-principios-e-pratica.pdf</a></p>
+<p>Há uma série de ferramentas úteis em seu dia a dia para modelar dados de forma conceitual, uma das mais utilizadas é o Modelo BR, que você encontrará no seguinte link:</p>
+<p>disponível em <a href="https://sourceforge.net/projects/brmodelo30/">https://sourceforge.net/projects/brmodelo30/</a></p>
+<p>Você pode preferir baixar o Workbench do MySQL se tiver mais familiarizado, para tanto é só você seguir as instruções da página de download. Workbench oferece:</p>
+<ul>
+<li>Design e modelagem de banco de dados</li>
+<li>Desenvolvimento SQL</li>
+<li>Administração de banco de dados</li>
+<li>Migração de Banco de Dados: Disponível em: <a href="https://dev.mysql.com/downloads/workbench/">https://dev.mysql.com/downloads/workbench/</a></li>
+</ul>
+<hr />
+<!-- ========================================================================= -->
+</div>
+<div id="atividade-i" class="section level1">
+<h1>Atividade I</h1>
+<!-- ========================================================================= -->
+<p>Você foi contratado pela empresa XPTO para a função de analista de dados. Como parte de seu trabalho, foi lhe confiada uma extração de dados contendo os seguintes valores: (25, 45, 28, 79, 74, 61, 12, 68, 93, 39, 100), sendo que cada valor na sua atual sequência atende pelos títulos: (alface, cenoura, pepino, chuchu, pimenta, couve, rúcula, cebola, alho, pimentão, alcachofra). Pediram para que você realize o seguinte, utilizando a linguagem R, e apresentar os resultados.</p>
+<ul>
+<li>Crie um gráfico de barras apresentando o resultado de cada item.</li>
+<li>Liste os componentes da matriz dos dados.</li>
+<li>Liste o resultado da soma dessa matriz.</li>
+<li>Liste a média aritmética dessa matriz.</li>
+<li>Liste o produto dos elementos dessa matriz.</li>
+</ul>
+<p>Instruções de envio</p>
+<p>Não envie arquivo .zip</p>
+<p>1 arquivo em PDF exibindo seu código;</p>
+<p>1 arquivo com o com o código em R;</p>
+<hr />
+<!-- ========================================================================= -->
+<div id="resolução" class="section level2">
+<h2>Resolução</h2>
+<!-- ========================================================================= -->
+<p>Carrego os vetores de dados numéricos e qualitativos (nomes das verduras)</p>
+<pre class="r"><code>valores&lt;-c(25, 45, 28, 79, 74, 61, 12, 68, 93, 39, 100)
+
+titulos&lt;-c(&quot;alface&quot;,&quot;cenoura&quot;,&quot;pepino&quot;,&quot;chuchu&quot;,&quot;pimenta&quot;,&quot;couve&quot;,&quot;rúcula&quot;,&quot;cebola&quot;,
+&quot;alho&quot;,&quot;pimentão&quot;,&quot;alcachofra&quot;)
+
+dados&lt;-data.frame(titulos,valores) # Crio o conjunto de dados combinando titulos e valores
+
+dados # Mostra o dataframe</code></pre>
+<pre><code>      titulos valores
+1      alface      25
+2     cenoura      45
+3      pepino      28
+4      chuchu      79
+5     pimenta      74
+6       couve      61
+7      rúcula      12
+8      cebola      68
+9        alho      93
+10   pimentão      39
+11 alcachofra     100</code></pre>
+<pre class="r"><code>str(dados) # Mostra a estrutura e o tipo de variaveis no dataset</code></pre>
+<pre><code>&#39;data.frame&#39;:   11 obs. of  2 variables:
+ $ titulos: chr  &quot;alface&quot; &quot;cenoura&quot; &quot;pepino&quot; &quot;chuchu&quot; ...
+ $ valores: num  25 45 28 79 74 61 12 68 93 39 ...</code></pre>
+<p>A variável titulos é lida como chr, ou seja, como caractere e os valores como numérica.</p>
+<!-- ========================================================================= -->
+<div id="crie-um-gráfico-de-barras-apresentando-o-resultado-de-cada-item." class="section level3">
+<h3>Crie um gráfico de barras apresentando o resultado de cada item.</h3>
+<!-- ========================================================================= -->
+<p>Após informarmos ao R as variáveis, podemos criar um gráfico de barras:</p>
+<pre class="r"><code>library(ggplot2) # Pacote do R para graficos estaticos de qualidade 
+
+ggplot(data=dados,aes(x=titulos,y=valores))+
+geom_bar(position = &quot;dodge&quot;, stat=&quot;identity&quot;)+
+  geom_text(aes(label=valores), position=position_dodge(width=0.9), vjust=-0.25,  size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+  ggtitle(&quot;Gráfico de barras para valores e títulos&quot;)+
+  theme(plot.title = element_text(hjust = 0.5)) # Ajusta o titulo do grafico em cima no meio</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-3-1.png" width="864" /></p>
+<p>Vamos gerar o mesmo gráfico utilizando interatividade aqui no HTML:</p>
+<pre class="r"><code>library(plotly) # Pacote para o Rmarkdown para graficos interativos
+
+graf.interativo&lt;-ggplot(data=dados,aes(x=titulos,y=valores))+
+geom_bar(stat=&quot;identity&quot;)+
+  ggtitle(&quot;Gráfico de barras para valores e títulos&quot;)+
+  theme(plot.title = element_text(hjust = 0.5)) # Ajusta o titulo do grafico em cima no meio
+
+ggplotly(graf.interativo)</code></pre>
+<div id="htmlwidget-5a1a4d8b233d718d104c" style="width:864px;height:288px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5a1a4d8b233d718d104c">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.899999999999999,0.9,0.899999999999999,0.9,0.899999999999999,0.9,0.9,0.899999999999999,0.9],"base":[0,0,0,0,0,0,0,0,0,0,0],"x":[2,5,8,6,9,7,11,4,3,10,1],"y":[25,45,28,79,74,61,12,68,93,39,100],"text":["titulos: alface<br />valores:  25","titulos: cenoura<br />valores:  45","titulos: pepino<br />valores:  28","titulos: chuchu<br />valores:  79","titulos: pimenta<br />valores:  74","titulos: couve<br />valores:  61","titulos: rúcula<br />valores:  12","titulos: cebola<br />valores:  68","titulos: alho<br />valores:  93","titulos: pimentão<br />valores:  39","titulos: alcachofra<br />valores: 100"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.4520547945205,"r":7.30593607305936,"b":51.8721461187215,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gráfico de barras para valores e títulos","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,11.6],"tickmode":"array","ticktext":["alcachofra","alface","alho","cebola","cenoura","chuchu","couve","pepino","pimenta","pimentão","rúcula"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11],"categoryorder":"array","categoryarray":["alcachofra","alface","alho","cebola","cenoura","chuchu","couve","pepino","pimenta","pimentão","rúcula"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"titulos","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5,105],"tickmode":"array","ticktext":["0","25","50","75","100"],"tickvals":[0,25,50,75,100],"categoryorder":"array","categoryarray":["0","25","50","75","100"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"valores","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"3d0c7f22770d":{"x":{},"y":{},"type":"bar"}},"cur_data":"3d0c7f22770d","visdat":{"3d0c7f22770d":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>Repare que retirei os valores dos rótulos acima das barras.</p>
+<p> </p>
+<!-- ========================================================================= -->
+</div>
+<div id="liste-os-componentes-da-matriz-dos-dados." class="section level3">
+<h3>Liste os componentes da matriz dos dados.</h3>
+<!-- ========================================================================= -->
+<p>Para listarmos os componentes da matriz de dados, podemos simplesmente ordenar do maior para o menor:</p>
+<pre class="r"><code>library(dplyr) # Pacote para rodar as formulas com o operador pipe
+
+dados%&gt;%
+group_by(titulos)%&gt;%
+arrange(desc(valores))</code></pre>
+<pre><code># A tibble: 11 x 2
+# Groups:   titulos [11]
+   titulos    valores
+   &lt;chr&gt;        &lt;dbl&gt;
+ 1 alcachofra     100
+ 2 alho            93
+ 3 chuchu          79
+ 4 pimenta         74
+ 5 cebola          68
+ 6 couve           61
+ 7 cenoura         45
+ 8 pimentão        39
+ 9 pepino          28
+10 alface          25
+11 rúcula          12</code></pre>
+<p>Poderíamos refazer o gráfico de barras ordenado:</p>
+<pre class="r"><code>ggplot(dados,aes(x= reorder(titulos,-valores),valores))+
+geom_bar(position=&quot;dodge&quot;,stat =&quot;identity&quot;)+
+  geom_text(aes(label=valores), position=position_dodge(width=0.9), vjust=-0.25,  size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle(&quot;Gráfico de barras ordenado para valores e títulos&quot;)+
+  theme(plot.title = element_text(hjust = 0.5))+# Centraliza o titulo do grafico acima
+theme(axis.title.x=element_blank())# Nao mostre reorder(-valores) como label no eixo x</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-6-1.png" width="864" /></p>
+<p>Aqui no RMarkdown, faço o mesmo gráfico para interaividade no HTML:</p>
+<pre class="r"><code>graf.interativo2&lt;-ggplot(dados,aes(x= reorder(titulos,-valores),valores))+
+geom_bar(stat =&quot;identity&quot;)+
+
+ggtitle(&quot;Gráfico de barras ordenado para valores e títulos&quot;)+
+  theme(plot.title = element_text(hjust = 0.5))+# Centraliza o titulo do grafico acima
+theme(axis.title.x=element_blank())# Nao mostre reorder(-valores) como label no eixo x
+
+ggplotly(graf.interativo2)</code></pre>
+<div id="htmlwidget-eaf9f569a83388709842" style="width:864px;height:288px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-eaf9f569a83388709842">{"x":{"data":[{"orientation":"v","width":[0.899999999999999,0.9,0.899999999999999,0.9,0.9,0.9,0.899999999999999,0.9,0.9,0.899999999999999,0.9],"base":[0,0,0,0,0,0,0,0,0,0,0],"x":[10,7,9,3,4,6,11,5,2,8,1],"y":[25,45,28,79,74,61,12,68,93,39,100],"text":["reorder(titulos, -valores): alface<br />valores:  25","reorder(titulos, -valores): cenoura<br />valores:  45","reorder(titulos, -valores): pepino<br />valores:  28","reorder(titulos, -valores): chuchu<br />valores:  79","reorder(titulos, -valores): pimenta<br />valores:  74","reorder(titulos, -valores): couve<br />valores:  61","reorder(titulos, -valores): rúcula<br />valores:  12","reorder(titulos, -valores): cebola<br />valores:  68","reorder(titulos, -valores): alho<br />valores:  93","reorder(titulos, -valores): pimentão<br />valores:  39","reorder(titulos, -valores): alcachofra<br />valores: 100"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":55.4520547945205,"r":7.30593607305936,"b":37.2602739726027,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Gráfico de barras ordenado para valores e títulos","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,11.6],"tickmode":"array","ticktext":["alcachofra","alho","chuchu","pimenta","cebola","couve","cenoura","pimentão","pepino","alface","rúcula"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11],"categoryorder":"array","categoryarray":["alcachofra","alho","chuchu","pimenta","cebola","couve","cenoura","pimentão","pepino","alface","rúcula"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-5,105],"tickmode":"array","ticktext":["0","25","50","75","100"],"tickvals":[0,25,50,75,100],"categoryorder":"array","categoryarray":["0","25","50","75","100"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"valores","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"3d0c236e36fc":{"x":{},"y":{},"type":"bar"}},"cur_data":"3d0c236e36fc","visdat":{"3d0c236e36fc":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p> </p>
+<!-- ========================================================================= -->
+</div>
+<div id="liste-a-soma-e-a-média-aritmética-dessa-matriz" class="section level3">
+<h3>Liste a soma e a média aritmética dessa matriz</h3>
+<!-- ========================================================================= -->
+<p>Para somarmos e também para obtermos a média aritmética do vetor de valores simplesmente fazemos</p>
+<pre class="r"><code>sum(dados$valores) # Soma</code></pre>
+<pre><code> 624</code></pre>
+<pre class="r"><code>mean(dados$valores) # Media aritmetica</code></pre>
+<pre><code> 56.72727</code></pre>
+<pre class="r"><code>round(mean(dados$valores),0) # Valores arredondados pois os valores sao discretos (inteiros)</code></pre>
+<pre><code> 57</code></pre>
+<p>Ou então aqui pelo Rmarkdown diretamente no corpo do texto, soma = 624 e a média = 57.</p>
+<p>Para inserir o valor da soma no texto utilize o comando:</p>
+<pre class="r"><code># o valor da soma eh `r sum(dados$valores)` ...
+
+# a média é de `r round(mean(dados$valores),0)` ...</code></pre>
+<!-- ========================================================================= -->
+</div>
+<div id="liste-o-produto-dos-elementos-da-matriz" class="section level3">
+<h3>Liste o produto dos elementos da matriz</h3>
+<!-- ========================================================================= -->
+<p>Vamos obter o multiplicatório do vetor de valores, que é o mesmo que:</p>
+<p><span class="math display">\[
+\displaystyle\prod_{i=1}^{11}\mbox{valores}_{i}= \mbox{valor}_{1}\times\mbox{valor}_{2}\times\ldots\times\mbox{valor}_{11}
+\]</span></p>
+<p>ou seja, a notação <span class="math inline">\(\displaystyle\prod_{i=1}^{11}\)</span> lê-se que do primeiro <span class="math inline">\(i=1\)</span>, índice de contagem da multiplicação até o <span class="math inline">\(11^o\)</span> multiplique a variável valores.</p>
+<pre class="r"><code>print(prod(dados$valores), digits = 20) # Especifico o numero de digitos para numeros grandes</code></pre>
+<pre><code> 3324580966324800000</code></pre>
+<p>Ou então podemos multiplicar o valor do alface com o da cenoura fazendo:</p>
+<pre class="r"><code>alfacexcenoura&lt;-dados[1,2]*dados[2,2]
+
+alfacexcenoura</code></pre>
+<pre><code> 1125</code></pre>
+<p>Sendo que a instrução [1,2] significa primeira linha, da segunda coluna.</p>
+<p>Se quiséssemos fazer o produto de todos os elementos do dataset, faríamos:</p>
+<p>alface <span class="math inline">\(\times 25\)</span>, cenoura <span class="math inline">\(\times 45\)</span>, pepino <span class="math inline">\(\times 28\)</span>, chuchu <span class="math inline">\(\times 79\)</span> …</p>
+<p>Ou seja, o vetor de nomes (títulos) multiplicado pelo vetor numérico de valores.</p>
+<pre class="r"><code>library(tidyr)
+library(tidyverse)
+
+multiplica.elementos&lt;-paste(dados$titulos,&quot;*&quot;,dados$valores)
+
+multiplica.elementos # Mostra o resultado </code></pre>
+<pre><code> &quot;alface * 25&quot;      &quot;cenoura * 45&quot;     &quot;pepino * 28&quot;      &quot;chuchu * 79&quot;     
+ &quot;pimenta * 74&quot;     &quot;couve * 61&quot;       &quot;rúcula * 12&quot;      &quot;cebola * 68&quot;     
+ &quot;alho * 93&quot;        &quot;pimentão * 39&quot;    &quot;alcachofra * 100&quot;</code></pre>
+<pre class="r"><code>as.tibble(multiplica.elementos) # Mostra o resultado como um vetor</code></pre>
+<pre><code>Warning: `as.tibble()` is deprecated as of tibble 2.0.0.
+Please use `as_tibble()` instead.
+The signature and semantics have changed, see `?as_tibble`.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre><code># A tibble: 11 x 1
+   value           
+   &lt;chr&gt;           
+ 1 alface * 25     
+ 2 cenoura * 45    
+ 3 pepino * 28     
+ 4 chuchu * 79     
+ 5 pimenta * 74    
+ 6 couve * 61      
+ 7 rúcula * 12     
+ 8 cebola * 68     
+ 9 alho * 93       
+10 pimentão * 39   
+11 alcachofra * 100</code></pre>
+<hr />
+<!-- ========================================================================= -->
+</div>
+</div>
+</div>
+<div id="atividade-ii" class="section level1">
+<h1>Atividade II</h1>
+<!-- ========================================================================= -->
+<p>Você trabalha há algum tempo como analista de dados numa empresa contratada pela Formula-1. O cientista de dados chefe pediu para que você, baseando-se no diagrama E-R abaixo, elabore os seguintes comandos SQL para satisfazer seus pedidos:</p>
+<center>
+<img src="https://github.com/rhozon/datasets/raw/master/PICCDados_UNI01_02.jpg" style="width:90.0%" />
+</center>
+<p><small> <span class="math inline">\(\color{red}{\text{Obs.: (a dica aqui é que, para elaborar os comandos SQL, você não precisa acessar a base de dados, já que possui}}\)</span></p>
+<p><span class="math inline">\(\color{red}{\text{a modelagem (diagrama) que indica as chaves PK e FK, bem como os atributos de cada tabela}}\)</span></p>
+<p><span class="math inline">\(\color{red}{\text{e seus relacionamentos.)}}\)</span> </small></p>
+<ol style="list-style-type: decimal">
+<li><p>Exibir as equipes que são do país “Alemanha”.</p></li>
+<li><p>Exibir quais os pilotos que são do mesmo país do piloto “Max Chilton”.</p></li>
+<li><p>Selecionar os pilotos que são da equipe “McLaren-Mercedes”.</p></li>
+</ol>
+<!-- ========================================================================= -->
+<div id="resolução-1" class="section level2">
+<h2>Resolução</h2>
+<!-- ========================================================================= -->
+<p>Poderíamos dar as instruções diretamente do R usando o SQLite, carregando primeiro os pacotes:</p>
+<pre class="r"><code>library(RSQLite)
+library(DBI)</code></pre>
+<p>Como aqui não há necessidade de usarmos os comandos para conectarmos ao banco de dados estruturado, (deixo o <em>chunk</em> somente com os comentários de comandos)</p>
+<pre class="r"><code>#conn &lt;- dbConnect(SQLite(), &quot;test .db&quot;)
+
+#dbListTables(conn) # Mostra todas as bases de dados disponiveis
+
+#conn</code></pre>
+<!-- ========================================================================= -->
+<div id="exibir-as-equipes-que-são-do-país-alemanha." class="section level3">
+<h3>Exibir as equipes que são do país “Alemanha”.</h3>
+<!-- ========================================================================= -->
+<p>Vamos exibir com comandos do SQLite quais as equipes são da Alemanha:</p>
+<pre class="r"><code>#query &lt;- &quot;SELECT NM_EQUIPE, ID_PAIS,
+#          FROM TB_EQUIPE
+#          WHERE ID_PAIS=&#39;Alemanha&#39;&quot;
+
+#result &lt;- dbGetQuery(conn, query)
+#str(result)</code></pre>
+<!-- ========================================================================= -->
+</div>
+<div id="exibir-quais-os-pilotos-que-são-do-mesmo-país-do-piloto-max-chilton" class="section level3">
+<h3>Exibir quais os pilotos que são do mesmo país do piloto “Max Chilton”</h3>
+<!-- ========================================================================= -->
+<pre class="r"><code>#query&lt;-&quot;SELECT ID_PAIS, NM_PILOTO
+#        FROM TB_PILOTO
+#        WHERE ID_PAIS == NM_PILOTO=&#39;Max Chilton&#39;&quot;
+#result &lt;- dbGetQuery(conn, query)
+
+#result</code></pre>
+<!-- ========================================================================= -->
+</div>
+<div id="selecionar-os-pilotos-que-são-da-equipe-mclaren-mercedes" class="section level3">
+<h3>Selecionar os pilotos que são da equipe “McLaren-Mercedes”</h3>
+<!-- ========================================================================= -->
+<pre class="r"><code>#query&lt;-&quot;SELECT NM_PILOTO FROM TB_PILOTO
+#       INNER JOIN TB_EQUIPE ON NM_EQUIPE_id=&#39;McLaren-Mercedes&#39;&quot;
+
+#result &lt;- dbGetQuery(conn, query)
+
+#result</code></pre>
+<hr />
+<!-- ========================================================================= -->
+</div>
+</div>
+</div>
+<div id="atividade-iii" class="section level1">
+<h1>Atividade III</h1>
+<!-- ========================================================================= -->
+<p>Você trabalha numa empresa de manipulação de dados e como analista de dados está acostumado a receber os mais diversos tipos de pedidos, desde procedures em SQL, rotinas de ETL e, também, como nesse caso, conjuntos de dados para gerar gráficos e entregar à área de marketing que está desenvolvendo um importante projeto, comparando faixas de markup entre produtos de concorrentes. Então, eles lhe passaram dois conjuntos de dados a saber:</p>
+<p>x = (5,5,5,13,7,11,11,9,8,9)</p>
+<p>y = (11,8,4,5,9,5,10,5,4,10)</p>
+<p>Ambos possuem 10 elementos cada, representados por 2 vetores.</p>
+<p>Pede-se que você prepare e apresente a visualização:</p>
+<ol style="list-style-type: decimal">
+<li><p>Utilize a linguagem R para plotar X e Y em gráficos diferentes utilizando BOXPLOT.</p></li>
+<li><p>Usando R, plote a comparação de X e Y no mesmo gráfico utilizando BOXPLOT.</p></li>
+</ol>
+<p>Obs.: como dica importante, aqui está o entendimento desse importante tipo de gráfico BOXPLOT que serve para a exibição de distribuição, recorde aqui a definição:</p>
+<center>
+<img src="https://github.com/rhozon/datasets/raw/master/PICCDados_UNI01_03.jpg" style="width:35.0%" />
+</center>
+<!-- ========================================================================= -->
+<div id="resolução-2" class="section level2">
+<h2>Resolução</h2>
+<!-- ========================================================================= -->
+<p>Começo declarando os conjuntos de dados</p>
+<pre class="r"><code>x &lt;- c(5,5,5,13,7,11,11,9,8,9)
+
+y &lt;- c(11,8,4,5,9,5,10,5,4,10)
+
+xy&lt;-data.frame(x,y)
+
+xy</code></pre>
+<pre><code>    x  y
+1   5 11
+2   5  8
+3   5  4
+4  13  5
+5   7  9
+6  11  5
+7  11 10
+8   9  5
+9   8  4
+10  9 10</code></pre>
+<!-- ========================================================================= -->
+<div id="utilize-a-linguagem-r-para-plotar-x-e-y-em-gráficos-diferentes-utilizando-boxplot." class="section level3">
+<h3>Utilize a linguagem R para plotar X e Y em gráficos diferentes utilizando BOXPLOT.</h3>
+<!-- ========================================================================= -->
+<pre class="r"><code>require(gridExtra)
+
+x&lt;-ggplot(data=xy,aes(x=&quot;&quot;,y=x))+
+geom_boxplot()+
+  ggtitle(&quot;Boxplot de x&quot;)+
+theme(axis.title.x=element_blank())
+
+y&lt;-ggplot(data=xy,aes(x=&quot;&quot;,y=y))+
+geom_boxplot()+
+  ggtitle(&quot;Boxplot de y&quot;)+
+theme(axis.title.x=element_blank())
+
+grid.arrange(x, y, ncol=2)</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-19-1.png" width="864" /></p>
+<p>O mesmo gráfico com interatividade</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+
+x&lt;-ggplot(data=xy,aes(x=&quot;&quot;,y=x))+
+geom_boxplot()+
+theme(axis.title.x=element_blank())
+
+y&lt;-ggplot(data=xy,aes(x=&quot;&quot;,y=y))+
+geom_boxplot()+
+theme(axis.title.x=element_blank())
+
+subplot(ggplotly(x), ggplotly(y))</code></pre>
+<div class="figure">
+<div id="htmlwidget-db05fa8307b97268edef" style="width:864px;height:576px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-db05fa8307b97268edef">{"x":{"data":[{"x":[1,1,1,1,1,1,1,1,1,1],"y":[5,5,5,13,7,11,11,9,8,9],"hoverinfo":"y","type":"box","fillcolor":"rgba(255,255,255,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x","yaxis":"y","frame":null},{"x":[1,1,1,1,1,1,1,1,1,1],"y":[11,8,4,5,9,5,10,5,4,10],"hoverinfo":"y","type":"box","fillcolor":"rgba(255,255,255,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x2","yaxis":"y2","frame":null}],"layout":{"xaxis":{"domain":[0,0.48],"automargin":true,"type":"linear","autorange":false,"range":[0.4,1.6],"tickmode":"array","ticktext":[""],"tickvals":[1],"categoryorder":"array","categoryarray":[""],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","hoverformat":".2f"},"xaxis2":{"domain":[0.52,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,1.6],"tickmode":"array","ticktext":[""],"tickvals":[1],"categoryorder":"array","categoryarray":[""],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y2","hoverformat":".2f"},"yaxis2":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[3.65,11.35],"tickmode":"array","ticktext":["4","6","8","10"],"tickvals":[4,6,8,10],"categoryorder":"array","categoryarray":["4","6","8","10"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x2","hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[4.6,13.4],"tickmode":"array","ticktext":["6","8","10","12"],"tickvals":[6,8,10,12],"categoryorder":"array","categoryarray":["6","8","10","12"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","hoverformat":".2f"},"annotations":[],"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":0.48,"y0":0,"y1":1},{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0.52,"x1":1,"y0":0,"y1":1}],"images":[],"margin":{"t":26.958904109589,"r":7.30593607305936,"b":14.6118721461187,"l":37.2602739726027},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"attrs":{"3d0c33233cc":{"x":{},"y":{},"type":"box"},"3d0c26211ef7":{"x":{},"y":{},"type":"box"}},"source":"A","config":{"doubleClick":"reset","showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p class="caption">
+<strong>Gráfico: Boxplots de x e de y</strong>
+</p>
+</div>
+<p>O que também pode ser feito sem o pacote ggplot2:</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+
+boxplot.x&lt;-boxplot(xy$x, main=&quot;Boxplot de X&quot;)
+
+boxplot.y&lt;-boxplot(xy$y, main=&quot;Boxplot de Y&quot;)</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-21-1.png" width="864" /></p>
+<p>A leitura dos boxplots pode ser resumida com o sumário estatístico para a mediana, máximo, mínimo, primeiro e terceito quartil:</p>
+<pre class="r"><code>summary(xy)</code></pre>
+<pre><code>       x              y        
+ Min.   : 5.0   Min.   : 4.00  
+ 1st Qu.: 5.5   1st Qu.: 5.00  
+ Median : 8.5   Median : 6.50  
+ Mean   : 8.3   Mean   : 7.10  
+ 3rd Qu.:10.5   3rd Qu.: 9.75  
+ Max.   :13.0   Max.   :11.00  </code></pre>
+<p>A amplitude interquartil, pode ser facilmente obtida:</p>
+<pre class="r"><code>IQR.x&lt;-quantile(xy$x,probs=0.75)-quantile(xy$x,probs=0.25)
+
+IQR.y&lt;-quantile(xy$y,probs=0.75)-quantile(xy$y,probs=0.25)
+
+
+tibble(IQR.x,IQR.y)</code></pre>
+<pre><code># A tibble: 1 x 2
+  IQR.x IQR.y
+  &lt;dbl&gt; &lt;dbl&gt;
+1     5  4.75</code></pre>
+<pre class="r"><code># Aqui no RMarkdown, uso:
+library(knitr)
+library(kableExtra)
+
+kbl(cbind(IQR.x,IQR.y)) %&gt;%
+  kable_paper() %&gt;%
+  scroll_box(width = &quot;200px&quot;, height = &quot;100px&quot;)%&gt;%
+  kable_styling(bootstrap_options = c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;))</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:100px; overflow-x: scroll; width:200px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+IQR.x
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+IQR.y
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+75%
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+4.75
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- ========================================================================= -->
+</div>
+<div id="usando-r-plote-a-comparação-de-x-e-y-no-mesmo-gráfico-utilizando-boxplot." class="section level3">
+<h3>Usando R, plote a comparação de X e Y no mesmo gráfico utilizando BOXPLOT.</h3>
+<!-- ========================================================================= -->
+<pre class="r"><code>ggplot(xy,aes(x=x,y=y))+
+geom_boxplot()+
+ggtitle(&quot;Boxplot x e y&quot;)</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-24-1.png" width="480" /></p>
+<p>Para facilitar a visualização das distribuições plotamos as densidades kernel, que é uma forma não paramétrica de estimar a função de densidade de probabilidade de uma variável aleatória:</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+
+densx &lt;- density(xy$x,kernel=&quot;epanechnikov&quot;)
+
+densy&lt;- density(xy$y,kernel=&quot;epanechnikov&quot;)
+
+densidades&lt;-c(densx,densy)
+
+plot(densx) 
+
+plot(densy)</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-25-1.png" width="768" /></p>
+<!-- ========================================================================= -->
+</div>
+</div>
+</div>
+<div id="atividade-iv" class="section level1">
+<h1>Atividade IV</h1>
+<!-- ========================================================================= -->
+<p>Como cientista de dados jr, trabalhando no IBGE, foi lhe passada uma amostra de dados retirada de um SGBD do CENSO, na forma de uma matriz, onde a primeira linha contém o nome dos atributos para facilitar sua identificação e, após isso, 6 linhas contendo alguns dados amostrais de uma população qualquer.</p>
+<p>Segue a tabela:</p>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
+<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Turma
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Sexo
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Idade
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Altura
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Peso
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Filhos
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Fuma
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Toler
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Exerc
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Cine
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+OpCine
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+TV
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+OpTV
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+1.60
+</td>
+<td style="text-align:right;">
+60.5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+P
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+1.69
+</td>
+<td style="text-align:right;">
+55.0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+1.85
+</td>
+<td style="text-align:right;">
+72.8
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+P
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+1.85
+</td>
+<td style="text-align:right;">
+80.9
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+P
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+1.58
+</td>
+<td style="text-align:right;">
+55.0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+A
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+1.76
+</td>
+<td style="text-align:right;">
+60.0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+NAO
+</td>
+<td style="text-align:left;">
+M
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+B
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+R
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Seu gerente pediu para que você, a partir desses dados, lhe passe, utilizando a linguagem R, as seguintes respostas:</p>
+<ol style="list-style-type: decimal">
+<li><p>Qual a média IMC dessa pequena amostra?</p></li>
+<li><p>Boxplot comparando a peso M, peso Fe peso geral no mesmo gráfico.</p></li>
+<li><p>Boxplot da altura geral.</p></li>
+</ol>
+<p><small> <span class="math inline">\(\color{red}{\text{Obs.: dica, a formula do IMC é a sigla para Índice de Massa Corporal, utilizada para classificar o peso}}\)</span></p>
+<p><span class="math inline">\(\color{red}{\text{do indivíduo em relação à sua altura e assim indicar se está dentro do peso ideal, acima ou abaixo do peso normal.}}\)</span></p>
+<p><span class="math inline">\(\color{red}{IMC = peso ÷ (Altura x Altura)}\)</span></p>
+<p><span class="math inline">\(\color{red}{\text{Há uma tabela para sabermos se o indivíduo está dentro ou fora dos padrões, mas isso não é importante nesse momento.}}\)</span></p>
+<p><span class="math inline">\(\color{red}{\text{Obter a medida sim!}}\)</span> </small></p>
+<div id="resolução-3" class="section level2">
+<h2>Resolução</h2>
+<p>Primeiramente carrego a tabela para dentro do R:</p>
+<pre class="r"><code>tabela&lt;-read.csv(file=&quot;https://raw.githubusercontent.com/rhozon/datasets/master/AtividadeIV.csv&quot;,head=TRUE,sep=&quot;;&quot;)
+
+str(tabela) # Checo se ele leu corretamente o dataset</code></pre>
+<pre><code>&#39;data.frame&#39;:   6 obs. of  14 variables:
+ $ Id    : int  1 2 3 4 5 6
+ $ Turma : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
+ $ Sexo  : chr  &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot; ...
+ $ Idade : int  17 18 18 25 19 19
+ $ Altura: num  1.6 1.69 1.85 1.85 1.58 1.76
+ $ Peso  : num  60.5 55 72.8 80.9 55 60
+ $ Filhos: int  2 1 2 2 1 3
+ $ Fuma  : chr  &quot;NAO&quot; &quot;NAO&quot; &quot;NAO&quot; &quot;NAO&quot; ...
+ $ Toler : chr  &quot;P&quot; &quot;M&quot; &quot;P&quot; &quot;P&quot; ...
+ $ Exerc : int  0 0 5 5 2 2
+ $ Cine  : int  1 1 2 2 2 1
+ $ OpCine: chr  &quot;B&quot; &quot;B&quot; &quot;M&quot; &quot;B&quot; ...
+ $ TV    : int  16 7 15 20 5 2
+ $ OpTV  : chr  &quot;R&quot; &quot;R&quot; &quot;R&quot; &quot;R&quot; ...</code></pre>
+<div id="qual-a-média-imc-dessa-pequena-amostra" class="section level3">
+<h3>Qual a média IMC dessa pequena amostra?</h3>
+<p>Primeiramente, precisamos criar a variável IMC:</p>
+<pre class="r"><code>tabela&lt;-tabela%&gt;%
+    mutate(IMC=Peso/Altura^2)
+
+str(tabela)</code></pre>
+<pre><code>&#39;data.frame&#39;:   6 obs. of  15 variables:
+ $ Id    : int  1 2 3 4 5 6
+ $ Turma : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
+ $ Sexo  : chr  &quot;F&quot; &quot;F&quot; &quot;M&quot; &quot;M&quot; ...
+ $ Idade : int  17 18 18 25 19 19
+ $ Altura: num  1.6 1.69 1.85 1.85 1.58 1.76
+ $ Peso  : num  60.5 55 72.8 80.9 55 60
+ $ Filhos: int  2 1 2 2 1 3
+ $ Fuma  : chr  &quot;NAO&quot; &quot;NAO&quot; &quot;NAO&quot; &quot;NAO&quot; ...
+ $ Toler : chr  &quot;P&quot; &quot;M&quot; &quot;P&quot; &quot;P&quot; ...
+ $ Exerc : int  0 0 5 5 2 2
+ $ Cine  : int  1 1 2 2 2 1
+ $ OpCine: chr  &quot;B&quot; &quot;B&quot; &quot;M&quot; &quot;B&quot; ...
+ $ TV    : int  16 7 15 20 5 2
+ $ OpTV  : chr  &quot;R&quot; &quot;R&quot; &quot;R&quot; &quot;R&quot; ...
+ $ IMC   : num  23.6 19.3 21.3 23.6 22 ...</code></pre>
+<p>Calculamos a média:</p>
+<pre class="r"><code>mean(tabela$IMC)</code></pre>
+<pre><code> 21.53335</code></pre>
+</div>
+<div id="boxplot-comparando-a-peso-m-peso-fe-peso-geral-no-mesmo-gráfico." class="section level3">
+<h3>Boxplot comparando a peso M, peso Fe peso geral no mesmo gráfico.</h3>
+<pre class="r"><code>ggplot(data=tabela,aes(x=Sexo,y=Peso, fill=mean(Peso)))+
+geom_boxplot()+
+  ggtitle(&quot;Boxplot comparativo de peso x sexo x peso geral (média(peso))&quot;)+
+  geom_jitter(shape=5, position=position_jitter(0.2))</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-30-1.png" width="864" /></p>
+<p>Ao observarmos as bolinhas geradas pela instrução jitter temos uma boa noção da dispersão dos pesos de uma maneira mais geral.</p>
+<pre class="r"><code>ggplotly(ggplot(data=tabela,aes(x=Sexo,y=Peso, fill=mean(Peso)))+
+geom_boxplot()+
+  ggtitle(&quot;Boxplot comparativo de peso x sexo x peso geral (média(peso))&quot;)+
+  geom_jitter(shape=5, position=position_jitter(0.2)))</code></pre>
+<div id="htmlwidget-1f5f7a5f9d2214939925" style="width:864px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1f5f7a5f9d2214939925">{"x":{"data":[{"x":[1,1,1,2,2,2],"y":[60.5,55,55,72.8,80.9,60],"hoverinfo":"y","type":"box","fillcolor":"rgba(51,106,152,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x","yaxis":"y","frame":null},{"x":[1.11629687370732,0.802126416191459,1.94044716265053,1.98776048151776,1.10381041401997,1.81794699868187],"y":[60.6057858528569,54.8897055060603,72.82550807558,81.0795690647327,55.1237877045758,59.8398848967627],"text":["Sexo: F<br />Peso: 60.5<br />mean(Peso): 64.03333","Sexo: F<br />Peso: 55.0<br />mean(Peso): 64.03333","Sexo: M<br />Peso: 72.8<br />mean(Peso): 64.03333","Sexo: M<br />Peso: 80.9<br />mean(Peso): 64.03333","Sexo: F<br />Peso: 55.0<br />mean(Peso): 64.03333","Sexo: M<br />Peso: 60.0<br />mean(Peso): 64.03333"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(51,106,152,1)","opacity":1,"size":5.66929133858268,"symbol":"diamond-open","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1],"y":[60],"name":"99_ce46a922d32a30d1921e296e939930da","type":"scatter","mode":"markers","opacity":0,"hoverinfo":"skip","showlegend":false,"marker":{"color":[0,1],"colorscale":[[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"],[0.5,"#336A98"]],"colorbar":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"thickness":23.04,"title":"mean(Peso)","titlefont":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"tickmode":"array","ticktext":["64.03333"],"tickvals":[0.5],"tickfont":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"ticklen":2,"len":0.5}},"xaxis":"x","yaxis":"y","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":43.1050228310502,"l":37.2602739726027},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Boxplot comparativo de peso x sexo x peso geral (média(peso))","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,2.6],"tickmode":"array","ticktext":["F","M"],"tickvals":[1,2],"categoryorder":"array","categoryarray":["F","M"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Sexo","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[53.5802123281267,82.3890622426663],"tickmode":"array","ticktext":["60","70","80"],"tickvals":[60,70,80],"categoryorder":"array","categoryarray":["60","70","80"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Peso","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"3d0c1a922e0f":{"x":{},"y":{},"fill":{},"type":"box"},"3d0c74252493":{"x":{},"y":{},"fill":{}}},"cur_data":"3d0c1a922e0f","visdat":{"3d0c1a922e0f":["function (y) ","x"],"3d0c74252493":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="boxplot-da-altura-geral" class="section level3">
+<h3>Boxplot da altura geral</h3>
+<pre class="r"><code>ggplot(tabela,aes(x=&quot;&quot;,y=Altura))+
+geom_boxplot()+
+geom_jitter(shape=5, position=position_jitter(0.2))+
+  ggtitle(&quot;Boxplot das Alturas&quot;)</code></pre>
+<p><img src="projetointegrador_files/figure-html/unnamed-chunk-32-1.png" width="864" /></p>
+<p>Ao passar o mouse em cima das bolinhas é possível ter uma noção melhor do peso geral</p>
+<pre class="r"><code>ggplotly(ggplot(tabela,aes(x=&quot;&quot;,y=Altura))+
+geom_boxplot()+
+geom_jitter(shape=5, position=position_jitter(0.2))+
+  ggtitle(&quot;Boxplot das Alturas&quot;))</code></pre>
+<div id="htmlwidget-e0eb0684e41ee0cd3525" style="width:864px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e0eb0684e41ee0cd3525">{"x":{"data":[{"x":[1,1,1,1,1,1],"y":[1.6,1.69,1.85,1.85,1.58,1.76],"hoverinfo":"y","type":"box","fillcolor":"rgba(255,255,255,1)","marker":{"opacity":null,"outliercolor":"rgba(0,0,0,1)","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"},"size":5.66929133858268},"line":{"color":"rgba(51,51,51,1)","width":1.88976377952756},"showlegend":false,"xaxis":"x","yaxis":"y","frame":null},{"x":[0.979742583539337,0.839224691689014,0.894630343094468,1.04198764385656,0.823738121334463,0.982460096664727],"y":[1.59682338827103,1.69067150437459,1.85204441659153,1.85747305460274,1.57221164807305,1.7620152666904],"text":["x: <br />Altura: 1.60","x: <br />Altura: 1.69","x: <br />Altura: 1.85","x: <br />Altura: 1.85","x: <br />Altura: 1.58","x: <br />Altura: 1.76"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(0,0,0,1)","opacity":1,"size":5.66929133858268,"symbol":"diamond-open","line":{"width":1.88976377952756,"color":"rgba(0,0,0,1)"}},"hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":31.4155251141553,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Boxplot das Alturas","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,1.6],"tickmode":"array","ticktext":[""],"tickvals":[1],"categoryorder":"array","categoryarray":[""],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"x","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1.55794857774656,1.87173612492923],"tickmode":"array","ticktext":["1.6","1.7","1.8"],"tickvals":[1.6,1.7,1.8],"categoryorder":"array","categoryarray":["1.6","1.7","1.8"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Altura","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"3d0c47f16fcd":{"x":{},"y":{},"type":"box"},"3d0c79c9730f":{"x":{},"y":{}}},"cur_data":"3d0c47f16fcd","visdat":{"3d0c47f16fcd":["function (y) ","x"],"3d0c79c9730f":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<hr />
+</div>
+</div>
+</div>
+<div id="referências" class="section level1">
+<h1><strong>Referências</strong></h1>
+<p>Gujarati, D.,N. <strong>Basic Econometrics</strong>, fourth edition, McGraw-HiII/lrwin, 2003.</p>
+<p>Overleaf: Online Editor. Disponível em <a href="overleaf.com">Overleaf.com</a></p>
+<p>Ozon, R.,H. <a href="http://leg.ufpr.br/doku.php/projetos:ehlers:volprev"><strong>Modelagem de Volatilidade em Séries Financeiras</strong>, <em>in</em> Wiki do Laboratório de Geoestatística e Informação, LEG/UFPR.</a></p>
+<p>Ozon, R.H. <a href="https://rhozon.github.io/selecaodeprodutosnor/cotacoes.html">Análise econométrica em tempo real: Modelos família ARCH para dados financeiros</a> <em>in</em> rhozon.github.io .</p>
+<p>Xie, Y. <strong>Dynamic Documents with R and knitr</strong> 2nd edition, 2015.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

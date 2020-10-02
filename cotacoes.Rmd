@@ -266,7 +266,6 @@ hist(dlnVALEclose, main="", breaks=20, freq=FALSE, col="grey")
 lines(density(dlnVALEclose, adjust=2, col="blue"))
 ```
 
-
 Vamos iniciar carregando os pacotes necessários do R:
 
 ```{r message=FALSE}
