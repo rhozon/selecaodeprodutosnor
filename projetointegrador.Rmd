@@ -320,7 +320,7 @@ multiplica.elementos<-paste(dados$titulos,"*",dados$valores)
 
 multiplica.elementos # Mostra o resultado 
 
-as.tibble(multiplica.elementos) # Mostra o resultado como um vetor
+as_tibble(multiplica.elementos) # Mostra o resultado como um vetor
 ```
 
 ***
@@ -694,7 +694,7 @@ tabela<-tabela%>%
 Vamos dar mais uma olhada no dataset:
 
 ```{r comment=FALSE, comment=NA, null_prefix=TRUE}
-# Suprimo duas colunas pra printar a tabela com o comando do R
+# Suprimo algumas colunas pra printar a tabela com o comando do R
 
 tabelaselecionada<-tabela%>%
   select(Sexo,Idade,Altura,Peso,IMC,Situacao)
