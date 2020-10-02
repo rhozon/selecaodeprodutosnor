@@ -1,0 +1,30 @@
+---
+title: "Fluxo de Salarios Microdados CAGED"
+author: "Rodrigo H. Ozon"
+date: "02/10/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Salários de entrada no Brasil por cargo
+
+<iframe allowfullscreen="true" frameborder="0" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiY2ZiZjQwZTctMWY1MS00ZjNhLTg5MmEtNDNhMTJhNjg3M2I2IiwidCI6ImJkMzc3ZDgxLTI1MWQtNDVmMS1hNDU2LWE4NTM5NzViODUxZiJ9" width="800"></iframe>
+
+<b>
+Fonte:</b> Microdados CAGED Julho 2019/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )
+
+#### **Proposta futura**
+
+Este painel demonstra os salários de admissão (salários de entrada) para cada cargo no mês de julho de 2019 nos municípios paranaenses.
+
+O objetivo de projeto é o de fazer um painel contendo esse grande volume de dados com as seguintes especificações:
+
++ Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS;
++ Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga;
++ Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro)
++ Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades)
+
+_Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos com um mês de delay...Com o atual governo a última base de dados do CAGED que dispomos é de dez/2019, infelizmente. Isso dificulta substancialmente a avaliação da dinâmica do mercado de trabalho formal brasileiro._

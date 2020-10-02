@@ -9,9 +9,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Rodrigo H. Ozon" />
 
+<meta name="date" content="2020-02-10" />
 
-<title>Tutoriais</title>
+<title>Fluxo de Salarios Microdados CAGED</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -344,6 +346,9 @@ $(document).ready(function () {
     <li>
       <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
     </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -381,129 +386,29 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore"><em>Tutoriais</em></h1>
+<h1 class="title toc-ignore">Fluxo de Salarios Microdados CAGED</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">02/10/2020</h4>
 
 </div>
 
 
-<hr />
-<p>Tutoriais disponíveis:</p>
-<p> </p>
-<div id="seleção-de-produtos-com-análise-conjunta-no-r" class="section level3">
-<h3><em>Seleção de produtos com Análise Conjunta no R</em></h3>
-<p><small>(baixar o pdf (<span class="math inline">\(\LaTeX\)</span>) no repositório)</small></p>
+<div id="salários-de-entrada-no-brasil-por-cargo" class="section level1">
+<h1>Salários de entrada no Brasil por cargo</h1>
+<iframe allowfullscreen="true" frameborder="0" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiY2ZiZjQwZTctMWY1MS00ZjNhLTg5MmEtNDNhMTJhNjg3M2I2IiwidCI6ImJkMzc3ZDgxLTI1MWQtNDVmMS1hNDU2LWE4NTM5NzViODUxZiJ9" width="800">
+</iframe>
+<p><b> Fonte:</b> Microdados CAGED Julho 2019/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )</p>
+<div id="proposta-futura" class="section level4">
+<h4><strong>Proposta futura</strong></h4>
+<p>Este painel demonstra os salários de admissão (salários de entrada) para cada cargo no mês de julho de 2019 nos municípios paranaenses.</p>
+<p>O objetivo de projeto é o de fazer um painel contendo esse grande volume de dados com as seguintes especificações:</p>
 <ul>
-<li>Aqui aprenderemos com dados de uma pesquisa de mercado compilada, como escolhemos os melhores perfis (<em>mix</em>) de produtos para oferecer aos nossos clientes de acordo com seus gostos e preferências.</li>
+<li>Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS;</li>
+<li>Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga;</li>
+<li>Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro)</li>
+<li>Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades)</li>
 </ul>
-<p> </p>
-</div>
-<div id="avaliando-as-melhores-estadias-do-airbnb-no-r" class="section level3">
-<h3><em>Avaliando as melhores estadias do Airbnb no R</em></h3>
-<p><small>(<a href="https://github.com/rhozon/R-para-estudantes-de-marketing/raw/master/R_para_estudantes_de_marketing.pdf">ler o e-book traduzido (feito em <span class="math inline">\(\LaTeX\)</span>) no repositório</a>)</small></p>
-<p><small> (<a href="https://rhozon.github.io/rparamkt/">ler a versão bookdown na íntegra traduzida do original</a>)</small></p>
-<ul>
-<li>Neste tutorial faremos uma análise preliminar comparativa dos dados do Airbnb com o R, avaliando alguns grupos e classificações das características das acomodações disponíveis.</li>
-</ul>
-<p> </p>
-</div>
-<div id="teste-ab-bayesiano-no-r-para-campanhas-de-marketing" class="section level3">
-<h3><em>Teste A/B Bayesiano no R para campanhas de marketing</em></h3>
-<ul>
-<li>Qual anúncio/publicidade conduz a maior níveis de venda ? Será que um bom desconto, atrai mesmo mais clientes ? Quais testes experimento para vender melhor e como meço isso ?</li>
-</ul>
-<p> </p>
-</div>
-<div id="inferência-causal-na-economia" class="section level3">
-<h3><em>Inferência Causal na Economia</em></h3>
-<ul>
-<li><a href="https://www.youtube.com/watch?v=2EhRT2mOXm8">Como a Ciência da Economia e em especial as contribuições da Econometria e seu abissal diferencial em relação ao data science, machine learning e até mesmo o deep learning, podem nos fornecer resultados mais coerentes para os nossos dados!</a></li>
-</ul>
-<p> </p>
-</div>
-<div id="variáveis-instrumentais-e-inferência-causal" class="section level3">
-<h3><em>Variáveis Instrumentais e Inferência Causal</em></h3>
-<ul>
-<li>Artigo interessante para replicação em R para a demanda por cigarros e o uso do método de variáveis instrumentais numa abordagem de inferência causal.</li>
-</ul>
-</div>
-<div id="a-importância-da-análise-de-resíduos-na-regressão-o-clássico-trabalho-de-anscombe-1973" class="section level3">
-<h3><em>A importância da análise de resíduos na regressão: O clássico trabalho de Anscombe (1973)</em></h3>
-<p> </p>
-<ul>
-<li>Quatro conjuntos de dados diferentes apresentam os mesmos valores para os coeficientes de regressão linear via MQO. Os valores de erro padrão de <span class="math inline">\(\beta\)</span>, <span class="math inline">\(R^{2}\)</span> e das médias para os valores de <span class="math inline">\(X^{&#39;}s\)</span> e <span class="math inline">\(Y^{&#39;}s\)</span> são exatamente iguais. Como ajustar o modelo de regressão corretamente ?</li>
-</ul>
-<p> </p>
-</div>
-<div id="regressão-do-componente-principal-no-excel-para-multicolinearidade" class="section level3">
-<h3><em>Regressão do Componente Principal no Excel para Multicolinearidade</em></h3>
-<ul>
-<li>Um método mais simples de corrigir a multicolinearidade, algumas aplicações em Eviews, com a reprodução de dados de Maddala, 2001.</li>
-</ul>
-<p> </p>
-</div>
-<div id="regressão-ridge-no-excel-e-no-r-para-multicolinearidade" class="section level3">
-<h3><em>Regressão <em>Ridge</em> no Excel e no R para Multicolinearidade</em></h3>
-<ul>
-<li>Veja como utilizar dois métodos para corrigir a multicolinearidade no seu modelo de regressão linear múltipla.</li>
-</ul>
-<p> </p>
-</div>
-<div id="gráfico-3d-interativo-para-regressão-linear-múltipla" class="section level3">
-<h3><em>Gráfico 3D interativo para regressão linear múltipla</em></h3>
-<ul>
-<li>Interaja com os dados de nosso exemplo de consumo de óleo para calefação do curso de Introdução à Econometria com Excel e veja como as relações entre três variáveis podem ser visualizadas.</li>
-</ul>
-<p> </p>
-</div>
-<div id="introdução-aos-processos-estocásticos-cadeias-de-markov" class="section level3">
-<h3><em>Introdução aos Processos Estocásticos: Cadeias de Markov</em></h3>
-<ul>
-<li>Comece a compreender alguns conceitos relacionados a processos aleatórios [em construção]</li>
-</ul>
-<p> </p>
-</div>
-<div id="análise-fatorial-para-uma-empresa-de-calçados-e-o-impacto-na-condução-de-seu-negócio" class="section level3">
-<h3><em>Análise Fatorial para uma empresa de calçados e o impacto na condução de seu negócio</em></h3>
-<ul>
-<li>Como a análise fatorial pode extrair informações agrupadas relevantes a respeito da condução ótima do negócio.</li>
-</ul>
-<p> </p>
-</div>
-<div id="árvores-de-decisão-para-modelos-de-regressão" class="section level3">
-<h3><em>Árvores de Decisão para modelos de regressão</em></h3>
-<ul>
-<li>Veja como é simples de criar uma árvore de decisão para antes de ajustar um modelo de regressão aos seus dados.</li>
-</ul>
-<p> </p>
-</div>
-<div id="redes-econômicas-teoria-de-redes-na-economia-usando-r" class="section level3">
-<h3><em>Redes econômicas: Teoria de Redes na Economia usando R</em></h3>
-<ul>
-<li>Como mapeamos numa visão data-driven as relações estabelecidas de redes econômicas ? Será que a Economia é interligada como as cadeias produtivas em seus nós e ramificações ?</li>
-</ul>
-<p> </p>
-</div>
-<div id="modelos-da-família-arch-em-tempo-real-para-dados-de-ações-vale-e-petro" class="section level3">
-<h3><em>Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</em></h3>
-<ul>
-<li><p>Veja como é possível criar uma aplicação web com análise automatizada em R em tempo real praticamente. (delay desde o último fechamento de pregão)</p></li>
-<li><p>Conheça também a News Impact Curve de Engle &amp; NG, que capta os efeitos simétricos e assimétricos na volatilidade dos preços de ativos financeiros.</p></li>
-</ul>
-<p> </p>
-</div>
-<div id="painel-comparativo-do-fluxo-de-salários-de-admissão-no-mercadp-formal-de-trabalho-brasileiro" class="section level3">
-<h3><em>Painel comparativo do fluxo de salários de admissão no mercadp formal de trabalho brasileiro</em></h3>
-<ul>
-<li>Veja qual o padrão de salário de admissão por perfil de empresa contratante por tipo de cargo ocupado no Brasil seus estados e municípios.</li>
-</ul>
-<hr />
-<div id="projeto-integrador-de-competências-em-ciência-de-dados-i---40h_turma_05_102020" class="section level4">
-<h4><em>PROJETO INTEGRADOR DE COMPETÊNCIAS EM CIÊNCIA DE DADOS I - 40h_Turma_05_102020</em></h4>
-<ul>
-<li>Acesse a solução dos exercícios propostos (selecione o menu acima)</li>
-</ul>
-<hr />
-<p><img src="econnerd.png" style="width:40.0%" /></p>
+<p><em>Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos com um mês de delay…Com o atual governo a última base de dados do CAGED que dispomos é de dez/2019, infelizmente. Isso dificulta substancialmente a avaliação da dinâmica do mercado de trabalho formal brasileiro.</em></p>
 </div>
 </div>
 

@@ -757,6 +757,11 @@ geom_jitter(shape=5, position=position_jitter(0.2))+
 
 
 
+<iframe allowfullscreen="true" frameborder="0" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiY2ZiZjQwZTctMWY1MS00ZjNhLTg5MmEtNDNhMTJhNjg3M2I2IiwidCI6ImJkMzc3ZDgxLTI1MWQtNDVmMS1hNDU2LWE4NTM5NzViODUxZiJ9" width="800"></iframe>
+
+<b>
+Fonte:</b> Microdados CAGED Julho 2019/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )
+
 *** 
 
 # **Referências**
@@ -767,7 +772,7 @@ Overleaf: Online \LaTeX Editor. Disponível em [Overleaf.com](overleaf.com)
 
 Ozon, R.,H. [**Modelagem de Volatilidade em Séries Financeiras**, _in_ Wiki do Laboratório de Geoestatística e Informação, LEG/UFPR.](http://leg.ufpr.br/doku.php/projetos:ehlers:volprev)
 
-Ozon, R.H. [Análise econométrica em tempo real: Modelos família ARCH para dados financeiros](https://rhozon.github.io/selecaodeprodutosnor/cotacoes.html) _in_ rhozon.github.io .
+Ozon, R.H. [**Análise econométrica em tempo real: Modelos família ARCH para dados financeiros**](https://rhozon.github.io/selecaodeprodutosnor/cotacoes.html) _in_ rhozon.github.io .
 
 Xie, Y. **Dynamic Documents with R and knitr** 2nd edition, 2015.
 
