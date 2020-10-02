@@ -660,6 +660,49 @@ Calculamos a média:
 mean(tabela$IMC)
 ```
 
+Esse resultado da média aponta para esse grupo de indivíduos dessa amostra como dentro dos padrões médios do IMC;
+
+Caso você deseje saber se está dentro ou fora dos padrões, segue a tabela de classificação do IMC:
+
+| Resultado           | Situação                  |
+| ------------------- | ------------------------- |
+|  |
+| Abaixo de 17        | Muito abaixo do _peso_    |
+| Entre 17 e 18,49    | Abaixo do _peso_          |
+| Entre 18,50 e 24,99 | _Peso_ normal             |
+| Entre 25 e 29,99    | Acima do _peso_           |
+| Entre 30 e 34,99    | _Obesidade_ I             |
+| Entre 35 e 39,99    | _Obesidade_ II (severa)   |
+| Acima de 40         | _Obesidade_ III (mórbida) |
+
+<small>**Fonte:** [Wikipedia](https://pt.wikipedia.org/wiki/%C3%8Dndice_de_massa_corporal) </small>
+
+Por mais que não se considere importante, sabermos se existe algum indivíduo dentro ou fora dos padrões, podemos criar uma variável(coluna) que mostra isso na tabela:
+
+```{r}
+tabela<-tabela%>%
+  mutate(Situacao = case_when(
+                              IMC <= 17 ~ "Muito abaixo do peso",
+                              IMC >= 17 & IMC <= 18.49 ~ "Abaixo do peso",
+                              IMC >= 18.5 & IMC <= 24.99 ~ "Peso Normal",
+                              IMC >= 25 & IMC <= 29.99 ~ "Acima do peso",
+                              IMC >= 30 & IMC <= 34.99 ~ "Obesidade I",
+                              IMC >= 35 & IMC <= 39.99 ~ "Obesidade II (severa)",
+                              IMC > 40 ~ "Obesidade III (mórbida)"))
+```
+
+Vamos dar mais uma olhada no dataset:
+
+```{r comment=FALSE, comment=NA, null_prefix=TRUE}
+# Suprimo duas colunas pra printar a tabela com o comando do R
+
+tabelaselecionada<-tabela%>%
+  select(Sexo,Idade,Altura,Peso,IMC,Situacao)
+
+tabelaselecionada
+```
+
+
 
 ### Boxplot comparando a peso M, peso Fe peso geral no mesmo gráfico.
 
