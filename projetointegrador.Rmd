@@ -62,10 +62,10 @@ Veja como eu criei um arquivo .pdf utilizando a prática de pesquisa reprodutív
 Como exercício criei essa página na web escrita em RMarkdown contendo as interatividades gráficas para os exercícios aqui propostos. [Caso tenha interesse, baixe esse documento no formato .pdf editado com a integração $\LaTeX~$+R aqui.](https://github.com/rhozon/datasets/raw/master/Atividades__Projeto_Integrador_de_Compet_ncias_em_CD.pdf)</small>
 
 
-Se quiser, [visite meu repositório](https://rhozon.github.io/) onde subi os scripts:
+Se quiser, [visite meu repositório](https://github.com/rhozon/Projeto-Integrador-CD) onde subi os scripts:
 
-+ [do arquivo .Rtex compilado no Overleaf.com;](https://rhozon.github.io/)
-+ [do arquivo .Rmd que você está lendo agora](https://rhozon.github.io/)
++ [do arquivo .Rtex compilado no Overleaf.com;](https://raw.githubusercontent.com/rhozon/Projeto-Integrador-CD/main/projeto_integrador_Rodrigo.H.Ozon%20(.Rtex).txt)
++ [do arquivo .Rmd que você está lendo agora](https://raw.githubusercontent.com/rhozon/Projeto-Integrador-CD/main/projeto_integrador_Rodrigo.H.Ozon%20(Rmarkdown).txt)
 
 
 *** 
