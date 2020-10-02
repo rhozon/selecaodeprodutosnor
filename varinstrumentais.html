@@ -419,6 +419,9 @@ div.tocify {
     <li>
       <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
     </li>
+    <li>
+      <a href="projetointegrador.html">PROJETO INTEGRADOR DE COMPETÊNCIAS EM CIÊNCIA DE DADOS I - 40h_Turma_05_102020</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -566,20 +569,20 @@ mod2OLS
 Constant
 </td>
 <td>
-0.714<sup>***</sup>
+1.132<sup>***</sup>
 </td>
 <td>
--0.076
+0.221
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.251)
+(0.243)
 </td>
 <td>
-(0.179)
+(0.186)
 </td>
 </tr>
 <tr>
@@ -595,17 +598,17 @@ Constant
 X
 </td>
 <td>
-1.389<sup>***</sup>
+1.333<sup>***</sup>
 </td>
 <td>
-0.987<sup>***</sup>
+0.983<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.043)
+(0.042)
 </td>
 <td>
 (0.037)
@@ -626,7 +629,7 @@ U
 <td>
 </td>
 <td>
-1.048<sup>***</sup>
+0.954<sup>***</sup>
 </td>
 </tr>
 <tr>
@@ -635,7 +638,7 @@ U
 <td>
 </td>
 <td>
-(0.058)
+(0.059)
 </td>
 </tr>
 <tr>
@@ -666,10 +669,10 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.776
+0.773
 </td>
 <td>
-0.893
+0.879
 </td>
 </tr>
 <tr>
@@ -677,10 +680,10 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.775
+0.772
 </td>
 <td>
-0.893
+0.879
 </td>
 </tr>
 <tr>
@@ -688,10 +691,10 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.364 (df = 298)
+1.338 (df = 298)
 </td>
 <td>
-0.942 (df = 297)
+0.977 (df = 297)
 </td>
 </tr>
 <tr>
@@ -699,10 +702,10 @@ Residual Std. Error
 F Statistic
 </td>
 <td>
-1,030.410<sup>***</sup> (df = 1; 298)
+1,014.135<sup>***</sup> (df = 1; 298)
 </td>
 <td>
-1,242.227<sup>***</sup> (df = 2; 297)
+1,082.043<sup>***</sup> (df = 2; 297)
 </td>
 </tr>
 <tr>
@@ -767,14 +770,14 @@ ModIV
 Constant
 </td>
 <td>
-2.998<sup>***</sup>
+2.688<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.456)
+(0.417)
 </td>
 </tr>
 <tr>
@@ -788,14 +791,14 @@ Constant
 X
 </td>
 <td>
-0.973<sup>***</sup>
+1.051<sup>***</sup>
 </td>
 </tr>
 <tr>
 <td style="text-align:left">
 </td>
 <td>
-(0.081)
+(0.074)
 </td>
 </tr>
 <tr>
@@ -821,7 +824,7 @@ Observations
 R<sup>2</sup>
 </td>
 <td>
-0.706
+0.738
 </td>
 </tr>
 <tr>
@@ -829,7 +832,7 @@ R<sup>2</sup>
 Adjusted R<sup>2</sup>
 </td>
 <td>
-0.705
+0.737
 </td>
 </tr>
 <tr>
@@ -837,7 +840,7 @@ Adjusted R<sup>2</sup>
 Residual Std. Error
 </td>
 <td>
-1.561 (df = 298)
+1.437 (df = 298)
 </td>
 </tr>
 <tr>
@@ -893,6 +896,7 @@ geom_vline(xintercept = 1, lty = 2)
 <p>Agora usamos a função IV.</p>
 <pre class="r"><code>IVsamD(sample_size = 30,
 coef_Z = 1, viol = 0)</code></pre>
+<pre><code>## Warning: Removed 1 rows containing non-finite values (stat_density).</code></pre>
 <p><img src="varinstrumentais_files/figure-html/unnamed-chunk-8-1.png" width="864" /></p>
 <p>A distribuição de amostragem IV tem maior propagação, embora consistente</p>
 <div id="exercício-proposto" class="section level3">
