@@ -417,6 +417,9 @@ div.tocify {
     <li>
       <a href="inferenciacausal.html">Inferência Causal na Economia</a>
     </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -509,7 +512,7 @@ Econometristas estão mais preocupados com relacionamentos causais. Em outras pa
 <div id="gráficos-causais-e-resultados-potenciais" class="section level1">
 <h1>Gráficos causais e resultados potenciais</h1>
 <p>Para ilustrar os gráficos causais e as abordagens de resultados potenciais, consideramos um caso de alguns indivíduos que sofrem de dores nas costas. Eles podem levar um remédio para aliviar sua dor.</p>
-<p>Denotamos dor por <span class="math inline">\(D\)</span> e medicina por <span class="math inline">\(M\)</span>, e os indivíduos são indexados por <span class="math inline">\(i\)</span>. queremos examinar o efeito de <span class="math inline">\(D\)</span> em <span class="math inline">\(P\)</span>. <span class="math inline">\(D\)</span> é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir <span class="math inline">\(D\)</span> aleatoriamente a diferentes indivíduos.</p>
+<p>Denotamos dor por <span class="math inline">\(D\)</span> e medicina por <span class="math inline">\(M\)</span>, e os indivíduos são indexados por <span class="math inline">\(i\)</span>. queremos examinar o efeito de <span class="math inline">\(D\)</span> em <span class="math inline">\(M\)</span>. <span class="math inline">\(D\)</span> é uma causa: queremos intervir para reduzir dor. Mas é eficaz? Podemos atribuir <span class="math inline">\(D\)</span> aleatoriamente a diferentes indivíduos.</p>
 <p>Usaremos o modelo causal estrutural de Pearl et al. (2016) como uma estrutura para compreender a inferência causal em relação a <span class="math inline">\(D\)</span>. O modelo causal estrutural consiste de um gráfico causal e respectivas equações estruturais que mostram nossas suposições sobre o fenômeno. Aqui, o gráfico causal é <span class="math inline">\(D\Rightarrow M\)</span> e a equação estrutural é (assumimos linearidade para simplificar; a abordagem de Pearl não requer a suposição de linearidade) <span class="math inline">\(D=\beta_{0}+\beta_{M}M+U_{D}\)</span>.</p>
 <p>Como M é atribuído aleatoriamente, ele é independente de <span class="math inline">\(U_D\)</span>. <span class="math inline">\(U_D\)</span> captura as outras causas ou fontes de variação em <span class="math inline">\(D\)</span>. A equação estrutural, neste caso, tem uma linha para <span class="math inline">\(M\)</span> e uma linha ou componente para <span class="math inline">\(U_D\)</span>. Faremos agora uma simulação. Nós assumimos que <span class="math inline">\(\beta_{0}=10\)</span>, <span class="math inline">\(\beta_{M}=-3\)</span> e <span class="math inline">\(U_M\sim N(0,1)\)</span></p>
 <pre class="r"><code>library(tidyverse)
@@ -645,7 +648,7 @@ D
 <p>Vemos nos dados gerados que o indivíduo 1 é atribuído a M = 0, ou seja, está no grupo de controle. Observamos que o valor de D para pessoa um, quando atribuído M = 0 é 9,49. No caso do indivíduo 2, o valor de D para a pessoa dois, quando atribuído M = 1 é 9,49.</p>
 <p>Denotamos o resultado potencial para um indivíduo neste caso por <span class="math inline">\(D_{i}(m)\)</span> onde <span class="math inline">\(i\)</span> indexa o indivíduo em é 0 ou 1, dependendo do valor atribuído de M.</p>
 <p>A Figura a seguir mostra como o gráfico causal estrutural está relacionado aos resultados potenciais.</p>
-<p>Aqui, <span class="math inline">\(P_{1} (0) = 9,49\,\, e\,\, P_{2} (1) = 9,49\)</span>. O efeito causal para um indivíduo é: <span class="math inline">\(P_{i}(1) - P_{i}(0)\)</span>.</p>
+<p>Aqui, <span class="math inline">\(D_{1} (0) = 9,49\,\, e\,\, D_{2} (1) = 9,49\)</span>. O efeito causal para um indivíduo é: <span class="math inline">\(D_{i}(1) - D_{i}(0)\)</span>.</p>
 <p>Infelizmente, e isso é chamado de dilema fundamental da inferência causal, nós não observamos ambos os resultados potenciais para um indivíduo. Portanto, não observamos neste caso o valor da dor para a pessoa 1 se caso ela tivesse recebido o medicamento, e a pessoa 2 com dor teria experimentado se ela não tivesse recebido o medicamento. Não observamos o contrafactual.</p>
 <p>Temos que nos contentar com um efeito de tratamento médio, a diferença entre a dor vivenciada pelo grupo de controle e pelo grupo de tratamento, que estimamos a seguir. Rodamos uma regressão de D em M: <span class="math inline">\(D = r_0 + r_{1}M + e\)</span>, sendo a equação de regressão.</p>
 <p>A equação de regressão é diferente da equação estrutural. Neste caso, <span class="math inline">\(r_1\)</span> irá dar-nos uma estimativa próxima do valor verdadeiro, ou do parâmetro estrutural, <span class="math inline">\(\beta_{M}\)</span>; isto não é necessariamente o caso de um coeficiente de regressão nos dar uma boa estimativa do efeito causal.</p>
@@ -695,8 +698,8 @@ M|m\rightarrow D(m)
 <thead>
 <tr class="header">
 <th></th>
-<th><span class="math inline">\(Y_{po1}\)</span></th>
-<th><span class="math inline">\(Y_{po0}\)</span></th>
+<th><span class="math inline">\(Y_{Do1}\)</span></th>
+<th><span class="math inline">\(Y_{Do0}\)</span></th>
 <th><span class="math inline">\(Eff\)</span></th>
 </tr>
 </thead>
@@ -754,17 +757,17 @@ M|m\rightarrow D(m)
 </div>
 <div id="atribuição-aleatória-de-tratamento-resultados-potenciais" class="section level1">
 <h1>Atribuição aleatória de tratamento (resultados potenciais)</h1>
-<p>Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, uma cirurgia, que afeta os anos vividos. Deixe Y(0) denotar o resultado potencial sem cirurgia, e Y(1) denotar o resultado potencial com a cirurgia. Para codificação no software R, usamos Y_po0, e Y_po1, respectivamente.</p>
+<p>Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, uma cirurgia, que afeta os anos vividos. Deixe Y(0) denotar o resultado potencial sem cirurgia, e Y(1) denotar o resultado potencial com a cirurgia. Para codificação no software R, usamos Y_Do0, e Y_Do1, respectivamente.</p>
 <p>Nós inserimos os dados.</p>
-<pre class="r"><code>Y_po0 &lt;- c(13,6,4,5,6,6,8,8)
-Y_po0</code></pre>
+<pre class="r"><code>Y_Do0 &lt;- c(13,6,4,5,6,6,8,8)
+Y_Do0</code></pre>
 <pre><code>## [1] 13  6  4  5  6  6  8  8</code></pre>
-<pre class="r"><code>Y_po1 &lt;- c(14,0,1,2,3,1,10,9)
-Y_po1</code></pre>
+<pre class="r"><code>Y_Do1 &lt;- c(14,0,1,2,3,1,10,9)
+Y_Do1</code></pre>
 <pre><code>## [1] 14  0  1  2  3  1 10  9</code></pre>
-<pre class="r"><code>Eff &lt;- Y_po1 - Y_po0</code></pre>
+<pre class="r"><code>Eff &lt;- Y_Do1 - Y_Do0</code></pre>
 <p>Então criamos um dataframe:</p>
-<pre class="r"><code>surg &lt;- data.frame(Y_po1, Y_po0, Eff)</code></pre>
+<pre class="r"><code>surg &lt;- data.frame(Y_Do1, Y_Do0, Eff)</code></pre>
 <p>Imprimimos os dados para o exemplo médico perfeito (tabela 1 acima)</p>
 <pre class="r"><code>library(knitr)
 library(kableExtra)
@@ -778,10 +781,10 @@ kbl(cbind(surg)) %&gt;%
 <thead>
 <tr>
 <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Y_po1
+Y_Do1
 </th>
 <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
-Y_po0
+Y_Do0
 </th>
 <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
 Eff
@@ -902,14 +905,14 @@ Eff
 </tr>
 <tr class="even">
 <td>2</td>
-<td>Y_po0</td>
+<td>Y_Do0</td>
 <td>7</td>
 <td></td>
 <td></td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>Y_po1</td>
+<td>Y_Do1</td>
 <td>5</td>
 <td></td>
 <td></td>
@@ -976,7 +979,7 @@ Yi=Di\times Yi(1) + (1-Di)\times Yi(0)
 <p>Considere a seguinte atribuição de tratamento:</p>
 <pre class="r"><code>D &lt;- c(rep(1,4), rep(0,4))</code></pre>
 <p>Os Ys observados com esta atribuição de tratamento são (Tabela 3):</p>
-<pre class="r"><code>Yi &lt;- D*Y_po1 + (1-D)*Y_po0
+<pre class="r"><code>Yi &lt;- D*Y_Do1 + (1-D)*Y_Do0
 surg_D &lt;- data.frame(D,Yi)
 
 
@@ -1086,7 +1089,7 @@ Atribuicao</code></pre>
 efeito.medio &lt;- numeric(iter)
 for(i in 1: iter) {
 Atribuicao &lt;- sample(D, replace = FALSE)
-Resultado &lt;- Atribuicao*Y_po1 + (1 - Atribuicao)*Y_po0
+Resultado &lt;- Atribuicao*Y_Do1 + (1 - Atribuicao)*Y_Do0
 mod_r &lt;- lm(Resultado ~ Atribuicao)
 efeito.medio[i] &lt;- mod_r$coeff[2]
 }
@@ -3616,23 +3619,8 @@ The sensitivity analysis asks how much hidden bias can be present—that is, how
 </p>
 <p>O pacote rbounds (Keele 2014) baseia-se no pacote Matching para fazer a correspondência genética e, em seguida, realiza uma análise de sensibilidade. Faremos isso para o dados lalonde no pacote MatchIt que analisamos anteriormente.</p>
 <p>Precisamos fornecer os dados ao Matching em um determinado formato. Y abaixo é para o resultado, Tr para tratamento, X para covariáveis.</p>
-<pre class="r"><code>library(rbounds)</code></pre>
-<pre><code>## Loading required package: Matching</code></pre>
-<pre><code>## Loading required package: MASS</code></pre>
-<pre><code>## 
-## Attaching package: &#39;MASS&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     select</code></pre>
-<pre><code>## ## 
-## ##  Matching (Version 4.9-7, Build Date: 2020-02-05)
-## ##  See http://sekhon.berkeley.edu/matching for additional documentation.
-## ##  Please cite software as:
-## ##   Jasjeet S. Sekhon. 2011. ``Multivariate and Propensity Score Matching
-## ##   Software with Automated Balance Optimization: The Matching package for R.&#39;&#39;
-## ##   Journal of Statistical Software, 42(7): 1-52. 
-## ##</code></pre>
-<pre class="r"><code>Y &lt;- l1$re78
+<pre class="r"><code>library(rbounds)
+Y &lt;- l1$re78
 Tr &lt;- l1$treat #o tratamento 
 X &lt;- cbind(l1$age, l1$educ, l1$black, l1$hispan, l1$married, l1$nodegree, l1$re74, l1$re75)
 BalanceMat &lt;- cbind(l1$age, I(l1$age^2), l1$educ, I(l1$educ^2), l1$black, l1$hispan, l1$married, l1$nodegree, l1$re74 , I(l1$re74^2), l1$re75, I(l1$re75^2), I(l1$re74*l1$re75), I(l1$age*l1$nodegree), I(l1$educ*l1$re74), I(l1$educ*75))</code></pre>
@@ -4018,19 +4006,12 @@ data(&quot;jtrain&quot;)</code></pre>
 <pre class="r"><code>jtrain &lt;- jtrain %&gt;%
 filter(year != 1989)</code></pre>
 <p>Usaremos o pacote plm, que trata dos dados do painel.</p>
-<pre class="r"><code>library(plm)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;plm&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
-## 
-##     between, lag, lead</code></pre>
-<pre class="r"><code>jtrain_p &lt;- pdata.frame(jtrain,
+<pre class="r"><code>library(plm)
+jtrain_p &lt;- pdata.frame(jtrain,
 index = c(&quot;fcode&quot;,&quot;year&quot;))</code></pre>
 <p>Usamos a função diff() para obter diferenças.</p>
-<pre class="r"><code>jtrain_p$scrap_d &lt;-
-diff(jtrain_p$scrap)
-jtrain_p$grant_d &lt;-
-diff(jtrain_p$grant)</code></pre>
+<pre class="r"><code>jtrain_p$scrap_d &lt;- diff(jtrain_p$scrap)
+jtrain_p$grant_d &lt;- diff(jtrain_p$grant)</code></pre>
 <p>Estimamos o efeito da concessão na sucata/descarte.</p>
 <pre class="r"><code>mod_did &lt;- lm(scrap_d ~ grant_d, data = jtrain_p)
 
@@ -4220,7 +4201,8 @@ summary(m_d4)</code></pre>
 ## Residual standard error: 1.053 on 2998 degrees of freedom
 ## Multiple R-squared:  0.7866, Adjusted R-squared:  0.7865 
 ## F-statistic: 1.105e+04 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>Nos resultados acima gerados, vemos que a diferença em diferença nos dá uma superestimativa, modelo 2 (controlando para o valor inicial) é próximo e a diferença simples nas médias é uma grande subestimação. Então, vemos que a diferença-em-diferença tem uma suposição crucial, que o tratamento e grupo de controle têm tendências paralelas. Isso pode ser examinado graficamente. Portanto, como na descontinuidade da regressão, o exame gráfico pode nos ajudar a julgar a validade da diferença-em-diferença em um determinado contexto.</p>
+<p>Nos resultados acima gerados, vemos que a diferença em diferença nos dá uma superestimativa, modelo 2 (controlando para o valor inicial) é próximo e a diferença simples nas médias é uma grande subestimação.</p>
+<p>Então, vemos que a diferença-em-diferença tem uma suposição crucial, que o tratamento e grupo de controle têm tendências paralelas. Isso pode ser examinado graficamente. Portanto, como na descontinuidade da regressão, o exame gráfico pode nos ajudar a julgar a validade da diferença-em-diferença em um determinado contexto.</p>
 </div>
 <div id="exemplo-bancos-de-negócios" class="section level2">
 <h2>Exemplo: bancos de negócios</h2>

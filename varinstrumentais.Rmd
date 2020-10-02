@@ -383,19 +383,19 @@ Para ir mais longe Morgan e Winship (2014), Abadie e Catteneo (2018), Manski e P
 
 ### Referências
 
-Abadie,A., andM.D. Catteneo. 2018. _**Econometric methods for program evaluation._** Annual Review of Economics 10: 465–503.
+Abadie,A., M.D. Catteneo. 2018. _**Econometric methods for program evaluation._** Annual Review of Economics 10: 465–503.
 
 Angrist, J.D., J. Pischke. 2015. _**Mastering ‘metrics - The path from cause to effect**._ Princeton: Princeton University Press.
 
-Josselin, J.-M., and B. Le Maux. 2017. _**Statistical tools for program evaluation: Methods and applications to economic policy, public health, and education._** Berlin: Springer.
+Josselin, J.-M., B. Le Maux. 2017. _**Statistical tools for program evaluation: Methods and applications to economic policy, public health, and education._** Berlin: Springer.
 
-Manski, C.F., and J.V. Pepper. 2018. _**How do right-to-carry laws affect crime rates? Coping with ambiguity using bounded variation assumptions._** Review of Economics and Statistics 100 (2): 232–244.
+Manski, C.F., J.V. Pepper. 2018. _**How do right-to-carry laws affect crime rates? Coping with ambiguity using bounded variation assumptions._** Review of Economics and Statistics 100 (2): 232–244.
 
 
-Morgan, S.L., and C.Winship. 2014. _**Counterfactuals and causal inference: Methods and principles for social research_** (Analytical methods for social research). Cambridge: Cambridge University Press.
+Morgan, S.L., C.Winship. 2014. _**Counterfactuals and causal inference: Methods and principles for social research_** (Analytical methods for social research). Cambridge: Cambridge University Press.
 
-Pearl, J., M. Glymour, and N.P. Jewell. 2016. _**Causal inference in statistics: A primer._** New York: Wiley.
+Pearl, J., M. Glymour, N.P. Jewell. 2016. _**Causal inference in statistics: A primer._** New York: Wiley.
 
 Rosenbaum, P. 2017. _**Observation and experiment - An introduction to causal inference._** London: Harvard University Press.
 
-Stock, J.H., and M.W. Watson. 2011. _**Introduction to econometrics._** Boston: Addison-Wesley.
+Stock, J.H., M.W. Watson. 2011. _**Introduction to econometrics._** Boston: Addison-Wesley.

@@ -102,7 +102,13 @@ Tutoriais disponíveis:
 + Conheça também a News Impact Curve de Engle & NG, que capta os efeitos simétricos e assimétricos na volatilidade dos preços de ativos financeiros.
 
 
+&nbsp;
 
+***
+
+#### _PROJETO INTEGRADOR DE COMPETÊNCIAS EM CIÊNCIA DE DADOS I - 40h\_Turma\_05\_102020_
+
++ Acesse a solução dos exercícios propostos (selecione o menu acima)
 
 
 ***
