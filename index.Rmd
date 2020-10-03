@@ -109,6 +109,17 @@ Tutoriais disponíveis:
 
 + Veja qual o padrão de salário de admissão por perfil de empresa contratante por tipo de cargo ocupado no Brasil seus estados e municípios.
 
+&nbsp;
+
+### *Webscrapping: CoinMarketCap x Icoinomia*
+
++ Comparativo de volume e fluxo de negociação de criptoativos entre as top 100 exchanges.
+
+
+&nbsp;
+
+
+
 
 ***
 
