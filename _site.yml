@@ -45,7 +45,9 @@ navbar:
         - text: "Variáveis Instrumentais e Inferência Causal"
           href: varinstrumentais.html 
         - text: "Fluxo de Salarios Microdados CAGED"
-          href: rmarkdownepowerbi.html           
+          href: rmarkdownepowerbi.html
+        - text: "Webscrapping CoinMarketCap x Icoinomia"
+          href: coinmarketcapxicoinomia.html 
         - text: "Projeto Integrador de Ciência de Dados"
           href: projetointegrador.html 
 

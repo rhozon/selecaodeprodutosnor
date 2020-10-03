@@ -65,6 +65,10 @@ Webscrapping comparativo de dois benchmarks de volume transacional nas exchanges
 Os dados são coletados em tempo real dos [websites CoinMarketCap](https://coinmarketcap.com/) contra o portal icoinomia. 
 
 
+##### Proposta futura
+
++ Buscar em outros sites benchmarks comparativos de negociação de cripto e criar comparativos para auditoria e análise de veracidade dos dados
+
 
 
 
