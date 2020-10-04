@@ -21,6 +21,9 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
@@ -252,6 +255,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -259,6 +325,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -347,6 +423,9 @@ $(document).ready(function () {
       <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
     </li>
     <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
       <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
     </li>
   </ul>
@@ -395,25 +474,209 @@ $(document).ready(function () {
 
 <div id="salários-de-entrada-no-brasil-por-cargo" class="section level1">
 <h1>Salários de entrada no Brasil por cargo</h1>
-<iframe allowfullscreen="true" frameborder="0" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiY2ZiZjQwZTctMWY1MS00ZjNhLTg5MmEtNDNhMTJhNjg3M2I2IiwidCI6ImJkMzc3ZDgxLTI1MWQtNDVmMS1hNDU2LWE4NTM5NzViODUxZiJ9" width="800">
-</iframe>
-<p><b> Fonte:</b> Microdados CAGED Julho 2019/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )</p>
+<ul>
+<li><em>Objetivo</em> <span class="math inline">\(\Rightarrow\)</span> fornecer subsídios suficientes e rápidos para obter bons <em>insights</em> a respeito da dinâmica do mercado formal de trabalho brasileiro a partir dos vários cargos (Classificação Brasileira de Ocupações), nas diferentes localidades em vários pontos do tempo (mês a mês);</li>
+<li><span class="math inline">\(\Rightarrow\)</span> <em>Por mais que os salários (em R$) não sejam capazes de refletir com clareza o poder de compra nas diferentes localidades, é fundamental que o usuário tenha cautela nas suas interpretações (o salário mínimo em São Paulo capital é capaz de pagar o aluguel de um imóvel com a mesma qualidade de uma cidade como Maringá (PR) p. ex. ?)</em></li>
+<li><span class="math inline">\(\Rightarrow\)</span> construir visualização completa dos microdados demonstrando a dinâmica das empresas no mercado formal de trabalho brasileiro no que diz respeito a seu número de empregados, atividades econômicas e demais características/variáveis.</li>
+<li><span class="math inline">\(\Rightarrow\)</span> demonstrar um padrão de comparação pelo crescimento do número dos estabelecimentos e empregos em diferentes localidadades brasileiras que são de distintos tamanhos.</li>
+</ul>
 <div id="proposta-futura" class="section level4">
 <h4><strong>Proposta futura</strong></h4>
-<p>Este painel demonstra os salários de admissão (salários de entrada) para cada cargo no mês de julho de 2019 nos municípios paranaenses.</p>
 <p>O objetivo de projeto é o de fazer um painel contendo esse grande volume de dados com as seguintes especificações:</p>
 <ul>
-<li>Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS;</li>
-<li>Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga;</li>
-<li>Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro)</li>
-<li>Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades)</li>
+<li>Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS; <span class="math inline">\(\color{red}{\text{(ok)}}\)</span></li>
+<li>Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga; <span class="math inline">\(\color{red}{\text{(a ser feito)}}\)</span></li>
+<li>Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro) <span class="math inline">\(\color{red}{\text{(ok)}}\)</span></li>
+<li>Análise comparativa com as medianas salariais, médios, máximos e mínimos <span class="math inline">\(\color{red}{\text{(ok)}}\)</span></li>
+<li>Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades) <span class="math inline">\(\color{red}{\text{(a ser feito)}}\)</span></li>
 </ul>
 <p><em>Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos com um mês de delay…Com o atual governo a última base de dados do CAGED que dispomos é de dez/2019, infelizmente. Isso dificulta substancialmente a avaliação da dinâmica do mercado de trabalho formal brasileiro.</em></p>
+<hr />
+</div>
+</div>
+<div id="introdução" class="section level1">
+<h1>Introdução</h1>
+<p>Um projeto de dados com um grande volume deles considera o nível de informações que detemos a respeito da dinâmica do fluxo do mercado formal de trabalho brasileiro.</p>
+<p>Assim, a qualidade de estudos mais aprofundados a respeito dele pode ser realizada se as estatísticas fossem divulgadas com o menor <em>delay</em> possível ao público.</p>
+<p>Os microdados do CAGED aqui trabalhados, trabalharam com uma matriz da seguinte dimensão:</p>
+<ul>
+<li>30.865.840 (quase 31 milhões) de linhas por 44 colunas; (muitas colunas não foram utilizadas nos painéis) para o ano de 2019;</li>
+<li><span class="math inline">\(\color{red}{\text{xxxx}}\)</span> (quase <span class="math inline">\(\color{red}{\text{xxxx}}\)</span> milhões) de linhas por <span class="math inline">\(\color{red}{\text{xxx colunas}}\)</span>, para o ano de 2020 (de janeiro a agosto)</li>
+</ul>
+<p>Tive de dividir em dois painéis; um para o ano de 2019 e outro para este ano de 2020 de janeiro a agosto.</p>
+<p>Carreguei ele num intel icore i7, oitava geração com 8gb de RAM, Win 64 Bits.</p>
+<hr />
+</div>
+<div id="variáveis-dos-microdados-do-fluxo-de-profissionais" class="section level1">
+<h1>Variáveis dos microdados do fluxo de profissionais</h1>
+<p>Para compreender o conteúdo específico de cada uma das variáveis desses microdados, baixe a planilha Layout no link da fonte da tabela a seguir.</p>
+<p><strong>Tabela 1:</strong> Conteúdo descritivo das variáveis presentes nos microdados do CAGED/ Ministério do Trabalho e Emprego</p>
+<table>
+<colgroup>
+<col width="16%" />
+<col width="83%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Variável</th>
+<th>Descrição</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>competência</td>
+<td>Competência da movimentação</td>
+</tr>
+<tr class="even">
+<td>região</td>
+<td>Região geográfica de acordo com o código do IBGE</td>
+</tr>
+<tr class="odd">
+<td>uf</td>
+<td>Unidade da federação de acordo com o código do IBGE</td>
+</tr>
+<tr class="even">
+<td>município</td>
+<td>Código do Município</td>
+</tr>
+<tr class="odd">
+<td>seção</td>
+<td>Código da seção da classificação nacional de atividade econômica (CNAE 2.0)</td>
+</tr>
+<tr class="even">
+<td>subclasse</td>
+<td>Código da subclasse da classificação nacional de atividade econômica (CNAE 2.0)</td>
+</tr>
+<tr class="odd">
+<td>saldomovimentação</td>
+<td>Valor da movimentação em termos de saldo</td>
+</tr>
+<tr class="even">
+<td>cbo2002ocupação</td>
+<td>Código da ocupação do trabalhador de acordo com a Classificação Brasileira de Ocupações (CBO 2002)</td>
+</tr>
+<tr class="odd">
+<td>categoria</td>
+<td>Categoria de trabalhador</td>
+</tr>
+<tr class="even">
+<td>graudeinstrução</td>
+<td>Grau de instrução do trabalhador</td>
+</tr>
+<tr class="odd">
+<td>idade</td>
+<td>Idade do trabalhador</td>
+</tr>
+<tr class="even">
+<td>horascontratuais</td>
+<td>Horas contratuais</td>
+</tr>
+<tr class="odd">
+<td>raçacor</td>
+<td>Raça ou cor do trabalhador</td>
+</tr>
+<tr class="even">
+<td>sexo</td>
+<td>Sexo do trabalhador</td>
+</tr>
+<tr class="odd">
+<td>tipoempregador</td>
+<td>Tipo de empregador</td>
+</tr>
+<tr class="even">
+<td>tipoestabelecimento</td>
+<td>Tipo de estabelecimento</td>
+</tr>
+<tr class="odd">
+<td>tipomovimentação</td>
+<td>Tipo de movimentação</td>
+</tr>
+<tr class="even">
+<td>tipodedeficiência</td>
+<td>Tipo de deficiência do trabalhador</td>
+</tr>
+<tr class="odd">
+<td>indtrabintermitente</td>
+<td>Indicador de trabalhador intermitente</td>
+</tr>
+<tr class="even">
+<td>indtrabparcial</td>
+<td>Indicador de trabalhador parcial</td>
+</tr>
+<tr class="odd">
+<td>salário</td>
+<td>Salário mensal declarado</td>
+</tr>
+<tr class="even">
+<td>tamestabjan</td>
+<td>Faixa de tamanho do estabelecimento no início do ano</td>
+</tr>
+<tr class="odd">
+<td>indicadoraprendiz</td>
+<td>Indicador de trabalhador aprendiz</td>
+</tr>
+<tr class="even">
+<td>fonte</td>
+<td>Fonte da movimentação</td>
+</tr>
+</tbody>
+</table>
+<p><small><strong>Fonte:</strong> Ministério do Trabalho e Emprego <a href="ftp://ftp.mtps.gov.br/pdet/microdados/CAGED/CAGEDEST_layout_Atualizado.xls">(planilha Layout.xlsx)</a></small></p>
+<hr />
+<div id="dashboard-dos-microdados-do-caged-para-o-ano-de-2019-no-brasil" class="section level2">
+<h2>Dashboard dos microdados do CAGED, para o ano de 2019, no Brasil</h2>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZDExOWY1YTYtODUwOS00ZDJkLTg5Y2EtMWFiMzcyYzIzNGRhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&amp;pageName=ReportSectiondc723d8ac30d390c6202" frameborder="0" allowFullScreen="true">
+</iframe>
+<p><small> <b> Fonte:</b> Microdados CAGED (ano de 2019)/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )</small></p>
+<hr />
+<p>Nas três abas deste painel, Dados Gerais é possível visualizarmos os salários de entrada/admissão nos diferentes cargos/profissões no mercado formal de trabalho nos estados e municípios brasileiros.</p>
+<p>Como a principal intenção do microdado não é a de fornecer um cálculo de salário médio, p. ex., apresentamos cada registro conforme a seleção/filtragem que o usuário do painel faça.</p>
+<p>Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.</p>
+<p><small><em><em>Na aba do mapa, preciso ainda corrigir o problema de geolocalização via latitudes e longitudes, pois existem algumas cidades com nomes iguais e isso confunde o Power BI e gera posições errôneas.</em></em></small></p>
+<hr />
+</div>
+<div id="dashboard-dos-microdados-do-caged-de-jan-a-agosto-de-2020-brasil" class="section level2">
+<h2>Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil</h2>
+<ul>
+<li>Baixe os dados no endereço <a href="ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/">ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/</a></li>
+</ul>
+<center>
+<span class="math inline">\(\color{red}{\text{[A construir] }}\)</span>
+</center>
+<hr />
+</div>
+</div>
+<div id="variáveis-dos-microdados-do-fluxo-de-empregos" class="section level1">
+<h1>Variáveis dos microdados do fluxo de empregos</h1>
+<p>A partir da RAIS, construimos o painel contemplando os dados referentes ao número de estabelecimentos e de empregados nas mesmas.</p>
+<center>
+<span class="math inline">\(\color{red}{\text{[A construir] }}\)</span>
+</center>
+<div id="taxa-de-crescimento-dos-empregos-ponderado-pelo-tamanho-das-cidades" class="section level3">
+<h3>Taxa de crescimento dos empregos ponderado pelo tamanho das cidades</h3>
+<p>Esta etapa do projeto busca construir um painel de visualização da dinâmica das taxas de crescimento dos empregos nos diversos cargos frente ao tamanho das cidades.</p>
+<p>Utilizaremos os microdados da RAIS/MTE para isso onde consideraremos:</p>
+<ul>
+<li>O número de estabelecimentos naquele ano, na escolhida localidade;</li>
+<li>O número de empregados naquele ano, na localidade selecionada pelo usuário;</li>
+<li>Comparativos de taxa de crescimento de empresas por CNAE Subclasse em diferentes localidades selecionadas pelo usuário</li>
+</ul>
+<p>O diretório de microdados do Ministério encontra-se neste link</p>
+<ul>
+<li><p><a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a></p></li>
+<li><p>A base dos microdados da RAIS encontra-se aqui: <a href="ftp://ftp.mtps.gov.br/pdet/microdados/RAIS/">ftp://ftp.mtps.gov.br/pdet/microdados/RAIS/</a></p></li>
+<li><p>Existe algo a definir a respeito da migração da RAIS estabelecimentos para a base do CAGED novo (CAGED estabelecimentos)… (veja <a href="ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Estabelecimentos/">ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Estabelecimentos/</a></p></li>
+</ul>
+<center>
+<span class="math inline">\(\color{red}{\text{[A construir] }}\)</span>
+</center>
 </div>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -446,6 +709,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

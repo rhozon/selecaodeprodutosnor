@@ -2,7 +2,10 @@
 title: "Fluxo de Salarios Microdados CAGED"
 author: "Rodrigo H. Ozon"
 date: "02/10/2020"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -11,20 +14,157 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Salários de entrada no Brasil por cargo
 
-<iframe allowfullscreen="true" frameborder="0" height="600" src="https://app.powerbi.com/view?r=eyJrIjoiY2ZiZjQwZTctMWY1MS00ZjNhLTg5MmEtNDNhMTJhNjg3M2I2IiwidCI6ImJkMzc3ZDgxLTI1MWQtNDVmMS1hNDU2LWE4NTM5NzViODUxZiJ9" width="800"></iframe>
++ *Objetivo* $\Rightarrow$ fornecer subsídios suficientes e rápidos para obter bons _insights_ a respeito da dinâmica do mercado formal de trabalho brasileiro a partir dos vários cargos (Classificação Brasileira de Ocupações), nas diferentes localidades em vários pontos do tempo (mês a mês);
++ $\Rightarrow$ _Por mais que os salários (em R\$) não sejam capazes de refletir com clareza o poder de compra nas diferentes localidades, é fundamental que o usuário tenha cautela nas suas interpretações  (o salário mínimo em São Paulo capital é capaz de pagar o aluguel de um imóvel com a mesma qualidade de uma cidade como Maringá (PR) p. ex. ?)_
++ $\Rightarrow$ construir visualização completa dos microdados demonstrando a dinâmica das empresas no mercado formal de trabalho brasileiro no que diz respeito a seu número de empregados, atividades econômicas e demais características/variáveis.
++ $\Rightarrow$ demonstrar um padrão de comparação pelo crescimento do número dos estabelecimentos e empregos em diferentes localidadades brasileiras que são de distintos tamanhos.
 
-<b>
-Fonte:</b> Microdados CAGED Julho 2019/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )
+
 
 #### **Proposta futura**
 
-Este painel demonstra os salários de admissão (salários de entrada) para cada cargo no mês de julho de 2019 nos municípios paranaenses.
 
 O objetivo de projeto é o de fazer um painel contendo esse grande volume de dados com as seguintes especificações:
 
-+ Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS;
-+ Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga;
-+ Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro)
-+ Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades)
++ Contemplando o Brasil todo e suas territoriedades conforme IBGE/RAIS; $\color{red}{\text{(ok)}}$
++ Temporalidade de inicío da série de dados para jan/2018 até a mais recente que o Ministério do Trabalho e Emprego divulga; $\color{red}{\text{(a ser feito)}}$
++ Análises gráficas comparativas por salário de admissão (único, sem média, mediana, somente o microdado puro) $\color{red}{\text{(ok)}}$
++ Análise comparativa com as medianas salariais, médios, máximos e mínimos $\color{red}{\text{(ok)}}$
++ Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades) $\color{red}{\text{(a ser feito)}}$
 
 _Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos com um mês de delay...Com o atual governo a última base de dados do CAGED que dispomos é de dez/2019, infelizmente. Isso dificulta substancialmente a avaliação da dinâmica do mercado de trabalho formal brasileiro._
+
+
+***
+
+# Introdução
+
+Um projeto de dados com um grande volume deles considera o nível de informações que detemos a respeito da dinâmica do fluxo do mercado formal de trabalho brasileiro.
+
+Assim, a qualidade de estudos mais aprofundados a respeito dele pode ser realizada se as estatísticas fossem divulgadas com o menor _delay_ possível ao público.
+
+Os microdados do CAGED aqui trabalhados, trabalharam com uma matriz da seguinte dimensão:
+
++ 30.865.840 (quase 31 milhões) de linhas por 44 colunas; (muitas colunas não foram utilizadas nos painéis) para o ano de 2019;
++ $\color{red}{\text{xxxx}}$ (quase $\color{red}{\text{xxxx}}$ milhões) de linhas por $\color{red}{\text{xxx colunas}}$, para o ano de 2020 (de janeiro a agosto)
+
+Tive de dividir em dois painéis; um para o ano de 2019 e outro para este ano de 2020 de janeiro a agosto.
+
+Carreguei ele num intel icore i7, oitava geração com 8gb de RAM, Win 64 Bits.
+
+
+*** 
+
+# Variáveis dos microdados do fluxo de profissionais
+
+Para compreender o conteúdo específico de cada uma das variáveis desses microdados, baixe a planilha Layout no link da fonte da tabela a seguir.
+
+
+**Tabela 1:** Conteúdo descritivo das variáveis presentes nos microdados do CAGED/ Ministério do Trabalho e Emprego
+
+| Variável            | Descrição                                                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| competência         | Competência da movimentação                                                                        |
+| região              | Região geográfica de acordo com o código do IBGE                                                   |
+| uf                  | Unidade da federação de acordo com o código do IBGE                                                |
+| município           | Código do Município                                                                                |
+| seção               | Código da seção da classificação nacional de atividade econômica (CNAE 2.0)                        |
+| subclasse           | Código da subclasse da classificação nacional de atividade econômica (CNAE 2.0)                    |
+| saldomovimentação   | Valor da movimentação em termos de saldo                                                           |
+| cbo2002ocupação     | Código da ocupação do trabalhador de acordo com a Classificação Brasileira de Ocupações (CBO 2002) |
+| categoria           | Categoria de trabalhador                                                                           |
+| graudeinstrução     | Grau de instrução do trabalhador                                                                   |
+| idade               | Idade do trabalhador                                                                               |
+| horascontratuais    | Horas contratuais                                                                                  |
+| raçacor             | Raça ou cor do trabalhador                                                                         |
+| sexo                | Sexo do trabalhador                                                                                |
+| tipoempregador      | Tipo de empregador                                                                                 |
+| tipoestabelecimento | Tipo de estabelecimento                                                                            |
+| tipomovimentação    | Tipo de movimentação                                                                               |
+| tipodedeficiência   | Tipo de deficiência do trabalhador                                                                 |
+| indtrabintermitente | Indicador de trabalhador intermitente                                                              |
+| indtrabparcial      | Indicador de trabalhador parcial                                                                   |
+| salário             | Salário mensal declarado                                                                           |
+| tamestabjan         | Faixa de tamanho do estabelecimento no início do ano                                               |
+| indicadoraprendiz   | Indicador de trabalhador aprendiz                                                                  |
+| fonte               | Fonte da movimentação                                                                              |
+
+<small>**Fonte:** Ministério do Trabalho e Emprego [(planilha Layout.xlsx)](ftp://ftp.mtps.gov.br/pdet/microdados/CAGED/CAGEDEST_layout_Atualizado.xls)</small> 
+
+
+
+
+*** 
+
+## Dashboard dos microdados do CAGED, para o ano de 2019, no Brasil
+
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZDExOWY1YTYtODUwOS00ZDJkLTg5Y2EtMWFiMzcyYzIzNGRhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSectiondc723d8ac30d390c6202" frameborder="0" allowFullScreen="true"></iframe>
+
+<small>
+<b>
+Fonte:</b> Microdados CAGED (ano de 2019)/Ministério do Trabalho e Emprego ( <a href="ftp://ftp.mtps.gov.br/pdet/microdados/">ftp://ftp.mtps.gov.br/pdet/microdados/</a> )</small>
+
+*** 
+
+
+Nas três abas deste painel, Dados Gerais é possível visualizarmos os salários de entrada/admissão nos diferentes cargos/profissões no mercado formal de trabalho nos estados e municípios brasileiros.
+
+Como a principal intenção do microdado não é a de fornecer um cálculo de salário médio, p. ex., apresentamos cada registro conforme a seleção/filtragem que o usuário do painel faça.
+
+Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.
+
+<small>_*Na aba do mapa, preciso ainda corrigir o problema de geolocalização via latitudes e longitudes, pois existem algumas cidades com nomes iguais e isso confunde o Power BI e gera posições errôneas.*_</small>
+
+***
+
+## Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil
+
++ Baixe os dados no endereço [ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/)
+
+<center>
+$\color{red}{\text{[A construir] }}$
+</center>
+
+
+
+
+***
+
+# Variáveis dos microdados do fluxo de empregos 
+
+A partir da RAIS, construimos o painel contemplando os dados referentes ao número de estabelecimentos e de empregados nas mesmas.
+
+<center>
+$\color{red}{\text{[A construir] }}$
+</center>
+
+
+### Taxa de crescimento dos empregos ponderado pelo tamanho das cidades
+
+
+Esta etapa do projeto busca construir um painel de visualização da dinâmica das taxas de crescimento dos empregos nos diversos cargos frente ao tamanho das cidades.
+
+Utilizaremos os microdados da RAIS/MTE para isso onde consideraremos:
+
++ O número de estabelecimentos naquele ano, na escolhida localidade;
++ O número de empregados naquele ano, na localidade selecionada pelo usuário;
++ Comparativos de taxa de crescimento de empresas por CNAE Subclasse em diferentes localidades selecionadas pelo usuário
+
+O diretório de microdados do Ministério encontra-se neste link
+
++ [ftp://ftp.mtps.gov.br/pdet/microdados/](ftp://ftp.mtps.gov.br/pdet/microdados/)
+
++ A base dos microdados da RAIS encontra-se aqui: [ftp://ftp.mtps.gov.br/pdet/microdados/RAIS/](ftp://ftp.mtps.gov.br/pdet/microdados/RAIS/)
+
++ Existe algo a definir a respeito da migração da RAIS estabelecimentos para a base do CAGED novo (CAGED estabelecimentos)... (veja [ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Estabelecimentos/](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Estabelecimentos/)
+
+
+<center>
+$\color{red}{\text{[A construir] }}$
+</center>
+
+
+
+
+
+
