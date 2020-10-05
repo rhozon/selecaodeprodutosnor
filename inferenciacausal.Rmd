@@ -7,11 +7,48 @@ output:
     toc: true
     toc_float: true
 ---
+<!-- ================================================================================= -->
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
 ```
 
+```{r include=FALSE}
+# cunhk para retiraar os prefixos
+default_output_hook <- knitr::knit_hooks$get("output")
+# Output hooks handle normal R console output.
+knitr::knit_hooks$set( output = function(x, options) {
+
+  comment <- knitr::opts_current$get("comment")
+  if( is.na(comment) ) comment <- ""
+  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
+                     x, perl = TRUE)
+  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
+  if( can_null && do_null ) {
+    # By default R print output aligns at the right brace.
+    align_index <- regexpr( "\\]", x )[1] - 1
+    # Two cases: start or newline
+    re <- paste0( "^.{", align_index, "}\\]")
+    rep <- comment
+    x <- gsub( re, rep,  x )
+    re <- paste0( "\\\n.{", align_index, "}\\]")
+    rep <- paste0( "\n", comment )
+    x <- gsub( re, rep,  x )
+  }
+
+  default_output_hook( x, options )
+
+})
+
+knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+
+```
+
+<!-- ================================================================================= -->
 
 <!-- ================================================================================= -->
 
@@ -128,7 +165,7 @@ U_D <- rnorm(num)
 Geramos o conjunto de dados Meds, que contém as variáveis M, D, U_D.
 
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 set.seed(3)
 M <- sample(c(0,1), num, replace = T)
 Indiv <- 1:num
@@ -179,7 +216,7 @@ Rodamos uma regressão de D em M: $D = r_0 + r_{1}M + e$, sendo a equação de r
 A equação de regressão é diferente da equação estrutural. Neste caso, $r_1$ irá
 dar-nos uma estimativa próxima do valor verdadeiro, ou do parâmetro estrutural, $\beta_{M}$; isto não é necessariamente o caso de um coeficiente de regressão nos dar uma boa estimativa do efeito causal.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 
 modd <- lm(D ~ M, data = Meds)
 
@@ -246,7 +283,7 @@ Consideramos um exemplo intrigante fornecido por Rubin (2008). Um tratamento, um
 
 Nós inserimos os dados.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 Y_Do0 <- c(13,6,4,5,6,6,8,8)
 Y_Do0
 
@@ -255,13 +292,13 @@ Y_Do1
 ```
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 Eff <- Y_Do1 - Y_Do0
 ```
 
 Então criamos um dataframe:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 surg <- data.frame(Y_Do1, Y_Do0, Eff)
 ```
 
@@ -287,7 +324,7 @@ print(skimble, caption.placement = "top")
 ```
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(knitr)
 library(kableExtra)
 
@@ -334,13 +371,13 @@ $$
 
 Considere a seguinte atribuição de tratamento:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 D <- c(rep(1,4), rep(0,4))
 ```
 
 Os Ys observados com esta atribuição de tratamento são (Tabela 3):
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 Yi <- D*Y_Do1 + (1-D)*Y_Do0
 surg_D <- data.frame(D,Yi)
 
@@ -355,7 +392,7 @@ kbl(cbind(surg_D)) %>%
 
 Estimamos a diferença de médias entre os grupos de tratamento e controle:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 lm(Yi ~ D)
 ```
 
@@ -363,7 +400,7 @@ Vemos que com esta atribuição de tratamento particular D, o efeito de tratamen
 
 Podemos randomizar a atribuição com:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 sample(D, replace = FALSE)
 
 Atribuicao <- sample(D, replace = FALSE)
@@ -372,7 +409,7 @@ Atribuicao
 
 Então, o que acontecerá se randomizarmos a atribuição? Nós olhamos para a distribuição de amostragem do efeito estimado usando um loop.
 
-```{r }
+```{r comment=NA, null_prefix=TRUE}
 iter <- 70
 efeito.medio <- numeric(iter)
 for(i in 1: iter) {
@@ -431,7 +468,7 @@ Nós podemos até acreditar nesses mecanismos, eles podem ou não ser verdadeiro
 Agora nos voltamos para a simulação, começando com o cenário de causa comum: $y1$ ←
 causa.comum → $x1$.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 causa.comum <- runif(100, min = 10, max = 20)
 x1 <- 2 * causa.comum + rnorm(100,0,0.5)
 y1 <- 2 * causa.comum + rnorm(100,0,0.5)
@@ -440,7 +477,7 @@ y1 <- 2 * causa.comum + rnorm(100,0,0.5)
 
 Regredimos (1) y1 em x1 e (2) y1 em x1 e a causa comum.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 m1 <- lm(y1 ~ x1)
 m2 <- lm(y1 ~ x1 + causa.comum)
 ```
@@ -470,7 +507,7 @@ stargazer(m1, m2, type="html",
 Geramos dados para o cenário de variável intermediária: $y2$ ← _inter_ ← $x2$
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 x2 <- runif(100,min=10,max=20)
 inter <- 2 * x2 + rnorm(100,0,0.5)
 y2 <- 2 * inter + rnorm(100,0,0.5)
@@ -508,7 +545,7 @@ Voltemo-nos agora para o cenário _colisor_
 
 $y$ → _colisor_ ← $x$
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 x3 <- rnorm(100)
 y3 <- rnorm(100)
 colisor <- 4 * y3 + 4 * x3 + 0.3 * rnorm(100)
@@ -516,7 +553,7 @@ colisor <- 4 * y3 + 4 * x3 + 0.3 * rnorm(100)
 
 $y$ → _colisor_ ← $x$
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 m5 <- lm(y3 ~ x3)
 m6 <- lm(y3 ~ x3 + colisor)
 ```
@@ -562,7 +599,7 @@ Esta seção procura iluminar o seguinte argumento de Freedman (1983, p. 152):
 Iremos gerar uma variável aleatória $y$ e 10 regressores, nenhum dos quais são causalmente relacionado com $y$.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 set.seed(80)
 x1 <- rnorm(30)
 x2 <- rnorm(30)
@@ -615,7 +652,7 @@ Gere seus dados como acima, alterando o valor dentro set.seed() a 999. Execute u
 
 Duflo e Chattopadhyay (2004) estudaram o efeito de reservar posições de liderança em Conselhos de Aldeia na Índia sobre os tipos de projetos realizados por eles. Um subconjunto de seus dados é apresentado em Imai (2018), isso corresponde aos dados para Birbhum distrito no estado de West Bengal. Os dados podem ser acessados da seguinte forma (remova o símbolo de hash):
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(tidyverse)
 
 women<-read.csv(file="https://raw.githubusercontent.com/kosukeimai/qss/master/UNCERTAINTY/women.csv", head=TRUE,sep=",")
@@ -633,7 +670,7 @@ Já temos os dados em nosso computador, então lemos as variáveis no conjunto d
 A reserva é feita por atribuição aleatória.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 women %>%
 group_by(reserved) %>%
 summarize(count_res = n(),
@@ -680,7 +717,7 @@ Obtemos uma estimativa de 9,25 com um valor $p$ baixo de 0,015 (figura acima).
 
 Também usamos o pacote estimatr, e um modelo linear, e estimamos o cluster com erros padrão robustos. Os resultados do summary(mod_water_r) mostram os coeficientes e intervalos de confiança resultantes.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 
 women$reserved <- factor(women$reserved)
 
@@ -701,7 +738,7 @@ Vemos os dados de um experimento realizado por volta de 1970, apresentado no e-b
 
 + [Você pode baixar o conjunto de dados completo desse e-book aqui](https://stat.columbia.edu/~gelman/arm/software/)
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 electric <- read.table(file="https://raw.githubusercontent.com/rhozon/datasets/master/electric.dat", header = TRUE) 
 
 str(electric)
@@ -719,7 +756,7 @@ Temos que discutir os dados, precisamos combinar as variáveis de pré-teste par
 o grupo de controle dos alunos, da mesma forma para o pós-teste, e criar um indicador para o tratamento.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 post.test <- c(electric$treated.Posttest, electric$control.Posttest)
 
 pre.test <- c(electric$treated.Pretest, electric$control.Pretest)
@@ -744,7 +781,7 @@ elec
 
 Vamos focar na grade1, filtrando os dados:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(tidyverse)
 elec_1 <- elec %>%
 filter(grade==1)
@@ -768,7 +805,7 @@ stat_smooth(method=lm, se = FALSE)
 
 Como este é um experimento, não precisamos controlar as pontuações do pré-teste, mas incluir as pontuações do pré-teste, que nos fornecem estimativas mais precisas.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mod1.1 <- lm(post.test ~ tratamento, data = elec_1)
 mod1.2 <- lm(post.test ~ pre.test + tratamento, data= elec_1)
 ```
@@ -799,13 +836,13 @@ stargazer(mod1.1, mod1.2, type="html",
 Analise os dados para as grades 2 e 4. Como os resultados podem se comparar com aqueles do grau 1?
 
 
-## Exemplo: Estrela
+## Exemplo: Star
 
 O projeto Star foi um grande experimento conduzido no Tennessee, nos Estados Unidos.
 Três tratamentos foram atribuídos em nível de sala de aula: turmas pequenas (13-17 alunos), classes regulares (22-25 alunos) e aulas regulares com um auxiliar que trabalharia com a professora. A análise aqui segue a apresentação na econometria
 do clássico livro de Hill et al. (2018), e se concentra no tratamento de pequenas classes em comparação com o grupo de controle de classes de tamanho regular.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(tidyverse)
 #library(POE5Rdata)
 #data(star)
@@ -828,7 +865,7 @@ As principais variáveis no dataset star são:
 Um dos tratamentos foi usar um auxiliar de ensino; nós ignoramos essas observações
 e focamos na comparação pequena versus regular.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 star <- star %>%
 filter(aide == 0) %>%
 dplyr::select(totalscore, small, tchexper, boy, freelunch, white_asian, schid) %>%
@@ -839,7 +876,7 @@ str(star)
 star <- as_tibble(star)
 ```
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 star %>%
 group_by(small_fac) %>%
 summarize(mscore = mean(totalscore),
@@ -860,7 +897,7 @@ Na figura acima, vemos que a distribuição da pontuação total muda para a dir
 
 Podemos ver como as diferentes covariáveis variam entre as classes regulares e pequenas.
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 star %>%
 group_by(small_fac) %>%
 summarize(mboy = mean(boy),
@@ -882,7 +919,7 @@ love.plot(small ~ boy + freelunch + white_asian + tchexper, data = star, stars =
 
 Podemos realizar um teste formal de equilíbrio da seguinte forma, usando um modelo de probabilidade linear (Hill et al. 2018).
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mod_star_check <- lm(small ~ boy + white_asian + tchexper + freelunch, data = star)
 mod_star_1 <- lm(totalscore ~ small_fac, data = star)
 mod_star_2 <- lm(totalscore ~ small_fac + boy + freelunch + white_asian, data = star)
@@ -910,7 +947,7 @@ stargazer(mod_star_check, type="html",
 O efeito de pequenas classes (cerca de 14 no modelo 1 e modelo 2 na Tabela 9) é
 estável nas três especificações. No modelo 3, obtemos uma estimativa maior e com mais precisão.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 summary(mod_star_1)
 
 summary(mod_star_2)
@@ -929,7 +966,7 @@ Suponha que x, uma variável binária e w, sejam as causas de y. Também w afeta
 
 Nós geramos os dados:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(tidyverse)
 
 x <- c(rep(0,6),rep(1,6))
@@ -957,7 +994,7 @@ geom_smooth(method = "lm", se = FALSE, col = "black")+
 
 Então rodamos três regressões diferentes:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 modelo1 <- lm(y ~ x + w + wsq, data = dat_mat)
 modelo2 <- lm(y ~ x + w, data = dat_mat)
 modelo3 <- lm(y ~ x , data = dat_mat)
@@ -985,7 +1022,7 @@ Se regredirmos y em x, w e wsq, nossa estimativa do efeito de y em x está perto
 Agora usamos correspondência exata para combinar observações para as quais x = 0 com
 observações para as quais x = 1 com exatamente o mesmo ws. Nós usamos o Pacote MatchIt e matchit(), com método = “exact”.
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(MatchIt)
 match.1 <- matchit(x ~ w, data = dat_mat, method = "exact", replace = FALSE)
 match.1
@@ -1003,14 +1040,14 @@ love.plot(match.1, stars = "std")
 
 Agora extraímos os dados correspondentes.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 match_dat <- match.data(match.1)
 match_dat
 ```
 
 Executamos as mesmas regressões que executamos anteriormente. Com a correspondência exata, a estimativa nas especificações de regressão é a mesma:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mod_matched1 <- lm(y ~ x + w + wsq, data = match_dat)
 mod_matched2 <- lm(y ~ x + w, data = match_dat)
 mod_matched3 <- lm(y ~ x , data = match_dat)
@@ -1037,7 +1074,7 @@ Lalonde (1986) mostrou que a avaliação experimental e econométrica (com dados
 Trabalharemos com a versão dos dados disponíveis no pacote MatchIt.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 data(lalonde, package = "MatchIt")
 #l1 <- read.csv("l1.csv")
 #write.csv(l1,"l1.csv")
@@ -1058,7 +1095,7 @@ love.plot(treat ~ age + educ + black + hispan + married + nodegree + re74 + re75
 As covariáveis são desequilibradas, especialmente black e re74
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mod_la1 <- lm(re78 ~ treat, data = l1)
 mod_la2 <- lm(re78 ~ treat + age + educ + black + hispan + married +
 nodegree + re74 + re75, data = l1)
@@ -1070,7 +1107,7 @@ summary(mod_la2)
 ```
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 set.seed(123)
 match.l1 <- matchit(treat ~ age + educ + black + hispan + married +
 nodegree + re74 + re75,
@@ -1089,7 +1126,7 @@ love.plot(match.l1, stars ="std")
 
 O equilíbrio da covariada melhorou após a correspondência
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 match_dat <- match.data(match.l1)
 ```
 
@@ -1149,7 +1186,7 @@ Precisamos fornecer os dados ao Matching em um determinado formato. Y abaixo é 
 resultado, Tr para tratamento, X para covariáveis.
 
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(rbounds)
 Y <- l1$re78
 Tr <- l1$treat #o tratamento 
@@ -1160,7 +1197,7 @@ BalanceMat <- cbind(l1$age, I(l1$age^2), l1$educ, I(l1$educ^2), l1$black, l1$his
 
 A função GenMatch() realiza a correspondência genética
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 #Pesos geneticos
 gen1 <- GenMatch(Tr=Tr, X=X, BalanceMat=BalanceMat, pop.size=50, data.type.int=FALSE, print=0, replace=FALSE)
 
@@ -1174,7 +1211,7 @@ A diferença de estimativa de médias fornecida pelo Matching é 765, com um Err
 
 se Gamma() mudar, como o valor $p$ do Rank assinado de Wilcoxon muda? Até com Gama = 1, o valor p está bem acima de 0,05 ou 0,1. Existe uma grande sensibilidade a um possível viés oculto devido a covariáveis ausentes.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 psens(mgen1, Gamma = 1.5, GammaInc = 0.1)
 ```
 
@@ -1182,7 +1219,7 @@ psens(mgen1, Gamma = 1.5, GammaInc = 0.1)
 O hlsens() fornece uma análise de sensibilidade para a estimativa de ponto Hodges-Lehmann. Com um baixo gama de 1,1, o limite inferior e o limite superior são
 -0,017 e 547, respectivamente.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 hlsens(mgen1, Gamma = 1.5, GammaInc = 0.1)
 ```
 
@@ -1199,7 +1236,7 @@ pais trabalharam em uma fábrica de baterias em Oklahoma.
 
 Os dados estão no pacote DOS e as observações já estão combinadas.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 data(lead, package = "DOS")
 head(lead)
 ```
@@ -1220,7 +1257,7 @@ A Figura acima mostra que a distribuição dos níveis de chumbo é muito maior 
 
 Nossa segunda comparação é de crianças cujos pais tiveram diferentes níveis de exposição para liderar na fábrica da bateria.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(forcats)
 llevel <- c("low", "medium", "high")
 lead$F_level <- factor(lead$level, levels = llevel)
@@ -1261,7 +1298,7 @@ A Figura acima mostra que as crianças cujos pais tinham higiene pior tiveram ma
 
 Examinamos o efeito das leis de compensação do trabalhador no tempo que um trabalhador esteve fora do trabalho após lesão/acidente de trabalho. Este estudo de Meyer, Viscusi e Durbin (1995) é discutido em Rosenbaum (2017). Em julho de 1980, o Kentucky aumentou seu benefício máximo de 131 para 217 dólares por semana. Este aumento afetou apenas os trabalhadores que eram acima do limite anterior - ganhadores de níveis mais altos.
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(wooldridge)
 data(injury)
 str(injury)
@@ -1269,7 +1306,7 @@ str(injury)
 
 Removemos as observações com os missings:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 injury <- injury %>%
 na.omit()
 ```
@@ -1277,7 +1314,7 @@ na.omit()
 Subconjuntos dos ganhadores (indenizados) de níveis mais elevados que estavam em Kentucky.
 
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 # subset highearners
 library(tidyverse)
     library(lubridate)
@@ -1288,7 +1325,7 @@ filter(ky == 1, highearn == 1)
 Subamostra dos ganhadores de níveis mais baixos
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 inj_ky_l <- injury %>%
 filter(ky == 1, highearn == 0)
 ```
@@ -1296,7 +1333,7 @@ filter(ky == 1, highearn == 0)
 A variável afchnge é uma variável dummy para observações após a mudança de política.
 Nós combinamos os dados.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 match.ky.h <- matchit(afchnge ~ male + married + hosp + indust + injtype + age + lprewage, data = inj_ky_h, method = "genetic", replace = FALSE, pop.size = 50, print = 0)
 
 match.ky.h
@@ -1321,7 +1358,7 @@ Nós comparamos o log de duração entre os grupos antes e depois dos dados grup
 #coord_flip()
 ```
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 #match_dat_ky_h %>%
 #group_by(afchnge) %>%
 #summarize(mean_ld = mean(ldurat), median_ld = median(ldurat))
@@ -1333,7 +1370,7 @@ A média de ldurat antes era 1,39, depois era 1,61.
 Usamos o pacote rbounds para estimar as diferenças nas médias depois e antes do grupo.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 #attach(match_dat_ky_h)
 #Y <- ldurat
 #Tr <- afchnge
@@ -1377,7 +1414,7 @@ Em um projeto de descontinuidade de regressão, a atribuição de tratamento dep
 
 Faremos uma simulação; então criaremos alguns dados sintéticos.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(tidyverse)
 set.seed(12)
 tamanho_amostra <- 1000
@@ -1391,29 +1428,29 @@ run <- runif(tamanho_amostra, min = 10, max = 50)
 
 A variável de tratamento, treat, é igual a 0 se a execução for $<$20, caso contrário, treat = 1.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 # tratamento, pontodecorte = 20
 treat <- ifelse(run < 20,0,1)
 ```
 
 O resultado é dado por: outcome = 10 treat - 0,4run + ruído
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 # outcome
 outcome <- 10 * treat - 0.4 * run + 3 * rnorm(tamanho_amostra)
 ```
 
 Criamos um dataframe com essas variáveis:
 
-```{r}
-
+```{r comment=NA, null_prefix=TRUE}
+ 
 rd_data <- data.frame(treat = factor(treat), run, outcome)
 ```
 
 
 Então plotamos os dados
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 ggplot(rd_data) +
 geom_point(aes(x = run, y = outcome, shape = treat), col = "grey60") + geom_smooth(aes(x = run, y = outcome, linetype = treat),
 col = "black") + geom_vline(xintercept = 20)
@@ -1424,7 +1461,7 @@ Vemos que há um salto claro no ponto de corte.
 Regredir a variável de resultado no tratamento e a variável em execução nos dá
 estimativa próxima do efeito verdadeiro (10).
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 lm(outcome ~ treat + run)
 ```
 
@@ -1433,7 +1470,7 @@ lm(outcome ~ treat + run)
 Agora trabalhamos com o código R para analisar os dados relativos ao consumo mínimo de idade legal (MLDA) apresentado em Angrist e Pischke (2015). A MLDA de 21 afetou
 taxas de mortalidade nos Estados Unidos ?
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 # lendo os dados de exemplo do Stata
 library(foreign)
 #mlda=read.dta("AEJfigs.dta")
@@ -1446,7 +1483,7 @@ str(mlda)
 Temos dados sobre todas as taxas de mortalidade por todas as causas e idade em meses.
 Criamos uma variável fictícia para maiores de 21 anos.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mlda$over21 = mlda$agecell>=21
 ```
 
@@ -1474,20 +1511,20 @@ rddtools (Stigler e Quast 2015).
 
 
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(rddtools)
 ```
 
 Removemos dados faltantes:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mlda <- mlda %>%
 na.omit()
 ```
 
 Temos que declarar os dados para regressão com descontinuidades:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 rd_data_2 <- rdd_data(y = all, x=agecell, data=mlda, cutpoint=21 )
 
 summary(rd_data_2)
@@ -1495,7 +1532,7 @@ summary(rd_data_2)
 
 Primeiro usamos uma regressão paramétrica para estimar o efeito do tratamento.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 reg_para <- rdd_reg_lm(rd_data_2, order=1)
 reg_para
 ```
@@ -1518,14 +1555,14 @@ Altere a ordem do polinômio no código acima, e então rode a regressão novame
 Agora usamos uma regressão não paramétrica; primeiro obtemos o bandwidth ideal.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 bw_ik <- rdd_bw_ik(rd_data_2)
 bw_ik
 ```
 
 Em seguida, estimamos e plotamos a regressão não paramétrica
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 reg_nonpara <- rdd_reg_np(rdd_object=rd_data_2, bw=bw_ik)
 reg_nonpara
 ```
@@ -1570,7 +1607,7 @@ $scrap_{1988} − scrap_{1987} = \Delta scrap_{i} = δ_{0} + β1\Delta grant_{i}
 
 A diferenciação nos ajuda a remover o efeito de confusão $a_{i}$. Os dados estão no pacote wooldridge.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(wooldridge)
 data("jtrain")
 ```
@@ -1578,14 +1615,14 @@ data("jtrain")
 
 Removemos os dados do ano de 1989.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 jtrain <- jtrain %>%
 filter(year != 1989)
 ```
 
 Usaremos o pacote plm, que trata dos dados do painel.
 
-```{r message=FALSE}
+```{r message=FALSE, comment=NA, null_prefix=TRUE}
 library(plm)
 jtrain_p <- pdata.frame(jtrain,
 index = c("fcode","year"))
@@ -1594,7 +1631,7 @@ index = c("fcode","year"))
 
 Usamos a função diff() para obter diferenças.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 jtrain_p$scrap_d <- diff(jtrain_p$scrap)
 jtrain_p$grant_d <- diff(jtrain_p$grant)
 ```
@@ -1602,7 +1639,7 @@ jtrain_p$grant_d <- diff(jtrain_p$grant)
 
 Estimamos o efeito da concessão na sucata/descarte.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 mod_did <- lm(scrap_d ~ grant_d, data = jtrain_p)
 
 summary(mod_did)
@@ -1634,7 +1671,7 @@ $y_{1} = fixed + eff ∗ treat + u_{y1}$
 
 Geramos os dados sintéticos com o seguinte código:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 ss <- 3000 # tamanho da amostra
 eff <- 3 # efeito= 3
 fixed <- rnorm(ss) # normal aleatoria
@@ -1648,7 +1685,7 @@ y0 <- fixed + uy0
 
 Em m_d1, estimamos a diferença das médias. Em m_d2 nós controlamos para o valor inicial de y, y0. Em m_d3, usamos diferença em diferença.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 # diferenca das medias
 m_d1 <- lm(y1 ~ treat)
 
@@ -1684,7 +1721,7 @@ $y_1 = beta ∗ y_0 + eff ∗ treat + u_{y1}$
 
 Geramos os dados sintéticos com o seguinte código:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 ss <- 3000
 eff <- 3
 y0 <- runif(ss, min = 1, max = 4)
@@ -1695,7 +1732,7 @@ y1 <- 0.3 * y0 + eff * treat + uy1
 ```
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 # diferenca nas medias
 m_d4 <- lm(y1 ~ treat)
 # controlando para y0
@@ -1736,7 +1773,7 @@ Recebemos os dados:
 
 Então carregue localmente:
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 load("C:/Users/rodri/Downloads/banks.rda")
 
 str(banks)
@@ -1744,7 +1781,7 @@ str(banks)
 
 Calculamos o número médio de bancos em atividade a cada ano diariamente e nos distritos 6 e 8.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 library(tidyverse)
 bankag <- banks %>%
 group_by(year) %>%
@@ -1756,7 +1793,7 @@ head(bankag)
 
 Empilhamos, ou reunimos, os bancos em atividade para o sexto e o oitavo distritos em um coluna.
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 bankag2 <- gather(bankag,
 "bty","num",2:3)
 ```
@@ -1764,7 +1801,7 @@ bankag2 <- gather(bankag,
 Filtramos pelos anos 1930 e 1931.
 
 
-```{r}
+```{r comment=NA, null_prefix=TRUE}
 bankag3 <- filter(bankag2, year == 1930 | year == 1931)
 bankag3
 ```

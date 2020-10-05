@@ -117,6 +117,42 @@ Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil anal�
 
 ***
 
+# As variáveis dos microdados do CAGED novo, CAGED Movimentação
+
+O link para download desta planilha com os descritores, encontra-se na referência da tabela a seguir.
+
+Tabela 2: Conteúdo descritivo das variáveis presentes nos microdados do CAGED Movimentação/ Ministério do Trabalho e Emprego
+
+| Variável            | Descrição                                                                                          |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| competência         | Competência da movimentação                                                                        |
+| região              | Região geográfica de acordo com o código do IBGE                                                   |
+| uf                  | Unidade da federação de acordo com o código do IBGE                                                |
+| município           | Código do Município                                                                                |
+| seção               | Código da seção da classificação nacional de atividade econômica (CNAE 2.0)                        |
+| subclasse           | Código da subclasse da classificação nacional de atividade econômica (CNAE 2.0)                    |
+| saldomovimentação   | Valor da movimentação em termos de saldo                                                           |
+| cbo2002ocupação     | Código da ocupação do trabalhador de acordo com a Classificação Brasileira de Ocupações (CBO 2002) |
+| categoria           | Categoria de trabalhador                                                                           |
+| graudeinstrução     | Grau de instrução do trabalhador                                                                   |
+| idade               | Idade do trabalhador                                                                               |
+| horascontratuais    | Horas contratuais                                                                                  |
+| raçacor             | Raça ou cor do trabalhador                                                                         |
+| sexo                | Sexo do trabalhador                                                                                |
+| tipoempregador      | Tipo de empregador                                                                                 |
+| tipoestabelecimento | Tipo de estabelecimento                                                                            |
+| tipomovimentação    | Tipo de movimentação                                                                               |
+| tipodedeficiência   | Tipo de deficiência do trabalhador                                                                 |
+| indtrabintermitente | Indicador de trabalhador intermitente                                                              |
+| indtrabparcial      | Indicador de trabalhador parcial                                                                   |
+| salário             | Salário mensal declarado                                                                           |
+| tamestabjan         | Faixa de tamanho do estabelecimento no início do ano                                               |
+| indicadoraprendiz   | Indicador de trabalhador aprendiz                                                                  |
+| fonte               | Fonte da movimentação       
+
+<small>**Fonte:** Ministério do Trabalho e Emprego [(planilha Layout.xlsx)](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx)</small> 
+
+
 ## Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil
 
 + Baixe os dados no endereço [ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/)
@@ -162,6 +198,17 @@ O diretório de microdados do Ministério encontra-se neste link
 <center>
 $\color{red}{\text{[A construir] }}$
 </center>
+
+
+***
+
+### **Referências**
+
+DataViva: A maior plataforma de visualização de dados sociais e econômicos do Brasil.
+Totalmente aberta e livre. Disponível em: [https://pt.wikipedia.org/wiki/DataViva](https://pt.wikipedia.org/wiki/DataViva)
+
+Ministério do Trabalho PDET: Programa de Disseminação das Estatísticas do Trabalho: [http://pdet.mte.gov.br/microdados-rais-e-caged](http://pdet.mte.gov.br/microdados-rais-e-caged)
+
 
 
 
