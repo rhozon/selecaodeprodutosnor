@@ -111,7 +111,7 @@ Nas três abas deste painel, Dados Gerais é possível visualizarmos os salário
 
 Como a principal intenção do microdado não é a de fornecer um cálculo de salário médio, p. ex., apresentamos cada registro conforme a seleção/filtragem que o usuário do painel faça.
 
-Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.
+Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral (com menores disparidades) recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.
 
 <small>_*Na aba do mapa, preciso ainda corrigir o problema de geolocalização via latitudes e longitudes, pois existem algumas cidades com nomes iguais e isso confunde o Power BI e gera posições errôneas.*_</small>
 
@@ -121,7 +121,7 @@ Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil anal�
 
 O link para download desta planilha com os descritores, encontra-se na referência da tabela a seguir.
 
-Tabela 2: Conteúdo descritivo das variáveis presentes nos microdados do CAGED Movimentação/ Ministério do Trabalho e Emprego
+**Tabela 2:** Conteúdo descritivo das variáveis presentes nos microdados do CAGED Movimentação/ Ministério do Trabalho e Emprego
 
 | Variável            | Descrição                                                                                          |
 | ------------------- | -------------------------------------------------------------------------------------------------- |
@@ -150,31 +150,35 @@ Tabela 2: Conteúdo descritivo das variáveis presentes nos microdados do CAGED 
 | indicadoraprendiz   | Indicador de trabalhador aprendiz                                                                  |
 | fonte               | Fonte da movimentação       
 
-<small>**Fonte:** Ministério do Trabalho e Emprego [(planilha Layout.xlsx)](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx)</small> 
+<small>**Fonte:** Ministério do Trabalho e Emprego [(planilha Layout.xlsx Novo CAGED)](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx)</small> 
 
 
 ## Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil
 
-+ Baixe os dados no endereço 
 
 ***
 
-<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZWIyZWNiNGYtYjIwZi00NWU0LWEzZjktYjZkZmY5ODdjYTBjIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZWIyZWNiNGYtYjIwZi00NWU0LWEzZjktYjZkZmY5ODdjYTBjIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection3b1a812ab590d467a0a8" frameborder="0" allowFullScreen="true"></iframe>
 
 <small>
-<b>
-Fonte:</b> Microdados CAGED (ano de 2020)/Ministério do Trabalho e Emprego ( <a href="ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/">ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/</a> )</small>
+**Fonte:** [Microdados CAGED (ano de 2020)/Ministério do Trabalho e Emprego](ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/) 
+</small>
 
 
 ***
 
 # Variáveis dos microdados do fluxo de empregos 
 
-A partir da RAIS, construimos o painel contemplando os dados referentes ao número de estabelecimentos e de empregados nas mesmas.
+A partir da RAIS, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.
 
 <center>
 $\color{red}{\text{[A construir] }}$
 </center>
+
+
++ _verificar a possibilidade para fazer integração em único painel empregos e estabelecimentos_
++ _verificar se possivel fazer somente para o último ano (2018) ou integrar CAGED Estab para 2019 e 2020..._ 
+
 
 
 ### Taxa de crescimento dos empregos ponderado pelo tamanho das cidades
