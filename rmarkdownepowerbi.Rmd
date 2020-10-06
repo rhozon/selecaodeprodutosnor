@@ -155,6 +155,16 @@ O link para download desta planilha com os descritores, encontra-se na referênc
 
 ## Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil
 
+O Ministério disponibilizou em seu portal um gráfico que demonstra a evolução do fluxo de contratações e demissões no Brasil desde o início deste ano até agosto:
+
+<center>
+![](http://pdet.mte.gov.br/images/Novo_CAGED/Ago2020/Saldo.jpg){width=80%}
+</center>
+
+
+&nbsp;
+
+Os meses de março, abril e maio foram severamente afetados pela pandemia do coronavírus.
 
 ***
 
@@ -169,11 +179,9 @@ O link para download desta planilha com os descritores, encontra-se na referênc
 
 # Variáveis dos microdados do fluxo de empregos 
 
-A partir da RAIS, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.
+[A partir do Novo CAGED, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.](https://app.powerbi.com/view?r=eyJrIjoiM2ZiNzk5YzUtODU5OS00YjFmLTk1NjItNDY1M2IwMTJhOTgzIiwidCI6ImNmODdjOTA4LTRhNjUtNGRlZS05MmM3LTExZWE2MTVjNjMyZSIsImMiOjR9&pageName=ReportSectionb52b07ec3b5f3ac6c749)
 
-<center>
-$\color{red}{\text{[A construir] }}$
-</center>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTM4YTUzZTUtMDc4NC00ODI2LTg1Y2EtOTNjNGM3NTQ5ODQxIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
 
 
 + _verificar a possibilidade para fazer integração em único painel empregos e estabelecimentos_
