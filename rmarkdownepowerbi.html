@@ -631,7 +631,7 @@ div.tocify {
 <hr />
 <p>Nas três abas deste painel, Dados Gerais é possível visualizarmos os salários de entrada/admissão nos diferentes cargos/profissões no mercado formal de trabalho nos estados e municípios brasileiros.</p>
 <p>Como a principal intenção do microdado não é a de fornecer um cálculo de salário médio, p. ex., apresentamos cada registro conforme a seleção/filtragem que o usuário do painel faça.</p>
-<p>Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.</p>
+<p>Todavia, nas duas abas após a aba de Dados Gerais, demonstramos um perfil analítico ao longo do tempo, considerando as principais cidades (ou grupos), conforme UF, (ou grupos) e notamos que os níveis salariais comparáveis em geral (com menores disparidades) recaem sobre as capitais e suas respectivas regiões metropolitanas. Também inserimos as opções referentes aos níveis de escolaridade do trabalhador e demais dados de informações individuais, como idade, sexo, tempo na empresa, etc.</p>
 <p><small><em><em>Na aba do mapa, preciso ainda corrigir o problema de geolocalização via latitudes e longitudes, pois existem algumas cidades com nomes iguais e isso confunde o Power BI e gera posições errôneas.</em></em></small></p>
 <hr />
 </div>
@@ -639,7 +639,7 @@ div.tocify {
 <div id="as-variáveis-dos-microdados-do-caged-novo-caged-movimentação" class="section level1">
 <h1>As variáveis dos microdados do CAGED novo, CAGED Movimentação</h1>
 <p>O link para download desta planilha com os descritores, encontra-se na referência da tabela a seguir.</p>
-<p>Tabela 2: Conteúdo descritivo das variáveis presentes nos microdados do CAGED Movimentação/ Ministério do Trabalho e Emprego</p>
+<p><strong>Tabela 2:</strong> Conteúdo descritivo das variáveis presentes nos microdados do CAGED Movimentação/ Ministério do Trabalho e Emprego</p>
 <table>
 <colgroup>
 <col width="16%" />
@@ -750,25 +750,26 @@ div.tocify {
 </tr>
 </tbody>
 </table>
-<p><small><strong>Fonte:</strong> Ministério do Trabalho e Emprego <a href="ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx">(planilha Layout.xlsx)</a></small></p>
+<p><small><strong>Fonte:</strong> Ministério do Trabalho e Emprego <a href="ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx">(planilha Layout.xlsx Novo CAGED)</a></small></p>
 <div id="dashboard-dos-microdados-do-caged-de-jan-a-agosto-de-2020-brasil" class="section level2">
 <h2>Dashboard dos microdados do CAGED de jan a agosto de 2020, Brasil</h2>
-<ul>
-<li>Baixe os dados no endereço</li>
-</ul>
 <hr />
-<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZWIyZWNiNGYtYjIwZi00NWU0LWEzZjktYjZkZmY5ODdjYTBjIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true">
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZWIyZWNiNGYtYjIwZi00NWU0LWEzZjktYjZkZmY5ODdjYTBjIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&amp;pageName=ReportSection3b1a812ab590d467a0a8" frameborder="0" allowFullScreen="true">
 </iframe>
-<p><small> <b> Fonte:</b> Microdados CAGED (ano de 2020)/Ministério do Trabalho e Emprego ( <a href="ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/">ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/</a> )</small></p>
+<p><small> <strong>Fonte:</strong> <a href="ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/">Microdados CAGED (ano de 2020)/Ministério do Trabalho e Emprego</a> </small></p>
 <hr />
 </div>
 </div>
 <div id="variáveis-dos-microdados-do-fluxo-de-empregos" class="section level1">
 <h1>Variáveis dos microdados do fluxo de empregos</h1>
-<p>A partir da RAIS, construimos o painel contemplando os dados referentes ao número de estabelecimentos e de empregados nas mesmas.</p>
+<p>A partir da RAIS, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.</p>
 <center>
 <span class="math inline">\(\color{red}{\text{[A construir] }}\)</span>
 </center>
+<ul>
+<li><em>verificar a possibilidade para fazer integração em único painel empregos e estabelecimentos</em></li>
+<li><em>verificar se possivel fazer somente para o último ano (2018) ou integrar CAGED Estab para 2019 e 2020…</em></li>
+</ul>
 <div id="taxa-de-crescimento-dos-empregos-ponderado-pelo-tamanho-das-cidades" class="section level3">
 <h3>Taxa de crescimento dos empregos ponderado pelo tamanho das cidades</h3>
 <p>Esta etapa do projeto busca construir um painel de visualização da dinâmica das taxas de crescimento dos empregos nos diversos cargos frente ao tamanho das cidades.</p>
