@@ -32,7 +32,6 @@ O objetivo de projeto é o de fazer um painel contendo esse grande volume de dad
 + Análise comparativa com as medianas salariais, médios, máximos e mínimos $\color{red}{\text{(ok)}}$
 + Mapa de análise econométrica ponderado pela matriz de distância pelo tamanho de mercado de trabalho selecionado no painel; (avalia a taxa de crescimento ponderada por salário conforme cargo em relação a terrritoriedades) $\color{red}{\text{(a ser feito)}}$
 
-_Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos com um mês de delay...Com o atual governo a última base de dados do CAGED que dispomos é de dez/2019, infelizmente. Isso dificulta substancialmente a avaliação da dinâmica do mercado de trabalho formal brasileiro._
 
 
 ***
@@ -41,19 +40,37 @@ _Até o governo Temer, as publicações pelo MTE dos dados do CAGED eram feitos 
 
 Um projeto de dados com um grande volume deles considera o nível de informações que detemos a respeito da dinâmica do fluxo do mercado formal de trabalho brasileiro.
 
-Assim, a qualidade de estudos mais aprofundados a respeito dele pode ser realizada se as estatísticas fossem divulgadas com o menor _delay_ possível ao público.
+Assim, a qualidade de estudos mais aprofundados a respeito pode ser realizada se as estatísticas fossem divulgadas com o menor _delay_ possível ao público.
 
 Os microdados do CAGED aqui trabalhados, trabalharam com uma matriz da seguinte dimensão:
 
 + 30.865.840 (quase 31 milhões) de linhas por 44 colunas; (muitas colunas não foram utilizadas nos painéis) para o ano de 2019;
-+ $\color{red}{\text{xxxx}}$ (quase $\color{red}{\text{xxxx}}$ milhões) de linhas por $\color{red}{\text{xxx colunas}}$, para o ano de 2020 (de janeiro a agosto)
++ 5.274.194 de linhas por 16 colunas (as colunas/variáveis utilizadas não foram as 16), para o ano de 2020 (de janeiro a agosto) para o fluxo de estabelecimentos 
++ 19.210.781 linhas e 26 colunas para o CAGED Movimentação, contemplando o período de jan a outubro de 2020
 
-Tive de dividir em dois painéis; um para o ano de 2019 e outro para este ano de 2020 de janeiro a agosto.
+Tive de dividir em painéis separados; um para o ano de 2019 e outros para este ano de 2020 de janeiro a agosto.
 
 Carreguei ele num intel icore i7, oitava geração com 8gb de RAM, Win 64 Bits.
 
 
 *** 
+
+
+# Variáveis dos microdados do fluxo de empregos 
+
+O Ministério do Trabalho e Emprego modificou um pouco as bases de dados do CAGED e consequentemente da RAIS, incluindo p. ex. o CAGED Estabelecimentos onde as informações referentes aos vínculos empregatícios nas empresas são registradas.
+
+Inicialmente vamos visualizar o comportamento dos estabelecimentos formais ainda sem os cargos/profissões com o cruzamento de dados:
+
+[A partir do Novo CAGED, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.](https://app.powerbi.com/view?r=eyJrIjoiM2ZiNzk5YzUtODU5OS00YjFmLTk1NjItNDY1M2IwMTJhOTgzIiwidCI6ImNmODdjOTA4LTRhNjUtNGRlZS05MmM3LTExZWE2MTVjNjMyZSIsImMiOjR9&pageName=ReportSectionb52b07ec3b5f3ac6c749)
+
+<center>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTM4YTUzZTUtMDc4NC00ODI2LTg1Y2EtOTNjNGM3NTQ5ODQxIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
+</center>
+
+Para visualizar os dados relacionados ao fluxo de empregos nas subclasses de categorias/classificações econômicas (CNAE) construimos o painel a seguir:
+
+
 
 # Variáveis dos microdados do fluxo de profissionais
 
@@ -98,7 +115,9 @@ Para compreender o conteúdo específico de cada uma das variáveis desses micro
 
 ## Dashboard dos microdados do CAGED, para o ano de 2019, no Brasil
 
+<center>
 <iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZDExOWY1YTYtODUwOS00ZDJkLTg5Y2EtMWFiMzcyYzIzNGRhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSectiondc723d8ac30d390c6202" frameborder="0" allowFullScreen="true"></iframe>
+</center>
 
 <small>
 <b>
@@ -158,8 +177,12 @@ O link para download desta planilha com os descritores, encontra-se na referênc
 O Ministério disponibilizou em seu portal um gráfico que demonstra a evolução do fluxo de contratações e demissões no Brasil desde o início deste ano até agosto:
 
 <center>
-![](http://pdet.mte.gov.br/images/Novo_CAGED/Ago2020/Saldo.jpg){width=80%}
+![](http://pdet.mte.gov.br/images/Novo_CAGED/Ago2020/Saldo.jpg){width=90%}
 </center>
+
+<small>**Fonte:** [Ministério do Trabalho e Emprego](http://pdet.mte.gov.br/novo-caged)</small>
+
+
 
 
 &nbsp;
@@ -167,8 +190,10 @@ O Ministério disponibilizou em seu portal um gráfico que demonstra a evoluçã
 Os meses de março, abril e maio foram severamente afetados pela pandemia do coronavírus.
 
 ***
-
+<center>
 <iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZWIyZWNiNGYtYjIwZi00NWU0LWEzZjktYjZkZmY5ODdjYTBjIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection3b1a812ab590d467a0a8" frameborder="0" allowFullScreen="true"></iframe>
+</center>
+
 
 <small>
 **Fonte:** [Microdados CAGED (ano de 2020)/Ministério do Trabalho e Emprego](ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2020/) 
@@ -176,17 +201,6 @@ Os meses de março, abril e maio foram severamente afetados pela pandemia do cor
 
 
 ***
-
-# Variáveis dos microdados do fluxo de empregos 
-
-[A partir do Novo CAGED, construimos o painel contemplando os dados referentes ao número de de empregados nas mesmas.](https://app.powerbi.com/view?r=eyJrIjoiM2ZiNzk5YzUtODU5OS00YjFmLTk1NjItNDY1M2IwMTJhOTgzIiwidCI6ImNmODdjOTA4LTRhNjUtNGRlZS05MmM3LTExZWE2MTVjNjMyZSIsImMiOjR9&pageName=ReportSectionb52b07ec3b5f3ac6c749)
-
-<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTM4YTUzZTUtMDc4NC00ODI2LTg1Y2EtOTNjNGM3NTQ5ODQxIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
-
-
-+ _verificar a possibilidade para fazer integração em único painel empregos e estabelecimentos_
-+ _verificar se possivel fazer somente para o último ano (2018) ou integrar CAGED Estab para 2019 e 2020..._ 
-
 
 
 ### Taxa de crescimento dos empregos ponderado pelo tamanho das cidades
@@ -218,10 +232,10 @@ $\color{red}{\text{[A construir] }}$
 
 ### **Referências**
 
-DataViva: A maior plataforma de visualização de dados sociais e econômicos do Brasil.
+**DataViva: A maior plataforma de visualização de dados sociais e econômicos do Brasil.**
 Totalmente aberta e livre. Disponível em: [https://pt.wikipedia.org/wiki/DataViva](https://pt.wikipedia.org/wiki/DataViva)
 
-Ministério do Trabalho PDET: Programa de Disseminação das Estatísticas do Trabalho: [http://pdet.mte.gov.br/microdados-rais-e-caged](http://pdet.mte.gov.br/microdados-rais-e-caged)
+**Ministério do Trabalho PDET: Programa de Disseminação das Estatísticas do Trabalho:** [http://pdet.mte.gov.br/microdados-rais-e-caged](http://pdet.mte.gov.br/microdados-rais-e-caged)
 
 
 
