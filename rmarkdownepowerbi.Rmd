@@ -233,7 +233,7 @@ $\color{red}{\text{[A construir] }}$
 ### **Referências**
 
 **DataViva: A maior plataforma de visualização de dados sociais e econômicos do Brasil.**
-Totalmente aberta e livre. Disponível em: [https://pt.wikipedia.org/wiki/DataViva](https://pt.wikipedia.org/wiki/DataViva)
+Totalmente aberta e livre. Disponível em: [http://dataviva.info/pt/](http://dataviva.info/pt/)
 
 **Ministério do Trabalho PDET: Programa de Disseminação das Estatísticas do Trabalho:** [http://pdet.mte.gov.br/microdados-rais-e-caged](http://pdet.mte.gov.br/microdados-rais-e-caged)
 
