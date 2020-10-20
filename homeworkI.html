@@ -482,22 +482,15 @@ div.tocify {
 <hr />
 <p><a href="https://github.com/rhozon/homeworkI">See the repo on github</a></p>
 <hr />
-<div id="section" class="section level1">
-<h1>2</h1>
-<p>In the simple linear regression model <span class="math inline">\(y=\beta_{0}+\beta_{1}x+u\)</span>, suppose that <span class="math inline">\(E(u)\neq 0\)</span>. Letting <span class="math inline">\(\alpha_{0}=E(u)\)</span>, show that the model can always be rewritten with the same slope, but a new intercept and error, where the new error has a zero expected value.</p>
-<div id="solution" class="section level2">
-<h2><strong>Solution:</strong></h2>
+<p>2 In the simple linear regression model <span class="math inline">\(y=\beta_{0}+\beta_{1}x+u\)</span>, suppose that <span class="math inline">\(E(u)\neq 0\)</span>. Letting <span class="math inline">\(\alpha_{0}=E(u)\)</span>, show that the model can always be rewritten with the same slope, but a new intercept and error, where the new error has a zero expected value.</p>
+<p><strong>Solution:</strong></p>
 <p><span class="math display">\[\begin{align}
 y=&amp;\beta_{0}+\beta_{1}x+u\quad \mbox{then we can add $\alpha_{0}$ and subtract $\alpha_{0}$}\\
 y=&amp;(\alpha_{0}+\beta_{0}) +\beta_{1}x+ (u−\alpha_{0})\\
 \end{align}\]</span></p>
 <p>We can call the new error <span class="math inline">\(e=u-\alpha_{0}\)</span> and so that <span class="math inline">\(E(e) = 0\)</span>. The new intercept is <span class="math inline">\(α_0+β_0\)</span>, but the slope is still <span class="math inline">\(β_1\)</span>.</p>
 <hr />
-</div>
-</div>
-<div id="section-1" class="section level1">
-<h1>3</h1>
-<p>The following table contains the ACT scores and the GPA (grade point average) for eight college students. Grade point average is based on a four-point scale and has been rounded to one digit after the decimal</p>
+<p>3 The following table contains the ACT scores and the GPA (grade point average) for eight college students. Grade point average is based on a four-point scale and has been rounded to one digit after the decimal</p>
 <table>
 <thead>
 <tr class="header">
@@ -556,7 +549,7 @@ y=&amp;(\alpha_{0}+\beta_{0}) +\beta_{1}x+ (u−\alpha_{0})\\
 \widehat{GPA}=\widehat{\beta}_{0}+\widehat{\beta}_{1}ACT
 \]</span></p>
 <p>Comment on the direction of the relationship. Does the intercept have useful interpretation here ? Explain. How much higher is the <em>GPA</em> predicted to be if the <em>ACT</em> score is increased by five points ?</p>
-<div id="solution-1" class="section level2">
+<div id="solution" class="section level2">
 <h2><strong>Solution</strong>:</h2>
 <p><a href="https://github.com/rhozon/homeworkI/blob/main/gpaxact.xlsx?raw=true">*Download the table here</a></p>
 <p>The estimated relationship between <em>GPA</em> and <em>ACT</em> is:</p>
@@ -594,8 +587,7 @@ F-statistic: 8.199 on 1 and 6 DF,  p-value: 0.02868</code></pre>
 <ol start="2" style="list-style-type: lower-roman">
 <li>Compute the fitted values and residuals for each observation and verify that residuals (approximately) sum to zero.</li>
 </ol>
-<div id="ii-solution" class="section level3">
-<h3>(ii) <strong>Solution</strong>:</h3>
+<p><strong>Solution</strong>:</p>
 <p>The fitted values are obtained by applying the OLS equation and multiplying by the ACT values. For example, for the second student, we estimate a GPA of 0.568 + 0.102 * 24 = 3.021.</p>
 <p>The residuals are obtained by the equation <span class="math inline">\(GPA-\widehat{GPA}\)</span>, and the sum <span class="math inline">\(\displaystyle\sum_{i=1}^{n}(GPA-\widehat{GPA})\)</span></p>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
@@ -782,45 +774,31 @@ NA
 <ol start="3" style="list-style-type: lower-roman">
 <li>What is the predicted value of <em>GPA</em> when <em>ACT</em>=20 ?</li>
 </ol>
-</div>
-</div>
-<div id="iii-solution" class="section level2">
-<h2>(iii) <strong>Solution</strong>:</h2>
+<p><strong>Solution</strong>:</p>
 <p>Using the OLS estimated equation <span class="math inline">\(\widehat{GPA}=0.568+0.102\times 20 = 2.612\)</span></p>
 <ol start="4" style="list-style-type: lower-roman">
 <li>How much of the variation in <em>GPA</em> for these eight students is explained by <em>ACT</em> ? Explain.</li>
 </ol>
-</div>
-<div id="iv-solution" class="section level2">
-<h2>(iv) <strong>Solution:</strong></h2>
+<p><strong>Solution:</strong></p>
 <p>By the <span class="math inline">\(R^{2}=0.5774\)</span> we cain expect that about 57.74% of the variations in GPA can be explained by ACT.</p>
 <hr />
-</div>
-</div>
-<div id="section-2" class="section level1">
-<h1>10</h1>
-<p>Let <span class="math inline">\(\widehat{\beta}_{0}\)</span> and <span class="math inline">\(\widehat{\beta}_{1}\)</span> be the OLS intercept and slope estimators, respectively, and let <span class="math inline">\(\overline{u}\)</span> be the sample average of errors (not the residuals!).</p>
+<p>10 Let <span class="math inline">\(\widehat{\beta}_{0}\)</span> and <span class="math inline">\(\widehat{\beta}_{1}\)</span> be the OLS intercept and slope estimators, respectively, and let <span class="math inline">\(\overline{u}\)</span> be the sample average of errors (not the residuals!).</p>
 <ol style="list-style-type: lower-roman">
 <li>Show that <span class="math inline">\(\widehat{\beta}_{1}\)</span> can be written as <span class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\displaystyle\sum_{i=1}^{n}w_{i}u_{i},\)</span> where <span class="math inline">\(w_{i}=d_{i}/\mbox{SST}_{x}\)</span> and <span class="math inline">\(d_{i}=x_{i}-\overline{x}\)</span></li>
 </ol>
-<div id="i-solution" class="section level2">
-<h2>(i) <strong>Solution:</strong></h2>
+<p><strong>Solution:</strong></p>
 <p>If we can call <span class="math inline">\(w=\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span> than <span class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span>. Then, now, define that <span class="math inline">\(w_{i}=d_{i}/SST_{x}\)</span> .</p>
 <ol start="2" style="list-style-type: lower-roman">
 <li>Use part (i), along with <span class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}u_{i}=0\)</span>, to show that <span class="math inline">\(\widehat{\beta}_{1}\)</span> and <span class="math inline">\(\overline{u}\)</span> are uncorrelated. [<em>Hint:</em> You are been asked to show that <span class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\cdot \overline{u}]=0\)</span>]</li>
 </ol>
-</div>
-<div id="ii-solution-1" class="section level2">
-<h2>(ii) <strong>Solution:</strong></h2>
+<p><strong>Solution:</strong></p>
 <p>We show that the latter is zero because <span class="math inline">\(Cov(\widehat{\beta}_{1},\overline{u})=E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]\)</span>.</p>
 <p>Remember that <span class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]=E[(\displaystyle\sum^{n}_{i=1}w_{i}u_{i})\overline{u}]=\displaystyle\sum^{n}_{i=1}w_{i}E(u_{i}\overline{u}).\)</span></p>
 <p>The <span class="math inline">\(u_{i}\)</span> are pairwise uncorrelated (they are independent), <span class="math inline">\(E(u_{i},\overline{u})=E(u_{i}^{2}/n)=\sigma^{2}/n\)</span> (because <span class="math inline">\(E(u_{i},u_{h})=0,\,\,i\neq h\)</span>). Therefore, <span class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}E(u_{i},\overline{u})=\sum^{n}_{i=1}w_{i}(\sigma^{2}/n)=(\sigma^{2}/n)\displaystyle\sum^{n}_{i=1}w_{i}=0\)</span></p>
 <ol start="3" style="list-style-type: lower-roman">
 <li>Show that <span class="math inline">\(\widehat{\beta}_{0}\)</span> can be written as <span class="math inline">\(\widehat{\beta}_{0}=\beta_{0}+\overline{u}-(\widehat{\beta}_{1}-\beta_{1})\overline{x}\)</span></li>
 </ol>
-</div>
-<div id="iii-solution-1" class="section level2">
-<h2>(iii) <strong>Solution:</strong></h2>
+<p><strong>Solution:</strong></p>
 <p>Remember that the OLS intercept formula is: <span class="math inline">\(\widehat{\beta}_{0}=\overline{y}-\widehat{\beta}\overline{x}\)</span> and if we can insert this in <span class="math inline">\(\overline{y}=\beta_{0}+\beta_{1}\overline{x}+\overline{u}\)</span> we can obtain:</p>
 <p><span class="math display">\[
 \widehat{\beta}_{0}=(\beta_{0}+\beta_{1}\overline{x}+\overline{u})-\widehat{\beta}_{1}\overline{x}=\beta_{0}+\overline{u}-(\widehat{\beta}-\beta_{1})\overline{x}
@@ -828,9 +806,7 @@ NA
 <ol start="4" style="list-style-type: lower-roman">
 <li>Use parts (ii) and (iii) to show that <span class="math inline">\(Var(\widehat{\beta}_{0}) =\sigma^{2}/n+\sigma^{2}(\overline{x})^{2}/SST_{x}\)</span>.</li>
 </ol>
-</div>
-<div id="iv-solution-1" class="section level2">
-<h2>(iv) <strong>Solution:</strong></h2>
+<p><strong>Solution:</strong></p>
 <p><span class="math inline">\(\widehat{\beta}_{1}\)</span> and <span class="math inline">\(\overline{u}\)</span> are uncorrelated than</p>
 <p><span class="math display">\[
 Var(\beta_{0})=Var(\overline{u})+Var(\widehat{\beta_{1}})\overline{x}^{2}=\\
@@ -840,9 +816,7 @@ Var(\beta_{0})=Var(\overline{u})+Var(\widehat{\beta_{1}})\overline{x}^{2}=\\
 <ol start="22" style="list-style-type: lower-alpha">
 <li>Do the algebra to simplify the expression in part (iv) to equation (2.58) [<em>Hint:</em> <span class="math inline">\(SST_{x}/n=n^{-1}\displaystyle\sum_{i=1}^{n}x^{2}_{i}-(\overline{x})^{2}\)</span>.]</li>
 </ol>
-</div>
-<div id="v-solution" class="section level2">
-<h2>(v) <strong>Solution</strong>:</h2>
+<p><strong>Solution</strong>:</p>
 <p>The substitution gives</p>
 <p><span class="math display">\[
 Var(\widehat{\beta}_{0})=\sigma^{2}[SST_{x}/n+\overline{x}^{2}]/SST_{x}=\\
@@ -850,11 +824,7 @@ Var(\widehat{\beta}_{0})=\sigma^{2}[SST_{x}/n+\overline{x}^{2}]/SST_{x}=\\
 \sigma^{2}(n^{-1}\sum^{n}_{i=1}x^{2}_{i})/SST_{x}
 \]</span></p>
 <hr />
-</div>
-</div>
-<div id="section-3" class="section level1">
-<h1>3</h1>
-<p>The following model is a simplified version of the multiple regression model used by Biddle and Hamermesh (1990) to study the tradeoff between time spent sleeping and working and to look at other factors affecting sleep:</p>
+<p>3 The following model is a simplified version of the multiple regression model used by Biddle and Hamermesh (1990) to study the tradeoff between time spent sleeping and working and to look at other factors affecting sleep:</p>
 <p><span class="math display">\[
 sleep=\beta_{0}+\beta_{1}totwrk+\beta_{2}educ+\beta_{3}age+u,
 \]</span></p>
@@ -874,10 +844,7 @@ n=706,\,\, R^{2}=.113.
 <li><p>Would you say <span class="math inline">\(totwrk\)</span>, <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> explain much of the variation in sleep? What other factors might affect the time spent sleeping ? Are these likely to be correlated with <span class="math inline">\(totwrk\)</span> ?</p></li>
 </ol>
 <hr />
-</div>
-<div id="section-4" class="section level1">
-<h1>9</h1>
-<p>The following equation describes the median housing price in a community in terms of amount of pollution (nox for nitrous oxide) and the average number of rooms in houses in the community (rooms):</p>
+<p>9 The following equation describes the median housing price in a community in terms of amount of pollution (nox for nitrous oxide) and the average number of rooms in houses in the community (rooms):</p>
 <p><span class="math display">\[
 \log(price)=\beta_{0} +\beta_{1}\log(nox)+\beta_{2}rooms+u.
 \]</span></p>
@@ -892,10 +859,7 @@ n=706,\,\, R^{2}=.113.
 \]</span></p>
 <p>Is the relationship between the simple and multiple regression estimates of the elasticity of <span class="math inline">\(price\)</span> with respect to <span class="math inline">\(nox\)</span> what would have predicted, given your answer in part (ii)? Does this mean that -.718 is definitely closer to the true elasticity than -1.043 ?</p>
 <hr />
-</div>
-<div id="section-5" class="section level1">
-<h1>16</h1>
-<p>The following equations were estimated using the data in LAWSCH85:</p>
+<p>16 The following equations were estimated using the data in LAWSCH85:</p>
 <p><span class="math display">\[\begin{align}
 \widehat{lsalary}=&amp; 9.9 -.0041rank +.294GPA\\
 &amp;(.24)\quad(.0003)\quad(.069)\\
