@@ -1,0 +1,482 @@
+---
+title: "Big Data: Análises Avançadas no R"
+author: "Rodrigo H. Ozon"
+date: "01/10/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<!-- ================================================================================= -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
+```
+
+```{r include=FALSE}
+# cunhk para retiraar os prefixos
+default_output_hook <- knitr::knit_hooks$get("output")
+# Output hooks handle normal R console output.
+knitr::knit_hooks$set( output = function(x, options) {
+
+  comment <- knitr::opts_current$get("comment")
+  if( is.na(comment) ) comment <- ""
+  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
+                     x, perl = TRUE)
+  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
+  if( can_null && do_null ) {
+    # By default R print output aligns at the right brace.
+    align_index <- regexpr( "\\]", x )[1] - 1
+    # Two cases: start or newline
+    re <- paste0( "^.{", align_index, "}\\]")
+    rep <- comment
+    x <- gsub( re, rep,  x )
+    re <- paste0( "\\\n.{", align_index, "}\\]")
+    rep <- paste0( "\n", comment )
+    x <- gsub( re, rep,  x )
+  }
+
+  default_output_hook( x, options )
+
+})
+
+knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+
+```
+
+<!-- ================================================================================= -->
+
+***
+
+#### **Resumo**
+
+
+<small>Este tutorial visa demonstrar com alguns exemplos práticos como o software livre R pode ser utilizado para trabalhar com Big Data.</small>
+
+***
+
+
+# Introdução
+
+Neste tutorial, trataremos de um dos maiores desafios da alta performance da análise financeira e gerenciamento de dados; isto é, como lidar com grandes conjuntos de dados de forma eficiente e sem falhas usando o R.
+
+O principal objetivo é fornecer uma introdução prática sobre como acessar e gerenciar grandes conjuntos de dados em R. Este tutorial não se concentra em nenhum teorema financeiro específico, mas visa dar exemplos práticos para pesquisadores e profissionais de como implementar análises e modelos intensivos em computação que alavancam grandes conjuntos de dados no ambiente R.
+
+Na primeira parte deste tutorial, explicamos como acessar dados diretamente para vários fontes abertas. O R oferece várias ferramentas e opções para carregar dados no ambiente sem requisitos prévios de gerenciamento de dados. Esta parte do trabalho objetiva guiá-lo através de exemplos práticos sobre como acessar dados usando o $\fbox{Quandl}$ e pacotes $\fbox{qualtmod}$.
+
+Na segunda parte deste tutorial, destacaremos a limitação do R para lidar com big data e mostrar exemplos práticos sobre como carregar uma grande quantidade de dados em R com a ajuda de grandes pacotes de memória e $\fbox{ff}$. Nós também mostraremos como executar análises estatísticas essenciais, como $k-$mean clustering e regressão linear, usando grandes conjuntos de dados.
+
+
+# Obtendo dados de fontes externas
+
+A extração de séries temporais financeiras ou dados transversais de fontes abertas é um dos os desafios de qualquer análise acadêmica. Há vários anos, a acessibilidade de dados públicos para análise financeira eram muito limitados; nos últimos anos, cada vez mais bancos de dados de acesso aberto estão disponíveis, oferecendo enormes oportunidades para analistas em qualquer área.
+
+Nesta seção, apresentaremos os pacotes $\fbox{Quandl}$ e $\fbox{quantmod}$, duas ferramentas específicas que pode ser usado para acessar e carregar facilmente dados financeiros no ambiente R. Guiaremos você por dois exemplos para mostrar como essas ferramentas podem ajudar analistas para integrar dados diretamente de fontes sem nenhum gerenciamento prévio de dados.
+
+[Quandl.com](https://www.quandl.com/) é um site de código aberto para séries financeiras, indexando milhões de conjuntos de dados financeiros, econômicos e sociais de 500 fontes. O pacote $\fbox{Quandl}$ interage diretamente com a API $\fbox{Quandl}$ para oferecer dados em vários formatos utilizáveis em R. 
+
+Além de baixar dados, os usuários também podem fazer upload e editar seus próprios dados, pesquisar em qualquer uma das fontes de dados diretamente do R.upload e pesquisar quaisquer dados.
+
+No primeiro exemplo simples, mostraremos como recuperar e plotar as séries temporais da taxa de câmbio com $\fbox{Quandl}$ de uma maneira fácil. Antes de podermos acessar quaisquer dados do $\fbox{Quandl}$, precisamos instalar e carregar o pacote $\fbox{Quandl}$ usando os seguintes comandos:
+
+
+```{r comment=NA, null_prefix=TRUE, message=FALSE, warning=FALSE}
+#Carrega os pacotes necessarios
+#install.packages(Quandl)
+#install.packages(quantmod)
+library(quantmod)
+library(Quandl)
+library(xts)
+```
+
+
+Baixaremos as taxas de câmbio em EUR para USD, CHF, GBP, JPY,
+RUB, CAD e AUD entre 1 de janeiro de 2005 e 30 de maio de 2014. Os seguintes comandos especificam como selecionar uma série temporal e um período específicos para a análise:
+
+
+
+```{r}
+#Baixa as taxas de cambio
+moedas <- c( "USD", "CHF", "GBP", "JPY", "RUB", "CAD", "AUD")
+moedas <- paste("CURRFX/EUR", moedas, sep = "")
+moedas_ts <- lapply(as.list(moedas), Quandl, start_date="2005-01-01",end_date="2013-06-07", type="xts")
+```
+
+
+Como próximo passo, visualizaremos a evolução da taxa de câmbio de quatro selecionadas moedas, USD, GBP, CAD e AUD, usando a função $\fbox{matplot()}$. A seguir demonstramos os resultados desse código:
+
+
+```{r}
+#Plota a evolucao das taxas de cambio
+Q<-cbind(moedas_ts[[1]]$Rate,moedas_ts[[3]]$Rate,moedas_ts[[6]]$Rate,moedas_ts[[7]]$Rate)
+
+matplot(Q, type = "l", xlab = "", ylab = "", main = "USD, GBP, CAD, AUD",xaxt = 'n', yaxt = 'n')
+         ticks = axTicksByTime(moedas_ts[[1]])
+         #abline(v = ticks,h = seq(min(Q), max(Q), length=5), col = "grey", lty = 4) 
+         axis(1, at = ticks, labels = names(ticks))
+         #axis(2, at = seq(min(Q), max(Q), length=5), labels = round(seq(min(Q), max(Q), length=5), 1)) 
+         legend("topright", legend = c("USD/EUR", "GBP/EUR", "CAD/EUR", "AUD/EUR"), col = 1:4, pch = 19)
+```
+
+
+
+
+No segundo exemplo, demonstraremos o uso do pacote $\fbox{quantmod}$ para acessar, carregar e investigar dados de fontes abertas. Uma das grandes vantagens do pacote $\fbox{quantmod}$ é que ele trabalha com uma variedade de fontes e acessos dados diretamente para o Yahoo!Finances, Google Finance ou Dados econômicos do Federal Reserve (FED).
+
+Neste exemplo, acessaremos as informações de preço das ações da BMW e analisaremos o desempenho da empresa fabricante de automóveis desde 2010:
+
+Na Web, obteremos os dados de preços das ações da BMW no Yahoo!Finances para o período determinado. O pacote $\fbox{quantmod}$ fornece uma função fácil de usar,
+$\fbox{getSymbols()}$, para baixar dados de fontes locais ou remotas. Como o primeiro argumento da função, precisamos definir o vetor de caracteres especificando o nome do símbolo carregado. O segundo especifica o ambiente em que o objeto é criado:
+
+
+```{r}
+bmw_acoes<- new.env()
+getSymbols("BMW.DE", env = bmw_acoes, src = "yahoo", from =as.Date("2010-01-01"), to = as.Date("2013-12-31"))
+```
+
+Como próximo passo, precisamos carregar a variável BMW.DE do ambiente $\fbox{bmw_acoes}$ para um vetor. Com a ajuda da função $\fbox{head()}$, também podemos mostrar as primeiras seis linhas dos dados:
+
+```{r}
+BMW<-bmw_acoes$BMW.DE
+head(BMW)
+```
+
+
+O pacote $\fbox{quantmod}$ também está equipado com uma capacidade de gráficos financeiros.
+
+A função $\fbox{chartSeries()}$ permite não apenas visualizar, mas também interagir com os gráficos. Com sua funcionalidade expandida, também podemos adicionar uma ampla variedade de indicadores técnicos e comerciais para um gráfico básico; essa é uma funcionalidade muito útil para análise técnica.
+
+Em nosso exemplo, adicionaremos as bandas de Bollinger usando o comando $\fbox{addBBands()}$ e o indicador de momento seguindo a tendência MACD usando o  comando $\fbox{addMACD()}$ para obter mais informações sobre a evolução do preço das ações. O gráfico a seguir demonstra o resultado:
+
+
+```{r}
+
+chartSeries(BMW,multi.col=TRUE,theme="white")
+addMACD()
+addBBands()
+```
+
+Por fim, calcularemos o retorno diário das ações da BMW para o período determinado.
+
+Também gostaríamos de investigar se os retornos têm distribuição normal.
+
+A figura a seguir mostra os retornos diários das ações da BMW na forma de um plot Q-Q normal:
+
+```{r}
+BMW_retorno <- log(BMW$BMW.DE.Close/BMW$BMW.DE.Open)
+
+qqnorm(BMW_retorno, main = "QQPlot dos log retornos da BMW",xlab = "Quantis teoricos",ylab = "Amostra de Quantis", plot.it = TRUE, datax = FALSE)
+
+qqline(BMW_retorno, col="red")
+```
+
+A captura de tela a seguir exibe a saída do código anterior para mostrar os retornos diários de log das ações da BMW na forma de um gráfico Q-Q normal.
+
+## Introdução a análise de Big Data no R
+
+Big data refere-se às situações em que volume, velocidade ou uma variedade de dados excede as habilidades de nossa capacidade computacional para processá-las, armazená-las e analisá-las. 
+
+A análise de big data deve lidar não apenas com grandes conjuntos de dados, mas também com análises intensivas, simulações e modelos com muitos parâmetros.
+
+O aproveitamento de grandes amostras de dados pode fornecer vantagens significativas no campo de finanças quantitativas; podemos relaxar as hipóteses de linearidade e normalidade, gerar melhores modelos de predição ou identificar eventos de baixa frequência.
+
+No entanto, a análise de grandes conjuntos de dados levanta dois desafios: Primeiro, a maioria das ferramentas de análise quantitativa têm capacidade limitada para lidar com dados massivos e até cálculos simples e tarefas de gerenciamento de dados podem ser difíceis de executar.
+
+Segundo, mesmo sem o limite de capacidade, o cálculo em grandes conjuntos de dados pode ser extremamente demorado.
+
+Embora o R seja um programa poderoso e robusto com um rico conjunto de algoritmos estatísticos e capacidades, uma das maiores deficiências é seu potencial limitado de escalar para tamanhos de dados grandes. A razão para isso é que o R requer os dados nos quais opera para ser carregado primeiro na memória. No entanto, o sistema operacional e a arquitetura do sistema só pode acessar aproximadamente 4 GB de memória. Se o conjunto de dados atingir a RAM limiar do computador, pode literalmente tornar-se impossível trabalhar com computador padrão com um algoritmo padrão. 
+
+Às vezes, até pequenos conjuntos de dados podem causar sérios problemas de computação em R, pois o R tem que armazenar o maior objeto criado durante o processo de análise.
+
+O R, no entanto, possui alguns pacotes para preencher a lacuna e fornecer suporte eficiente a grandes análise de dados. Nesta seção, apresentaremos dois pacotes específicos que podem ser ferramentas úteis para criar, armazenar, acessar e manipular dados massivos.
+
+Primeiro, apresentaremos o pacote $\fbox{bigmemory}$, que é uma opção amplamente usada para computação estatística em larga escala. O pacote e seus irmãos (biganalytics, bigtabulate e bigalgebra) abordam dois desafios no manuseio e análise de conjuntos de dados massivos: gerenciamento de dados e análise estatística. As ferramentas são capazes de implementar matrizes maciças que não se encaixam no ambiente de tempo de execução do R e apoiam sua manipulação e exploração.
+
+Uma alternativa para o pacote $\fbox{bigmemory}$ é o pacote $\fbox{ff}$. Este pacote permite usuários do R manipularem vetores e matrizes grandes e trabalhar com vários arquivos de dados grandes simultaneamente. A grande vantagem dos objetos $\fbox{ff}$ é que eles se comportam como R comuns vetores.
+
+No entanto, os dados não são armazenados na memória; e sim no disco.
+Nesta seção, mostraremos como esses pacotes podem ajudar os usuários do R a superar a limitações dele para lidar com conjuntos de dados muito grandes. Embora os conjuntos de dados que usamos aqui de tamanho simples, eles demostram efetivamente o poder dos pacotes de big data.
+
+
+## *K Means Clustering* no Big Data
+
+
+Quadros de dados e matrizes são objetos fáceis de usar no R, com manipulações típicas que são executados rapidamente em conjuntos de dados com um tamanho razoável. No entanto, problemas podem surgir quando o usuário precisa lidar com conjuntos de dados maiores. 
+
+Nesta seção, ilustraremos como os pacotes $\fbox{bigmemory}$ e $\fbox{biganalytics}$ podem resolver o problema de grandes demais conjuntos de dados, que são impossíveis de manipular por quadros de dados ou tabelas de dados.
+
+As atualizações mais recentes dos pacotes $\fbox{bigmemory}$, $\fbox{biganalytics}$ e $\fbox{biglm}$ podem ser consultadas pelo leitor no site do CRAN. Os exemplos mostrados aqui assumem que a Versão 2.15.3 do R é a última versão disponível para Windows.
+
+No exemplo a seguir, executaremos o *cluster K-means* para grandes conjuntos de dados. Para fins ilustrativos, usaremos a Pesquisa de origem e destino de companhias aéreas dados do Bureau of Transportation Statistics dos EUA. Os conjuntos de dados contêm as características resumidas de mais de 3 milhões de vôos domésticos, incluindo o tarifa do itinerário, número de passageiros, aeroporto de origem, indicador de ida e volta, e milhas voadas, em um formato csv.
+
+
+## Carregando grandes matrizes
+
+A leitura do conjunto de dados de arquivos csv pode ser facilmente executada pelo arquivo $\fbox{read.csv()}$.
+
+No entanto, quando precisamos lidar com conjuntos de dados maiores, o tempo de leitura de qualquer arquivo pode tornar-se bastante substancial. Com algumas opções cuidadosas, no entanto, o carregamento de dados a funcionalidade do R pode ser significativamente aprimorada.
+
+Uma delas é especificar tipos corretos em $\fbox{colClasses = argumento}$ ao carregar dados para R; isso resultará em uma conversão mais rápida de dados externos. Além disso, a especificação NULL de colunas que não são necessárias para a análise pode diminuir o tempo e a memória consumidos para carregar os dados.
+
+No entanto, se o conjunto de dados atingir o limite de RAM do computador, precisamos adotar opções pioneiras de dados com maior eficiência de memória. No exemplo a seguir, mostraremos como o pacote $\fbox{bigmemory}$ pode lidar com essa tarefa.
+
+Antes de tudo, instalaremos e carregaremos os pacotes $\fbox{bigmemory}$ e $\fbox{biganalytics}$ necessárias para executar a análise de *K-means cluster* em big data:
+
+```{r}
+#install.packages(bigmemory)
+#install.packages(biganalytics)
+library(bigmemory)
+library(biganalytics)
+```
+
+
+Usamos a função $\fbox{read.big.matrix}$ para importar o conjunto de dados baixado no R de o sistema local. A função lida com dados não como um quadro de dados, mas como uma matriz objetos, que precisamos transformar em uma matriz com a função $\fbox{as.matrix}$:
+
+```{r}
+#x<-read.big.matrix("FlightTicketData.csv", type='integer', header=TRUE,
+#backingfile="data.bin",descriptorfile="data.desc")
+#xm<-as.matrix(x)
+#nrow(x)
+```
+
+
+
+
+
+
+## Análise de Big Data com *K-Means Clustering*
+
+O formato da função K-means big data em R é $\fbox{bigkmeans(x,centers)}$, em que x é um conjunto de dados numérico (objeto de matriz de big data) e center é o número de clusters para extrair. A função retorna as associações de cluster, centróides, na soma do cluster quadrados (WCSS) e tamanhos de cluster. A função $\fbox{bigkmeans()}$ funciona tanto em objetos regulares da matriz do R ou em objetos big.matrix.
+
+Determinaremos o número de clusters com base na porcentagem de variação
+explicada por cada cluster; portanto, traçaremos a porcentagem de variação
+explicado pelos clusters versus o número de clusters:
+
+
+```{r}
+#res_bigkmeans <- lapply(1:10, function(i) {
+#bigkmeans(x, centers=i,iter.max=50,nstart=1)})
+
+#lapply(res_bigkmeans, function(x) x$withinss)
+
+#var <- sapply(res_bigkmeans, function(x) sum(x$withinss))
+
+#plot(1:10, var, type = "b", xlab = "Numero de clusters", ylab = "Percentual da variancia explicada")
+```
+
+
+A redução acentuada de 1 a 3 clusters (com pequena diminuição a seguir) sugere uma solução de três clusters. Portanto, executaremos a análise do cluster K-means de big data com três grupos. O gráfico a seguir demonstra o resultado da compilação desse código:
+
+
+```{r}
+#res_big<-bigkmeans(x, centers=3,iter.max=50,nstart=1)
+#res_big
+```
+
+Calcular o tempo médio de execução das duas funções leva um tempo substancial.
+A figura anterior, no entanto, revela que $\fbox{bigkmeans()}$ funciona com mais eficiência com conjuntos de dados maiores que a função $\fbox{kmeans()}$, reduzindo o tempo de cálculo do R na análise.
+
+# Análise de regressão linear com *big data*
+
+Nesta seção, ilustraremos como carregar grandes conjuntos de dados diretamente de um URL com a ajuda do pacote $\fbox{ff}$ e como interagir com um pacote $\fbox{biglm}$ para caber em um modelo de regressão linear geral para os conjuntos de dados que são maiores que a memória.
+
+O pacote $\fbox{biglm}$ pode lidar efetivamente com conjuntos de dados, mesmo que sobrecarreguem a RAM do computador, pois carrega dados na memória em pedaços. 
+
+Ele processa o último pedaço e atualiza as estatísticas suficientes necessárias para o modelo. Em seguida, descarta o pedaço e carrega o próximo.
+
+Esse processo é repetido até que todos os dados sejam processados em
+o cálculo.
+
+O exemplo a seguir examina o valor da compensação de desemprego como
+uma função linear de alguns dados socioeconômicos.
+
+## Carregando *big data*
+
+Para executar uma análise de regressão linear de big data, primeiro precisamos instalar e carregar os pacotes $\fbox{ff}$, que usaremos para abrir arquivos grandes no R, e o pacote $\fbox{biglm}$, que usaremos para ajustar o modelo de regressão linear em nossos dados:
+
+```{r}
+install.packages(ff)
+install.packages(biglm)
+library(ff)
+library(biglm)
+```
+
+Para a análise de regressão linear de big data, foi utilizado o CEP do imposto de renda individual fornecido pela agência governamental dos EUA, Internal Revenue Service (IRS). Os dados no nível do CEP mostram os itens de renda e impostos selecionados classificados pelo estado, CEP e classes de renda.
+
+Utilizamos os dados de 2012 do banco de dados; isto banco de dados é de tamanho razoável, mas nos permite destacar a funcionalidade do grande
+pacotes de dados.
+
+Carregaremos diretamente o conjunto de dados necessário no R a partir do URL com o seguinte comando:
+
+[https://www.irs.gov/pub/irs-soi/12zpallagi](https://www.irs.gov/pub/irs-soi/12zpallagi)
+
+
+```{r}
+
+download.file("http://www.irs.gov/file_source/pub/irs-soi/12zpallagi.
+csv","soi.csv")
+```
+
+Depois de baixar os dados, usaremos a função read.table.ffdf que lê os arquivos em um objeto ffdf suportado pelo pacote ff. A função read.table.ffdf funciona como a função read.table. Isso também fornece opções convenientes para ler outros formatos de arquivo, como csv:
+
+```{r}
+
+x <- read.csv.ffdf(file="soi.csv",header=TRUE)
+```
+
+
+
+
+Depois de convertermos o conjunto de dados em um objeto $\fbox{ff}$, carregaremos o pacote $\fbox{biglm}$ para realizar a análise de regressão linear.
+
+Aproveitando o conjunto de dados de quase 1,67.000 observações em 77 diferentes
+variáveis, investigaremos se a quantidade de desemprego no nível da localização
+remuneração (definida como variável A02300) pode ser explicada pelo salário total e
+valor do salário (A00200), o número de residentes por categoria de renda (AGI_STUB), o número de dependentes (a variável NUMDEP) e o número de casados
+pessoas (MARS2) no local especificado.
+
+
+## Ajustando um modelo de regressão linear em grandes datasets
+
+Para a análise de regressão linear, usaremos a função $\fbox{biglm}$; portanto, antes
+se especificarmos o nosso modelo, precisamos carregar o pacote:
+
+```{r}
+require(biglm)
+```
+
+
+Como próximo passo, definiremos a fórmula e ajustaremos o modelo em nossos dados. Na função summary, podemos obter os coeficientes e o nível de significância de a variável do modelo ajustado. Como a saída do modelo não inclui o quadrado R
+valor, precisamos carregar o valor R-quadrado do modelo com um comando separado:
+
+```{r}
+mymodel<-biglm(A02300 ~ A00200+AGI_STUB+NUMDEP+MARS2,data=x)
+
+summary(mymodel)
+
+summary(mymodel)$rsq
+```
+
+
+
+Podemos concluir pelo resultado do coeficiente do modelo de regressão que todas as variáveis contribuir significativamente para o modelo. As variáveis independentes explicam 86.09 porcento da variação total do valor da indenização por desemprego, indicando um bom ajuste do modelo.
+
+# Considerações finais
+
+Neste tutorial, usamos o R para acessar dados de fontes abertas e executar várias análises em grandes conjuntos de dados. Os exemplos aqui apresentados visam ser uma prática guia para pesquisadores empíricos que lidam com uma grande quantidade de dados.
+
+Primeiro, introduzimos métodos úteis para a integração de dados de código aberto. O R tem poderosas opções para acessar diretamente os dados para análise financeira sem prévia requisito de gerenciamento de dados. Em segundo lugar, discutimos como lidar com big data em um ambiente R. Embora R tenha limitações fundamentais no manuseio de grandes conjuntos de dados e realizando análises e simulações computacionalmente intensivas, introduzimos ferramentas e pacotes específicos que podem preencher essa lacuna. Apresentamos dois exemplos de como executar o K-means cluster e como ajustar a regressão linear modelos em big data. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***
+
+# Referências
+
+Adler, D., Nenadic, O., Zucchini, W.,Gläser, C. (2007): **The ff package: Handling Large Data Sets in R with Memory Mapped Pages of Binary
+Flat Files**
+
+Enea, M. (2009): **Fitting Linear Models and Generalized Linear Models with large data sets in R.** In book of short papers, conference on "Statistical Methods for the analysis of large data-sets", Italian Statistical Society, Chieti-Pescara, 23-25 September 2009, 411-414.
+
+Kane, M.,Emerson, JW., Weston (2010): **The Bigmemory Project**, Yale University.
+
+Kane, M.,Emerson, JW., Weston, S. (2013): **Scalable Strategies for Computing with Massive Data.** Journal of Statistical Software , Vol. 55, Issue 14
+
+Lumley, T. (2009) **biglm: bounded memory linear and generalized linear models.** R package version 0.7
+
+Xie, Y. **Dynamic Documents with R and knitr** 2nd edition, 2015.
+
+
+
