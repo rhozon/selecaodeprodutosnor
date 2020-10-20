@@ -50,8 +50,6 @@ navbar:
           href: coinmarketcapxicoinomia.html 
         - text: "Projeto Integrador de Ciência de Dados"
           href: projetointegrador.html 
-        - text: "Big Data: Análises Avançadas no R"
-          href: bigdatanor.html    
         - text: "Homework I: Econometrics (Shangai University of Finance)"
           href: homeworkI.html 
 
