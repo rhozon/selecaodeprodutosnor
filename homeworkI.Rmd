@@ -98,7 +98,7 @@ $$
 
 Comment on the direction of the relationship. Does the intercept have useful interpretation here ? Explain. How much higher is the _GPA_ predicted to be if the _ACT_ score is increased by five points ?
 
-## **Solution**: 
+ **Solution**: 
 
 [*Download the table here](https://github.com/rhozon/homeworkI/blob/main/gpaxact.xlsx?raw=true)
 
