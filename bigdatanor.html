@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo H. Ozon" />
+
+<meta name="date" content="2020-01-10" />
+
+<title>Big Data: Análises Avançadas no R</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Big Data: Análises Avançadas no R</h1>
+<h4 class="author">Rodrigo H. Ozon</h4>
+<h4 class="date">01/10/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<!-- ================================================================================= -->
+<hr />
+<div id="resumo" class="section level4">
+<h4><strong>Resumo</strong></h4>
+<p><small>Este tutorial visa demonstrar com alguns exemplos práticos como o software livre R pode ser utilizado para trabalhar com Big Data.</small></p>
+<hr />
+</div>
+<div id="introdução" class="section level1">
+<h1>Introdução</h1>
+<p>Neste tutorial, trataremos de um dos maiores desafios da alta performance da análise financeira e gerenciamento de dados; isto é, como lidar com grandes conjuntos de dados de forma eficiente e sem falhas usando o R.</p>
+<p>O principal objetivo é fornecer uma introdução prática sobre como acessar e gerenciar grandes conjuntos de dados em R. Este tutorial não se concentra em nenhum teorema financeiro específico, mas visa dar exemplos práticos para pesquisadores e profissionais de como implementar análises e modelos intensivos em computação que alavancam grandes conjuntos de dados no ambiente R.</p>
+<p>Na primeira parte deste tutorial, explicamos como acessar dados diretamente para vários fontes abertas. O R oferece várias ferramentas e opções para carregar dados no ambiente sem requisitos prévios de gerenciamento de dados. Esta parte do trabalho objetiva guiá-lo através de exemplos práticos sobre como acessar dados usando o <span class="math inline">\(\fbox{Quandl}\)</span> e pacotes <span class="math inline">\(\fbox{qualtmod}\)</span>.</p>
+<p>Na segunda parte deste tutorial, destacaremos a limitação do R para lidar com big data e mostrar exemplos práticos sobre como carregar uma grande quantidade de dados em R com a ajuda de grandes pacotes de memória e <span class="math inline">\(\fbox{ff}\)</span>. Nós também mostraremos como executar análises estatísticas essenciais, como <span class="math inline">\(k-\)</span>mean clustering e regressão linear, usando grandes conjuntos de dados.</p>
+</div>
+<div id="obtendo-dados-de-fontes-externas" class="section level1">
+<h1>Obtendo dados de fontes externas</h1>
+<p>A extração de séries temporais financeiras ou dados transversais de fontes abertas é um dos os desafios de qualquer análise acadêmica. Há vários anos, a acessibilidade de dados públicos para análise financeira eram muito limitados; nos últimos anos, cada vez mais bancos de dados de acesso aberto estão disponíveis, oferecendo enormes oportunidades para analistas em qualquer área.</p>
+<p>Nesta seção, apresentaremos os pacotes <span class="math inline">\(\fbox{Quandl}\)</span> e <span class="math inline">\(\fbox{quantmod}\)</span>, duas ferramentas específicas que pode ser usado para acessar e carregar facilmente dados financeiros no ambiente R. Guiaremos você por dois exemplos para mostrar como essas ferramentas podem ajudar analistas para integrar dados diretamente de fontes sem nenhum gerenciamento prévio de dados.</p>
+<p><a href="https://www.quandl.com/">Quandl.com</a> é um site de código aberto para séries financeiras, indexando milhões de conjuntos de dados financeiros, econômicos e sociais de 500 fontes. O pacote <span class="math inline">\(\fbox{Quandl}\)</span> interage diretamente com a API <span class="math inline">\(\fbox{Quandl}\)</span> para oferecer dados em vários formatos utilizáveis em R.</p>
+<p>Além de baixar dados, os usuários também podem fazer upload e editar seus próprios dados, pesquisar em qualquer uma das fontes de dados diretamente do R.upload e pesquisar quaisquer dados.</p>
+<p>No primeiro exemplo simples, mostraremos como recuperar e plotar as séries temporais da taxa de câmbio com <span class="math inline">\(\fbox{Quandl}\)</span> de uma maneira fácil. Antes de podermos acessar quaisquer dados do <span class="math inline">\(\fbox{Quandl}\)</span>, precisamos instalar e carregar o pacote <span class="math inline">\(\fbox{Quandl}\)</span> usando os seguintes comandos:</p>
+<pre class="r"><code>#Carrega os pacotes necessarios
+#install.packages(Quandl)
+#install.packages(quantmod)
+library(quantmod)
+library(Quandl)
+library(xts)</code></pre>
+<p>Baixaremos as taxas de câmbio em EUR para USD, CHF, GBP, JPY, RUB, CAD e AUD entre 1 de janeiro de 2005 e 30 de maio de 2014. Os seguintes comandos especificam como selecionar uma série temporal e um período específicos para a análise:</p>
+<pre class="r"><code>#Baixa as taxas de cambio
+moedas &lt;- c( &quot;USD&quot;, &quot;CHF&quot;, &quot;GBP&quot;, &quot;JPY&quot;, &quot;RUB&quot;, &quot;CAD&quot;, &quot;AUD&quot;)
+moedas &lt;- paste(&quot;CURRFX/EUR&quot;, moedas, sep = &quot;&quot;)
+moedas_ts &lt;- lapply(as.list(moedas), Quandl, start_date=&quot;2005-01-01&quot;,end_date=&quot;2013-06-07&quot;, type=&quot;xts&quot;)</code></pre>
+<p>Como próximo passo, visualizaremos a evolução da taxa de câmbio de quatro selecionadas moedas, USD, GBP, CAD e AUD, usando a função <span class="math inline">\(\fbox{matplot()}\)</span>. A seguir demonstramos os resultados desse código:</p>
+<pre class="r"><code>#Plota a evolucao das taxas de cambio
+Q&lt;-cbind(moedas_ts[[1]]$Rate,moedas_ts[[3]]$Rate,moedas_ts[[6]]$Rate,moedas_ts[[7]]$Rate)
+
+matplot(Q, type = &quot;l&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, main = &quot;USD, GBP, CAD, AUD&quot;,xaxt = &#39;n&#39;, yaxt = &#39;n&#39;)
+         ticks = axTicksByTime(moedas_ts[[1]])
+         #abline(v = ticks,h = seq(min(Q), max(Q), length=5), col = &quot;grey&quot;, lty = 4) 
+         axis(1, at = ticks, labels = names(ticks))
+         #axis(2, at = seq(min(Q), max(Q), length=5), labels = round(seq(min(Q), max(Q), length=5), 1)) 
+         legend(&quot;topright&quot;, legend = c(&quot;USD/EUR&quot;, &quot;GBP/EUR&quot;, &quot;CAD/EUR&quot;, &quot;AUD/EUR&quot;), col = 1:4, pch = 19)</code></pre>
+<p><img src="bigdatanor_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>No segundo exemplo, demonstraremos o uso do pacote <span class="math inline">\(\fbox{quantmod}\)</span> para acessar, carregar e investigar dados de fontes abertas. Uma das grandes vantagens do pacote <span class="math inline">\(\fbox{quantmod}\)</span> é que ele trabalha com uma variedade de fontes e acessos dados diretamente para o Yahoo!Finances, Google Finance ou Dados econômicos do Federal Reserve (FED).</p>
+<p>Neste exemplo, acessaremos as informações de preço das ações da BMW e analisaremos o desempenho da empresa fabricante de automóveis desde 2010:</p>
+<p>Na Web, obteremos os dados de preços das ações da BMW no Yahoo!Finances para o período determinado. O pacote <span class="math inline">\(\fbox{quantmod}\)</span> fornece uma função fácil de usar, <span class="math inline">\(\fbox{getSymbols()}\)</span>, para baixar dados de fontes locais ou remotas. Como o primeiro argumento da função, precisamos definir o vetor de caracteres especificando o nome do símbolo carregado. O segundo especifica o ambiente em que o objeto é criado:</p>
+<pre class="r"><code>bmw_acoes&lt;- new.env()
+getSymbols(&quot;BMW.DE&quot;, env = bmw_acoes, src = &quot;yahoo&quot;, from =as.Date(&quot;2010-01-01&quot;), to = as.Date(&quot;2013-12-31&quot;))</code></pre>
+<pre><code>## &#39;getSymbols&#39; currently uses auto.assign=TRUE by default, but will
+## use auto.assign=FALSE in 0.5-0. You will still be able to use
+## &#39;loadSymbols&#39; to automatically load data. getOption(&quot;getSymbols.env&quot;)
+## and getOption(&quot;getSymbols.auto.assign&quot;) will still be checked for
+## alternate defaults.
+## 
+## This message is shown once per session and may be disabled by setting 
+## options(&quot;getSymbols.warning4.0&quot;=FALSE). See ?getSymbols for details.</code></pre>
+<pre><code>## [1] &quot;BMW.DE&quot;</code></pre>
+<p>Como próximo passo, precisamos carregar a variável BMW.DE do ambiente <span class="math inline">\(\fbox{bmw_acoes}\)</span> para um vetor. Com a ajuda da função <span class="math inline">\(\fbox{head()}\)</span>, também podemos mostrar as primeiras seis linhas dos dados:</p>
+<pre class="r"><code>BMW&lt;-bmw_acoes$BMW.DE
+head(BMW)</code></pre>
+<pre><code>##            BMW.DE.Open BMW.DE.High BMW.DE.Low BMW.DE.Close BMW.DE.Volume
+## 2010-01-04      31.820      32.455     31.820       32.050       1808170
+## 2010-01-05      31.960      32.410     31.785       32.310       1564182
+## 2010-01-06      32.450      33.040     32.360       32.810       2218604
+## 2010-01-07      32.650      33.200     32.380       33.100       2026145
+## 2010-01-08      33.335      33.430     32.515       32.655       1925894
+## 2010-01-11      32.995      33.050     32.110       32.170       2157825
+##            BMW.DE.Adjusted
+## 2010-01-04        21.72463
+## 2010-01-05        21.90087
+## 2010-01-06        22.23979
+## 2010-01-07        22.43635
+## 2010-01-08        22.13472
+## 2010-01-11        21.80597</code></pre>
+<p>O pacote <span class="math inline">\(\fbox{quantmod}\)</span> também está equipado com uma capacidade de gráficos financeiros.</p>
+<p>A função <span class="math inline">\(\fbox{chartSeries()}\)</span> permite não apenas visualizar, mas também interagir com os gráficos. Com sua funcionalidade expandida, também podemos adicionar uma ampla variedade de indicadores técnicos e comerciais para um gráfico básico; essa é uma funcionalidade muito útil para análise técnica.</p>
+<p>Em nosso exemplo, adicionaremos as bandas de Bollinger usando o comando <span class="math inline">\(\fbox{addBBands()}\)</span> e o indicador de momento seguindo a tendência MACD usando o comando <span class="math inline">\(\fbox{addMACD()}\)</span> para obter mais informações sobre a evolução do preço das ações. O gráfico a seguir demonstra o resultado:</p>
+<pre class="r"><code>chartSeries(BMW,multi.col=TRUE,theme=&quot;white&quot;)</code></pre>
+<p><img src="bigdatanor_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>addMACD()</code></pre>
+<p><img src="bigdatanor_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>addBBands()</code></pre>
+<p><img src="bigdatanor_files/figure-html/unnamed-chunk-7-3.png" width="672" /></p>
+<p>Por fim, calcularemos o retorno diário das ações da BMW para o período determinado.</p>
+<p>Também gostaríamos de investigar se os retornos têm distribuição normal.</p>
+<p>A figura a seguir mostra os retornos diários das ações da BMW na forma de um plot Q-Q normal:</p>
+<pre class="r"><code>BMW_retorno &lt;- log(BMW$BMW.DE.Close/BMW$BMW.DE.Open)
+
+qqnorm(BMW_retorno, main = &quot;QQPlot dos log retornos da BMW&quot;,xlab = &quot;Quantis teoricos&quot;,ylab = &quot;Amostra de Quantis&quot;, plot.it = TRUE, datax = FALSE)
+
+qqline(BMW_retorno, col=&quot;red&quot;)</code></pre>
+<p><img src="bigdatanor_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>A captura de tela a seguir exibe a saída do código anterior para mostrar os retornos diários de log das ações da BMW na forma de um gráfico Q-Q normal.</p>
+<div id="introdução-a-análise-de-big-data-no-r" class="section level2">
+<h2>Introdução a análise de Big Data no R</h2>
+<p>Big data refere-se às situações em que volume, velocidade ou uma variedade de dados excede as habilidades de nossa capacidade computacional para processá-las, armazená-las e analisá-las.</p>
+<p>A análise de big data deve lidar não apenas com grandes conjuntos de dados, mas também com análises intensivas, simulações e modelos com muitos parâmetros.</p>
+<p>O aproveitamento de grandes amostras de dados pode fornecer vantagens significativas no campo de finanças quantitativas; podemos relaxar as hipóteses de linearidade e normalidade, gerar melhores modelos de predição ou identificar eventos de baixa frequência.</p>
+<p>No entanto, a análise de grandes conjuntos de dados levanta dois desafios: Primeiro, a maioria das ferramentas de análise quantitativa têm capacidade limitada para lidar com dados massivos e até cálculos simples e tarefas de gerenciamento de dados podem ser difíceis de executar.</p>
+<p>Segundo, mesmo sem o limite de capacidade, o cálculo em grandes conjuntos de dados pode ser extremamente demorado.</p>
+<p>Embora o R seja um programa poderoso e robusto com um rico conjunto de algoritmos estatísticos e capacidades, uma das maiores deficiências é seu potencial limitado de escalar para tamanhos de dados grandes. A razão para isso é que o R requer os dados nos quais opera para ser carregado primeiro na memória. No entanto, o sistema operacional e a arquitetura do sistema só pode acessar aproximadamente 4 GB de memória. Se o conjunto de dados atingir a RAM limiar do computador, pode literalmente tornar-se impossível trabalhar com computador padrão com um algoritmo padrão.</p>
+<p>Às vezes, até pequenos conjuntos de dados podem causar sérios problemas de computação em R, pois o R tem que armazenar o maior objeto criado durante o processo de análise.</p>
+<p>O R, no entanto, possui alguns pacotes para preencher a lacuna e fornecer suporte eficiente a grandes análise de dados. Nesta seção, apresentaremos dois pacotes específicos que podem ser ferramentas úteis para criar, armazenar, acessar e manipular dados massivos.</p>
+<p>Primeiro, apresentaremos o pacote <span class="math inline">\(\fbox{bigmemory}\)</span>, que é uma opção amplamente usada para computação estatística em larga escala. O pacote e seus irmãos (biganalytics, bigtabulate e bigalgebra) abordam dois desafios no manuseio e análise de conjuntos de dados massivos: gerenciamento de dados e análise estatística. As ferramentas são capazes de implementar matrizes maciças que não se encaixam no ambiente de tempo de execução do R e apoiam sua manipulação e exploração.</p>
+<p>Uma alternativa para o pacote <span class="math inline">\(\fbox{bigmemory}\)</span> é o pacote <span class="math inline">\(\fbox{ff}\)</span>. Este pacote permite usuários do R manipularem vetores e matrizes grandes e trabalhar com vários arquivos de dados grandes simultaneamente. A grande vantagem dos objetos <span class="math inline">\(\fbox{ff}\)</span> é que eles se comportam como R comuns vetores.</p>
+<p>No entanto, os dados não são armazenados na memória; e sim no disco. Nesta seção, mostraremos como esses pacotes podem ajudar os usuários do R a superar a limitações dele para lidar com conjuntos de dados muito grandes. Embora os conjuntos de dados que usamos aqui de tamanho simples, eles demostram efetivamente o poder dos pacotes de big data.</p>
+<hr />
+</div>
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<p>Adler, D., Nenadic, O., Zucchini, W.,Gläser, C. (2007): <strong>The ff package: Handling Large Data Sets in R with Memory Mapped Pages of Binary Flat Files</strong></p>
+<p>Enea, M. (2009): <strong>Fitting Linear Models and Generalized Linear Models with large data sets in R.</strong> In book of short papers, conference on “Statistical Methods for the analysis of large data-sets”, Italian Statistical Society, Chieti-Pescara, 23-25 September 2009, 411-414.</p>
+<p>Kane, M.,Emerson, JW., Weston (2010): <strong>The Bigmemory Project</strong>, Yale University.</p>
+<p>Kane, M.,Emerson, JW., Weston, S. (2013): <strong>Scalable Strategies for Computing with Massive Data.</strong> Journal of Statistical Software , Vol. 55, Issue 14</p>
+<p>Lumley, T. (2009) <strong>biglm: bounded memory linear and generalized linear models.</strong> R package version 0.7</p>
+<p>Xie, Y. <strong>Dynamic Documents with R and knitr</strong> 2nd edition, 2015.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

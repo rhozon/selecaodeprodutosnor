@@ -120,7 +120,6 @@ Tutoriais disponíveis:
 
 
 
-
 ***
 
 #### _PROJETO INTEGRADOR DE COMPETÊNCIAS EM CIÊNCIA DE DADOS I - 40h\_Turma\_05\_102020_
@@ -130,5 +129,10 @@ Tutoriais disponíveis:
 
 ***
 
+
+### *Homework I: Econometrics (Shangai University of Finance)*
+
+
+*** 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
