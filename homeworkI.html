@@ -1202,15 +1202,25 @@ n=706,\,\, R^{2}=.113.
 \log(price)=\beta_{0} +\beta_{1}\log(nox)+\beta_{2}rooms+u.
 \]</span></p>
 <ol style="list-style-type: lower-roman">
-<li><p>What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> and <span class="math inline">\(\beta_{2}\)</span>? What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> ? Explain.</p></li>
-<li><p>Why might <span class="math inline">\(nox\)</span> [or more precisely <span class="math inline">\(\log(nox)\)</span>] and <span class="math inline">\(rooms\)</span> be negatively correlated? If this is the case, does the simple regression of <span class="math inline">\(log(price)\)</span> on <span class="math inline">\(log(nox)\)</span> produce an upward or a downward biased estimator of <span class="math inline">\(\beta_{1}\)</span>?</p></li>
-<li><p>Using the data in HPRICE2, the following equations were estimated:</p></li>
+<li>What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> and <span class="math inline">\(\beta_{2}\)</span>? What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> ? Explain.</li>
+</ol>
+<p><strong>Solution</strong></p>
+<p>We hope <span class="math inline">\(\beta_1 &lt; 0\)</span> because more pollution can be expected to lower housing values; <span class="math inline">\(\beta_1\)</span> is the elasticity of price with respect to <span class="math inline">\(nox\)</span>. <span class="math inline">\(\beta_2\)</span> is probably positive because <span class="math inline">\(rooms\)</span> roughly measures the size of a house. (However, it does not allow us to distinguish homes where each room is large from homes where each room is small.)</p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>Why might <span class="math inline">\(nox\)</span> [or more precisely <span class="math inline">\(\log(nox)\)</span>] and <span class="math inline">\(rooms\)</span> be negatively correlated? If this is the case, does the simple regression of <span class="math inline">\(log(price)\)</span> on <span class="math inline">\(log(nox)\)</span> produce an upward or a downward biased estimator of <span class="math inline">\(\beta_{1}\)</span>?</li>
+</ol>
+<p><strong>Soloution</strong></p>
+<p>If we assume that <span class="math inline">\(rooms\)</span> increases with quality of the home, then <span class="math inline">\(log(nox)\)</span> and <span class="math inline">\(rooms\)</span> are negatively correlated when poorer neighborhoods have more pollution, something that is often true. If <span class="math inline">\(\beta_2 &gt; 0\)</span> and <span class="math inline">\(Corr(x1, x2) &lt; 0\)</span>, the simple regression estimator <span class="math inline">\(\widetilde{β}_1\)</span> has a downward bias. But because <span class="math inline">\(\beta_1 &lt; 0\)</span>, this means that the simple regression, on average, overstates the importance of pollution. <span class="math inline">\((E(\widetilde{\beta}_1)\)</span> is more negative than <span class="math inline">\(\beta_1\)</span>.)</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Using the data in HPRICE2, the following equations were estimated:</li>
 </ol>
 <p><span class="math display">\[
 \widehat{\log(price)}=11.71-1.043\log(nox), n=506,\,R^{2}=.264\\
 \widehat{\log(price)}=9.23-.718\log(nox)+.306rooms, n=506,\,R^{2}=.514
 \]</span></p>
 <p>Is the relationship between the simple and multiple regression estimates of the elasticity of <span class="math inline">\(price\)</span> with respect to <span class="math inline">\(nox\)</span> what would have predicted, given your answer in part (ii)? Does this mean that -.718 is definitely closer to the true elasticity than -1.043 ?</p>
+<p><strong>Solution:</strong></p>
+<p>This is what we expect from the typical sample based on our analysis in part (i). The simple regression estimate, −1.043, is more negative (larger in magnitude) than the multiple regression estimate, −0.718. As those estimates are only for one sample, we can never know which is closer to <span class="math inline">\(\beta_1\)</span>. But if this is a “typical” sample, <span class="math inline">\(\beta_1\)</span> is closer to −0.718.</p>
 <hr />
 <p>16 The following equations were estimated using the data in LAWSCH85:</p>
 <p><span class="math display">\[\begin{align}
