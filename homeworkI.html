@@ -558,28 +558,139 @@ y=&amp;(\alpha_{0}+\beta_{0}) +\beta_{1}x+ (u−\alpha_{0})\\
 <p>In R we can call:</p>
 <pre class="r"><code>table&lt;-read.csv(file=&quot;https://raw.githubusercontent.com/rhozon/homeworkI/main/gpaxact.csv&quot;,head=TRUE,sep=&quot;;&quot;)
 
-GPA.fitted&lt;-lm(GPA~ACT,data=table)
-
-summary(GPA.fitted)</code></pre>
-<pre><code>
-Call:
-lm(formula = GPA ~ ACT, data = table)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--0.42308 -0.14863  0.06703  0.10742  0.37912 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)  
-(Intercept)  0.56813    0.92842   0.612   0.5630  
-ACT          0.10220    0.03569   2.863   0.0287 *
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-Residual standard error: 0.2692 on 6 degrees of freedom
-  (1 observation deleted due to missingness)
-Multiple R-squared:  0.5774,    Adjusted R-squared:  0.507 
-F-statistic: 8.199 on 1 and 6 DF,  p-value: 0.02868</code></pre>
+GPA.fitted&lt;-lm(GPA~ACT,data=table)</code></pre>
+<p> </p>
+<center>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="1" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+GPA
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+0.568
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.928)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+ACT
+</td>
+<td>
+0.102<sup>**</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.036)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.577
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.507
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.269 (df = 6)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+8.199<sup>**</sup> (df = 1; 6)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
 <p>The direction of the relationship is positive, i.e. when ACT grows (one point), GPA is expected to grow by about 0.10 score points.</p>
 <p>The intercept shows the GPA value when the other coefficients are equal to zero. That is, if any student in the class gets a score of 0 we expect GPA = 0.568.</p>
 <p>If the ACT score is increased by 5 points the GPA will be about 0.51 (=0.102*5) greater.</p>
@@ -870,10 +981,287 @@ n=706,\,\, R^{2}=.113.
 &amp;n=99\quad R^{2}=.8036
 \end{align}\]</span></p>
 <p>How can it be that the <span class="math inline">\(R^{2}\)</span> is smaller when the variable <span class="math inline">\(age\)</span> is added to equation.</p>
+<p><strong>Solution</strong>:</p>
+<p>By using the wooldridge package in R we can see:</p>
+<pre class="r"><code>library(wooldridge)
+
+#inspect the dataset
+str(lawsch85)</code></pre>
+<pre><code>&#39;data.frame&#39;:   156 obs. of  21 variables:
+ $ rank   : int  128 104 34 49 95 98 124 157 145 91 ...
+ $ salary : num  31400 33098 32870 35000 33606 ...
+ $ cost   : int  8340 6980 16370 17566 8350 8350 6020 5986 4785 7680 ...
+ $ LSAT   : int  155 160 155 157 162 161 155 152 155 160 ...
+ $ GPA    : num  3.15 3.5 3.25 3.2 3.38 ...
+ $ libvol : int  216 256 424 329 332 311 220 230 230 157 ...
+ $ faculty: int  45 44 78 136 56 40 40 45 101 44 ...
+ $ age    : int  12 113 134 89 70 29 61 60 70 128 ...
+ $ clsize : int  210 190 270 277 150 156 151 149 322 70 ...
+ $ north  : int  1 0 0 0 0 0 0 0 0 0 ...
+ $ south  : int  0 1 0 0 0 0 1 1 0 1 ...
+ $ east   : int  0 0 1 1 0 0 0 0 1 0 ...
+ $ west   : int  0 0 0 0 1 1 0 0 0 0 ...
+ $ lsalary: num  10.4 10.4 10.4 10.5 10.4 ...
+ $ studfac: num  4.67 4.32 3.46 2.04 2.68 ...
+ $ top10  : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ r11_25 : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ r26_40 : int  0 0 1 0 0 0 0 0 0 0 ...
+ $ r41_60 : int  0 0 0 1 0 0 0 0 0 0 ...
+ $ llibvol: num  5.38 5.55 6.05 5.8 5.81 ...
+ $ lcost  : num  9.03 8.85 9.7 9.77 9.03 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<p>By running the two regression models, we can have:</p>
+<pre class="r"><code>mod1&lt;-lm(lsalary~rank+GPA,data=lawsch85)
+
+mod2&lt;-lm(lsalary~rank+GPA+age,data=lawsch85)</code></pre>
+<p> </p>
+<center>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+lsalary
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+mod1
+</td>
+<td>
+mod2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+9.899<sup>***</sup>
+</td>
+<td>
+9.860<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.245)
+</td>
+<td>
+(0.293)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+rank
+</td>
+<td>
+-0.004<sup>***</sup>
+</td>
+<td>
+-0.004<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.0003)
+</td>
+<td>
+(0.0004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+GPA
+</td>
+<td>
+0.294<sup>***</sup>
+</td>
+<td>
+0.295<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.069)
+</td>
+<td>
+(0.083)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+age
+</td>
+<td>
+</td>
+<td>
+0.0002
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.0004)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+142
+</td>
+<td>
+99
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.824
+</td>
+<td>
+0.804
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.821
+</td>
+<td>
+0.797
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+0.117 (df = 139)
+</td>
+<td>
+0.120 (df = 95)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+324.858<sup>***</sup> (df = 2; 139)
+</td>
+<td>
+129.535<sup>***</sup> (df = 3; 95)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>The coefficient of the age variable was shown to be insignificant in model 2.</p>
+<p>With different observations the <span class="math inline">\(R^2\)</span> are been incomparable (see the <span class="math inline">\(n\)</span> in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.</p>
+<p>Although the general F test is significant in both models, the t statistic shows that the inclusion of the age variable does not improve the model’s fit to explain lsalary.</p>
 <hr />
 <div id="references" class="section level3">
 <h3>References</h3>
-<p><a href="http://english.sufe.edu.cn/">Shangai University of Finance</a></p>
+<p><a href="https://cran.r-project.org/web/packages/wooldridge/wooldridge.pdf">CRAN Wooldridge documentation: Data Sets from “Introductory Econometrics: A Modern Approach, 6e” by Jeffrey M. Wooldridge</a></p>
+<p><a href="http://english.sufe.edu.cn/">Shangai University of Finance: Avaible in http://english.sufe.edu.cn/</a></p>
+<p><a href="https://book4you.org/book/3372803/9610fc">Wooldridge, J. <em><strong>Introductory econometrics: A modern approach</strong></em>, 2016, 6.ed., Cengage Learning, ISBN 13: 978-1-305-27010-7</a></p>
 </div>
 
 

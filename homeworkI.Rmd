@@ -111,13 +111,31 @@ $$
 
 In R we can call:
 
+
+
+
 ```{r comment=NA, warning=FALSE, message=FALSE}
 table<-read.csv(file="https://raw.githubusercontent.com/rhozon/homeworkI/main/gpaxact.csv",head=TRUE,sep=";")
 
 GPA.fitted<-lm(GPA~ACT,data=table)
 
-summary(GPA.fitted)
 ```
+
+&nbsp;
+
+<center>
+```{r chunk 6, echo=FALSE, message=FALSE, results='asis',warning=FALSE}
+library(stargazer)
+stargazer(GPA.fitted, type="html", 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+
+</center>
+
+&nbsp;
 
 
 The direction of the relationship is positive, i.e. when ACT grows (one point), GPA is expected to grow by about 0.10 score points.  
@@ -312,7 +330,56 @@ Is the relationship between the simple and multiple regression estimates of the 
 
 How can it be that the $R^{2}$ is smaller when the variable $age$ is added to equation.
 
+**Solution**:
 
+
+
+
+
+By using the wooldridge package in R we can see:
+
+```{r comment=NA}
+library(wooldridge)
+
+#inspect the dataset
+str(lawsch85)
+```
+
+
+By running the two regression models, we can have:
+
+```{r message=FALSE, comment=NA}
+
+mod1<-lm(lsalary~rank+GPA,data=lawsch85)
+
+mod2<-lm(lsalary~rank+GPA+age,data=lawsch85)
+
+```
+
+&nbsp;
+
+<center>
+```{r echo=FALSE, message=FALSE, results='asis'}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(mod1, mod2, type="html", 
+          column.labels = c("mod1", "mod2"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+</center>
+
+&nbsp;
+
+The coefficient of the age variable was shown to be insignificant in model 2.
+
+
+With different observations the $R^2$ are been incomparable (see the $n$ in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.
+
+
+Although the general F test is significant in both models, the t statistic shows that the inclusion of the age variable does not improve the model's fit to explain lsalary. 
 
 
 
@@ -327,15 +394,17 @@ How can it be that the $R^{2}$ is smaller when the variable $age$ is added to eq
 ### References
 
 
+[CRAN Wooldridge documentation: Data Sets from "Introductory Econometrics: A Modern
+Approach, 6e" by Jeffrey M. Wooldridge](https://cran.r-project.org/web/packages/wooldridge/wooldridge.pdf)
 
 
 
-
-[Shangai University of Finance](http://english.sufe.edu.cn/)
-
+[Shangai University of Finance: Avaible in http://english.sufe.edu.cn/](http://english.sufe.edu.cn/)
 
 
 
+[Wooldridge, J. _**Introductory econometrics: A modern approach**_, 2016, 6.ed., Cengage Learning, ISBN 13:
+978-1-305-27010-7 ](https://book4you.org/book/3372803/9610fc)
 
 
 

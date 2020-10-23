@@ -14,6 +14,51 @@ params:
 
 <!-- https://bookdown.org/ccolonescu/RPoE4/time-varying-volatility-and-arch-models.html -->
 
+
+<!-- ================================================================================= -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
+```
+
+```{r include=FALSE}
+# cunhk para retiraar os prefixos
+default_output_hook <- knitr::knit_hooks$get("output")
+# Output hooks handle normal R console output.
+knitr::knit_hooks$set( output = function(x, options) {
+
+  comment <- knitr::opts_current$get("comment")
+  if( is.na(comment) ) comment <- ""
+  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
+                     x, perl = TRUE)
+  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
+  if( can_null && do_null ) {
+    # By default R print output aligns at the right brace.
+    align_index <- regexpr( "\\]", x )[1] - 1
+    # Two cases: start or newline
+    re <- paste0( "^.{", align_index, "}\\]")
+    rep <- comment
+    x <- gsub( re, rep,  x )
+    re <- paste0( "\\\n.{", align_index, "}\\]")
+    rep <- paste0( "\n", comment )
+    x <- gsub( re, rep,  x )
+  }
+
+  default_output_hook( x, options )
+
+})
+
+knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+
+```
+
+<!-- ================================================================================= -->
+
+
 ***
 #### **Resumo** 
 
@@ -214,7 +259,7 @@ $$
 
 #### Rodando o modelo ARCH e GARCH para os dados da VALE
 
-```{r}
+```{r comment=NA}
 
 ativo2[1:10,] # Gero as primeiras 10 linhas do dataset
 
@@ -302,14 +347,37 @@ plot.ts(rTS) # Serie de retornos logaritmizados da VALE
 
 Então obtemos os valores de estimativas dos parâmetros da regressão:
 
-```{r}
+```{r comment=NA }
 
 VALE.media <- dynlm(rTS~1)
 
-summary(VALE.media)
+
 ```
 
-```{r}
+
+&nbsp;
+
+<center>
+```{r echo=FALSE, message=FALSE, results='asis',warning=FALSE}
+library(stargazer)
+stargazer(VALE.media, type="html", 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE,
+          omit.stat=c("LL","ser","f"),
+          header=FALSE) 
+```
+
+</center>
+
+&nbsp;
+
+
+
+
+
+
+```{r comment=NA}
 ehatsq <- ts(resid(VALE.media)^2) # Obtenho os valores da serie de residuos do modelo ARCH elevado ao quadrado
 
 VALE.ARCH <- dynlm(ehatsq~L(ehatsq)) # Agora estimo o modelo dinamico usando a serie de residuos
@@ -317,8 +385,27 @@ VALE.ARCH <- dynlm(ehatsq~L(ehatsq)) # Agora estimo o modelo dinamico usando a s
 summary(VALE.ARCH) # Printa os resultados
 ```
 
+&nbsp;
 
-```{r}
+<center>
+```{r echo=FALSE, message=FALSE, results='asis',warning=FALSE}
+library(stargazer)
+stargazer(VALE.ARCH , type="html", 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          omit.stat=c("LL","ser","f"),
+          header=FALSE) 
+```
+
+</center>
+
+&nbsp;
+
+
+
+
+```{r comment=NA}
 library(broom)
 
 T <- nobs(VALE.media)
@@ -338,15 +425,18 @@ O valor da estatística LM é de `r round(LM,2)` que deve ser comparado ao valor
 
 A mesma conclusão pode ser alcançada se, em vez do procedimento passo a passo, usarmos um dos recursos de teste ARCH do R, a função ArchTest() no pacote FinTS.
 
-```{r}
+```{r comment=NA}
 library(FinTS)
 VALEArchTest <- ArchTest(dlnVALEclose, lags=1, demean=TRUE)
 VALEArchTest
 ```
 
+
+
+
 A função garch() no pacote tseries torna-se um modelo ARCH quando usada com o order = argumento igual a c(0,1). Essa função pode ser usada para estimar e plotar a variância $h_{t}$ definida na Equação 3, conforme mostrado no código a seguir e na Figura abaixo.
 
-```{r}
+```{r comment=NA}
 library(tseries)
 
 rTS<-rTS%>%
@@ -356,7 +446,7 @@ VALE.arch <- garch(rTS,c(0,1))
 ```
 
 
-```{r}
+```{r comment=NA}
 sbydarch <- summary(VALE.arch)
 sbydarch
 ```
@@ -370,7 +460,7 @@ plot.ts(hhat)
 
 # O modelo GARCH
 
-```{r}
+```{r comment=NA}
 library(rugarch)
 garchSpec <- ugarchspec(
            variance.model=list(model="sGARCH",
@@ -383,6 +473,9 @@ coef(garchFit)
 
 
 
+
+
+
 ```{r fig.width=9,fig.height=3}
 rhat <- garchFit@fit$fitted.values
 plot.ts(rhat)
@@ -390,7 +483,7 @@ hhat <- ts(garchFit@fit$sigma^2)
 plot.ts(hhat)
 ```
 
-```{r}
+```{r comment=NA}
 # tGARCH 
 garchMod <- ugarchspec(variance.model=list(model="fGARCH",
                                garchOrder=c(1,1),
@@ -401,6 +494,9 @@ garchFit <- ugarchfit(spec=garchMod, data=rTS)
 coef(garchFit)
 ```
 
+
+
+
 ```{r fig.width=9,fig.height=3}
 rhat <- garchFit@fit$fitted.values
 plot.ts(rhat)
@@ -408,7 +504,7 @@ hhat <- ts(garchFit@fit$sigma^2)
 plot.ts(hhat)
 ```
 
-```{r}
+```{r comment=NA}
 # GARCH-in-mean
 garchMod <- ugarchspec(
           variance.model=list(model="fGARCH",
@@ -424,6 +520,13 @@ garchMod <- ugarchspec(
 garchFit <- ugarchfit(spec=garchMod, data=rTS)
 coef(garchFit)
 ```
+
+
+
+
+
+
+
 
 ```{r fig.width=9, fig.height=3, message=FALSE}
 rhat <- garchFit@fit$fitted.values
@@ -447,7 +550,7 @@ library(car)
 library(FinTS)
 ```
 
-```{r}
+```{r comment=NA}
 options(digits=4)
 
 VALEfechamento<-ativo2$VALE.Close
@@ -467,7 +570,7 @@ VALE.ret[1:10,] # printa as primeiras dez linhas
 
 Agora vamos definir o GARCH assimétrico
 
-```{r}
+```{r comment=NA}
 garch11.spec = ugarchspec(variance.model = list(garchOrder=c(1,1)), 
                           mean.model = list(armaOrder=c(0,0)))
 VALE.garch11.fit = ugarchfit(spec=garch11.spec, data=VALE.ret,
@@ -483,6 +586,15 @@ plot(residuals(VALE.garch11.fit))
 ```
 
 
+
+
+
+
+
+
+
+
+
 Rodaremos o teste de Engle & NG. para o viés de sinal:
 
 <!-- https://onlinelibrary.wiley.com/doi/full/10.1111/j.1540-6261.1993.tb05127.x  -->
@@ -491,7 +603,7 @@ Rodaremos o teste de Engle & NG. para o viés de sinal:
 
 O teste de viés de sinal considera a variável $S_{t-1}^{-}$, uma variável fictícia que assume o valor um quando $\epsilon_{t-1}$ é negativo e zero, caso contrário. Este teste examina o impacto de choques de retorno positivo e negativo sobre a volatilidade não prevista pelo modelo em consideração. O teste de viés de tamanho negativo utiliza a variável $S_{t-1}^{-}$ $\epsilon_{t-1}$. Ele se concentra nos diferentes efeitos que grandes e pequenos choques de retorno negativo têm sobre a volatilidade, o que não é previsto pelo modelo de volatilidade. O teste de viés de tamanho positivo utiliza a variável $S_{t-1}^{+}$ $\epsilon_{t-1}$ onde $S_{t-1}^{+}$ é definido como 1 menos $S_{t-1}$. Ele se concentra nos diferentes impactos que grandes e pequenos choques de retorno positivo podem ter sobre a volatilidade, que não são explicados pelo modelo de volatilidade.
 
-```{r}
+```{r comment=NA}
 signbias(VALE.garch11.fit)
 ```
 
@@ -501,7 +613,7 @@ Como apontado acima, o efeito de viés de negativo foi o que apresentou signific
 
 ## Modelo EGARCH de Nelson
 
-```{r}
+```{r comment=NA}
 egarch11.spec = ugarchspec(variance.model=list(model="eGARCH",
                                                garchOrder=c(1,1)),
                            mean.model=list(armaOrder=c(0,0)))
@@ -513,7 +625,7 @@ plot(residuals(VALE.egarch11.fit))
 
 ## Modelo GJR GARCH
 
-```{r}
+```{r comment=NA}
 gjrgarch11.spec = ugarchspec(variance.model=list(model="gjrGARCH",
                                                  garchOrder=c(1,1)),
                              mean.model=list(armaOrder=c(0,0)))
@@ -526,7 +638,7 @@ plot(residuals(VALE.gjrgarch11.fit))
 
 ## Modelo APARCH
 
-```{r}
+```{r comment=NA}
 aparch11.1.spec = ugarchspec(variance.model=list(model="apARCH",
                                                  garchOrder=c(1,1)),
                              mean.model=list(armaOrder=c(0,0)),
@@ -540,7 +652,7 @@ plot(residuals(VALE.aparch11.1.fit))
 
 # Comparando as News Impact Curves
 
-```{r}
+```{r comment=NA}
 nic.garch11 = newsimpact(VALE.garch11.fit)
 nic.egarch11 = newsimpact(VALE.egarch11.fit)
 nic.gjrgarch11 = newsimpact(VALE.gjrgarch11.fit)
@@ -549,7 +661,7 @@ nic.aparch11.1 = newsimpact(VALE.aparch11.1.fit)
 
 Via critério de informação, comparamos:
 
-```{r}
+```{r comment=NA}
 model.list = list(garch11 = VALE.garch11.fit,
                   egarch11 = VALE.egarch11.fit,
                   gjrgarch11 = VALE.gjrgarch11.fit,
@@ -578,7 +690,7 @@ plot(nic.aparch11.1$zx, type="l", lwd=2, col="blue", main="APARCH(1,1,1)",
 
 Vamos observar um modelo GARCH(1,1) normal, examinaremos os resíduos padronizados:
 
-```{r}
+```{r comment=NA}
 VALE.garch11.zt = residuals(VALE.garch11.fit)/sigma(VALE.garch11.fit)
 VALE.garch11.zt = xts(VALE.garch11.zt, order.by=index(VALE.ret))
 qqPlot(coredata(VALE.garch11.zt))
@@ -590,7 +702,7 @@ plot(VALE.garch11.fit, which=9)
 
 Rodaremos um modelo GARCH(1,1) com erros de Student $t$:
 
-```{r}
+```{r comment=NA}
 garch11.t.spec = ugarchspec(variance.model = list(garchOrder=c(1,1)), 
                             mean.model = list(armaOrder=c(0,0)),
                             distribution.model = "std")
@@ -613,7 +725,7 @@ plot(residuals(VALE.aparch11.1.t.fit))
 
 Ajustamos uma $t$ enviesada:
 
-```{r}
+```{r comment=NA}
 garch11.st.spec = ugarchspec(variance.model = list(garchOrder=c(1,1)), 
                             mean.model = list(armaOrder=c(0,0)),
                             distribution.model = "sstd")
@@ -626,7 +738,7 @@ plot(VALE.garch11.st.fit, which=9)
 
 ## Plotamos os gráficos dos modelos da família ARCH
 
-```{r}
+```{r comment=NA}
 VALE.garch11.fcst = ugarchforecast(VALE.garch11.fit, n.ahead=250)
 VALE.garch11.t.fcst = ugarchforecast(VALE.garch11.t.fit, n.ahead=250)
 VALE.aparch11.1.fcst = ugarchforecast(VALE.aparch11.1.fit, n.ahead=250)
@@ -650,7 +762,7 @@ plot(sigma(VALE.aparch11.1.t.fcst), type="l", col="blue")
 
 Extraio as projeções de volatilidades:
 
-```{r}
+```{r comment=NA}
 
 #VALE.garch11.sigma = as.data.frame(VALE.garch11.fcst)$sigma
 #VALE.garch11.t.sigma = as.data.frame(VALE.garch11.t.fcst)$sigma
@@ -674,7 +786,7 @@ Extraio as projeções de volatilidades:
 
 Reajusta os modelos, deixando 100 observações fora da amostra para estatísticas de avaliação de previsão
 
-```{r}
+```{r comment=NA}
 VALE.garch11.fit = ugarchfit(spec=garch11.spec, data=VALE.ret,
                              out.sample=100)
 VALE.garch11.t.fit = ugarchfit(spec=garch11.t.spec, data=VALE.ret,
@@ -689,7 +801,7 @@ VALE.aparch11.1.t.fit = ugarchfit(spec=aparch11.1.t.spec, data=VALE.ret,
 
 Compara a persistência com a variância incondicional:
 
-```{r}
+```{r comment=NA}
 c.mat = matrix(0, 4, 2)
 colnames(c.mat) = c("Persistence", "E[sig(t)]")
 rownames(c.mat) = c("GARCH-n", "GARCH-t", "APARCH-n","APARCH-t")
@@ -710,7 +822,7 @@ c.mat
 
 Finaliza computando 100 previsões dinâmicas 1 passo à frente:
 
-```{r}
+```{r comment=NA}
 VALE.garch11.fcst = ugarchforecast(VALE.garch11.fit, n.roll=100, n.ahead=1)
 VALE.garch11.t.fcst = ugarchforecast(VALE.garch11.t.fit, n.roll=100, n.ahead=1)
 VALE.aparch11.1.fcst = ugarchforecast(VALE.aparch11.1.fit, n.roll=100, n.ahead=1)
@@ -719,7 +831,7 @@ VALE.aparch11.1.t.fcst = ugarchforecast(VALE.aparch11.1.t.fit, n.roll=100, n.ahe
 
 Vamos ver os resultados para os retornos esperados pelos 4 modelos ajustados:
 
-```{r}
+```{r comment=NA}
 VALE.garch11.fcst
 
 VALE.garch11.t.fcst
@@ -733,7 +845,7 @@ VALE.aparch11.1.t.fcst
 Com os dados observados, comparamos o de melhor ajuste:
 
 
-```{r}
+```{r comment=NA}
 # Obtem comparativo de previsao estatistica
 fcst.list = list(garch11=VALE.garch11.fcst,
                  garch11.t=VALE.garch11.t.fcst,
