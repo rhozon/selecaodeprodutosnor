@@ -940,19 +940,262 @@ sleep=\beta_{0}+\beta_{1}totwrk+\beta_{2}educ+\beta_{3}age+u,
 \]</span></p>
 <p>where <span class="math inline">\(sleep\)</span> and <span class="math inline">\(totwrk\)</span> (total work) are measured in minutes per week and <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> are measured in years (See also Computer Exercise C3 in Chapter 2.)</p>
 <ol style="list-style-type: lower-roman">
-<li><p>If adults trade off sleep for work, what is the sign of <span class="math inline">\(\beta_{1}\)</span> ?</p></li>
-<li><p>What signs do you think <span class="math inline">\(\beta_{2}\)</span> and <span class="math inline">\(\beta_{3}\)</span> will have ?</p></li>
-<li><p>Using th data in SLEEP75, the estimated equation is</p></li>
+<li>If adults trade off sleep for work, what is the sign of <span class="math inline">\(\beta_{1}\)</span> ?</li>
+</ol>
+<p><strong>Solution</strong>:</p>
+<pre class="r"><code>library(wooldridge)
+
+str(sleep75)</code></pre>
+<pre><code>&#39;data.frame&#39;:   706 obs. of  34 variables:
+ $ age     : int  32 31 44 30 64 41 35 47 32 30 ...
+ $ black   : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ case    : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ clerical: num  0 0 0 0 0 0 0 0 0 0 ...
+ $ construc: num  0 0 0 0 0 0 0 0 0 0 ...
+ $ educ    : int  12 14 17 12 14 12 12 13 17 15 ...
+ $ earns74 : num  0 9500 42500 42500 2500 ...
+ $ gdhlth  : int  0 1 1 1 1 1 1 1 1 1 ...
+ $ inlf    : int  1 1 1 1 1 1 1 1 1 1 ...
+ $ leis1   : int  3529 2140 4595 3211 4052 4812 4787 3544 4359 4211 ...
+ $ leis2   : int  3479 2140 4505 3211 4007 4797 4157 3469 4359 4061 ...
+ $ leis3   : int  3479 2140 4227 3211 4007 4797 4157 3439 4121 4061 ...
+ $ smsa    : int  0 0 1 0 0 0 0 1 0 1 ...
+ $ lhrwage : num  1.956 0.358 3.022 2.264 1.012 ...
+ $ lothinc : num  10.08 0 0 0 9.33 ...
+ $ male    : int  1 1 1 0 1 1 1 1 1 1 ...
+ $ marr    : int  1 0 1 1 1 1 1 1 1 1 ...
+ $ prot    : int  1 1 0 1 1 1 1 1 0 0 ...
+ $ rlxall  : int  3163 2920 3038 3083 3493 4078 3810 3033 3606 3168 ...
+ $ selfe   : int  0 1 1 1 0 0 0 1 0 1 ...
+ $ sleep   : int  3113 2920 2670 3083 3448 4063 3180 2928 3368 3018 ...
+ $ slpnaps : int  3163 2920 2760 3083 3493 4078 3810 3003 3368 3168 ...
+ $ south   : int  0 1 0 0 0 0 0 0 0 0 ...
+ $ spsepay : num  0 0 20000 5000 2400 0 12000 0 0 6000 ...
+ $ spwrk75 : int  0 0 1 1 1 0 1 0 0 1 ...
+ $ totwrk  : int  3438 5020 2815 3786 2580 1205 2113 3608 2353 2851 ...
+ $ union   : int  0 0 0 0 0 0 0 0 1 0 ...
+ $ worknrm : int  3438 5020 2815 3786 2580 0 2113 3608 2353 2851 ...
+ $ workscnd: int  0 0 0 0 0 1205 0 0 0 0 ...
+ $ exper   : int  14 11 21 12 44 23 17 28 9 9 ...
+ $ yngkid  : int  0 0 0 0 0 0 1 0 0 0 ...
+ $ yrsmarr : int  13 0 0 12 33 23 0 24 11 7 ...
+ $ hrwage  : num  7.07 1.43 20.53 9.62 2.75 ...
+ $ agesq   : int  1024 961 1936 900 4096 1681 1225 2209 1024 900 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<p>We can run the OLS regression in R</p>
+<pre class="r"><code>fit&lt;-lm(sleep~totwrk+educ+age,data=sleep75)</code></pre>
+<p> </p>
+<center>
+<table style="text-align:center">
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="1" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+sleep
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+fit
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+3,638.245<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(112.275)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+totwrk
+</td>
+<td>
+-0.148<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.017)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+educ
+</td>
+<td>
+-11.134<sup>*</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(5.885)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+age
+</td>
+<td>
+2.200
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1.446)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+706
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.113
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.110
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+419.359 (df = 702)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+29.919<sup>***</sup> (df = 3; 702)
+</td>
+</tr>
+<tr>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<pre class="r"><code>#generating the dataset
+library(xlsx)
+write.xlsx(sleep75, file=&quot;sleep75.xlsx&quot;)</code></pre>
+<p><a href="https://github.com/rhozon/homeworkI/blob/main/sleep75.xlsx?raw=true">You can download the dataset here</a></p>
+<p>Soon if adults trade off sleep for work, more work implies less sleep (other things equal), so <span class="math inline">\(β_1 &lt; 0\)</span>.</p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>What signs do you think <span class="math inline">\(\beta_{2}\)</span> and <span class="math inline">\(\beta_{3}\)</span> will have ?</li>
+</ol>
+<p><strong>Solution</strong></p>
+<p>The signs of <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are not obvious. One could argue that more educated people like to get more out of life, and so, other things equal, they sleep less (<span class="math inline">\(\beta_2 &lt; 0\)</span>). The relationship between sleeping and age is more complicated than this model suggests, and economists are not in the best position to judge such things.</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Using th data in SLEEP75, the estimated equation is</li>
 </ol>
 <p><span class="math display">\[
 \widehat{sleep}=3,638.25-.148totwrk-11.13educ+2.20age\\
 n=706,\,\, R^{2}=.113.
 \]</span></p>
 <p>If someone works five more hours per week, by how many minutes is <em>sleep</em> predicted to fall ? Is this a large tradeoff ?</p>
+<p><strong>Solution</strong></p>
+<p>Since <span class="math inline">\(totwrk\)</span> is in minutes, we must convert five hours into minutes: <span class="math inline">\(∆totwrk = 5(60) = 300\)</span>. Then sleep is predicted to fall by 0.148(300) = 44.4 minutes. Fo a week, 45 minutes less sleep is not an overwhelming change</p>
 <ol start="4" style="list-style-type: lower-roman">
-<li><p>Discuss the sign and magnitude of the estimated coefficient on <em>educ</em></p></li>
-<li><p>Would you say <span class="math inline">\(totwrk\)</span>, <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> explain much of the variation in sleep? What other factors might affect the time spent sleeping ? Are these likely to be correlated with <span class="math inline">\(totwrk\)</span> ?</p></li>
+<li>Discuss the sign and magnitude of the estimated coefficient on <em>educ</em></li>
 </ol>
+<p><strong>Solution</strong></p>
+<p>More education implies less predicted time sleeping, but the effect is quite small. If we assume the difference between college and high school is four years, the college graduate sleeps about 45 minutes less per week, other things equal</p>
+<ol start="22" style="list-style-type: lower-alpha">
+<li>Would you say <span class="math inline">\(totwrk\)</span>, <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> explain much of the variation in sleep? What other factors might affect the time spent sleeping ? Are these likely to be correlated with <span class="math inline">\(totwrk\)</span> ?</li>
+</ol>
+<p><strong>Solution</strong></p>
+<p>As shown in the (i) the <span class="math inline">\(R^2=0.113\)</span> that the three explanatory variables explain only about 11.3% of the variation in sleep. One important factor in the error term is general health.</p>
+<p>Another is marital status, and whether the person has children. Health (however we measure that), marital status, and number and ages of children would generally be correlated with totwrk. (For example, less healthy people would tend to work less.)</p>
 <hr />
 <p>9 The following equation describes the median housing price in a community in terms of amount of pollution (nox for nitrous oxide) and the average number of rooms in houses in the community (rooms):</p>
 <p><span class="math display">\[

@@ -270,7 +270,62 @@ where $sleep$ and $totwrk$ (total work) are measured in minutes per week and $ed
 
 (i) If adults trade off sleep for work, what is the sign of $\beta_{1}$ ?
 
+**Solution**:
+
+```{r comment=NA}
+library(wooldridge)
+
+str(sleep75)
+
+
+```
+
+
+We can run the OLS regression in R
+
+```{r comment=NA}
+fit<-lm(sleep~totwrk+educ+age,data=sleep75)
+
+```
+
+
+&nbsp;
+
+<center>
+```{r echo=FALSE, message=FALSE, results='asis'}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(fit, type="html", 
+          column.labels = c("fit"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+</center>
+
+&nbsp;
+
+
+```{r}
+#generating the dataset
+library(xlsx)
+write.xlsx(sleep75, file="sleep75.xlsx")
+```
+
+[You can download the dataset here](https://github.com/rhozon/homeworkI/blob/main/sleep75.xlsx?raw=true)
+
+
+Soon if adults trade off sleep for work, more work implies less sleep (other things equal), so $β_1 < 0$.
+
 (ii) What signs do you think $\beta_{2}$ and $\beta_{3}$ will have ?
+
+
+**Solution** 
+
+
+The signs of $\beta_2$ and $\beta_3$ are not obvious. One could argue that more educated people like to get more out of life, and so, other things equal, they sleep less ($\beta_2 < 0$). The relationship between sleeping and age is more complicated than this model suggests, and economists are not in the best position to judge such things.
+
 
 (iii) Using th data in SLEEP75, the estimated equation is 
 
@@ -282,9 +337,28 @@ $$
 
 If someone works five more hours per week, by how many minutes is _sleep_ predicted to fall ? Is this a large tradeoff ?
 
+**Solution** 
+
+Since $totwrk$ is in minutes, we must convert five hours into minutes: $∆totwrk = 5(60) = 300$. Then sleep is predicted to fall by 0.148(300) = 44.4 minutes. Fo a week, 45 minutes less sleep is not an overwhelming change
+
 (iv) Discuss the sign and magnitude of the estimated coefficient on _educ_
 
+**Solution** 
+
+More education implies less predicted time sleeping, but the effect is quite small.
+If we assume the difference between college and high school is four years, the
+college graduate sleeps about 45 minutes less per week, other things equal
+
+
+
 (v) Would you say $totwrk$, $educ$ and $age$ explain much of the variation in sleep? What other factors might affect the time spent sleeping ? Are these likely to be correlated with $totwrk$ ?
+
+**Solution** 
+
+As shown in the (i) the $R^2=0.113$ that the three explanatory variables explain only about 11.3% of the variation in sleep. One important factor in the error term is general health.
+
+Another is marital status, and whether the person has children. Health (however we measure that), marital status, and number and ages of children would generally be correlated with totwrk. (For example, less healthy people would tend to work less.)
+
 
 ***
 
