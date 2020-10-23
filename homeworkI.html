@@ -1010,6 +1010,56 @@ str(lawsch85)</code></pre>
  $ llibvol: num  5.38 5.55 6.05 5.8 5.81 ...
  $ lcost  : num  9.03 8.85 9.7 9.77 9.03 ...
  - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<pre class="r"><code>head(lawsch85)</code></pre>
+<pre><code>  rank salary  cost LSAT  GPA libvol faculty age clsize north south east west
+1  128  31400  8340  155 3.15    216      45  12    210     1     0    0    0
+2  104  33098  6980  160 3.50    256      44 113    190     0     1    0    0
+3   34  32870 16370  155 3.25    424      78 134    270     0     0    1    0
+4   49  35000 17566  157 3.20    329     136  89    277     0     0    1    0
+5   95  33606  8350  162 3.38    332      56  70    150     0     0    0    1
+6   98  31700  8350  161 3.40    311      40  29    156     0     0    0    1
+   lsalary  studfac top10 r11_25 r26_40 r41_60  llibvol    lcost
+1 10.35456 4.666667     0      0      0      0 5.375278 9.028818
+2 10.40723 4.318182     0      0      0      0 5.545177 8.850804
+3 10.40032 3.461539     0      0      1      0 6.049734 9.703206
+4 10.46310 2.036765     0      0      0      1 5.796058 9.773721
+5 10.42246 2.678571     0      0      0      0 5.805135 9.030017
+6 10.36407 3.900000     0      0      0      0 5.739793 9.030017</code></pre>
+<pre class="r"><code>sum(is.na(lawsch85))</code></pre>
+<pre><code>[1] 101</code></pre>
+<pre class="r"><code>na_count &lt;-sapply(lawsch85, function(y) sum(length(which(is.na(y)))))
+
+na_count &lt;- data.frame(na_count)
+
+na_count</code></pre>
+<pre><code>        na_count
+rank           0
+salary         8
+cost           6
+LSAT           6
+GPA            7
+libvol         1
+faculty        4
+age           45
+clsize         3
+north          0
+south          0
+east           0
+west           0
+lsalary        8
+studfac        6
+top10          0
+r11_25         0
+r26_40         0
+r41_60         0
+llibvol        1
+lcost          6</code></pre>
+<pre class="r"><code>sum(na_count)</code></pre>
+<pre><code>[1] 101</code></pre>
+<pre class="r"><code>#generating the dataset
+library(xlsx)
+write.xlsx(lawsch85, file=&quot;lawsch85.xlsx&quot;)</code></pre>
+<p><a href="https://github.com/rhozon/homeworkI/raw/main/lawsch85.xlsx">Now you can download the lawsch85.xlsx here</a></p>
 <p>By running the two regression models, we can have:</p>
 <pre class="r"><code>mod1&lt;-lm(lsalary~rank+GPA,data=lawsch85)
 
@@ -1254,8 +1304,22 @@ F Statistic
 </center>
 <p> </p>
 <p>The coefficient of the age variable was shown to be insignificant in model 2.</p>
-<p>With different observations the <span class="math inline">\(R^2\)</span> are been incomparable (see the <span class="math inline">\(n\)</span> in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.</p>
-<p>Although the general F test is significant in both models, the t statistic shows that the inclusion of the age variable does not improve the model’s fit to explain lsalary.</p>
+<p>With different observations the <span class="math inline">\(R^2\)</span> are been incomparable (see the <span class="math inline">\(n\)</span> in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.As seen above, the age variable has 45 missing data and the other variables in the both models…</p>
+<pre class="r"><code>library(dplyr)
+regvars&lt;-lawsch85%&gt;%
+select(lsalary,rank,GPA,age)
+
+na_count_reg &lt;-sapply(regvars, function(y) sum(length(which(is.na(y)))))
+
+na_count_reg &lt;- data.frame(na_count_reg)
+
+na_count_reg</code></pre>
+<pre><code>        na_count_reg
+lsalary            8
+rank               0
+GPA                7
+age               45</code></pre>
+<p>Although the general <span class="math inline">\(F\)</span> test is significant in both models, the <span class="math inline">\(t\)</span> statistic shows that the inclusion of the <span class="math inline">\(age\)</span> variable does not improve the model’s fit to explain lsalary.</p>
 <hr />
 <div id="references" class="section level3">
 <h3>References</h3>

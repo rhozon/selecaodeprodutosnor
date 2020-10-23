@@ -333,17 +333,35 @@ How can it be that the $R^{2}$ is smaller when the variable $age$ is added to eq
 **Solution**:
 
 
-
-
-
 By using the wooldridge package in R we can see:
 
-```{r comment=NA}
+```{r comment=NA, message=FALSE}
 library(wooldridge)
 
 #inspect the dataset
 str(lawsch85)
+
+
+head(lawsch85)
+
+sum(is.na(lawsch85))
+
+na_count <-sapply(lawsch85, function(y) sum(length(which(is.na(y)))))
+
+na_count <- data.frame(na_count)
+
+na_count
+
+sum(na_count)
+
+  
+#generating the dataset
+library(xlsx)
+write.xlsx(lawsch85, file="lawsch85.xlsx")
 ```
+
+
+[Now you can download the lawsch85.xlsx here](https://github.com/rhozon/homeworkI/raw/main/lawsch85.xlsx)
 
 
 By running the two regression models, we can have:
@@ -376,15 +394,23 @@ stargazer(mod1, mod2, type="html",
 The coefficient of the age variable was shown to be insignificant in model 2.
 
 
-With different observations the $R^2$ are been incomparable (see the $n$ in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.
+With different observations the $R^2$ are been incomparable (see the $n$ in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.As seen above, the age variable has 45 missing data and the other variables in the both models...
+
+```{r comment=NA, message=FALSE}
+library(dplyr)
+regvars<-lawsch85%>%
+select(lsalary,rank,GPA,age)
+
+na_count_reg <-sapply(regvars, function(y) sum(length(which(is.na(y)))))
+
+na_count_reg <- data.frame(na_count_reg)
+
+na_count_reg
+```
 
 
-Although the general F test is significant in both models, the t statistic shows that the inclusion of the age variable does not improve the model's fit to explain lsalary. 
 
-
-
-
-
+Although the general $F$ test is significant in both models, the $t$ statistic shows that the inclusion of the $age$ variable does not improve the model's fit to explain lsalary. 
 
 
 
