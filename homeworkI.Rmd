@@ -370,7 +370,17 @@ $$
 
 (i) What is the interpretation of $\beta_{1}$ and $\beta_{2}$? What is the interpretation of $\beta_{1}$ ? Explain.
 
+**Solution** 
+
+We hope $\beta_1 < 0$ because more pollution can be expected to lower housing values; $\beta_1$ is the elasticity of price with respect to $nox$. $\beta_2$ is probably positive because $rooms$ roughly measures the size of a house. (However, it does not allow us to distinguish homes where each room is large from homes where each room is small.)
+
+
 (ii) Why might $nox$ [or more precisely $\log(nox)$] and $rooms$ be negatively correlated? If this is the case, does the simple regression of $log(price)$ on $log(nox)$ produce an upward or a downward biased estimator of $\beta_{1}$?
+
+**Soloution**
+
+
+If we assume that $rooms$ increases with quality of the home, then $log(nox)$ and $rooms$ are negatively correlated when poorer neighborhoods have more pollution, something that is often true. If $\beta_2 > 0$ and $Corr(x1, x2) < 0$, the simple regression estimator $\widetilde{β}_1$ has a downward bias. But because $\beta_1 < 0$, this means that the simple regression, on average, overstates the importance of pollution. $(E(\widetilde{\beta}_1)$ is more negative than $\beta_1$.)
  
 (iii) Using the data in HPRICE2, the following equations were estimated:
 
@@ -381,6 +391,13 @@ $$
 
 
 Is the relationship between the simple and multiple regression estimates of the elasticity of $price$ with respect to $nox$ what would have predicted, given your answer in part (ii)? Does this mean that -.718 is definitely closer to the true elasticity than -1.043 ? 
+
+**Solution:**
+
+
+This is what we expect from the typical sample based on our analysis in part (i). The simple regression estimate, −1.043, is more negative (larger in magnitude) than the multiple regression estimate, −0.718. As those estimates are only for one sample, we can never know which is closer to $\beta_1$. But if this is a “typical” sample, $\beta_1$ is closer to −0.718.
+
+
 
 
 ***
