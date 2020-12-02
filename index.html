@@ -22,8 +22,19 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -351,10 +362,10 @@ $(document).ready(function () {
       <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
     </li>
     <li>
-      <a href="bigdatanor.html">Big Data: Análises Avançadas no R</a>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
     </li>
     <li>
-      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
     </li>
   </ul>
 </li>
@@ -527,6 +538,9 @@ $(document).ready(function () {
 </div>
 <div id="homework-i-econometrics-shangai-university-of-finance" class="section level3">
 <h3><em>Homework I: Econometrics (Shangai University of Finance)</em></h3>
+</div>
+<div id="homework-ii-econometrics-shangai-university-of-finance" class="section level3">
+<h3><em>Homework II: Econometrics (Shangai University of Finance)</em></h3>
 <hr />
 <p><img src="econnerd.png" style="width:40.0%" /></p>
 </div>
@@ -540,7 +554,7 @@ $(document).ready(function () {
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

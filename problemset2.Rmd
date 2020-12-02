@@ -1,0 +1,465 @@
+---
+title: "Homework: Econometrics (Shangai University of Finance) "
+author: "Ozon, R. H. and Peixoto, F., S."
+date: "02/12/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<!-- ================================================================================= -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
+```
+
+```{r include=FALSE}
+# cunhk para retiraar os prefixos
+default_output_hook <- knitr::knit_hooks$get("output")
+# Output hooks handle normal R console output.
+knitr::knit_hooks$set( output = function(x, options) {
+
+  comment <- knitr::opts_current$get("comment")
+  if( is.na(comment) ) comment <- ""
+  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
+                     x, perl = TRUE)
+  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
+  if( can_null && do_null ) {
+    # By default R print output aligns at the right brace.
+    align_index <- regexpr( "\\]", x )[1] - 1
+    # Two cases: start or newline
+    re <- paste0( "^.{", align_index, "}\\]")
+    rep <- comment
+    x <- gsub( re, rep,  x )
+    re <- paste0( "\\\n.{", align_index, "}\\]")
+    rep <- paste0( "\n", comment )
+    x <- gsub( re, rep,  x )
+  }
+
+  default_output_hook( x, options )
+
+})
+
+knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+
+```
+
+<!-- ================================================================================= -->
+
+***
+
+[See the repo on github](https://github.com/rhozon/homeworkI)
+
+***
+
+## Chapter 4 Problems 2,9
+
+2 Consider an equation to explain salaries of CEOs in terms of annual firm sales, return on equity (_roe_ in percentage form), and return of the firm´s stock (_ros_ in percentage form):
+
+$$
+log(salary) = \beta_0 +\beta_1 log(sales)+\beta_2 roe+\beta_3 ros +u
+$$
+
+(i) In terms of the model parameters, state the null hypothesis that, after controlling for $sales$, $roe$, $ros$ has no effect on CEOs salary. State the alternative that better stock market performance increases a CEO´s salary.
+
+
+**Answer:**
+
+$$
+H_0 : β_3 = 0,\\
+H_1 : β_3 > 0
+$$
+
+
+(ii) Using the data CEOSAL1, the following equation was obtained by OLS:
+\begin{align}
+\widehat{log(salary)} = & 4.32 + .280log(sales) +.0174roe+.00024ros\\
+& (.32)\quad\quad(.035)\quad\quad(.0041)\quad\quad\quad(.00054)\\
+&n=209\quad R^{2}=.283
+\end{align}
+
+By what percentage is $salary$ predicted to increase if $ros$ increases by 50 point ? Does $ros$ have a practically large effect on $salary$ ?
+
+**Answer:**
+
+By exploring the CEOSAL1 data, we can see:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+library(wooldridge)
+
+str(ceosal1)
+
+write.csv(ceosal1,"ceosal1.csv")
+
+library(xlsx)
+
+write.xlsx(ceosal1,"ceosal1.xlsx")
+```
+
+[Now you can download this data here.](https://github.com/rhozon/homeworkI/blob/main/ceosal1.xlsx?raw=true)
+
+
+Using R, the estimated model, looks like:
+
+```{r message=FALSE, comment=NA}
+
+fit<-lm(lsalary~lsales+roe+ros, data=ceosal1)
+
+summary(fit)
+
+```
+
+
+
+
+The proportionate effect on $\widehat{salary}$ is $.00024(50) = .012$. or 1.2%. Therefore, a 50 point _ceteris paribus_ increase in $ros$ is predicted to increase $salary$ by only 1.2%. Practically speaking, this is a very small effect for such a large change in $ros$.
+
+
+(iii) Test the null hypothesis that $ros$ has no effect on $salary$ against the alternative that $ros$ has a positive effect. Carry out the test at 10% significance level. 
+
+**Answer:**
+
+The 10% critical value for a one-tailed test, using $df = \infty$, is obtained from Table G.2 as 1.282. The $t$ statistic on $ros$ is $.00024/.00054 ≈ .44$, which is well below the critical value. Therefore, we fail to reject $H_0$ at the 10% significance level.
+
+
+(iv) Would you include $ros$ in a final model explaining CEO compensation in terms of firm perfomance ? Explain.
+
+**Answer:**
+
+Based on this sample, the estimated $ros$ coefficient appears to be different from zero only because of sampling variation. On the other hand, including $ros$ may not be causing any harm; it depends on how correlated it is with the other independent variables (although these are very significant even with $ros$ in the equation).
+
+If you are a policy maker trying to estimate the causal effect of per-student spending on math test performance, explain why the first equation is more relevant than the second. What is the estimated effect of a 10% increase in expenditures per student?
+
+&nbsp;
+
+***
+
+9 In Problem 3 in Chapter 3, we estimated the equation:
+
+\begin{align}
+\widehat{sleep} =& 3,638.25 - .148 totwrk - 11.13 educ + 2.20 age\\
+& (112.28)\quad (.0172)\quad\quad\quad (5.88)\quad\quad (1.45)\\
+&\quad\quad\quad\quad n=706, R^2 = .113,
+\end{align}
+
+
+where we now report standard errors along with the estimates.
+
+(i) Is either $educ$ or $age$ individually significant at the 5% level against a two-sided alternative?
+
+Show your work.
+
+**Answer:**
+
+With $df = 706 – 4 = 702$, we use the standard normal critical value ($df = \infty$ in Table G.2), which is 1.96 for a two-tailed test at the 5% level. Now $t_{educ} = −11.13/5.88 ≈ −1.89$, so $|t_{educ}| = 1.89 < 1.96$, and we fail to reject $H0: β_{educ} = 0$ at the 5% level. Also, $t_{age} ≈ 1.52$, so age is also statistically insignificant at the 5% level.
+
+
+
+(ii) Dropping educ and age from the equation gives
+\begin{align}
+\widehat{sleep} =& 3,586.38 - .151 totwrk\\
+& \quad(38.91)\quad (.017)\\
+&\quad n=706, R^2 = .103
+\end{align}
+
+
+Are $educ$ and $age$ jointly significant in the original equation at the 5% level? Justify your answer.
+
+**Answer:**
+
+
+We could to compute the $R^2$ form of the $F$ statistic for joint significance. $F = \frac{0.113−0.103}{1−0.113} \frac{702}{2} = 3.9572$. The 5% critical value is the $F_{2,702}$ distribution can be obtained with a denominator $df = \infty$: 3.00. Therefore, $educ$ and $age$ are jointly significant at the 5% level. (In fact, the $p$ value is about 0.019, and so $educ$ and $age$ are jointly significant at the 2% level).
+
+(iii) Does including $educ$ and $age$ in the model greatly affect the estimated tradeoff between $sleeping$ and $working$?
+
+**Answer**: 
+
+Not really. These variables are jointly significant, but including them only changes the coefficient on $totwork$ from −0.151 to −0.148.
+
+
+(iv) Suppose that the sleep equation contains heteroskedasticity. What does this mean about the tests computed in parts (i) and (ii)?
+
+**Answer:**
+
+The $t$ and $F$ statistics that we used assume homoskedasticity. If there is heteroskedasticity in the equation, the tests are no longer valid.
+
+&nbsp;
+
+***
+
+## Chapter 5 Problems 4
+
+4 In the simple regression model (5.16), under the first four Gauss-Markov assumptions, we showed that estimators of the form (5.17) are consistent for the slope, $\beta_1$. Given such an estimator, define an estimator of $\beta_0$ by $\widetilde{\beta}_0 = \overline{y}-\widetilde{\beta}_{1}\overline{x}$. Show that $plim \widetilde{\beta_0}=\beta_0$.
+
+**Answer:**
+
+Write $y = β_0 + β_1x + u$, and take the expected value: $E(y) = β_0 + β_{1}E(x) + E(u)$, or $μ_y = β_0 + β_{1}μ_x$, since $E(u) = 0$, where $μ_y = E(y)$ and $µ_x = E(x)$. We can rewrite this as $β_0 = µ_y − β_1 µ_x$. Now, $\widetilde{β_0} = y − β_{1} \overline{x}$ . Taking the plim of this we have plim$(\widetilde{β_0}) = plim(\overline{y} − \widetilde{β_1}\overline{x}) = plim(\overline{y}) – plim( \widetilde{β1})\cdot plim(\overline{x}) = μ_y − β_1 μ_x$, where we use the fact that $plim(\overline{y}) = μ_y$ and $plim(\overline{x}) = μ_x$ by the law of large numbers, and $plim(\widetilde{β_1}) = β_1$ . We have also used the parts of the Property PLIM.2 from Appendix C. 
+
+&nbsp;
+
+*** 
+
+## Chapter 6 Problems 3,10,C8
+
+3 Using the data in RDCHEM, the following equation was obtained by OLS:
+
+\begin{align}
+\widehat{rditens}=&2.613+.00030sales-.0000000070 sales^2\\
+&\quad(.429)\quad(.00014)\quad\quad(.0000000037)\\
+&n=32,R^2 = .1484
+\end{align}
+
+(i) At what point does the marginal effect of $sales$ on $rdintens$ become negative?
+
+**Answer:**
+
+$\Delta(rdintens/sales) = 0.0003 – 0.000000007sales$ 
+
+$= sales = 21428.57$. 
+
+
+At the point \$21428.57 millions of $sales$, $rdintens$ reaches the highest point. When $salesexceeds$ \$21428.57 millions, the marginal effect of $sales$ on $rdintens$ becomes negative.
+
+(ii) Would you keep the quadratic term in the model? Explain.
+
+**Answer:**
+
+$$
+H0: \beta_2 = 0,\\
+H1: \beta_2 = 0
+$$
+
+$t$ = - 0.000000007 / 0.0000000037 = -1.89 and the critical $t$ (29, 0.01) = 0.256
+
+
++ If $|t| > \mbox{critical}\,\, t$ => Reject $H_0 \\$
+
++ $sale^2$ has significant impact on $rdintens$, thus $sale^2$ should be included in the model
+
+(iii) Define $salesbil$ as sales measured in billions of dollars: $salesbil = sales/1,000$. Rewrite the estimated equation with $salesbil$ and $salesbil2$ as the independent variables. Be sure to report standard errors and the R-squared. [Hint: Note that $salesbil^2 = sales^2/ (1, 000)^2.$]
+
+**Answer:**
+
+Using R we can do:
+
+```{r message=FALSE, comment=NA}
+str(rdchem)
+
+library(dplyr)
+rdchem<-rdchem%>%
+  mutate(salesbil = sales/1000,
+         salesbil2 = sales^2 / 1000^2) #Adding the new variables on the dataset
+
+str(rdchem)
+```
+
+
+I can generate the new dataset for run in other econometric softwares:
+
+```{r message=FALSE, comment=NA}
+write.csv(rdchem,"rdchem.csv")
+
+write.xlsx(rdchem,"rdchem.xlsx")
+
+```
+
+[You can download the .csv file here](https://github.com/rhozon/homeworkI/blob/main/rdchem.csv) and the [.xlsx file here](https://github.com/rhozon/homeworkI/blob/main/rdchem.xlsx?raw=true)
+
+
+The new fitted model is:
+
+```{r message=FALSE, comment=NA}
+summary(lm(rdintens~salesbil+salesbil2, data=rdchem))
+
+```
+
+
+
+(iv) For the purpose of reporting the results, which equation do you prefer?
+
+**Answer:**
+
+By comparing the standard errors and the $R^2$ we can see:
+
+\begin{align}
+\widehat{rdintens}=&2.613+.00030sales-.0000000070 sales^2\\
+&\quad(.429)\quad(.00014)\quad\quad(.0000000037)\\
+&n=32,R^2 = .1484
+\end{align}
+
+_versus_
+
+\begin{align}
+\widehat{rdintens}=&2.612+0.305salesbil-0.007salesbil2\\
+&\quad(.429)\quad(0.139)\quad(0.003)\\
+&n=32,R^2 = .1484
+\end{align}
+
+The first model has lower standard errors and maybe the chosen as prefered.
+
+&nbsp;
+
+***
+
+10. The following two equations were estimated using the data in MEAPSINGLE. The key explanatory variable is lexppp, the log of expenditures per student at the school level.
+
+<center>
+![](https://www.coursehero.com/solutions/attachments/152701/){width=80%}
+</center>
+
+(i) If you are a policy maker trying to estimate the causal effect of per-student spending on math test performance, explain why the first equation is more relevant than the second. What is the estimated effect of a 10% increase in expenditures per student?
+
+**Answer:**
+
+By declaring the hypothesis test:
+
+$$
+H_0 : \widehat{\beta}_{lexppp} = 0\\
+H_0 : \widehat{\beta}_{lexppp} \neq 0
+$$
+
+By dividing the coefficient $\widehat{\beta}_{lexppp}$ by his standard error ($t_{\beta_{lexppp}}=\widehat{\beta}_{lexppp}/se(\widehat{\beta}_{lexppp})\approx 9.01/4.01 \approx 2.23\geq 1.96 $) and compare it to the critical value at 5% level of significance at 224 degrees of freedom with four explanatory variables.
+
+The coefficient of ($lexppp$) is statistically significant because the null hypothesis is rejected.
+
+For the second regression model the coefficient of ($lexppp$) is statistically insignificant because the null hypothesis is not rejected ($t_{\beta_{lexppp}}=1.93/2.82$).
+
+The estimated change in the math scores by substituting the increase in expenditure per student by 10%. This indicates that 10% increase in the expenditure per student increases the math scores by 0.901%.
+
+\begin{align}
+\widehat{\Delta math4} =& 9.01(\Delta lexppp)\\
+=& 9.01/100\equiv 0.901\%
+\end{align}
+
+
+
+
+(ii) Does adding $read4$ to the regression have strange effects on coefficients and statistical significance other than $\beta_{lexppp}$?
+
+**Answer:**
+
+By calling the dataset, we can see:
+
+```{r message=FALSE, comment=NA}
+
+str(meapsingle)
+
+```
+
+We can generate the dataset in .csv or .xlxs format using:
+
+```{r message=FALSE, comment=NA}
+
+write.csv(meapsingle, "meapsingle.csv")
+
+write.xlsx(meapsingle,"meapsingle.xlsx")
+
+```
+
+The files are avaiable [here](https://github.com/rhozon/homeworkI/blob/main/meapsingle.xlsx?raw=true) and [here](https://raw.githubusercontent.com/rhozon/homeworkI/main/meapsingle.csv).
+
+
+By comparing the two regression models:
+
+```{r message=FALSE, comment=NA}
+model1<-lm(math4~lexppp + free + lmedinc + pctsgle, data=meapsingle)
+
+model2<-lm(math4~lexppp + free + lmedinc + pctsgle +read4, data=meapsingle)
+
+summary(model1)
+
+summary(model2)
+```
+
+By putting the results sidye by side:
+<center>
+```{r echo=FALSE, message=FALSE, results='asis', warning=FALSE}
+#http://people.virginia.edu/~jcf2d/exercises/getting_started_with_stargazer.html
+library(stargazer)
+stargazer(model1,model2, type="html", 
+          column.labels = c("model1", "model2"), 
+          intercept.bottom = FALSE, 
+          single.row=FALSE,     
+          notes.append = FALSE, 
+          header=FALSE) 
+```
+</center>
+
+&nbsp;
+
+By including the variable $read4$ we see the increseases de $R^2$ but the $lexppp$ and $free$ lost statistical significance and the $lmeing$ and $postgle$ be significative.
+
+
+(iii) How would you explain to someone with only basic knowledge of regression why, in this case, you prefer the equation with the smaller adjusted R-squared?
+
+**Answer:**
+
+The importance of causal relationships in an econometric model is more fundamental and interesting to remain prominent in relation to the selection of a model compared to the mere objective of statistical adjustment, which can often lead us to an inadequate interpretation of an economic phenomenon .
+
+The statistical significance of the variables in their set of explanations provides us with a more robust interpretation than a biased $R ^ 2$.
+
+
+
+&nbsp;
+
+***
+
+C8 Use the data in HPRICE1 for this exercise.
+
+(i) Estimate the model
+
+$$
+price = \beta_0 + \beta_1 lotsize + \beta_2 sqrft + \beta_3 bdrms + u
+$$
+
+and report the results in the usual form, including the standard error of the regression. Obtain predicted price, when we plug in $lotsize = 10,000$, $sqrft = 2,300$, and $bdrms = 4$; round this price to the nearest dollar.
+
+
+(ii) Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.
+
+(iii) Let $price^0$  be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for $price^0$ and comment on the width of this confidence interval.
+
+
+
+
+
+
+
+
+&nbsp;
+
+***
+
+## References
+
+Wooldridge, J.M. **Introductory Econometrics: A modern approach**, 6 .ed, 2016. Avaible in [zlib](https://book4you.org/book/3372803/9610fc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
