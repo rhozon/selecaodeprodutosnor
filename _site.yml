@@ -52,6 +52,8 @@ navbar:
           href: projetointegrador.html 
         - text: "Homework I: Econometrics (Shangai University of Finance)"
           href: homeworkI.html 
+        - text: "Homework II: Econometrics (Shangai University of Finance)"
+          href: problemset2.html 
 
   right:
     - icon: fa-question fa-lg

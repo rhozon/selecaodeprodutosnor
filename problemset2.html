@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ozon, R. H. and Peixoto, F., S." />
+
+<meta name="date" content="2020-02-12" />
+
+<title>Homework: Econometrics (Shangai University of Finance)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Homework: Econometrics (Shangai University of Finance)</h1>
+<h4 class="author">Ozon, R. H. and Peixoto, F., S.</h4>
+<h4 class="date">02/12/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<!-- ================================================================================= -->
+<hr />
+<p><a href="https://github.com/rhozon/homeworkI">See the repo on github</a></p>
+<hr />
+<div id="chapter-4-problems-29" class="section level2">
+<h2>Chapter 4 Problems 2,9</h2>
+<p>2 Consider an equation to explain salaries of CEOs in terms of annual firm sales, return on equity (<em>roe</em> in percentage form), and return of the firm´s stock (<em>ros</em> in percentage form):</p>
+<p><span class="math display">\[
+log(salary) = \beta_0 +\beta_1 log(sales)+\beta_2 roe+\beta_3 ros +u
+\]</span></p>
+<ol style="list-style-type: lower-roman">
+<li>In terms of the model parameters, state the null hypothesis that, after controlling for <span class="math inline">\(sales\)</span>, <span class="math inline">\(roe\)</span>, <span class="math inline">\(ros\)</span> has no effect on CEOs salary. State the alternative that better stock market performance increases a CEO´s salary.</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p><span class="math display">\[
+H_0 : β_3 = 0,\\
+H_1 : β_3 &gt; 0
+\]</span></p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>Using the data CEOSAL1, the following equation was obtained by OLS: <span class="math display">\[\begin{align}
+\widehat{log(salary)} = &amp; 4.32 + .280log(sales) +.0174roe+.00024ros\\
+&amp; (.32)\quad\quad(.035)\quad\quad(.0041)\quad\quad\quad(.00054)\\
+&amp;n=209\quad R^{2}=.283
+\end{align}\]</span></li>
+</ol>
+<p>By what percentage is <span class="math inline">\(salary\)</span> predicted to increase if <span class="math inline">\(ros\)</span> increases by 50 point ? Does <span class="math inline">\(ros\)</span> have a practically large effect on <span class="math inline">\(salary\)</span> ?</p>
+<p><strong>Answer:</strong></p>
+<p>By exploring the CEOSAL1 data, we can see:</p>
+<pre class="r"><code>library(wooldridge)
+
+str(ceosal1)</code></pre>
+<pre><code>&#39;data.frame&#39;:   209 obs. of  12 variables:
+ $ salary  : int  1095 1001 1122 578 1368 1145 1078 1094 1237 833 ...
+ $ pcsalary: int  20 32 9 -9 7 5 10 7 16 5 ...
+ $ sales   : num  27595 9958 6126 16246 21783 ...
+ $ roe     : num  14.1 10.9 23.5 5.9 13.8 ...
+ $ pcroe   : num  106.4 -30.6 -16.3 -25.7 -3 ...
+ $ ros     : int  191 13 14 -21 56 55 62 44 37 37 ...
+ $ indus   : int  1 1 1 1 1 1 1 1 1 1 ...
+ $ finance : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ consprod: int  0 0 0 0 0 0 0 0 0 0 ...
+ $ utility : int  0 0 0 0 0 0 0 0 0 0 ...
+ $ lsalary : num  7 6.91 7.02 6.36 7.22 ...
+ $ lsales  : num  10.23 9.21 8.72 9.7 9.99 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<pre class="r"><code>write.csv(ceosal1,&quot;ceosal1.csv&quot;)
+
+library(xlsx)
+
+write.xlsx(ceosal1,&quot;ceosal1.xlsx&quot;)</code></pre>
+<p><a href="https://github.com/rhozon/homeworkI/blob/main/ceosal1.xlsx?raw=true">Now you can download this data here.</a></p>
+<p>Using R, the estimated model, looks like:</p>
+<pre class="r"><code>fit&lt;-lm(lsalary~lsales+roe+ros, data=ceosal1)
+
+summary(fit)</code></pre>
+<pre><code>
+Call:
+lm(formula = lsalary ~ lsales + roe + ros, data = ceosal1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.96060 -0.27144 -0.03264  0.22563  2.79805 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 4.3117125  0.3154329  13.669  &lt; 2e-16 ***
+lsales      0.2803149  0.0353200   7.936 1.34e-13 ***
+roe         0.0174168  0.0040923   4.256 3.17e-05 ***
+ros         0.0002417  0.0005418   0.446    0.656    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.4832 on 205 degrees of freedom
+Multiple R-squared:  0.2827,    Adjusted R-squared:  0.2722 
+F-statistic: 26.93 on 3 and 205 DF,  p-value: 1.001e-14</code></pre>
+<p>The proportionate effect on <span class="math inline">\(\widehat{salary}\)</span> is <span class="math inline">\(.00024(50) = .012\)</span>. or 1.2%. Therefore, a 50 point <em>ceteris paribus</em> increase in <span class="math inline">\(ros\)</span> is predicted to increase <span class="math inline">\(salary\)</span> by only 1.2%. Practically speaking, this is a very small effect for such a large change in <span class="math inline">\(ros\)</span>.</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Test the null hypothesis that <span class="math inline">\(ros\)</span> has no effect on <span class="math inline">\(salary\)</span> against the alternative that <span class="math inline">\(ros\)</span> has a positive effect. Carry out the test at 10% significance level.</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>The 10% critical value for a one-tailed test, using <span class="math inline">\(df = \infty\)</span>, is obtained from Table G.2 as 1.282. The <span class="math inline">\(t\)</span> statistic on <span class="math inline">\(ros\)</span> is <span class="math inline">\(.00024/.00054 ≈ .44\)</span>, which is well below the critical value. Therefore, we fail to reject <span class="math inline">\(H_0\)</span> at the 10% significance level.</p>
+<ol start="4" style="list-style-type: lower-roman">
+<li>Would you include <span class="math inline">\(ros\)</span> in a final model explaining CEO compensation in terms of firm perfomance ? Explain.</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>Based on this sample, the estimated <span class="math inline">\(ros\)</span> coefficient appears to be different from zero only because of sampling variation. On the other hand, including <span class="math inline">\(ros\)</span> may not be causing any harm; it depends on how correlated it is with the other independent variables (although these are very significant even with <span class="math inline">\(ros\)</span> in the equation).</p>
+<p>If you are a policy maker trying to estimate the causal effect of per-student spending on math test performance, explain why the first equation is more relevant than the second. What is the estimated effect of a 10% increase in expenditures per student?</p>
+<p> </p>
+<hr />
+<p>9 In Problem 3 in Chapter 3, we estimated the equation:</p>
+<p><span class="math display">\[\begin{align}
+\widehat{sleep} =&amp; 3,638.25 - .148 totwrk - 11.13 educ + 2.20 age\\
+&amp; (112.28)\quad (.0172)\quad\quad\quad (5.88)\quad\quad (1.45)\\
+&amp;\quad\quad\quad\quad n=706, R^2 = .113,
+\end{align}\]</span></p>
+<p>where we now report standard errors along with the estimates.</p>
+<ol style="list-style-type: lower-roman">
+<li>Is either <span class="math inline">\(educ\)</span> or <span class="math inline">\(age\)</span> individually significant at the 5% level against a two-sided alternative?</li>
+</ol>
+<p>Show your work.</p>
+<p><strong>Answer:</strong></p>
+<p>With <span class="math inline">\(df = 706 – 4 = 702\)</span>, we use the standard normal critical value (<span class="math inline">\(df = \infty\)</span> in Table G.2), which is 1.96 for a two-tailed test at the 5% level. Now <span class="math inline">\(t_{educ} = −11.13/5.88 ≈ −1.89\)</span>, so <span class="math inline">\(|t_{educ}| = 1.89 &lt; 1.96\)</span>, and we fail to reject <span class="math inline">\(H0: β_{educ} = 0\)</span> at the 5% level. Also, <span class="math inline">\(t_{age} ≈ 1.52\)</span>, so age is also statistically insignificant at the 5% level.</p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>Dropping educ and age from the equation gives <span class="math display">\[\begin{align}
+\widehat{sleep} =&amp; 3,586.38 - .151 totwrk\\
+&amp; \quad(38.91)\quad (.017)\\
+&amp;\quad n=706, R^2 = .103
+\end{align}\]</span></li>
+</ol>
+<p>Are <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> jointly significant in the original equation at the 5% level? Justify your answer.</p>
+<p><strong>Answer:</strong></p>
+<p>We could to compute the <span class="math inline">\(R^2\)</span> form of the <span class="math inline">\(F\)</span> statistic for joint significance. <span class="math inline">\(F = \frac{0.113−0.103}{1−0.113} \frac{702}{2} = 3.9572\)</span>. The 5% critical value is the <span class="math inline">\(F_{2,702}\)</span> distribution can be obtained with a denominator <span class="math inline">\(df = \infty\)</span>: 3.00. Therefore, <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> are jointly significant at the 5% level. (In fact, the <span class="math inline">\(p\)</span> value is about 0.019, and so <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> are jointly significant at the 2% level).</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Does including <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> in the model greatly affect the estimated tradeoff between <span class="math inline">\(sleeping\)</span> and <span class="math inline">\(working\)</span>?</li>
+</ol>
+<p><strong>Answer</strong>:</p>
+<p>Not really. These variables are jointly significant, but including them only changes the coefficient on <span class="math inline">\(totwork\)</span> from −0.151 to −0.148.</p>
+<ol start="4" style="list-style-type: lower-roman">
+<li>Suppose that the sleep equation contains heteroskedasticity. What does this mean about the tests computed in parts (i) and (ii)?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>The <span class="math inline">\(t\)</span> and <span class="math inline">\(F\)</span> statistics that we used assume homoskedasticity. If there is heteroskedasticity in the equation, the tests are no longer valid.</p>
+<p> </p>
+<hr />
+</div>
+<div id="chapter-5-problems-4" class="section level2">
+<h2>Chapter 5 Problems 4</h2>
+<p>4 In the simple regression model (5.16), under the first four Gauss-Markov assumptions, we showed that estimators of the form (5.17) are consistent for the slope, <span class="math inline">\(\beta_1\)</span>. Given such an estimator, define an estimator of <span class="math inline">\(\beta_0\)</span> by <span class="math inline">\(\widetilde{\beta}_0 = \overline{y}-\widetilde{\beta}_{1}\overline{x}\)</span>. Show that <span class="math inline">\(plim \widetilde{\beta_0}=\beta_0\)</span>.</p>
+<p><strong>Answer:</strong></p>
+<p>Write <span class="math inline">\(y = β_0 + β_1x + u\)</span>, and take the expected value: <span class="math inline">\(E(y) = β_0 + β_{1}E(x) + E(u)\)</span>, or <span class="math inline">\(μ_y = β_0 + β_{1}μ_x\)</span>, since <span class="math inline">\(E(u) = 0\)</span>, where <span class="math inline">\(μ_y = E(y)\)</span> and <span class="math inline">\(µ_x = E(x)\)</span>. We can rewrite this as <span class="math inline">\(β_0 = µ_y − β_1 µ_x\)</span>. Now, <span class="math inline">\(\widetilde{β_0} = y − β_{1} \overline{x}\)</span> . Taking the plim of this we have plim<span class="math inline">\((\widetilde{β_0}) = plim(\overline{y} − \widetilde{β_1}\overline{x}) = plim(\overline{y}) – plim( \widetilde{β1})\cdot plim(\overline{x}) = μ_y − β_1 μ_x\)</span>, where we use the fact that <span class="math inline">\(plim(\overline{y}) = μ_y\)</span> and <span class="math inline">\(plim(\overline{x}) = μ_x\)</span> by the law of large numbers, and <span class="math inline">\(plim(\widetilde{β_1}) = β_1\)</span> . We have also used the parts of the Property PLIM.2 from Appendix C.</p>
+<p> </p>
+<hr />
+</div>
+<div id="chapter-6-problems-310c8" class="section level2">
+<h2>Chapter 6 Problems 3,10,C8</h2>
+<p>3 Using the data in RDCHEM, the following equation was obtained by OLS:</p>
+<p><span class="math display">\[\begin{align}
+\widehat{rditens}=&amp;2.613+.00030sales-.0000000070 sales^2\\
+&amp;\quad(.429)\quad(.00014)\quad\quad(.0000000037)\\
+&amp;n=32,R^2 = .1484
+\end{align}\]</span></p>
+<ol style="list-style-type: lower-roman">
+<li>At what point does the marginal effect of <span class="math inline">\(sales\)</span> on <span class="math inline">\(rdintens\)</span> become negative?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p><span class="math inline">\(\Delta(rdintens/sales) = 0.0003 – 0.000000007sales\)</span></p>
+<p><span class="math inline">\(= sales = 21428.57\)</span>.</p>
+<p>At the point $21428.57 millions of <span class="math inline">\(sales\)</span>, <span class="math inline">\(rdintens\)</span> reaches the highest point. When <span class="math inline">\(salesexceeds\)</span> $21428.57 millions, the marginal effect of <span class="math inline">\(sales\)</span> on <span class="math inline">\(rdintens\)</span> becomes negative.</p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>Would you keep the quadratic term in the model? Explain.</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p><span class="math display">\[
+H0: \beta_2 = 0,\\
+H1: \beta_2 = 0
+\]</span></p>
+<p><span class="math inline">\(t\)</span> = - 0.000000007 / 0.0000000037 = -1.89 and the critical <span class="math inline">\(t\)</span> (29, 0.01) = 0.256</p>
+<ul>
+<li><p>If <span class="math inline">\(|t| &gt; \mbox{critical}\,\, t\)</span> =&gt; Reject <span class="math inline">\(H_0 \\\)</span></p></li>
+<li><p><span class="math inline">\(sale^2\)</span> has significant impact on <span class="math inline">\(rdintens\)</span>, thus <span class="math inline">\(sale^2\)</span> should be included in the model</p></li>
+</ul>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Define <span class="math inline">\(salesbil\)</span> as sales measured in billions of dollars: <span class="math inline">\(salesbil = sales/1,000\)</span>. Rewrite the estimated equation with <span class="math inline">\(salesbil\)</span> and <span class="math inline">\(salesbil2\)</span> as the independent variables. Be sure to report standard errors and the R-squared. [Hint: Note that <span class="math inline">\(salesbil^2 = sales^2/ (1, 000)^2.\)</span>]</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>Using R we can do:</p>
+<pre class="r"><code>str(rdchem)</code></pre>
+<pre><code>&#39;data.frame&#39;:   32 obs. of  8 variables:
+ $ rd      : num  430.6 59 23.5 3.5 1.7 ...
+ $ sales   : num  4570 2830 597 134 42 ...
+ $ profits : num  186.9 467 107.4 -4.3 8 ...
+ $ rdintens: num  9.42 2.08 3.94 2.62 4.05 ...
+ $ profmarg: num  4.09 16.5 18 -3.22 19.05 ...
+ $ salessq : num  20886730 8008900 356170 17849 1764 ...
+ $ lsales  : num  8.43 7.95 6.39 4.89 3.74 ...
+ $ lrd     : num  6.065 4.078 3.157 1.253 0.531 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<pre class="r"><code>library(dplyr)
+rdchem&lt;-rdchem%&gt;%
+  mutate(salesbil = sales/1000,
+         salesbil2 = sales^2 / 1000^2) #Adding the new variables on the dataset
+
+str(rdchem)</code></pre>
+<pre><code>&#39;data.frame&#39;:   32 obs. of  10 variables:
+ $ rd       : num  430.6 59 23.5 3.5 1.7 ...
+ $ sales    : num  4570 2830 597 134 42 ...
+ $ profits  : num  186.9 467 107.4 -4.3 8 ...
+ $ rdintens : num  9.42 2.08 3.94 2.62 4.05 ...
+ $ profmarg : num  4.09 16.5 18 -3.22 19.05 ...
+ $ salessq  : num  20886730 8008900 356170 17849 1764 ...
+ $ lsales   : num  8.43 7.95 6.39 4.89 3.74 ...
+ $ lrd      : num  6.065 4.078 3.157 1.253 0.531 ...
+ $ salesbil : num  4.57 2.83 0.597 0.134 0.042 ...
+ $ salesbil2: num  20.88673 8.0089 0.35617 0.01785 0.00176 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<p>I can generate the new dataset for run in other econometric softwares:</p>
+<pre class="r"><code>write.csv(rdchem,&quot;rdchem.csv&quot;)
+
+write.xlsx(rdchem,&quot;rdchem.xlsx&quot;)</code></pre>
+<p><a href="https://github.com/rhozon/homeworkI/blob/main/rdchem.csv">You can download the .csv file here</a> and the <a href="https://github.com/rhozon/homeworkI/blob/main/rdchem.xlsx?raw=true">.xlsx file here</a></p>
+<p>The new fitted model is:</p>
+<pre class="r"><code>summary(lm(rdintens~salesbil+salesbil2, data=rdchem))</code></pre>
+<pre><code>
+Call:
+lm(formula = rdintens ~ salesbil + salesbil2, data = rdchem)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.1418 -1.3630 -0.2257  1.0688  5.5808 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  2.612512   0.429442   6.084 1.27e-06 ***
+salesbil     0.300571   0.139295   2.158   0.0394 *  
+salesbil2   -0.006946   0.003726  -1.864   0.0725 .  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 1.788 on 29 degrees of freedom
+Multiple R-squared:  0.1484,    Adjusted R-squared:  0.08969 
+F-statistic: 2.527 on 2 and 29 DF,  p-value: 0.09733</code></pre>
+<ol start="4" style="list-style-type: lower-roman">
+<li>For the purpose of reporting the results, which equation do you prefer?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>By comparing the standard errors and the <span class="math inline">\(R^2\)</span> we can see:</p>
+<p><span class="math display">\[\begin{align}
+\widehat{rdintens}=&amp;2.613+.00030sales-.0000000070 sales^2\\
+&amp;\quad(.429)\quad(.00014)\quad\quad(.0000000037)\\
+&amp;n=32,R^2 = .1484
+\end{align}\]</span></p>
+<p><em>versus</em></p>
+<p><span class="math display">\[\begin{align}
+\widehat{rdintens}=&amp;2.612+0.305salesbil-0.007salesbil2\\
+&amp;\quad(.429)\quad(0.139)\quad(0.003)\\
+&amp;n=32,R^2 = .1484
+\end{align}\]</span></p>
+<p>The first model has lower standard errors and maybe the chosen as prefered.</p>
+<p> </p>
+<hr />
+<ol start="10" style="list-style-type: decimal">
+<li>The following two equations were estimated using the data in MEAPSINGLE. The key explanatory variable is lexppp, the log of expenditures per student at the school level.</li>
+</ol>
+<center>
+<img src="https://www.coursehero.com/solutions/attachments/152701/" style="width:80.0%" />
+</center>
+<ol style="list-style-type: lower-roman">
+<li>If you are a policy maker trying to estimate the causal effect of per-student spending on math test performance, explain why the first equation is more relevant than the second. What is the estimated effect of a 10% increase in expenditures per student?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>By declaring the hypothesis test:</p>
+<p><span class="math display">\[
+H_0 : \widehat{\beta}_{lexppp} = 0\\
+H_0 : \widehat{\beta}_{lexppp} \neq 0
+\]</span></p>
+<p>By dividing the coefficient <span class="math inline">\(\widehat{\beta}_{lexppp}\)</span> by his standard error ($t_{<em>{lexppp}}=</em>{lexppp}/se(_{lexppp})9.01/4.01 2.231.96 $) and compare it to the critical value at 5% level of significance at 224 degrees of freedom with four explanatory variables.</p>
+<p>The coefficient of (<span class="math inline">\(lexppp\)</span>) is statistically significant because the null hypothesis is rejected.</p>
+<p>For the second regression model the coefficient of (<span class="math inline">\(lexppp\)</span>) is statistically insignificant because the null hypothesis is not rejected (<span class="math inline">\(t_{\beta_{lexppp}}=1.93/2.82\)</span>).</p>
+<p>The estimated change in the math scores by substituting the increase in expenditure per student by 10%. This indicates that 10% increase in the expenditure per student increases the math scores by 0.901%.</p>
+<p><span class="math display">\[\begin{align}
+\widehat{\Delta math4} =&amp; 9.01(\Delta lexppp)\\
+=&amp; 9.01/100\equiv 0.901\%
+\end{align}\]</span></p>
+<ol start="2" style="list-style-type: lower-roman">
+<li>Does adding <span class="math inline">\(read4\)</span> to the regression have strange effects on coefficients and statistical significance other than <span class="math inline">\(\beta_{lexppp}\)</span>?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>By calling the dataset, we can see:</p>
+<pre class="r"><code>str(meapsingle)</code></pre>
+<pre><code>&#39;data.frame&#39;:   229 obs. of  18 variables:
+ $ dcode   : int  63010 63010 63270 63270 63010 63010 63010 63130 63130 63130 ...
+ $ bcode   : int  3030 3133 2023 2978 316 5670 1494 1631 1753 2254 ...
+ $ math4   : num  92.8 100 72.1 76.1 95.2 88.6 95.2 66.7 83.9 95.7 ...
+ $ read4   : num  82.5 94.3 46.5 65.7 80.6 72.7 90.5 46.3 44.6 56.5 ...
+ $ enroll  : int  607 370 220 356 329 331 288 452 428 238 ...
+ $ exppp   : num  6620 6620 5608 5830 6620 ...
+ $ free    : num  1 0 5.9 8.1 0.3 1.2 12.2 50.2 40.2 24.4 ...
+ $ reduced : num  0.7 0 5 2.8 0.3 0.9 5.2 17.5 10 17.6 ...
+ $ lunch   : num  1.7 0 10.9 10.9 0.6 2.1 17.4 67.7 50.2 42 ...
+ $ medinc  : int  110322 110322 65119 65119 109313 109313 109313 43750 43750 43750 ...
+ $ totchild: int  4076 4076 2524 2524 3486 3486 3486 4651 4651 4651 ...
+ $ married : int  3542 3542 2091 2091 3241 3241 3241 3258 3258 3258 ...
+ $ single  : int  534 534 433 433 245 245 245 1393 1393 1393 ...
+ $ pctsgle : num  13.1 13.1 17.16 17.16 7.03 ...
+ $ zipcode : int  48009 48009 48017 48017 48025 48025 48025 48030 48030 48030 ...
+ $ lenroll : num  6.41 5.91 5.39 5.87 5.8 ...
+ $ lexppp  : num  8.8 8.8 8.63 8.67 8.8 ...
+ $ lmedinc : num  11.6 11.6 11.1 11.1 11.6 ...</code></pre>
+<p>We can generate the dataset in .csv or .xlxs format using:</p>
+<pre class="r"><code>write.csv(meapsingle, &quot;meapsingle.csv&quot;)
+
+write.xlsx(meapsingle,&quot;meapsingle.xlsx&quot;)</code></pre>
+<p>The files are avaiable <a href="https://github.com/rhozon/homeworkI/blob/main/meapsingle.xlsx?raw=true">here</a> and <a href="https://raw.githubusercontent.com/rhozon/homeworkI/main/meapsingle.csv">here</a>.</p>
+<p>By comparing the two regression models:</p>
+<pre class="r"><code>model1&lt;-lm(math4~lexppp + free + lmedinc + pctsgle, data=meapsingle)
+
+model2&lt;-lm(math4~lexppp + free + lmedinc + pctsgle +read4, data=meapsingle)
+
+summary(model1)</code></pre>
+<pre><code>
+Call:
+lm(formula = math4 ~ lexppp + free + lmedinc + pctsgle, data = meapsingle)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-33.259  -7.422   1.615   7.274  49.524 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 24.48949   59.23781   0.413   0.6797    
+lexppp       9.00648    4.03530   2.232   0.0266 *  
+free        -0.42164    0.07064  -5.969 9.27e-09 ***
+lmedinc     -0.75221    5.35816  -0.140   0.8885    
+pctsgle     -0.27444    0.16086  -1.706   0.0894 .  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 11.59 on 224 degrees of freedom
+Multiple R-squared:  0.4716,    Adjusted R-squared:  0.4622 
+F-statistic: 49.98 on 4 and 224 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>summary(model2)</code></pre>
+<pre><code>
+Call:
+lm(formula = math4 ~ lexppp + free + lmedinc + pctsgle + read4, 
+    data = meapsingle)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-29.5690  -4.6729  -0.0349   4.3644  24.8425 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 149.37870   41.70293   3.582 0.000419 ***
+lexppp        1.93215    2.82480   0.684 0.494688    
+free         -0.06004    0.05399  -1.112 0.267297    
+lmedinc     -10.77595    3.75746  -2.868 0.004529 ** 
+pctsgle      -0.39663    0.11143  -3.559 0.000454 ***
+read4         0.66656    0.04249  15.687  &lt; 2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 8.012 on 223 degrees of freedom
+Multiple R-squared:  0.7488,    Adjusted R-squared:  0.7432 
+F-statistic: 132.9 on 5 and 223 DF,  p-value: &lt; 2.2e-16</code></pre>
+By putting the results sidye by side:
+<center>
+<table style="text-align:center">
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+<em>Dependent variable:</em>
+</td>
+</tr>
+<tr>
+<td>
+</td>
+<td colspan="2" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td colspan="2">
+math4
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+model1
+</td>
+<td>
+model2
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(1)
+</td>
+<td>
+(2)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Constant
+</td>
+<td>
+24.489
+</td>
+<td>
+149.379<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(59.238)
+</td>
+<td>
+(41.703)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+lexppp
+</td>
+<td>
+9.006<sup>**</sup>
+</td>
+<td>
+1.932
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(4.035)
+</td>
+<td>
+(2.825)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+free
+</td>
+<td>
+-0.422<sup>***</sup>
+</td>
+<td>
+-0.060
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.071)
+</td>
+<td>
+(0.054)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+lmedinc
+</td>
+<td>
+-0.752
+</td>
+<td>
+-10.776<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(5.358)
+</td>
+<td>
+(3.757)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+pctsgle
+</td>
+<td>
+-0.274<sup>*</sup>
+</td>
+<td>
+-0.397<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+(0.161)
+</td>
+<td>
+(0.111)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+read4
+</td>
+<td>
+</td>
+<td>
+0.667<sup>***</sup>
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+(0.042)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Observations
+</td>
+<td>
+229
+</td>
+<td>
+229
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+R<sup>2</sup>
+</td>
+<td>
+0.472
+</td>
+<td>
+0.749
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Adjusted R<sup>2</sup>
+</td>
+<td>
+0.462
+</td>
+<td>
+0.743
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+Residual Std. Error
+</td>
+<td>
+11.594 (df = 224)
+</td>
+<td>
+8.012 (df = 223)
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+F Statistic
+</td>
+<td>
+49.979<sup>***</sup> (df = 4; 224)
+</td>
+<td>
+132.941<sup>***</sup> (df = 5; 223)
+</td>
+</tr>
+<tr>
+<td colspan="3" style="border-bottom: 1px solid black">
+</td>
+</tr>
+<tr>
+<td style="text-align:left">
+<em>Note:</em>
+</td>
+<td colspan="2" style="text-align:right">
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+</td>
+</tr>
+</table>
+</center>
+<p> </p>
+<p>By including the variable <span class="math inline">\(read4\)</span> we see the increseases de <span class="math inline">\(R^2\)</span> but the <span class="math inline">\(lexppp\)</span> and <span class="math inline">\(free\)</span> lost statistical significance and the <span class="math inline">\(lmeing\)</span> and <span class="math inline">\(postgle\)</span> be significative.</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>How would you explain to someone with only basic knowledge of regression why, in this case, you prefer the equation with the smaller adjusted R-squared?</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<p>The importance of causal relationships in an econometric model is more fundamental and interesting to remain prominent in relation to the selection of a model compared to the mere objective of statistical adjustment, which can often lead us to an inadequate interpretation of an economic phenomenon .</p>
+<p>The statistical significance of the variables in their set of explanations provides us with a more robust interpretation than a biased <span class="math inline">\(R ^ 2\)</span>.</p>
+<p> </p>
+<hr />
+<p>C8 Use the data in HPRICE1 for this exercise.</p>
+<ol style="list-style-type: lower-roman">
+<li>Estimate the model</li>
+</ol>
+<p><span class="math display">\[
+price = \beta_0 + \beta_1 lotsize + \beta_2 sqrft + \beta_3 bdrms + u
+\]</span></p>
+<p>and report the results in the usual form, including the standard error of the regression. Obtain predicted price, when we plug in <span class="math inline">\(lotsize = 10,000\)</span>, <span class="math inline">\(sqrft = 2,300\)</span>, and <span class="math inline">\(bdrms = 4\)</span>; round this price to the nearest dollar.</p>
+<ol start="2" style="list-style-type: lower-roman">
+<li><p>Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.</p></li>
+<li><p>Let <span class="math inline">\(price^0\)</span> be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for <span class="math inline">\(price^0\)</span> and comment on the width of this confidence interval.</p></li>
+</ol>
+<p> </p>
+<hr />
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Wooldridge, J.M. <strong>Introductory Econometrics: A modern approach</strong>, 6 .ed, 2016. Avaible in <a href="https://book4you.org/book/3372803/9610fc">zlib</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
