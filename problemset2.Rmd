@@ -419,8 +419,55 @@ $$
 
 and report the results in the usual form, including the standard error of the regression. Obtain predicted price, when we plug in $lotsize = 10,000$, $sqrft = 2,300$, and $bdrms = 4$; round this price to the nearest dollar.
 
+**Answer:**
+
+Calling R for access the dataset:
+
+```{r message=FALSE, comment=NA}
+
+str(hprice1)
+
+```
+
+Generating dataset in [.csv](https://github.com/rhozon/homeworkI/blob/main/hprice1.csv) and [.xlsx](https://github.com/rhozon/homeworkI/blob/main/hprice1.xlsx?raw=true) format for download:
+
+
+```{r message=FALSE, comment=NA}
+
+write.csv(hprice1, "hprice1.csv")
+
+write.xlsx(hprice1, "hprice1.xlsx")
+
+```
+
+
+Now estimating the model:
+
+```{r message=FALSE, comment=NA}
+
+model <- lm(price~lotsize + sqrft + bdrms, data=hprice1)
+
+summary(model)
+```
+
+
+By obtained coefficients we can see predicted prices 
+
+```{r message=FALSE, comment=NA}
+round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)
+
+```
 
 (ii) Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.
+
+**Answer:** 
+
+```{r message=FALSE, comment=NA}
+confint(model)
+```
+
+The estimated $\beta_1=2.068e-03$ is with the interval [0.000790769, 0.003344644], $\beta_2=1.228e-01$ is with the interval [0.096454149, 0.149102222]  and $\beta_3=1.385e+01$ is with the interval [-4.065140551, 31.770184040]
+
 
 (iii) Let $price^0$  be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for $price^0$ and comment on the width of this confidence interval.
 

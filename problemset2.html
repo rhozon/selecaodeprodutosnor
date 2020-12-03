@@ -1148,9 +1148,65 @@ F Statistic
 price = \beta_0 + \beta_1 lotsize + \beta_2 sqrft + \beta_3 bdrms + u
 \]</span></p>
 <p>and report the results in the usual form, including the standard error of the regression. Obtain predicted price, when we plug in <span class="math inline">\(lotsize = 10,000\)</span>, <span class="math inline">\(sqrft = 2,300\)</span>, and <span class="math inline">\(bdrms = 4\)</span>; round this price to the nearest dollar.</p>
+<p><strong>Answer:</strong></p>
+<p>Calling R for access the dataset:</p>
+<pre class="r"><code>str(hprice1)</code></pre>
+<pre><code>&#39;data.frame&#39;:   88 obs. of  10 variables:
+ $ price   : num  300 370 191 195 373 ...
+ $ assess  : num  349 352 218 232 319 ...
+ $ bdrms   : int  4 3 3 3 4 5 3 3 3 3 ...
+ $ lotsize : num  6126 9903 5200 4600 6095 ...
+ $ sqrft   : int  2438 2076 1374 1448 2514 2754 2067 1731 1767 1890 ...
+ $ colonial: int  1 1 0 1 1 1 1 1 0 0 ...
+ $ lprice  : num  5.7 5.91 5.25 5.27 5.92 ...
+ $ lassess : num  5.86 5.86 5.38 5.45 5.77 ...
+ $ llotsize: num  8.72 9.2 8.56 8.43 8.72 ...
+ $ lsqrft  : num  7.8 7.64 7.23 7.28 7.83 ...
+ - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
+<p>Generating dataset in <a href="https://github.com/rhozon/homeworkI/blob/main/hprice1.csv">.csv</a> and <a href="https://github.com/rhozon/homeworkI/blob/main/hprice1.xlsx?raw=true">.xlsx</a> format for download:</p>
+<pre class="r"><code>write.csv(hprice1, &quot;hprice1.csv&quot;)
+
+write.xlsx(hprice1, &quot;hprice1.xlsx&quot;)</code></pre>
+<p>Now estimating the model:</p>
+<pre class="r"><code>model &lt;- lm(price~lotsize + sqrft + bdrms, data=hprice1)
+
+summary(model)</code></pre>
+<pre><code>
+Call:
+lm(formula = price ~ lotsize + sqrft + bdrms, data = hprice1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-120.026  -38.530   -6.555   32.323  209.376 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -2.177e+01  2.948e+01  -0.739  0.46221    
+lotsize      2.068e-03  6.421e-04   3.220  0.00182 ** 
+sqrft        1.228e-01  1.324e-02   9.275 1.66e-14 ***
+bdrms        1.385e+01  9.010e+00   1.537  0.12795    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 59.83 on 84 degrees of freedom
+Multiple R-squared:  0.6724,    Adjusted R-squared:  0.6607 
+F-statistic: 57.46 on 3 and 84 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>By obtained coefficients we can see predicted prices</p>
+<pre class="r"><code>round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)</code></pre>
+<pre><code>[1] 336.71</code></pre>
 <ol start="2" style="list-style-type: lower-roman">
-<li><p>Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.</p></li>
-<li><p>Let <span class="math inline">\(price^0\)</span> be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for <span class="math inline">\(price^0\)</span> and comment on the width of this confidence interval.</p></li>
+<li>Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.</li>
+</ol>
+<p><strong>Answer:</strong></p>
+<pre class="r"><code>confint(model)</code></pre>
+<pre><code>                    2.5 %       97.5 %
+(Intercept) -80.384661400 36.844045104
+lotsize       0.000790769  0.003344644
+sqrft         0.096454149  0.149102222
+bdrms        -4.065140551 31.770184040</code></pre>
+<p>The estimated <span class="math inline">\(\beta_1=2.068e-03\)</span> is with the interval [0.000790769, 0.003344644], <span class="math inline">\(\beta_2=1.228e-01\)</span> is with the interval [0.096454149, 0.149102222] and <span class="math inline">\(\beta_3=1.385e+01\)</span> is with the interval [-4.065140551, 31.770184040]</p>
+<ol start="3" style="list-style-type: lower-roman">
+<li>Let <span class="math inline">\(price^0\)</span> be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for <span class="math inline">\(price^0\)</span> and comment on the width of this confidence interval.</li>
 </ol>
 <p> </p>
 <hr />
