@@ -114,7 +114,7 @@ summary(fit)
 
 ```
 
-
+[Click here to see in Stata how to run this regression](https://www.loom.com/share/2dcf29c13ff04a3da35b7caa2049fe96)
 
 
 The proportionate effect on $\widehat{salary}$ is $.00024(50) = .012$. or 1.2%. Therefore, a 50 point _ceteris paribus_ increase in $ros$ is predicted to increase $salary$ by only 1.2%. Practically speaking, this is a very small effect for such a large change in $ros$.
