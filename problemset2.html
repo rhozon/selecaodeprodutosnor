@@ -1193,8 +1193,14 @@ Residual standard error: 59.83 on 84 degrees of freedom
 Multiple R-squared:  0.6724,    Adjusted R-squared:  0.6607 
 F-statistic: 57.46 on 3 and 84 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>By obtained coefficients we can see predicted prices</p>
-<pre class="r"><code>round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)</code></pre>
+<pre class="r"><code>estimated&lt;-round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)
+
+estimated</code></pre>
 <pre><code>[1] 336.71</code></pre>
+<p>Is the same to do <span class="math inline">\(\widehat{price}=-2.177e+01 + 2.068e-03lotsize+1.228e-01sqrft+1.385e+01bdrms\)</span> and changing by the expected values:</p>
+<p><span class="math display">\[
+\widehat{price}=-2.177e+01 + 2.068e-03\times 1000 + 1.228e-01\times 2300 + 1.385e+01\times 4 = \mbox{US\$ }336.71
+\]</span></p>
 <ol start="2" style="list-style-type: lower-roman">
 <li>Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.</li>
 </ol>
@@ -1209,6 +1215,23 @@ bdrms        -4.065140551 31.770184040</code></pre>
 <ol start="3" style="list-style-type: lower-roman">
 <li>Let <span class="math inline">\(price^0\)</span> be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for <span class="math inline">\(price^0\)</span> and comment on the width of this confidence interval.</li>
 </ol>
+<p><strong>Answer:</strong></p>
+<p>First we can simulate the future selling price oriented by (i) results:</p>
+<pre class="r"><code>lotsize &lt;- c(1000)
+
+sqrft &lt;- c(2300)
+
+bdrms &lt;- c(4)
+
+unknown.price.zero &lt;- data.frame(lotsize, sqrft, bdrms)</code></pre>
+<p>By using predict function …</p>
+<pre class="r"><code>unknown.price.zero</code></pre>
+<pre><code>  lotsize sqrft bdrms
+1    1000  2300     4</code></pre>
+<pre class="r"><code>predict(model, newdata = unknown.price.zero, interval = &quot;confidence&quot;)</code></pre>
+<pre><code>       fit      lwr      upr
+1 318.0973 299.3994 336.7952</code></pre>
+<p>The 95% prediction intervals associated with a sqrft of 2300 is (299.4, 336.8). This means that, according to our model, 95% of the prices with a sqrft of 2300 have a selling prices between 299.4 and 336.8.</p>
 <p> </p>
 <hr />
 </div>

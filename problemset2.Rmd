@@ -454,9 +454,18 @@ summary(model)
 By obtained coefficients we can see predicted prices 
 
 ```{r message=FALSE, comment=NA}
-round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)
+estimated<-round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)
+
+estimated
 
 ```
+
+
+Is the same to do $\widehat{price}=-2.177e+01 + 2.068e-03lotsize+1.228e-01sqrft+1.385e+01bdrms$ and changing by the expected values:
+
+$$
+\widehat{price}=-2.177e+01 + 2.068e-03\times 1000 + 1.228e-01\times 2300 + 1.385e+01\times 4 = \mbox{US\$ }336.71
+$$
 
 (ii) Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.
 
@@ -472,11 +481,31 @@ The estimated $\beta_1=2.068e-03$ is with the interval [0.000790769, 0.003344644
 (iii) Let $price^0$  be the unknown future selling price of the house with the characteristics used in parts (i) and (ii). Find a 95% CI for $price^0$ and comment on the width of this confidence interval.
 
 
+**Answer:**
+
+First we can simulate the future selling price oriented by (i) results:
+
+```{r message=FALSE, comment=NA}
+
+lotsize <- c(1000)
+
+sqrft <- c(2300)
+
+bdrms <- c(4)
+
+unknown.price.zero <- data.frame(lotsize, sqrft, bdrms)
+```
+
+By using predict function ...
+
+```{r message=FALSE, comment=NA}
+
+unknown.price.zero
+predict(model, newdata = unknown.price.zero, interval = "confidence")
+```
 
 
-
-
-
+The 95% prediction intervals associated with a sqrft of 2300 is (299.4, 336.8). This means that, according to our model, 95% of the prices with a sqrft of 2300 have a selling prices between 299.4 and 336.8.
 
 &nbsp;
 
