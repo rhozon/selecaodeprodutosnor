@@ -1193,10 +1193,16 @@ Residual standard error: 59.83 on 84 degrees of freedom
 Multiple R-squared:  0.6724,    Adjusted R-squared:  0.6607 
 F-statistic: 57.46 on 3 and 84 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>By obtained coefficients we can see predicted prices</p>
-<pre class="r"><code>estimated&lt;-round(summary(model)$coef[1,1] + summary(model)$coef[2,1]*10000 + summary(model)$coef[3,1]*2300 + summary(model)$coef[4,1]*4, digits = 2)
+<pre class="r"><code>summary(model)$coef</code></pre>
+<pre><code>                 Estimate   Std. Error    t value     Pr(&gt;|t|)
+(Intercept) -21.770308148 2.947504e+01 -0.7386014 4.622078e-01
+lotsize       0.002067707 6.421258e-04  3.2200957 1.822929e-03
+sqrft         0.122778185 1.323741e-02  9.2750930 1.658015e-14
+bdrms        13.852521744 9.010145e+00  1.5374360 1.279451e-01</code></pre>
+<pre class="r"><code>estimated&lt;- -21.770308148 + 0.002067707*1000+0.122778185*2300+13.852521744*4
 
 estimated</code></pre>
-<pre><code>[1] 336.71</code></pre>
+<pre><code>[1] 318.0973</code></pre>
 <p>Is the same to do <span class="math inline">\(\widehat{price}=-2.177e+01 + 2.068e-03lotsize+1.228e-01sqrft+1.385e+01bdrms\)</span> and changing by the expected values:</p>
 <p><span class="math display">\[
 \widehat{price}=-2.177e+01 + 2.068e-03\times 1000 + 1.228e-01\times 2300 + 1.385e+01\times 4 = \mbox{US\$ }336.71
