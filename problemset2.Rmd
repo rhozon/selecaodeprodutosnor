@@ -454,11 +454,10 @@ summary(model)
 By obtained coefficients we can see predicted prices 
 
 
+
 ```{r comment=NA}
 
-summary(model)$coef
-
-estimated<- -21.770308148 + 0.002067707*1000+0.122778185*2300+13.852521744*4
+estimated <- summary(model)$coef[1,1]+summary(model)$coef[2,1]*1000+summary(model)$coef[3,1]*2300+summary(model)$coef[4,1]*4
 
 estimated
 
@@ -468,7 +467,7 @@ estimated
 Is the same to do $\widehat{price}=-2.177e+01 + 2.068e-03lotsize+1.228e-01sqrft+1.385e+01bdrms$ and changing by the expected values:
 
 $$
-\widehat{price}=-2.177e+01 + 2.068e-03\times 1000 + 1.228e-01\times 2300 + 1.385e+01\times 4 = \mbox{US\$ }318.09
+\widehat{price}=-2.177e+01 + 2.068e-03\times 1000 + 1.228e-01\times 2300 + 1.385e+01\times 4 = \mbox{US\$ }318.10
 $$
 
 (ii) Run a regression that allows you to put a 95% confidence interval around the predicted value in part (i). Note that your prediction will differ somewhat due to rounding error.
