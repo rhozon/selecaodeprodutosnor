@@ -1,0 +1,476 @@
+---
+title: "Consulta e automação a base SECEX/MDiC "
+author: "Ozon, R. H."
+date: "02/12/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<!-- ================================================================================= -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
+```
+
+```{r include=FALSE}
+# cunhk para retiraar os prefixos
+default_output_hook <- knitr::knit_hooks$get("output")
+# Output hooks handle normal R console output.
+knitr::knit_hooks$set( output = function(x, options) {
+
+  comment <- knitr::opts_current$get("comment")
+  if( is.na(comment) ) comment <- ""
+  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
+                     x, perl = TRUE)
+  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
+  if( can_null && do_null ) {
+    # By default R print output aligns at the right brace.
+    align_index <- regexpr( "\\]", x )[1] - 1
+    # Two cases: start or newline
+    re <- paste0( "^.{", align_index, "}\\]")
+    rep <- comment
+    x <- gsub( re, rep,  x )
+    re <- paste0( "\\\n.{", align_index, "}\\]")
+    rep <- paste0( "\n", comment )
+    x <- gsub( re, rep,  x )
+  }
+
+  default_output_hook( x, options )
+
+})
+
+knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+
+```
+
+<!-- ================================================================================= -->
+
+***
+
+## Download dos dados e conversão do formato
+
+No chunk abaixo rodamos um procedimento de busca e coleta da base de dados completa das exportações e importações nacionais no período compreendido entre jan/1997 até o último mês disponível. Ao rodar o chunk a cada mês ele atualiza os arquivos, (se houver nova publicação no SECEX) sem a necessidade de baixá-los do site toda vez. 
+
+Descomente o chunk (retirando as cerquilhas) onde os comandos estão presentes caso queira reproduzir na sua máquina ou adapte para setar um outro repositório para armazenar os arquivos.
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+#Baixa a serie completa
+#url_exp <- download.file("http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_COMPLETA.zip") #Exportacoes
+#url_imp <- download.file("http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/IMP_COMPLETA.zip") #Importacoes
+
+#Escrevo num local temporario
+#temp_exp <- tempfile()
+#temp_imp <- tempfile()
+
+#Insiro os arquivos .zip na pasta local temporaria
+#download.file(url_exp, temp_exp)
+#download.file(url_imp, temp_imp)
+
+#Deszipa os arquivos
+#unzip_exp <- unz(temp_exp, "EXP_COMPLETA.csv") #Extrai as exportacoes na base completa
+#unzip_imp <- unz(temp_imp, "IMP_COMPLETA.csv") #Extrai as importacoes na base completa
+```
+
+Após guardá-lo em um determinado local estipule uma rotina de em determinado dia do mês rodar o chunk acima para atualizar os arquivos da base completa.
+
+Você poderá atualizar os arquivos quando criar um modelo de visualização de dados (assim como eu fiz uma usando o Power BI no final deste documento) sem se preocupar em reorganizá-los ou fazer o procedimento todo novamente. 
+
+Isso lhe fornece velocidade e minimiza substancialmente quaisquer erros humanos no processo.
+
+Neste tutorial, trabalho com um ETL menor para os dados de exportação disponível no último mês, como demonstração. Utilizo a linguagem R aqui dentro de um documento do tipo RMarkdown para elucidar mais claramente as nossas possibilidades.
+
+
+
+## Pauta de Exportações
+
+Primeiro baixo os dados de exportação:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+expdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2020.csv", "exp.csv")
+exp<-read.csv("exp.csv", head=TRUE, sep=";", encoding = "latin1")
+
+head(exp)
+
+library(dplyr)
+glimpse(exp)
+```
+
+## Agregando por mês/ano
+
+
+Concateno CO_ANO com CO_MES
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+
+exp$MesAno = str_c(exp$CO_MES,"/",exp$CO_ANO)
+
+glimpse(exp)
+```
+
+Agrego por período e organizo decrescente por maior valor (em US$ FOB) do maior para o menor nesse ano de 2020:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+expper<-exp%>%
+  group_by(MesAno)%>%
+  summarise(Total_MesAno = sum(VL_FOB))
+
+arrange(expper, desc(Total_MesAno))
+```
+
+Em seguida crio a tabela de exportação resumida:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expresumida<-exp%>%
+  group_by(MesAno, CO_NCM)%>%
+  summarise(TotalExpMensal = sum(VL_FOB))
+
+arrange(expresumida, desc(TotalExpMensal))
+```
+
+
+
+Ainda não tá bom, vou mudar esse mês/ano:
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+a <- c("1/2020", "2/2020", "3/2020", "4/2020", "5/2020", "6/2020", "7/2020", "8/2020", "9/2020", "10/2020", "11/2020", "12/2020")
+mmmaaaa <- c("jan/2020", "fev/2020", "mar/2020", "abr/2020", "mai/2020", "jun/2020", "jul/2020", "ago/2020", "set/2020", "out/2020", "nov/2020", "dez/2020")  
+
+dfmesano<-data.frame(a,mmmaaaa)
+
+dfmesano
+```
+
+
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+#expresumida<-left_join(expresumida, dfmesano %>%
+#       select(MesAno, a), by = c("MesAno" = "a"))
+```
+
+
+
+## Agregando por NCM
+
+Baixo os dados de código NCM e nome
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+#ncmdwlnd<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/NCM.csv","NCM.csv")
+ncm <- read.csv("NCM.csv", sep = ";", encoding = "latin1")
+
+glimpse(ncm)
+```
+
+Então agrupo as exportações (em US$ FOB) por NCM: (O agruoamento é necessário por uma questão de limitação de processamento e memória)
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+#agrupa exp por ncm
+expncm<-exp%>%
+  group_by(CO_NCM)%>%
+  summarise(Total_NCM = sum(VL_FOB))
+
+arrange(expncm, desc(Total_NCM))
+```
+
+Caso os nomes dos produtos pelo NCM:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+expncm <- left_join(expncm, ncm %>%
+                             select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))%>%
+                             mutate(TotExpNCM = expncm$Total_NCM)
+
+glimpse(expncm)
+
+head(expncm)
+```
+
+Vamos ver como fica a classificação:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expncm<-expncm%>%
+  select(-Total_NCM)
+
+arrange(expncm,desc(TotExpNCM))
+
+```
+
+Podemos filtrar aqueles que possuem a string "soja" no nome do produto (NCM):
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+expncmsoja<-expncm%>%
+  filter(grepl("soja", NO_NCM_POR ) | grepl("Soja", NO_NCM_POR))
+
+expncmsoja
+```
+
+Ou então poderíamos filtrar com base em diferentes strings de produtos:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+expncmprodutos<-expncm%>%
+  filter(grepl("soja", NO_NCM_POR ) | grepl("Soja", NO_NCM_POR) |
+         grepl("milho", NO_NCM_POR ) | grepl("Milho", NO_NCM_POR) |
+         grepl("açúcar", NO_NCM_POR ) | grepl("Açúcar", NO_NCM_POR))
+
+expncmprodutos
+```
+
+Você poderia exportar esta tabela filtrada para um arquivo do tipo .csv:
+
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+write.csv(expncmprodutos, "expncmprodutos.csv")
+
+```
+
+Poderíamos calcular uma estimativa de participação neste ano de 2020 da lista de nossos produtos exportados em relação ao total exportado pelo Brasil fazendo:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+sum(expncmprodutos$TotExpNCM)/sum(expper$Total_MesAno, na.rm=TRUE)
+
+```
+
+Ou seja, cerca de `r round((sum(expncmprodutos$TotExpNCM)/sum(expper$Total_MesAno, na.rm=TRUE))*100,digits=2)`% dos nossos produtos tem representatividade na pauta exportadora brasileira em 2020.
+
+
+Finalmente eu crio a tabela com somente os 10 primeiros produtos exportados no Brasil, por ordem de valor em dólares FOB:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+topten<-expncm%>%
+  top_n(TotExpNCM, n=10)
+
+arrange(topten, desc(TotExpNCM))
+```  
+
+## Agregando por UF
+
+Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verificar em quanto:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expuf<-exp%>%
+  group_by(SG_UF_NCM)%>%
+  summarise(TotalExp_UF = sum(VL_FOB))
+
+arrange(expuf, desc(TotalExp_UF))
+
+```
+
+
+Podemos ver que tipo de produto cada estado mais exporta:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+epufncm<-exp%>%
+  group_by(SG_UF_NCM, CO_NCM)%>%
+  summarise(TotExpUFNCM = sum(VL_FOB))
+
+arrange(epufncm, desc(TotExpUFNCM))
+```
+
+Preciso substituir a coluna de códigos do NCM pelo nomes, para vermos o primeiro produto mais exportado por UF:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+epufncm <- left_join(epufncm, ncm %>%
+                             select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))%>%
+  select(-CO_NCM)
+
+arrange(epufncm, desc(TotExpUFNCM))
+```
+
+Caso queiramos ver quais foram os produtos exportados pelo estado do Paraná nesse ano, fazemos:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+epufncmPR <- epufncm%>%
+  filter(SG_UF_NCM == "PR")
+
+arrange(epufncmPR, desc(TotExpUFNCM))
+
+```
+
+## Agregando por país
+
+Baixo os dados dos países:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+paisesdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/PAIS.csv","paises.csv")
+paises <- read.csv("paises.csv", sep = ";", encoding = "latin1")
+
+glimpse(paises)
+
+```
+
+Então agrupo as exportações (em US$ FOB) por NCM: (O agrupamento é necessário por uma questão de limitação de processamento e memória)
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+#agrupa exp por pais
+exppais<-exp%>%
+  group_by(CO_PAIS)%>%
+  summarise(Total_PAIS = sum(VL_FOB))
+
+arrange(exppais, desc(Total_PAIS))
+```
+
+Caso os nomes dos produtos pelo nome do pais de destino:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+exppais <- left_join(exppais, paises %>%
+                             select(CO_PAIS, NO_PAIS), by = c("CO_PAIS" = "CO_PAIS"))%>%
+                             mutate(TotExpPais = exppais$Total_PAIS)
+
+glimpse(exppais)
+
+head(exppais)
+```
+
+Vamos ver como fica a classificação:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exppais<-exppais%>%
+  select(-Total_PAIS)
+
+arrange(exppais,desc(TotExpPais))
+
+```
+
+
+
+## Agregando por via
+
+
+Baixo os dados descritores dos tipos de via (dicionário):
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+viadwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/VIA.csv","via.csv")
+via <- read.csv("via.csv", sep = ";", encoding = "latin1")
+
+glimpse(via)
+
+```
+
+Então agrupo as exportações (em US$ FOB) por via: (O agrupamento é necessário por uma questão de limitação de processamento e memória)
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+#agrupa exp por pais
+expvia<-exp%>%
+  group_by(CO_VIA)%>%
+  summarise(Total_VIA = sum(VL_FOB))
+
+arrange(expvia, desc(Total_VIA))
+```
+
+Caso os nomes das vias:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+expvia <- left_join(expvia, via %>%
+                             select(CO_VIA, NO_VIA), by = c("CO_VIA" = "CO_VIA"))%>%
+                             mutate(TotExpVia = expvia$Total_VIA)
+
+glimpse(expvia)
+
+head(expvia)
+```
+
+Vamos ver como fica a classificação:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expvia<-expvia%>%
+  select(-Total_VIA)
+
+arrange(expvia,desc(TotExpVia))
+
+```
+
+
+
+## Agregando por COD_URF
+
+Baixo os dados descritores dos tipos de códigos na unidade da Receita Federal (dicionário):
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+urfdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/URF.csv","urf.csv")
+urf <- read.csv("urf.csv", sep = ";", encoding = "latin1")
+
+glimpse(urf)
+
+```
+
+Então agrupo as exportações (em US$ FOB) por código da receita federal: (O agrupamento é necessário por uma questão de limitação de processamento e memória)
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+#agrupa exp por pais
+expurf<-exp%>%
+  group_by(CO_URF)%>%
+  summarise(Total_URF = sum(VL_FOB))
+
+arrange(expurf, desc(Total_URF))
+```
+
+Caso os nomes das URFs:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(tidyverse)
+expurf <- left_join(expurf, urf %>%
+                             select(CO_URF, NO_URF), by = c("CO_URF" = "CO_URF"))%>%
+                             mutate(TotExpUrf = expurf$Total_URF)
+
+glimpse(expurf)
+
+head(expurf)
+```
+
+Vamos ver como fica a classificação:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expurf<-expurf%>%
+  select(-Total_URF)
+
+arrange(expurf,desc(TotExpUrf))
+
+```
+
+
+***
+
+## Visualização da base de dados completa 
+
+***
+
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNjg2OGVhNzktMTRkNi00ZDc0LTk3YjItNzcyNGVjNjNmMzlmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSectionfd057912b83c58976702" frameborder="0" allowFullScreen="true"></iframe>
+
+
+***
+
+### Referências
+
+CRAN The Comprehensive R Archive Network. Disponível em < https://cran.r-project.org/ > 
+
+Ministério da Defesa Indústria e Comércio Exterior. Disponível em < http://www.mdic.gov.br/index.php/comercio-exterior/estatisticas-de-comercio-exterior/base-de-dados-do-comercio-exterior-brasileiro-arquivos-para-download > 
+
+
+
+
+
+
