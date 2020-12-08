@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ozon, R. H." />
+
+<meta name="date" content="2020-02-12" />
+
+<title>Consulta e automação a base SECEX/MDiC</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Consulta e automação a base SECEX/MDiC</h1>
+<h4 class="author">Ozon, R. H.</h4>
+<h4 class="date">02/12/2020</h4>
+
+</div>
+
+
+<!-- ================================================================================= -->
+<!-- ================================================================================= -->
+<hr />
+<div id="download-dos-dados-e-conversão-do-formato" class="section level2">
+<h2>Download dos dados e conversão do formato</h2>
+<p>No chunk abaixo rodamos um procedimento de busca e coleta da base de dados completa das exportações e importações nacionais no período compreendido entre jan/1997 até o último mês disponível. Ao rodar o chunk a cada mês ele atualiza os arquivos, (se houver nova publicação no SECEX) sem a necessidade de baixá-los do site toda vez.</p>
+<p>Descomente o chunk (retirando as cerquilhas) onde os comandos estão presentes caso queira reproduzir na sua máquina ou adapte para setar um outro repositório para armazenar os arquivos.</p>
+<pre class="r"><code>#Baixa a serie completa
+#url_exp &lt;- download.file(&quot;http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_COMPLETA.zip&quot;) #Exportacoes
+#url_imp &lt;- download.file(&quot;http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/IMP_COMPLETA.zip&quot;) #Importacoes
+
+#Escrevo num local temporario
+#temp_exp &lt;- tempfile()
+#temp_imp &lt;- tempfile()
+
+#Insiro os arquivos .zip na pasta local temporaria
+#download.file(url_exp, temp_exp)
+#download.file(url_imp, temp_imp)
+
+#Deszipa os arquivos
+#unzip_exp &lt;- unz(temp_exp, &quot;EXP_COMPLETA.csv&quot;) #Extrai as exportacoes na base completa
+#unzip_imp &lt;- unz(temp_imp, &quot;IMP_COMPLETA.csv&quot;) #Extrai as importacoes na base completa</code></pre>
+<p>Após guardá-lo em um determinado local estipule uma rotina de em determinado dia do mês rodar o chunk acima para atualizar os arquivos da base completa.</p>
+<p>Você poderá atualizar os arquivos quando criar um modelo de visualização de dados (assim como eu fiz uma usando o Power BI no final deste documento) sem se preocupar em reorganizá-los ou fazer o procedimento todo novamente.</p>
+<p>Isso lhe fornece velocidade e minimiza substancialmente quaisquer erros humanos no processo.</p>
+<p>Neste tutorial, trabalho com um ETL menor para os dados de exportação disponível no último mês, como demonstração. Utilizo a linguagem R aqui dentro de um documento do tipo RMarkdown para elucidar mais claramente as nossas possibilidades.</p>
+</div>
+<div id="pauta-de-exportações" class="section level2">
+<h2>Pauta de Exportações</h2>
+<p>Primeiro baixo os dados de exportação:</p>
+<pre class="r"><code>expdwnld&lt;-download.file(&quot;http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2020.csv&quot;, &quot;exp.csv&quot;)
+exp&lt;-read.csv(&quot;exp.csv&quot;, head=TRUE, sep=&quot;;&quot;, encoding = &quot;latin1&quot;)
+
+head(exp)</code></pre>
+<pre><code>  CO_ANO CO_MES   CO_NCM CO_UNID CO_PAIS SG_UF_NCM CO_VIA  CO_URF QT_ESTAT
+1   2020      6 22030000      17     607        PA      0  217800       12
+2   2020      2 39269090      10      63        PR      1  817800       81
+3   2020      8 84149039      10     158        SP      7 1017500       66
+4   2020      8 84198999      11     589        SP      4  817700        1
+5   2020      4  7094000      10     580        AL      0  417900        5
+6   2020     11 21031090      10      97        SP      7  147600     5867
+  KG_LIQUIDO VL_FOB
+1         12    218
+2         81    797
+3         66   4853
+4         15    520
+5          5     16
+6       5867   5947</code></pre>
+<pre class="r"><code>library(dplyr)
+glimpse(exp)</code></pre>
+<pre><code>Rows: 1,277,163
+Columns: 11
+$ CO_ANO     &lt;int&gt; 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 20...
+$ CO_MES     &lt;int&gt; 6, 2, 8, 8, 4, 11, 7, 7, 3, 11, 9, 2, 5, 8, 3, 3, 11, 1,...
+$ CO_NCM     &lt;int&gt; 22030000, 39269090, 84149039, 84198999, 7094000, 2103109...
+$ CO_UNID    &lt;int&gt; 17, 10, 10, 11, 10, 10, 10, 10, 11, 10, 10, 10, 10, 10, ...
+$ CO_PAIS    &lt;int&gt; 607, 63, 158, 589, 580, 97, 467, 434, 158, 163, 434, 434...
+$ SG_UF_NCM  &lt;chr&gt; &quot;PA&quot;, &quot;PR&quot;, &quot;SP&quot;, &quot;SP&quot;, &quot;AL&quot;, &quot;SP&quot;, &quot;PR&quot;, &quot;SP&quot;, &quot;SP&quot;, &quot;E...
+$ CO_VIA     &lt;int&gt; 0, 1, 7, 4, 0, 7, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4, 12, 4, 4...
+$ CO_URF     &lt;int&gt; 217800, 817800, 1017500, 817700, 417900, 147600, 917800,...
+$ QT_ESTAT   &lt;dbl&gt; 12, 81, 66, 1, 5, 5867, 3, 28, 1, 350, 2, 98, 1, 2, 150,...
+$ KG_LIQUIDO &lt;dbl&gt; 12, 81, 66, 15, 5, 5867, 3, 25, 0, 350, 2, 98, 1, 2, 46,...
+$ VL_FOB     &lt;int&gt; 218, 797, 4853, 520, 16, 5947, 7, 618, 18, 403, 125, 190...</code></pre>
+</div>
+<div id="agregando-por-mêsano" class="section level2">
+<h2>Agregando por mês/ano</h2>
+<p>Concateno CO_ANO com CO_MES</p>
+<pre class="r"><code>library(tidyverse)
+
+exp$MesAno = str_c(exp$CO_MES,&quot;/&quot;,exp$CO_ANO)
+
+glimpse(exp)</code></pre>
+<pre><code>Rows: 1,277,163
+Columns: 12
+$ CO_ANO     &lt;int&gt; 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 2020, 20...
+$ CO_MES     &lt;int&gt; 6, 2, 8, 8, 4, 11, 7, 7, 3, 11, 9, 2, 5, 8, 3, 3, 11, 1,...
+$ CO_NCM     &lt;int&gt; 22030000, 39269090, 84149039, 84198999, 7094000, 2103109...
+$ CO_UNID    &lt;int&gt; 17, 10, 10, 11, 10, 10, 10, 10, 11, 10, 10, 10, 10, 10, ...
+$ CO_PAIS    &lt;int&gt; 607, 63, 158, 589, 580, 97, 467, 434, 158, 163, 434, 434...
+$ SG_UF_NCM  &lt;chr&gt; &quot;PA&quot;, &quot;PR&quot;, &quot;SP&quot;, &quot;SP&quot;, &quot;AL&quot;, &quot;SP&quot;, &quot;PR&quot;, &quot;SP&quot;, &quot;SP&quot;, &quot;E...
+$ CO_VIA     &lt;int&gt; 0, 1, 7, 4, 0, 7, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4, 12, 4, 4...
+$ CO_URF     &lt;int&gt; 217800, 817800, 1017500, 817700, 417900, 147600, 917800,...
+$ QT_ESTAT   &lt;dbl&gt; 12, 81, 66, 1, 5, 5867, 3, 28, 1, 350, 2, 98, 1, 2, 150,...
+$ KG_LIQUIDO &lt;dbl&gt; 12, 81, 66, 15, 5, 5867, 3, 25, 0, 350, 2, 98, 1, 2, 46,...
+$ VL_FOB     &lt;int&gt; 218, 797, 4853, 520, 16, 5947, 7, 618, 18, 403, 125, 190...
+$ MesAno     &lt;chr&gt; &quot;6/2020&quot;, &quot;2/2020&quot;, &quot;8/2020&quot;, &quot;8/2020&quot;, &quot;4/2020&quot;, &quot;11/20...</code></pre>
+<p>Agrego por período e organizo decrescente por maior valor (em US$ FOB) do maior para o menor nesse ano de 2020:</p>
+<pre class="r"><code>expper&lt;-exp%&gt;%
+  group_by(MesAno)%&gt;%
+  summarise(Total_MesAno = sum(VL_FOB))
+
+arrange(expper, desc(Total_MesAno))</code></pre>
+<pre><code># A tibble: 11 x 2
+   MesAno  Total_MesAno
+   &lt;chr&gt;          &lt;dbl&gt;
+ 1 7/2020   19461713439
+ 2 3/2020   18348211019
+ 3 9/2020   18242179212
+ 4 10/2020  17749410384
+ 5 4/2020   17610426475
+ 6 5/2020   17543679577
+ 7 11/2020  17526605514
+ 8 6/2020   17516077876
+ 9 8/2020   17480305089
+10 2/2020   15582409248
+11 1/2020   14494605904</code></pre>
+<p>Em seguida crio a tabela de exportação resumida:</p>
+<pre class="r"><code>expresumida&lt;-exp%&gt;%
+  group_by(MesAno, CO_NCM)%&gt;%
+  summarise(TotalExpMensal = sum(VL_FOB))
+
+arrange(expresumida, desc(TotalExpMensal))</code></pre>
+<pre><code># A tibble: 62,312 x 3
+# Groups:   MesAno [11]
+   MesAno    CO_NCM TotalExpMensal
+   &lt;chr&gt;      &lt;int&gt;          &lt;dbl&gt;
+ 1 4/2020  12019000     5030291654
+ 2 5/2020  12019000     4697672156
+ 3 6/2020  12019000     4295970483
+ 4 3/2020  12019000     3743233663
+ 5 7/2020  12019000     3458470960
+ 6 9/2020  26011100     2932977653
+ 7 10/2020 26011100     2641402530
+ 8 11/2020 26011100     2504606337
+ 9 2/2020  27090010     2316023766
+10 8/2020  26011100     2254094790
+# ... with 62,302 more rows</code></pre>
+<p>Ainda não tá bom, vou mudar esse mês/ano:</p>
+<pre class="r"><code>a &lt;- c(&quot;1/2020&quot;, &quot;2/2020&quot;, &quot;3/2020&quot;, &quot;4/2020&quot;, &quot;5/2020&quot;, &quot;6/2020&quot;, &quot;7/2020&quot;, &quot;8/2020&quot;, &quot;9/2020&quot;, &quot;10/2020&quot;, &quot;11/2020&quot;, &quot;12/2020&quot;)
+mmmaaaa &lt;- c(&quot;jan/2020&quot;, &quot;fev/2020&quot;, &quot;mar/2020&quot;, &quot;abr/2020&quot;, &quot;mai/2020&quot;, &quot;jun/2020&quot;, &quot;jul/2020&quot;, &quot;ago/2020&quot;, &quot;set/2020&quot;, &quot;out/2020&quot;, &quot;nov/2020&quot;, &quot;dez/2020&quot;)  
+
+dfmesano&lt;-data.frame(a,mmmaaaa)
+
+dfmesano</code></pre>
+<pre><code>         a  mmmaaaa
+1   1/2020 jan/2020
+2   2/2020 fev/2020
+3   3/2020 mar/2020
+4   4/2020 abr/2020
+5   5/2020 mai/2020
+6   6/2020 jun/2020
+7   7/2020 jul/2020
+8   8/2020 ago/2020
+9   9/2020 set/2020
+10 10/2020 out/2020
+11 11/2020 nov/2020
+12 12/2020 dez/2020</code></pre>
+<pre class="r"><code>library(tidyverse)
+#expresumida&lt;-left_join(expresumida, dfmesano %&gt;%
+#       select(MesAno, a), by = c(&quot;MesAno&quot; = &quot;a&quot;))</code></pre>
+</div>
+<div id="agregando-por-ncm" class="section level2">
+<h2>Agregando por NCM</h2>
+<p>Baixo os dados de código NCM e nome</p>
+<pre class="r"><code>#ncmdwlnd&lt;-download.file(&quot;http://www.mdic.gov.br/balanca/bd/tabelas/NCM.csv&quot;,&quot;NCM.csv&quot;)
+ncm &lt;- read.csv(&quot;NCM.csv&quot;, sep = &quot;;&quot;, encoding = &quot;latin1&quot;)
+
+glimpse(ncm)</code></pre>
+<pre><code>Rows: 13,117
+Columns: 14
+$ CO_NCM         &lt;int&gt; 29398000, 30021100, 30021211, 30021212, 30021213, 30...
+$ CO_UNID        &lt;int&gt; 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, ...
+$ CO_SH6         &lt;int&gt; 293980, 300211, 300212, 300212, 300212, 300212, 3002...
+$ CO_PPE         &lt;int&gt; 3329, 3990, 3990, 3990, 3990, 3990, 3990, 3990, 3990...
+$ CO_PPI         &lt;int&gt; 3329, 3221, 3990, 3990, 3990, 3990, 3990, 3990, 3990...
+$ CO_FAT_AGREG   &lt;int&gt; 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3...
+$ CO_CUCI_ITEM   &lt;chr&gt; &quot;54149&quot;, &quot;54163&quot;, &quot;54163&quot;, &quot;54163&quot;, &quot;54163&quot;, &quot;54163&quot;...
+$ CO_CGCE_N3     &lt;int&gt; 240, 322, 322, 322, 322, 322, 322, 322, 322, 322, 32...
+$ CO_SIIT        &lt;int&gt; 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000...
+$ CO_ISIC_CLASSE &lt;int&gt; 2100, 2100, 2100, 2100, 2100, 2100, 2100, 2100, 2100...
+$ CO_EXP_SUBSET  &lt;int&gt; 1402, 1406, 1406, 1406, 1406, 1406, 1406, 1406, 1406...
+$ NO_NCM_POR     &lt;chr&gt; &quot;Outros alcalóides, naturais ou reproduzidos por sín...
+$ NO_NCM_ESP     &lt;chr&gt; &quot;Otros alcaloides, naturales o producidas por síntes...
+$ NO_NCM_ING     &lt;chr&gt; &quot;Other alkaloids, natural or produced by synthesis, ...</code></pre>
+<p>Então agrupo as exportações (em US$ FOB) por NCM: (O agruoamento é necessário por uma questão de limitação de processamento e memória)</p>
+<pre class="r"><code>#agrupa exp por ncm
+expncm&lt;-exp%&gt;%
+  group_by(CO_NCM)%&gt;%
+  summarise(Total_NCM = sum(VL_FOB))
+
+arrange(expncm, desc(Total_NCM))</code></pre>
+<pre><code># A tibble: 7,686 x 2
+     CO_NCM   Total_NCM
+      &lt;int&gt;       &lt;dbl&gt;
+ 1 12019000 28482243596
+ 2 26011100 21358066850
+ 3 27090010 18028435885
+ 4 17011400  6703987065
+ 5  2023000  6083279666
+ 6 47032900  5212058854
+ 7 10059010  4935839068
+ 8  9011110  4430674111
+ 9 23040090  4371210763
+10  2071400  3771652265
+# ... with 7,676 more rows</code></pre>
+<p>Caso os nomes dos produtos pelo NCM:</p>
+<pre class="r"><code>library(tidyverse)
+expncm &lt;- left_join(expncm, ncm %&gt;%
+                             select(CO_NCM, NO_NCM_POR), by = c(&quot;CO_NCM&quot; = &quot;CO_NCM&quot;))%&gt;%
+                             mutate(TotExpNCM = expncm$Total_NCM)
+
+glimpse(expncm)</code></pre>
+<pre><code>Rows: 7,686
+Columns: 4
+$ CO_NCM     &lt;int&gt; 1012100, 1012900, 1019000, 1022110, 1022190, 1022911, 10...
+$ Total_NCM  &lt;dbl&gt; 2344251, 2517876, 19, 9158, 284562, 1510, 159884, 209272...
+$ NO_NCM_POR &lt;chr&gt; &quot;Cavalos reprodutores de raça pura&quot;, &quot;Cavalos, exceto re...
+$ TotExpNCM  &lt;dbl&gt; 2344251, 2517876, 19, 9158, 284562, 1510, 159884, 209272...</code></pre>
+<pre class="r"><code>head(expncm)</code></pre>
+<pre><code># A tibble: 6 x 4
+   CO_NCM Total_NCM NO_NCM_POR                                         TotExpNCM
+    &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;                                                  &lt;dbl&gt;
+1 1012100   2344251 Cavalos reprodutores de raça pura                    2344251
+2 1012900   2517876 Cavalos, exceto reprodutores de raça pura            2517876
+3 1019000        19 Animais espécie asinina/muar, exceto reprodutores~        19
+4 1022110      9158 Bovinos reprodutores raça pura, prenhe ou com cri~      9158
+5 1022190    284562 Outros bovinos reprodutores de raça pura              284562
+6 1022911      1510 Outros bovinos para reprodução, prenhe ou com cri~      1510</code></pre>
+<p>Vamos ver como fica a classificação:</p>
+<pre class="r"><code>expncm&lt;-expncm%&gt;%
+  select(-Total_NCM)
+
+arrange(expncm,desc(TotExpNCM))</code></pre>
+<pre><code># A tibble: 7,686 x 3
+     CO_NCM NO_NCM_POR                                                 TotExpNCM
+      &lt;int&gt; &lt;chr&gt;                                                          &lt;dbl&gt;
+ 1 12019000 Soja, mesmo triturada, exceto para semeadura                 2.85e10
+ 2 26011100 Minérios de ferro e seus concentrados, exceto as piritas~    2.14e10
+ 3 27090010 Óleos brutos de petróleo                                     1.80e10
+ 4 17011400 Outros açúcares de cana                                      6.70e 9
+ 5  2023000 Carnes desossadas de bovino, congeladas                      6.08e 9
+ 6 47032900 Pastas químicas de madeira, à soda ou ao sulfato, exceto~    5.21e 9
+ 7 10059010 Milho em grão, exceto para semeadura                         4.94e 9
+ 8  9011110 Café não torrado, não descafeinado, em grão                  4.43e 9
+ 9 23040090 Bagaços e outros resíduos sólidos, da extração do óleo d~    4.37e 9
+10  2071400 Pedaços e miudezas, comestíveis de galos/galinhas, conge~    3.77e 9
+# ... with 7,676 more rows</code></pre>
+<p>Podemos filtrar aqueles que possuem a string “soja” no nome do produto (NCM):</p>
+<pre class="r"><code>expncmsoja&lt;-expncm%&gt;%
+  filter(grepl(&quot;soja&quot;, NO_NCM_POR ) | grepl(&quot;Soja&quot;, NO_NCM_POR))
+
+expncmsoja</code></pre>
+<pre><code># A tibble: 12 x 3
+     CO_NCM NO_NCM_POR                                                 TotExpNCM
+      &lt;int&gt; &lt;chr&gt;                                                          &lt;dbl&gt;
+ 1 12011000 Soja, mesmo triturada, para semeadura                        3.51e 6
+ 2 12019000 Soja, mesmo triturada, exceto para semeadura                 2.85e10
+ 3 12081000 Farinha de soja                                              3.14e 5
+ 4 15071000 Óleo de soja, em bruto, mesmo degomado                       5.81e 8
+ 5 15079011 Óleo de soja, refinado, em recipientes com capacidade in~    1.47e 8
+ 6 15079019 Óleo de soja, refinado, em recipientes com capacidade me~    1.33e 7
+ 7 15079090 Outros óleos de soja                                         2.44e 5
+ 8 21031010 Molho de soja, preparado, em embalagens imediatas de con~    1.10e 6
+ 9 21031090 Outros molhos de soja, preparados                            3.87e 5
+10 23040010 Farinhas e pellets, da extração do óleo de soja              1.16e 9
+11 23040090 Bagaços e outros resíduos sólidos, da extração do óleo d~    4.37e 9
+12 35040020 Proteínas de soja em pó, com teor de proteínas superior ~    1.85e 7</code></pre>
+<p>Ou então poderíamos filtrar com base em diferentes strings de produtos:</p>
+<pre class="r"><code>expncmprodutos&lt;-expncm%&gt;%
+  filter(grepl(&quot;soja&quot;, NO_NCM_POR ) | grepl(&quot;Soja&quot;, NO_NCM_POR) |
+         grepl(&quot;milho&quot;, NO_NCM_POR ) | grepl(&quot;Milho&quot;, NO_NCM_POR) |
+         grepl(&quot;açúcar&quot;, NO_NCM_POR ) | grepl(&quot;Açúcar&quot;, NO_NCM_POR))
+
+expncmprodutos</code></pre>
+<pre><code># A tibble: 86 x 3
+    CO_NCM NO_NCM_POR                                                  TotExpNCM
+     &lt;int&gt; &lt;chr&gt;                                                           &lt;dbl&gt;
+ 1 4011010 Leite UHT (Ultra High Temperature), com um teor, em peso, ~    416660
+ 2 4011090 Outros leites e cremes, com um teor, em peso, de matérias ~     50856
+ 3 4012010 Leite UHT (Ultra High Temperature), com um teor, em peso, ~    914181
+ 4 4012090 Outros leites e cremes, com um teor, em peso, de matérias ~      6562
+ 5 4014010 Leite, com um teor, em peso, de matérias gordas, superior ~      1471
+ 6 4014021 Creme de leite UHT (Ultra High Temperature), com um teor, ~      5622
+ 7 4014029 Outros cremes de leite, com um teor, em peso, de matérias ~     21136
+ 8 4015010 Leite, com um teor, em peso, de matérias gordas, superior ~      9652
+ 9 4015021 Creme de leite UHT (Ultra High Temperature), com um teor, ~   1411301
+10 4015029 Outros cremes de leite, com um teor, em peso, de matérias ~  13521548
+# ... with 76 more rows</code></pre>
+<p>Você poderia exportar esta tabela filtrada para um arquivo do tipo .csv:</p>
+<pre class="r"><code>write.csv(expncmprodutos, &quot;expncmprodutos.csv&quot;)</code></pre>
+<p>Poderíamos calcular uma estimativa de participação neste ano de 2020 da lista de nossos produtos exportados em relação ao total exportado pelo Brasil fazendo:</p>
+<pre class="r"><code>sum(expncmprodutos$TotExpNCM)/sum(expper$Total_MesAno, na.rm=TRUE)</code></pre>
+<pre><code> 0.2575833</code></pre>
+<p>Ou seja, cerca de 25.76% dos nossos produtos tem representatividade na pauta exportadora brasileira em 2020.</p>
+<p>Finalmente eu crio a tabela com somente os 10 primeiros produtos exportados no Brasil, por ordem de valor em dólares FOB:</p>
+<pre class="r"><code>topten&lt;-expncm%&gt;%
+  top_n(TotExpNCM, n=10)
+
+arrange(topten, desc(TotExpNCM))</code></pre>
+<pre><code># A tibble: 10 x 3
+     CO_NCM NO_NCM_POR                                                 TotExpNCM
+      &lt;int&gt; &lt;chr&gt;                                                          &lt;dbl&gt;
+ 1 12019000 Soja, mesmo triturada, exceto para semeadura                 2.85e10
+ 2 26011100 Minérios de ferro e seus concentrados, exceto as piritas~    2.14e10
+ 3 27090010 Óleos brutos de petróleo                                     1.80e10
+ 4 17011400 Outros açúcares de cana                                      6.70e 9
+ 5  2023000 Carnes desossadas de bovino, congeladas                      6.08e 9
+ 6 47032900 Pastas químicas de madeira, à soda ou ao sulfato, exceto~    5.21e 9
+ 7 10059010 Milho em grão, exceto para semeadura                         4.94e 9
+ 8  9011110 Café não torrado, não descafeinado, em grão                  4.43e 9
+ 9 23040090 Bagaços e outros resíduos sólidos, da extração do óleo d~    4.37e 9
+10  2071400 Pedaços e miudezas, comestíveis de galos/galinhas, conge~    3.77e 9</code></pre>
+</div>
+<div id="agregando-por-uf" class="section level2">
+<h2>Agregando por UF</h2>
+<p>Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verificar em quanto:</p>
+<pre class="r"><code>expuf&lt;-exp%&gt;%
+  group_by(SG_UF_NCM)%&gt;%
+  summarise(TotalExp_UF = sum(VL_FOB))
+
+arrange(expuf, desc(TotalExp_UF))</code></pre>
+<pre><code># A tibble: 28 x 2
+   SG_UF_NCM TotalExp_UF
+   &lt;chr&gt;           &lt;dbl&gt;
+ 1 SP        38089963184
+ 2 MG        23524678657
+ 3 RJ        20657495915
+ 4 PA        18435688104
+ 5 MT        16836801328
+ 6 PR        15398571669
+ 7 RS        12850451844
+ 8 GO         7543823722
+ 9 SC         7448129046
+10 BA         7099650968
+# ... with 18 more rows</code></pre>
+<p>Podemos ver que tipo de produto cada estado mais exporta:</p>
+<pre class="r"><code>epufncm&lt;-exp%&gt;%
+  group_by(SG_UF_NCM, CO_NCM)%&gt;%
+  summarise(TotExpUFNCM = sum(VL_FOB))
+
+arrange(epufncm, desc(TotExpUFNCM))</code></pre>
+<pre><code># A tibble: 39,898 x 3
+# Groups:   SG_UF_NCM [28]
+   SG_UF_NCM   CO_NCM TotExpUFNCM
+   &lt;chr&gt;        &lt;int&gt;       &lt;dbl&gt;
+ 1 RJ        27090010 14817344125
+ 2 PA        26011100 12391868283
+ 3 MG        26011100  8545999523
+ 4 MT        12019000  7601899031
+ 5 PR        12019000  4598847650
+ 6 SP        17011400  4056048259
+ 7 MG         9011110  3379526430
+ 8 MT        10059010  3037254813
+ 9 RS        12019000  2931053717
+10 GO        12019000  2503019444
+# ... with 39,888 more rows</code></pre>
+<p>Preciso substituir a coluna de códigos do NCM pelo nomes, para vermos o primeiro produto mais exportado por UF:</p>
+<pre class="r"><code>epufncm &lt;- left_join(epufncm, ncm %&gt;%
+                             select(CO_NCM, NO_NCM_POR), by = c(&quot;CO_NCM&quot; = &quot;CO_NCM&quot;))%&gt;%
+  select(-CO_NCM)
+
+arrange(epufncm, desc(TotExpUFNCM))</code></pre>
+<pre><code># A tibble: 39,898 x 3
+# Groups:   SG_UF_NCM [28]
+   SG_UF_NCM TotExpUFNCM NO_NCM_POR                                             
+   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;                                                  
+ 1 RJ        14817344125 Óleos brutos de petróleo                               
+ 2 PA        12391868283 Minérios de ferro e seus concentrados, exceto as pirit~
+ 3 MG         8545999523 Minérios de ferro e seus concentrados, exceto as pirit~
+ 4 MT         7601899031 Soja, mesmo triturada, exceto para semeadura           
+ 5 PR         4598847650 Soja, mesmo triturada, exceto para semeadura           
+ 6 SP         4056048259 Outros açúcares de cana                                
+ 7 MG         3379526430 Café não torrado, não descafeinado, em grão            
+ 8 MT         3037254813 Milho em grão, exceto para semeadura                   
+ 9 RS         2931053717 Soja, mesmo triturada, exceto para semeadura           
+10 GO         2503019444 Soja, mesmo triturada, exceto para semeadura           
+# ... with 39,888 more rows</code></pre>
+<p>Caso queiramos ver quais foram os produtos exportados pelo estado do Paraná nesse ano, fazemos:</p>
+<pre class="r"><code>epufncmPR &lt;- epufncm%&gt;%
+  filter(SG_UF_NCM == &quot;PR&quot;)
+
+arrange(epufncmPR, desc(TotExpUFNCM))</code></pre>
+<pre><code>
+   SG_UF_NCM TotExpUFNCM NO_NCM_POR                                             
+   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;                                                  
+ 1 PR         4598847650 Soja, mesmo triturada, exceto para semeadura           
+ 2 PR         1557712574 Pedaços e miudezas, comestíveis de galos/galinhas, con~
+ 3 PR          899487221 Bagaços e outros resíduos sólidos, da extração do óleo~
+ 4 PR          679182210 Outros açúcares de cana                                
+ 5 PR          441906058 Carnes de galos/galinhas, não cortadas em pedaços, con~
+ 6 PR          356345022 Outras madeiras compensadas, constituídas exclusivamen~
+ 7 PR          287937527 Pastas químicas de madeira, à soda ou ao sulfato, exce~
+ 8 PR          282817680 Automóveis com motor explosão, 1500 &lt; cm3 &lt;= 3000, até~
+ 9 PR          269439573 Outros papéis e cartões dos tipos utilizados para escr~
+10 PR          263318118 Café solúvel, mesmo descafeinado                       
+# ... with 4,223 more rows</code></pre>
+</div>
+<div id="agregando-por-país" class="section level2">
+<h2>Agregando por país</h2>
+<p>Baixo os dados dos países:</p>
+<pre class="r"><code>paisesdwnld&lt;-download.file(&quot;http://www.mdic.gov.br/balanca/bd/tabelas/PAIS.csv&quot;,&quot;paises.csv&quot;)
+paises &lt;- read.csv(&quot;paises.csv&quot;, sep = &quot;;&quot;, encoding = &quot;latin1&quot;)
+
+glimpse(paises)</code></pre>
+<pre><code>Rows: 281
+Columns: 6
+$ CO_PAIS       &lt;int&gt; 0, 13, 15, 17, 20, 23, 25, 31, 37, 40, 41, 42, 43, 47...
+$ CO_PAIS_ISON3 &lt;int&gt; 898, 4, 248, 8, 724, 276, 278, 854, 20, 24, 660, 10, ...
+$ CO_PAIS_ISOA3 &lt;chr&gt; &quot;ZZZ&quot;, &quot;AFG&quot;, &quot;ALA&quot;, &quot;ALB&quot;, &quot;ESP&quot;, &quot;DEU&quot;, &quot;DEU&quot;, &quot;BFA...
+$ NO_PAIS       &lt;chr&gt; &quot;Não Definido&quot;, &quot;Afeganistão&quot;, &quot;Aland, Ilhas&quot;, &quot;Albân...
+$ NO_PAIS_ING   &lt;chr&gt; &quot;Not defined&quot;, &quot;Afghanistan&quot;, &quot;Aland Islands&quot;, &quot;Alban...
+$ NO_PAIS_ESP   &lt;chr&gt; &quot;No definido&quot;, &quot;Afganistan&quot;, &quot;Alans, Islas&quot;, &quot;Albania...</code></pre>
+<p>Então agrupo as exportações (em US$ FOB) por NCM: (O agrupamento é necessário por uma questão de limitação de processamento e memória)</p>
+<pre class="r"><code>#agrupa exp por pais
+exppais&lt;-exp%&gt;%
+  group_by(CO_PAIS)%&gt;%
+  summarise(Total_PAIS = sum(VL_FOB))
+
+arrange(exppais, desc(Total_PAIS))</code></pre>
+<pre><code># A tibble: 242 x 2
+   CO_PAIS  Total_PAIS
+     &lt;int&gt;       &lt;dbl&gt;
+ 1     160 63191994262
+ 2     249 19020221673
+ 3      63  7688407809
+ 4     573  6992638437
+ 5     245  3864919709
+ 6     399  3778187719
+ 7     149  3748719043
+ 8      23  3743852774
+ 9     158  3426770900
+10     493  3411473261
+# ... with 232 more rows</code></pre>
+<p>Caso os nomes dos produtos pelo nome do pais de destino:</p>
+<pre class="r"><code>library(tidyverse)
+exppais &lt;- left_join(exppais, paises %&gt;%
+                             select(CO_PAIS, NO_PAIS), by = c(&quot;CO_PAIS&quot; = &quot;CO_PAIS&quot;))%&gt;%
+                             mutate(TotExpPais = exppais$Total_PAIS)
+
+glimpse(exppais)</code></pre>
+<pre><code>Rows: 242
+Columns: 4
+$ CO_PAIS    &lt;int&gt; 13, 15, 17, 23, 31, 37, 40, 41, 42, 43, 53, 59, 63, 64, ...
+$ Total_PAIS &lt;dbl&gt; 34746250, 140, 36785540, 3743852774, 5324191, 184476, 31...
+$ NO_PAIS    &lt;chr&gt; &quot;Afeganistão&quot;, &quot;Aland, Ilhas&quot;, &quot;Albânia&quot;, &quot;Alemanha&quot;, &quot;B...
+$ TotExpPais &lt;dbl&gt; 34746250, 140, 36785540, 3743852774, 5324191, 184476, 31...</code></pre>
+<pre class="r"><code>head(exppais)</code></pre>
+<pre><code># A tibble: 6 x 4
+  CO_PAIS Total_PAIS NO_PAIS      TotExpPais
+    &lt;int&gt;      &lt;dbl&gt; &lt;chr&gt;             &lt;dbl&gt;
+1      13   34746250 Afeganistão    34746250
+2      15        140 Aland, Ilhas        140
+3      17   36785540 Albânia        36785540
+4      23 3743852774 Alemanha     3743852774
+5      31    5324191 Burkina Faso    5324191
+6      37     184476 Andorra          184476</code></pre>
+<p>Vamos ver como fica a classificação:</p>
+<pre class="r"><code>exppais&lt;-exppais%&gt;%
+  select(-Total_PAIS)
+
+arrange(exppais,desc(TotExpPais))</code></pre>
+<pre><code># A tibble: 242 x 3
+   CO_PAIS NO_PAIS                  TotExpPais
+     &lt;int&gt; &lt;chr&gt;                         &lt;dbl&gt;
+ 1     160 China                   63191994262
+ 2     249 Estados Unidos          19020221673
+ 3      63 Argentina                7688407809
+ 4     573 Países Baixos (Holanda)  6992638437
+ 5     245 Espanha                  3864919709
+ 6     399 Japão                    3778187719
+ 7     149 Canadá                   3748719043
+ 8      23 Alemanha                 3743852774
+ 9     158 Chile                    3426770900
+10     493 México                   3411473261
+# ... with 232 more rows</code></pre>
+</div>
+<div id="agregando-por-via" class="section level2">
+<h2>Agregando por via</h2>
+<p>Baixo os dados descritores dos tipos de via (dicionário):</p>
+<pre class="r"><code>viadwnld&lt;-download.file(&quot;http://www.mdic.gov.br/balanca/bd/tabelas/VIA.csv&quot;,&quot;via.csv&quot;)
+via &lt;- read.csv(&quot;via.csv&quot;, sep = &quot;;&quot;, encoding = &quot;latin1&quot;)
+
+glimpse(via)</code></pre>
+<pre><code>Rows: 17
+Columns: 2
+$ CO_VIA &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 99, 13, 11, 15, 14, 12
+$ NO_VIA &lt;chr&gt; &quot;VIA NAO DECLARADA&quot;, &quot;MARITIMA&quot;, &quot;FLUVIAL&quot;, &quot;LACUSTRE&quot;, &quot;AER...</code></pre>
+<p>Então agrupo as exportações (em US$ FOB) por via: (O agrupamento é necessário por uma questão de limitação de processamento e memória)</p>
+<pre class="r"><code>#agrupa exp por pais
+expvia&lt;-exp%&gt;%
+  group_by(CO_VIA)%&gt;%
+  summarise(Total_VIA = sum(VL_FOB))
+
+arrange(expvia, desc(Total_VIA))</code></pre>
+<pre><code># A tibble: 13 x 2
+   CO_VIA    Total_VIA
+    &lt;int&gt;        &lt;dbl&gt;
+ 1      1 153267580824
+ 2      0  19259118150
+ 3      7   9315667942
+ 4      4   9020007864
+ 5      9    283429847
+ 6      2    257448501
+ 7      6     74345756
+ 8      3     35873742
+ 9     12     21620658
+10     15     18561991
+11      8      1961970
+12     13         3843
+13     14         2649</code></pre>
+<p>Caso os nomes das vias:</p>
+<pre class="r"><code>library(tidyverse)
+expvia &lt;- left_join(expvia, via %&gt;%
+                             select(CO_VIA, NO_VIA), by = c(&quot;CO_VIA&quot; = &quot;CO_VIA&quot;))%&gt;%
+                             mutate(TotExpVia = expvia$Total_VIA)
+
+glimpse(expvia)</code></pre>
+<pre><code>Rows: 13
+Columns: 4
+$ CO_VIA    &lt;int&gt; 0, 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14, 15
+$ Total_VIA &lt;dbl&gt; 19259118150, 153267580824, 257448501, 35873742, 902000786...
+$ NO_VIA    &lt;chr&gt; &quot;VIA NAO DECLARADA&quot;, &quot;MARITIMA&quot;, &quot;FLUVIAL&quot;, &quot;LACUSTRE&quot;, &quot;...
+$ TotExpVia &lt;dbl&gt; 19259118150, 153267580824, 257448501, 35873742, 902000786...</code></pre>
+<pre class="r"><code>head(expvia)</code></pre>
+<pre><code># A tibble: 6 x 4
+  CO_VIA    Total_VIA NO_VIA               TotExpVia
+   &lt;int&gt;        &lt;dbl&gt; &lt;chr&gt;                    &lt;dbl&gt;
+1      0  19259118150 VIA NAO DECLARADA  19259118150
+2      1 153267580824 MARITIMA          153267580824
+3      2    257448501 FLUVIAL              257448501
+4      3     35873742 LACUSTRE              35873742
+5      4   9020007864 AEREA               9020007864
+6      6     74345756 FERROVIARIA           74345756</code></pre>
+<p>Vamos ver como fica a classificação:</p>
+<pre class="r"><code>expvia&lt;-expvia%&gt;%
+  select(-Total_VIA)
+
+arrange(expvia,desc(TotExpVia))</code></pre>
+<pre><code># A tibble: 13 x 3
+   CO_VIA NO_VIA                         TotExpVia
+    &lt;int&gt; &lt;chr&gt;                              &lt;dbl&gt;
+ 1      1 MARITIMA                    153267580824
+ 2      0 VIA NAO DECLARADA            19259118150
+ 3      7 RODOVIARIA                    9315667942
+ 4      4 AEREA                         9020007864
+ 5      9 MEIOS PROPRIOS                 283429847
+ 6      2 FLUVIAL                        257448501
+ 7      6 FERROVIARIA                     74345756
+ 8      3 LACUSTRE                        35873742
+ 9     12 EM MAOS                         21620658
+10     15 VICINAL FRONTEIRICO             18561991
+11      8 CONDUTO/REDE DE TRANSMISSAO      1961970
+12     13 POR REBOQUE                         3843
+13     14 DUTOS                               2649</code></pre>
+</div>
+<div id="agregando-por-cod_urf" class="section level2">
+<h2>Agregando por COD_URF</h2>
+<p>Baixo os dados descritores dos tipos de códigos na unidade da Receita Federal (dicionário):</p>
+<pre class="r"><code>urfdwnld&lt;-download.file(&quot;http://www.mdic.gov.br/balanca/bd/tabelas/URF.csv&quot;,&quot;urf.csv&quot;)
+urf &lt;- read.csv(&quot;urf.csv&quot;, sep = &quot;;&quot;, encoding = &quot;latin1&quot;)
+
+glimpse(urf)</code></pre>
+<pre><code>Rows: 276
+Columns: 2
+$ CO_URF &lt;int&gt; 510353, 710251, 1010351, 1017504, 1017505, 510352, 317903, 9...
+$ NO_URF &lt;chr&gt; &quot;0510353 - IRF ILHEUS&quot;, &quot;0710251 - IRF CAMPOS DOS GOYTACAZES...</code></pre>
+<p>Então agrupo as exportações (em US$ FOB) por código da receita federal: (O agrupamento é necessário por uma questão de limitação de processamento e memória)</p>
+<pre class="r"><code>#agrupa exp por pais
+expurf&lt;-exp%&gt;%
+  group_by(CO_URF)%&gt;%
+  summarise(Total_URF = sum(VL_FOB))
+
+arrange(expurf, desc(Total_URF))</code></pre>
+<pre><code># A tibble: 74 x 2
+    CO_URF   Total_URF
+     &lt;int&gt;       &lt;dbl&gt;
+ 1  817800 55362316562
+ 2  317903 19682166723
+ 3  917800 16284312619
+ 4  717800 14662729832
+ 5 1017700  9798566262
+ 6  727600  9368236721
+ 7  817600  6546727372
+ 8  927800  6284456993
+ 9  217800  6214360009
+10  710251  5354464173
+# ... with 64 more rows</code></pre>
+<p>Caso os nomes das URFs:</p>
+<pre class="r"><code>library(tidyverse)
+expurf &lt;- left_join(expurf, urf %&gt;%
+                             select(CO_URF, NO_URF), by = c(&quot;CO_URF&quot; = &quot;CO_URF&quot;))%&gt;%
+                             mutate(TotExpUrf = expurf$Total_URF)
+
+glimpse(expurf)</code></pre>
+<pre><code>Rows: 74
+Columns: 4
+$ CO_URF    &lt;int&gt; 117600, 130151, 140100, 147600, 147700, 147800, 147852, 2...
+$ Total_URF &lt;dbl&gt; 9141079, 512863, 15672, 954652599, 30869531, 98154677, 12...
+$ NO_URF    &lt;chr&gt; &quot;0117600 - AEROPORTO INTERNACIONAL DE BRASILIA&quot;, &quot;0130151...
+$ TotExpUrf &lt;dbl&gt; 9141079, 512863, 15672, 954652599, 30869531, 98154677, 12...</code></pre>
+<pre class="r"><code>head(expurf)</code></pre>
+<pre><code># A tibble: 6 x 4
+  CO_URF Total_URF NO_URF                                        TotExpUrf
+   &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;                                             &lt;dbl&gt;
+1 117600   9141079 0117600 - AEROPORTO INTERNACIONAL DE BRASILIA   9141079
+2 130151    512863 0130151 - CACERES                                512863
+3 140100     15672 0140100 - CAMPO GRANDE                            15672
+4 147600 954652599 0147600 - ALF - CORUMBÁ                       954652599
+5 147700  30869531 0147700 - ALF - MUNDO NOVO                     30869531
+6 147800  98154677 0147800 - ALF - PONTA PORÃ                     98154677</code></pre>
+<p>Vamos ver como fica a classificação:</p>
+<pre class="r"><code>expurf&lt;-expurf%&gt;%
+  select(-Total_URF)
+
+arrange(expurf,desc(TotExpUrf))</code></pre>
+<pre><code># A tibble: 74 x 3
+    CO_URF NO_URF                                                     TotExpUrf
+     &lt;int&gt; &lt;chr&gt;                                                          &lt;dbl&gt;
+ 1  817800 0817800 - PORTO DE SANTOS                                55362316562
+ 2  317903 0317903 - IRF SAO LUIS                                   19682166723
+ 3  917800 0917800 - PORTO DE PARANAGUA                             16284312619
+ 4  717800 0717800 - PORTO DE ITAGUAI                               14662729832
+ 5 1017700 1017700 - PORTO DE RIO GRANDE                             9798566262
+ 6  727600 0727600 - PORTO DE VITORIA                                9368236721
+ 7  817600 0817600 - AEROPORTO INTERNACIONAL DE SAO PAULO/GUARULHOS  6546727372
+ 8  927800 0927800 - ITAJAI                                          6284456993
+ 9  217800 0217800 - ALF - BELÉM                                     6214360009
+10  710251 0710251 - IRF CAMPOS DOS GOYTACAZES                       5354464173
+# ... with 64 more rows</code></pre>
+<hr />
+</div>
+<div id="visualização-da-base-de-dados-completa" class="section level2">
+<h2>Visualização da base de dados completa</h2>
+<hr />
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNjg2OGVhNzktMTRkNi00ZDc0LTk3YjItNzcyNGVjNjNmMzlmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&amp;pageName=ReportSectionfd057912b83c58976702" frameborder="0" allowFullScreen="true">
+</iframe>
+<hr />
+<div id="referências" class="section level3">
+<h3>Referências</h3>
+<p>CRAN The Comprehensive R Archive Network. Disponível em &lt; <a href="https://cran.r-project.org/" class="uri">https://cran.r-project.org/</a> &gt;</p>
+<p>Ministério da Defesa Indústria e Comércio Exterior. Disponível em &lt; <a href="http://www.mdic.gov.br/index.php/comercio-exterior/estatisticas-de-comercio-exterior/base-de-dados-do-comercio-exterior-brasileiro-arquivos-para-download" class="uri">http://www.mdic.gov.br/index.php/comercio-exterior/estatisticas-de-comercio-exterior/base-de-dados-do-comercio-exterior-brasileiro-arquivos-para-download</a> &gt;</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

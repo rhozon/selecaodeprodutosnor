@@ -111,6 +111,12 @@ Tutoriais disponíveis:
 
 &nbsp;
 
+
+### *Sugestão de automação da base de dados de comércio exterior brasileira a partir dos dados MDiC/SECEX*
+
++ Acompanhe como automatizar a coleta, extração de uma base da web no formato .zip e atualização no R e Power BI dos dados da balança comercial brasileira.
+
+
 ### *Webscrapping: CoinMarketCap x Icoinomia*
 
 + Comparativo de volume e fluxo de negociação de criptoativos entre as top 100 exchanges.

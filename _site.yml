@@ -46,6 +46,8 @@ navbar:
           href: varinstrumentais.html 
         - text: "Fluxo de Salarios Microdados CAGED"
           href: rmarkdownepowerbi.html
+        - text: "Automação da visualização da base de dados da balança comercial brasileira"
+          href: automsecex.html 
         - text: "Webscrapping CoinMarketCap x Icoinomia"
           href: coinmarketcapxicoinomia.html 
         - text: "Projeto Integrador de Ciência de Dados"
