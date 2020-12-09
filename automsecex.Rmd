@@ -53,6 +53,9 @@ knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
 
 ***
 
+[em construção...]
+
+
 ## Download dos dados e conversão do formato
 
 No chunk abaixo rodamos um procedimento de busca e coleta da base de dados completa das exportações e importações nacionais no período compreendido entre jan/1997 até o último mês disponível. Ao rodar o chunk a cada mês ele atualiza os arquivos, (se houver nova publicação no SECEX) sem a necessidade de baixá-los do site toda vez. 
@@ -95,11 +98,12 @@ Primeiro baixo os dados de exportação:
 
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-expdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2020.csv", "exp.csv")
+#expdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/comexstat-bd/ncm/EXP_2020.csv", "exp.csv")
 exp<-read.csv("exp.csv", head=TRUE, sep=";", encoding = "latin1")
 
 head(exp)
 
+#library(vctrs)
 library(dplyr)
 glimpse(exp)
 ```
@@ -112,52 +116,40 @@ Concateno CO_ANO com CO_MES
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 library(tidyverse)
 
-exp$MesAno = str_c(exp$CO_MES,"/",exp$CO_ANO)
+exp<-exp%>%
+  mutate(CO_MES = formatC(CO_MES, width = 2, flag = "0")) #Arrumo pra dois digitos no mes
+
+library(lubridate)
+
+exp$AnoMes<-str_c(exp$CO_ANO,"/",exp$CO_MES) #uno uma coluna com a outra e chamo ela de MesAno
 
 glimpse(exp)
+
+colSums(is.na(exp)) #Conta quantos missings temos em cada variavel
 ```
 
-Agrego por período e organizo decrescente por maior valor (em US$ FOB) do maior para o menor nesse ano de 2020:
+Agrego por período e organizo de modo decrescente temporalmente:
 
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 expper<-exp%>%
-  group_by(MesAno)%>%
-  summarise(Total_MesAno = sum(VL_FOB))
+  group_by(AnoMes)%>%
+  summarise(Total_AnoMes =sum(VL_FOB, na.rm = TRUE))
 
-arrange(expper, desc(Total_MesAno))
+arrange(expper, AnoMes)
 ```
 
-Em seguida crio a tabela de exportação resumida:
+Vamos ver num gráfico:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+library(plotly)
+library(ggplot2)
 
-expresumida<-exp%>%
-  group_by(MesAno, CO_NCM)%>%
-  summarise(TotalExpMensal = sum(VL_FOB))
-
-arrange(expresumida, desc(TotalExpMensal))
-```
-
+ggplotly(ggplot(expper, aes(x=AnoMes, y=Total_AnoMes))+
+  geom_bar(stat="identity")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)))
 
 
-Ainda não tá bom, vou mudar esse mês/ano:
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-a <- c("1/2020", "2/2020", "3/2020", "4/2020", "5/2020", "6/2020", "7/2020", "8/2020", "9/2020", "10/2020", "11/2020", "12/2020")
-mmmaaaa <- c("jan/2020", "fev/2020", "mar/2020", "abr/2020", "mai/2020", "jun/2020", "jul/2020", "ago/2020", "set/2020", "out/2020", "nov/2020", "dez/2020")  
-
-dfmesano<-data.frame(a,mmmaaaa)
-
-dfmesano
-```
-
-
-
-
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-library(tidyverse)
-#expresumida<-left_join(expresumida, dfmesano %>%
-#       select(MesAno, a), by = c("MesAno" = "a"))
 ```
 
 
@@ -179,7 +171,7 @@ Então agrupo as exportações (em US$ FOB) por NCM: (O agruoamento é necessár
 #agrupa exp por ncm
 expncm<-exp%>%
   group_by(CO_NCM)%>%
-  summarise(Total_NCM = sum(VL_FOB))
+  summarise(Total_NCM = sum(VL_FOB, na.rm=TRUE))
 
 arrange(expncm, desc(Total_NCM))
 ```
@@ -191,18 +183,16 @@ library(tidyverse)
 expncm <- left_join(expncm, ncm %>%
                              select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))%>%
                              mutate(TotExpNCM = expncm$Total_NCM)
+expncm<-expncm%>%
+  select(-Total_NCM) #tiro fora a soma pra nao ficar em duplicidade
 
 glimpse(expncm)
 
-head(expncm)
 ```
 
 Vamos ver como fica a classificação:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-
-expncm<-expncm%>%
-  select(-Total_NCM)
 
 arrange(expncm,desc(TotExpNCM))
 
@@ -231,7 +221,6 @@ expncmprodutos
 Você poderia exportar esta tabela filtrada para um arquivo do tipo .csv:
 
 
-
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
 write.csv(expncmprodutos, "expncmprodutos.csv")
@@ -242,11 +231,11 @@ Poderíamos calcular uma estimativa de participação neste ano de 2020 da lista
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
-sum(expncmprodutos$TotExpNCM)/sum(expper$Total_MesAno, na.rm=TRUE)
+round((sum(expncmprodutos$TotExpNCM, na.rm=TRUE)/sum(expncm$TotExpNCM, na.rm=TRUE))*100,digits = 2) 
 
 ```
 
-Ou seja, cerca de `r round((sum(expncmprodutos$TotExpNCM)/sum(expper$Total_MesAno, na.rm=TRUE))*100,digits=2)`% dos nossos produtos tem representatividade na pauta exportadora brasileira em 2020.
+Ou seja, cerca de `r round((sum(expncmprodutos$TotExpNCM, na.rm=TRUE)/sum(expncm$TotExpNCM, na.rm=TRUE))*100,digits=2)`% dos nossos produtos tiveram representatividade na pauta exportadora brasileira de janeiro até o último mês disponível na base de 2020.
 
 
 Finalmente eu crio a tabela com somente os 10 primeiros produtos exportados no Brasil, por ordem de valor em dólares FOB:
@@ -258,6 +247,35 @@ topten<-expncm%>%
 arrange(topten, desc(TotExpNCM))
 ```  
 
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(treemap)
+#treemap(expncm, #Your data frame object
+#        index=c("NO_NCM_POR"),  #A list of your categorical variables
+#        vSize = "TotExpNCM",  #This is your quantitative variable
+#        type="index", #Type sets the organization and color scheme of your treemap
+#        palette = "Reds",  #Select your color palette from the RColorBrewer presets or make your own.
+#        title="Produtos com maior fluxo financeiro de exportação no Brasil em 2020", #Customize your title
+#        fontsize.title = 12 #Change the font size of the title
+#        )
+
+#library(treemapify)
+#treemap<-ggplot(expncm, aes(area=TotExpNCM, fill = TotExpNCM, label = as.character(NO_NCM_POR))) +
+#  geom_treemap()+
+#  geom_treemap_text(fontface = "italic", colour = "white", place = "centre", grow=TRUE)  +
+#  theme(legend.position = "none")
+
+#treemap
+
+```
+
+
+
+
+
+
 ## Agregando por UF
 
 Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verificar em quanto:
@@ -267,11 +285,150 @@ Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verif
 
 expuf<-exp%>%
   group_by(SG_UF_NCM)%>%
-  summarise(TotalExp_UF = sum(VL_FOB))
+  summarise(TotalExp_UF = sum(VL_FOB, na.rm = TRUE))
 
 arrange(expuf, desc(TotalExp_UF))
 
 ```
+
+Vamos ver como ficam as descritivas:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+min(expuf$TotalExp_UF) 
+
+mean(expuf$TotalExp_UF)
+
+max(expuf$TotalExp_UF)
+
+```
+
+
+Determino o intervalo adequado de classe conforme [Regra de Sturges:](https://maestrovirtuale.com/regra-de-sturges-explicacao-aplicacoes-e-exemplos/#:~:text=A%20regra%20Sturges%20%C3%A9%20um%20m%C3%A9todo%20emp%C3%ADrico%20amplamente%20usado%20em,representando%20uma%20amostra%20ou%20popula%C3%A7%C3%A3o.&text=%E2%80%93%20N%20%C3%A9%20o%20n%C3%BAmero%20total%20de%20observa%C3%A7%C3%B5es%20na%20amostra.)
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+k <- 1 + 3.322*log10(28)
+
+round(k,digits = 0) # Numero ideal de classes a serem utilizadas
+
+amplitude <- (max(expuf$TotalExp_UF) - min(expuf$TotalExp_UF)) / k
+
+amplitude #Tamanho do intervalo
+```
+
+
+Determinando os intervalos de classes:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+
+min(expuf$TotalExp_UF) 
+
+min(expuf$TotalExp_UF) + amplitude - 1 
+
+#primeira classe = de 13547392 a 3332244011 
+
+3332244011 + 1 
+
+3332244011 + 1 + amplitude - 1
+
+#segunda classe = de 3332244012 a 6650940631 
+
+6650940631 + 1 
+
+6650940631 + 1 + amplitude - 1
+
+#terceira classe = de 6650940632 a 9969637251
+
+9969637251 + 1
+
+9969637251 + 1 + amplitude - 1
+
+#quarta classe = de 6650940633 a 13288333871
+
+13288333871 + 1
+
+13288333871 + 1 + amplitude - 1
+
+#quinta classe = de 13288333872 a 16607030491
+
+16607030491 + 1 
+
+16607030491 + 1 + amplitude - 1
+
+#sexta classe = de 16607030492 a 19925727111
+
+
+```
+
+
+Podemos também observar o novo dataset agrupado:
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+write.csv(expuf, "expuf.csv")
+```
+
+
+Renomeio o nome da coluna SG_UF_NCM pra fazer o join:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+colnames(expuf)[1]<-"abbrev_state"
+
+```` 
+
+
+Vamos ver no mapa como fica. Inicialmente carrego as bibliotecas:
+
+
+```{r mapa, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE, results = 'hide'}
+
+library(ggplot2)
+library(geobr)
+
+uf<-read_state(code_state="all")
+```
+
+Agora faço a junção:
+
+```{r mapa2, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+junta<-full_join(uf, expuf, by="abbrev_state")
+```
+
+
+Em seguida crio as categorias de classes pro mapa:
+
+```{r mapa4, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+junta$categorias_em_dolares<-
+  cut(junta$TotalExp_UF,
+      breaks=c(0, 3332244011, 6650940631, 9969637251, 13288333871, 16607030491, 19925727111),
+  labels=c("de 13547392 a 3332244011",
+           "de 3332244012 a 6650940631",
+           "de 6650940632 a 9969637251", 
+           "de 6650940633 a 13288333871",
+           "de 13288333872 a 16607030491",
+           "de 16607030492 a 19925727111"))
+
+```
+
+Então geramos o mapa:
+
+```{r mapa3, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE, fig.height=8, fig.width=12}
+library(ggspatial) #pacote para carregar a escala no mapa (funcao annotation_scale)
+
+ggplot(junta)+
+  geom_sf(aes(fill=categorias_em_dolares))+
+  scale_fill_manual(values=c('#999999','#F3D4D2','#E9A8A2','#E9635A','#C41617','#6A0002'))+
+  annotation_scale(location = "br", height = unit(0.2,"cm"))+
+  annotation_north_arrow(location="tr", style = north_arrow_nautical, height=unit(1.5,"cm"), width=unit(1.5,"cm"))+
+  labs(x = "Longitude", y = "Latitude", title = "Mapa por estado do fluxo de exportações (em US$ FOB)")
+  
+  
+```
+
 
 
 Podemos ver que tipo de produto cada estado mais exporta:
@@ -310,7 +467,7 @@ arrange(epufncmPR, desc(TotExpUFNCM))
 Baixo os dados dos países:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-paisesdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/PAIS.csv","paises.csv")
+#paisesdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/PAIS.csv","paises.csv")
 paises <- read.csv("paises.csv", sep = ";", encoding = "latin1")
 
 glimpse(paises)
@@ -360,7 +517,7 @@ arrange(exppais,desc(TotExpPais))
 Baixo os dados descritores dos tipos de via (dicionário):
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-viadwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/VIA.csv","via.csv")
+#viadwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/VIA.csv","via.csv")
 via <- read.csv("via.csv", sep = ";", encoding = "latin1")
 
 glimpse(via)
@@ -409,7 +566,7 @@ arrange(expvia,desc(TotExpVia))
 Baixo os dados descritores dos tipos de códigos na unidade da Receita Federal (dicionário):
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-urfdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/URF.csv","urf.csv")
+#urfdwnld<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/URF.csv","urf.csv")
 urf <- read.csv("urf.csv", sep = ";", encoding = "latin1")
 
 glimpse(urf)
@@ -458,6 +615,8 @@ arrange(expurf,desc(TotExpUrf))
 
 ***
 
+(Abra no modo tela inteira)
+
 <iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiNjg2OGVhNzktMTRkNi00ZDc0LTk3YjItNzcyNGVjNjNmMzlmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSectionfd057912b83c58976702" frameborder="0" allowFullScreen="true"></iframe>
 
 
@@ -465,7 +624,7 @@ arrange(expurf,desc(TotExpUrf))
 
 ### Referências
 
-CRAN The Comprehensive R Archive Network. Disponível em < https://cran.r-project.org/ > 
+CRAN _The Comprehensive R Archive Network_. Disponível em < https://cran.r-project.org/ > 
 
 Ministério da Defesa Indústria e Comércio Exterior. Disponível em < http://www.mdic.gov.br/index.php/comercio-exterior/estatisticas-de-comercio-exterior/base-de-dados-do-comercio-exterior-brasileiro-arquivos-para-download > 
 
