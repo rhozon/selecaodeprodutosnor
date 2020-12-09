@@ -218,10 +218,10 @@ Write $y = β_0 + β_1x + u$, and take the expected value: $E(y) = β_0 + β_{1}
 
 **Answer:**
 
-$\Delta(rdintens/sales) = 0.0003 – 0.000000007sales$ 
-
-$= sales = 21428.57$. 
-
+\begin{align}
+\Delta(rdintens/sales) =& 0.0003 – 0.000000007sales\\
+=& sales = 21428.57. 
+\end{align}
 
 At the point \$21428.57 millions of $sales$, $rdintens$ reaches the highest point. When $salesexceeds$ \$21428.57 millions, the marginal effect of $sales$ on $rdintens$ becomes negative.
 
