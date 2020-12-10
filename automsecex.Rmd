@@ -106,6 +106,7 @@ head(exp)
 #library(vctrs)
 library(dplyr)
 glimpse(exp)
+
 ```
 
 ## Agregando por mês/ano
@@ -171,8 +172,11 @@ Então agrupo as exportações (em US$ FOB) por NCM: (O agruoamento é necessár
 #agrupa exp por ncm
 expncm<-exp%>%
   group_by(CO_NCM)%>%
-  summarise(Total_NCM = sum(VL_FOB, na.rm=TRUE))
+  summarise(Total_NCM = sum(VL_FOB, na.rm=TRUE))%>%
+  mutate(NCM_percentual = (Total_NCM/sum(Total_NCM))*100)
 
+
+options(scipen = 999) #nao mostra os numeros em notacao cientifica
 arrange(expncm, desc(Total_NCM))
 ```
 
@@ -204,7 +208,7 @@ Podemos filtrar aqueles que possuem a string "soja" no nome do produto (NCM):
 expncmsoja<-expncm%>%
   filter(grepl("soja", NO_NCM_POR ) | grepl("Soja", NO_NCM_POR))
 
-expncmsoja
+arrange(expncmsoja, desc(NCM_percentual))
 ```
 
 Ou então poderíamos filtrar com base em diferentes strings de produtos:
@@ -215,7 +219,7 @@ expncmprodutos<-expncm%>%
          grepl("milho", NO_NCM_POR ) | grepl("Milho", NO_NCM_POR) |
          grepl("açúcar", NO_NCM_POR ) | grepl("Açúcar", NO_NCM_POR))
 
-expncmprodutos
+arrange(expncmprodutos,desc(NCM_percentual))
 ```
 
 Você poderia exportar esta tabela filtrada para um arquivo do tipo .csv:
@@ -248,27 +252,18 @@ arrange(topten, desc(TotExpNCM))
 ```  
 
 
-
+Tentando interagir com esse treemap:
 
 ```{r message=FALSE, warning=FALSE}
-library(treemap)
-#treemap(expncm, #Your data frame object
-#        index=c("NO_NCM_POR"),  #A list of your categorical variables
-#        vSize = "TotExpNCM",  #This is your quantitative variable
-#        type="index", #Type sets the organization and color scheme of your treemap
-#        palette = "Reds",  #Select your color palette from the RColorBrewer presets or make your own.
-#        title="Produtos com maior fluxo financeiro de exportação no Brasil em 2020", #Customize your title
-#        fontsize.title = 12 #Change the font size of the title
-#        )
+library(highcharter)
 
-#library(treemapify)
-#treemap<-ggplot(expncm, aes(area=TotExpNCM, fill = TotExpNCM, label = as.character(NO_NCM_POR))) +
-#  geom_treemap()+
-#  geom_treemap_text(fontface = "italic", colour = "white", place = "centre", grow=TRUE)  +
-#  theme(legend.position = "none")
+tmap <- expncm %>%
+  hchart(
+    "treemap", 
+    hcaes(x = NO_NCM_POR, value = TotExpNCM, color = TotExpNCM)
+    )
 
-#treemap
-
+tmap
 ```
 
 
@@ -285,7 +280,8 @@ Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verif
 
 expuf<-exp%>%
   group_by(SG_UF_NCM)%>%
-  summarise(TotalExp_UF = sum(VL_FOB, na.rm = TRUE))
+  summarise(TotalExp_UF = sum(VL_FOB, na.rm = TRUE))%>%
+            mutate(ExpUFpercentual = (TotalExp_UF/sum(TotalExp_UF))*100)
 
 arrange(expuf, desc(TotalExp_UF))
 
@@ -293,15 +289,12 @@ arrange(expuf, desc(TotalExp_UF))
 
 Vamos ver como ficam as descritivas:
 
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+Parâmetro | Valor (TotalExp_UF)
+--------- | ------
+Mínimo:   | ``r min(expuf$TotalExp_UF)/10^7``
+Média:    | ``r mean(expuf$TotalExp_UF)/10^7``
+Máximo:   | ``r max(expuf$TotalExp_UF)/10^7``
 
-min(expuf$TotalExp_UF) 
-
-mean(expuf$TotalExp_UF)
-
-max(expuf$TotalExp_UF)
-
-```
 
 
 Determino o intervalo adequado de classe conforme [Regra de Sturges:](https://maestrovirtuale.com/regra-de-sturges-explicacao-aplicacoes-e-exemplos/#:~:text=A%20regra%20Sturges%20%C3%A9%20um%20m%C3%A9todo%20emp%C3%ADrico%20amplamente%20usado%20em,representando%20uma%20amostra%20ou%20popula%C3%A7%C3%A3o.&text=%E2%80%93%20N%20%C3%A9%20o%20n%C3%BAmero%20total%20de%20observa%C3%A7%C3%B5es%20na%20amostra.)
@@ -318,50 +311,43 @@ amplitude <- (max(expuf$TotalExp_UF) - min(expuf$TotalExp_UF)) / k
 amplitude #Tamanho do intervalo
 ```
 
-
-Determinando os intervalos de classes:
-
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+Os intervalos de classe são obtidos então:
 
 
-min(expuf$TotalExp_UF) 
+```{r}
+primclassmin <- min(expuf$TotalExp_UF)
+primclassmax <- (min(expuf$TotalExp_UF) + amplitude - 1)
 
-min(expuf$TotalExp_UF) + amplitude - 1 
+segclassmin <- primclassmax +1
+segclassmax <- (segclassmin + amplitude -1)
 
-#primeira classe = de 13547392 a 3332244011 
+terclassmin <- segclassmax +1
+terclassmax <- (terclassmin + amplitude -1)
 
-3332244011 + 1 
+quaclassmin <- terclassmax +1
+quaclassmax <- (quaclassmin + amplitude -1)
 
-3332244011 + 1 + amplitude - 1
+quiclassmin <- quaclassmax +1
+quiclassmax <- (quiclassmin + amplitude -1)
 
-#segunda classe = de 3332244012 a 6650940631 
-
-6650940631 + 1 
-
-6650940631 + 1 + amplitude - 1
-
-#terceira classe = de 6650940632 a 9969637251
-
-9969637251 + 1
-
-9969637251 + 1 + amplitude - 1
-
-#quarta classe = de 6650940633 a 13288333871
-
-13288333871 + 1
-
-13288333871 + 1 + amplitude - 1
-
-#quinta classe = de 13288333872 a 16607030491
-
-16607030491 + 1 
-
-16607030491 + 1 + amplitude - 1
-
-#sexta classe = de 16607030492 a 19925727111
+sexclassmin <- quiclassmax +1
+sexclassmax <- (sexclassmin + amplitude -1)
 
 
 ```
+
+
+Então determinamos os intervalos de classes. P. ex., a primeira classe vai de ``r min(expuf$TotalExp_UF)/1000000`` até ``r (min(expuf$TotalExp_UF) + amplitude - 1)/1000000``. (Os valores foram divididos por 10000000 para facilitar a leitura)
+
+
+Classe    | Intervalo
+--------- | ------
+Primeira:  | de ``r primclassmin/10^7`` até ``r primclassmax/10^7``
+Segunda:  | de ``r segclassmin/10^7`` até ``r segclassmax/10^7``
+Terceira:  | de ``r terclassmin/10^7`` até ``r terclassmax/10^7``
+Quarta:    | de ``r quaclassmin/10^7`` até ``r quaclassmax/10^7``
+Quinta:    | de ``r quiclassmin/10^7`` até ``r quiclassmax/10^7``
+Sexta:     | de ``r sexclassmin/10^7`` até ``r sexclassmax/10^7``
 
 
 Podemos também observar o novo dataset agrupado:
@@ -382,12 +368,15 @@ colnames(expuf)[1]<-"abbrev_state"
 Vamos ver no mapa como fica. Inicialmente carrego as bibliotecas:
 
 
-```{r mapa, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE, results = 'hide'}
+```{r mapa, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
-library(ggplot2)
+library(tmap)
+library(sf)
+library(leaflet)
+library(tmaptools)
 library(geobr)
 
-uf<-read_state(code_state="all")
+uf<-read_state(code_state="all", showProgress = FALSE)
 ```
 
 Agora faço a junção:
@@ -429,6 +418,68 @@ ggplot(junta)+
   
 ```
 
+Ou então de um modo mais simples gero um mapa com as classes de cores graduada de modo automático pelo R.
+
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+tm_shape(junta)+
+  tm_polygons("TotalExp_UF", id="abbrev_state", palette = "Reds")
+```
+
+Tento criar um mapa interativo:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+tmap_mode("view")
+tmap_last()
+```
+
+```{r}
+str(junta) #Soh uma olhada nos dados que foram juntados
+```
+
+Um outro modelo de mapa no R pode ser gerado usando:
+
+```{r}
+#library(viridis)
+#junta %>% 
+#   ggplot(aes(fill = TotalExp_UF), color = "black") +
+#    geom_sf() + 
+#    scale_fill_viridis(name = "Exportações por UF", direction = -1)
+```
+
+
+Uma visualização de mapa mais adequada pode ser obtida com uma certa interatividade. Primeiro gero os centróides dos pontos no mapa:
+
+```{r}
+coord_pontos <- junta %>% 
+                  mutate(ExpUFpercentual = TotalExp_UF/sum(TotalExp_UF,na.rm = FALSE)) %>% 
+                  st_centroid()
+
+#ggplot(junta)+ 
+#  geom_sf() + 
+#  geom_sf(data = coord_pontos, aes(size = ExpUFpercentual), col = "blue", alpha = .65,
+#          show.legend = "point") + 
+#  scale_size_continuous(name = "Exportações UF/US$ 1 MIlhão")
+```
+
+Em seguida geramos o mapa:
+
+```{r}
+data.frame(st_coordinates(coord_pontos), 
+           ExpUFpercentual = coord_pontos$ExpUFpercentual, 
+           UF = coord_pontos$abbrev_state) %>% 
+  leaflet() %>% 
+    addTiles() %>%
+    addCircleMarkers(~ X, ~ Y,
+                     label = ~ as.character(paste0(UF, ": ", round(ExpUFpercentual*100,digits = 2), "%")),
+                     labelOptions = labelOptions(textsize = "13px"),
+                     radius = ~ ExpUFpercentual*100,
+                     fillOpacity = 0.5)
+```
+
+
 
 
 Podemos ver que tipo de produto cada estado mais exporta:
@@ -462,7 +513,7 @@ arrange(epufncmPR, desc(TotExpUFNCM))
 
 ```
 
-## Agregando por país
+## Agregando por país de destino
 
 Baixo os dados dos países:
 
@@ -484,6 +535,7 @@ exppais<-exp%>%
 
 arrange(exppais, desc(Total_PAIS))
 ```
+
 
 Caso os nomes dos produtos pelo nome do pais de destino:
 
@@ -509,9 +561,102 @@ arrange(exppais,desc(TotExpPais))
 
 ```
 
+Podemos visualizar quais os principais destinos de nossas exportações nesse ano projetando um mapa. Primeiramente eu busco uma tabela contendo os dados de latitudes e longitudes dos países:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+latlong<- read.csv(file="https://raw.githubusercontent.com/rhozon/datasets/master/isoa3paises.csv", head=TRUE, sep=";")
+
+str(latlong)
+
+```
+
+Renomeio as colunas de latitude e longitude:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+
+colnames(latlong)[3]<-"lat"
+colnames(latlong)[4]<-"long"
+colnames(latlong)[5]<-"CO_PAIS"
+
+glimpse(latlong)
+
+```
+
+
+
+Faço um join com a tabela de exportações por país:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exppais <- left_join(exppais, paises %>%
+                             select(CO_PAIS, CO_PAIS), by = c("CO_PAIS" = "CO_PAIS"))
+
+str(exppais)
+```
+
+Também precisamos inserir o código ISOA3 dos nomes dos países:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exppais<- left_join(exppais, latlong %>%
+                      select(CO_PAIS, ISOA3), by = c("CO_PAIS" = "CO_PAIS"))
+                    
+glimpse(exppais)                    
+```
+
+Em seguida a latitude
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+exppais<- left_join(exppais, latlong %>%
+                      select(CO_PAIS, lat), by = c("CO_PAIS" = "CO_PAIS"))
+                    
+glimpse(exppais)  
+
+```
+
+e também a longitude
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+exppais<- left_join(exppais, latlong %>%
+                      select(CO_PAIS, long), by = c("CO_PAIS" = "CO_PAIS"))
+                    
+glimpse(exppais)  
+
+```
+
+
+Vamos ver se o mapa com o leaflet sai:
+```{r}
+library(leaflet)
+
+# Cria as labels dos popups
+make_label <- function(pais, vlrexportado) {
+  txt <- stringr::str_glue(
+    "<b>País</b>: {pais}<br>",
+    "<b>Exportações</b>: {vlrexportado}"
+  )
+  htmltools::HTML(txt)
+}
+
+
+mapaleaflet<-exppais %>% 
+  mutate(lab = map2(NO_PAIS, TotExpPais, make_label)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lng = ~long, lat = ~lat, popup = ~lab,
+             clusterOptions = markerClusterOptions())
+
+mapaleaflet
+```
+
+
 
 
 ## Agregando por via
+
+Por qual modal o fluxo financeiro da pauta de exportações tupiniquim é mais proeminente ? Será que o rodoviário (mais caro) é também o mais eficiente ?
 
 
 Baixo os dados descritores dos tipos de via (dicionário):
