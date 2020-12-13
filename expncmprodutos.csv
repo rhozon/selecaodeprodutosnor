@@ -1,86 +1,86 @@
-"","CO_NCM","NCM_percentual","NO_NCM_POR","TotExpNCM"
-"1",4011010,0.000276670900649041,"Leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, não superior a 1 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",284703
-"2",4011090,0.0000276872060722642,"Outros leites e cremes, com um teor, em peso, de matérias gordas, não superior a 1 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",28491
-"3",4012010,0.000508373292864263,"Leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 1 %, mas não superior a 6 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",523132
-"4",4012090,0.00000318940754375666,"Outros leites e cremes, com um teor, em peso, de matérias gordas, superior a 1 %, mas não superior a 6 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",3282
-"5",4014010,0.00000041689696412907,"Leite, com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",429
-"6",4014021,0.00000326229162839461,"Creme de leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",3357
-"7",4014029,0.0000111298856181124,"Outros cremes de leite, com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",11453
-"8",4015010,0.00000445856240425215,"Leite, com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",4588
-"9",4015021,0.000682512806820227,"Creme de leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",702327
-"10",4015029,0.00624540708720422,"Outros cremes de leite, com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",6426719
-"11",4021010,0.0000695780625587719,"Leite em pó, grânulos ou outras formas sólidas, com um teor, em peso, de matérias gordas, não superior a 1,5 %, com um teor de arsênio, chumbo ou cobre, considerados isoladamente,inferior a 5 ppm, concentrados ou adicionados de açúcar/outros edulcorantes.",71598
-"12",4021090,0.0000344790309727259,"Outros leites e cremes, em pó, com um teor, em peso, de matérias gordas, não superior a 1,5 %, concentrados ou adicionados de açúcar ou de outros edulcorantes",35480
-"13",4022110,0.000237479670657523,"Leite integral, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",244374
-"14",4022120,0.00000244113094147371,"Leite parcialmente desnatado, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",2512
-"15",4022130,0.0000131823014415171,"Creme de leite, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",13565
-"16",4029100,0.00000129539313096515,"Outros leites, cremes de leite, concentrados, sem adição de açúcar ou de outros edulcorantes",1333
-"17",4041000,0.000178793405707046,"Soro de leite, modificado ou não, mesmo concentrado ou adicionado de açúcar ou de outros edulcorantes",183984
-"18",6029081,0.00000237310579581163,"Mudas de cana-de-açúcar",2442
-"19",7099911,0.0000194396430546338,"Milho doce, frescos ou refrigerados, para semeadura",20004
-"20",7099919,0.00000433417356647005,"Milho doce, frescos ou refrigerados, exceto para semeadura",4460
-"21",7104000,0.0000421580981301802,"Milho doce congelado, não cozidos ou cozidos em água ou vapor, congelados",43382
-"22",8111000,0.0000146215191661678,"Morangos, não cozidos ou cozidos em água ou vapor, congelados, mesmo adicionados de açúcar ou de outros edulcorantes",15046
-"23",8112000,0.0000000252664826744891,"Framboesas, amoras, incluindo as silvestres, amoras-framboesas e groselhas, não cozidas ou cozidas em água ou vapor, congeladas, mesmo adicionadas de açúcar ou de outros edulcorantes",26
-"24",8119000,0.0046080253107253,"Outras frutas não cozidas ou cozidas em água ou vapor, congeladas, mesmo adicionadas de açúcar ou de outros edulcorantes",4741802
-"25",10051000,0.0236963612466774,"Milho para semeadura",24384296
-"26",10059010,2.89453863291133,"Milho em grão, exceto para semeadura",2978570679
-"27",10059090,0.00100762830084642,"Milho, exceto em grão",1036881
-"28",11022000,0.0224304949160808,"Farinha de milho",23081680
-"29",11031300,0.00539893424358247,"Grumos e sêmolas, de milho",5555672
-"30",11042300,0.00373273118467431,"Outros grãos trabalhados (por exemplo, descascados, em pérolas, cortados ou partidos), de milho",3841097
-"31",11081200,0.011994516316687,"Amido de milho",12342732
-"32",12011000,0.000302045251768794,"Soja, mesmo triturada, para semeadura",310814
-"33",12019000,14.2169913163122,"Soja, mesmo triturada, exceto para semeadura",14629728205
-"34",12081000,0.00019592408096035,"Farinha de soja",201612
-"35",12129200,0.000000031097209445525,"Cana-de-açúcar fresca, refrigerada, congelada, seca, em pó",32
-"36",12129300,0.00000217583287339158,"Cana-de-açúcar, fresca, regrigerada, congelada ou seca",2239
-"37",15071000,0.305725013716117,"Óleo de soja, em bruto, mesmo degomado",314600590
-"38",15079011,0.0769033756358763,"Óleo de soja, refinado, em recipientes com capacidade inferior ou igual a 5 litros",79135976
-"39",15079019,0.00639515375571356,"Óleo de soja, refinado, em recipientes com capacidade menor que 5 litros",6580813
-"40",15079090,0.0000446682260051112,"Outros óleos de soja",45965
-"41",15152100,0.012950731212442,"Óleo de milho, em bruto",13326707
-"42",15152910,0.00018992912205193,"Óleo de milho, refinado, em recipientes com capacidade inferior ou igual a 5 litros",195443
-"43",15152990,0.0000134796685068399,"Outros óleos de milho",13871
-"44",17011200,0.00000314567709297389,"Açúcar de beterraba, em bruto",3237
-"45",17011300,0.000678823900349751,"Açúcar de cana mencionado na nota 2 da posição 1701",698531
-"46",17011400,3.15001259886143,"Outros açúcares de cana",3241461371
-"47",17019100,0.000149857452317985,"Outros açúcares de cana, beterraba, com aromatizante corante",154208
-"48",17019900,0.615153088963734,"Outros açúcares de cana, beterraba, sacarose químicamente pura, sol.",633011746
-"49",17022000,0.00000160442164983006,"Açúcar e xarope, de bordo (ácer)",1651
-"50",17024020,0.000000883355105811945,"Xarope de glicose, que contenham, em peso, no estado seco, um teor de frutose (levulose) igual ou superior a 20 % e inferior a 50 %, com exceção do açúcar invertido",909
-"51",17026020,0.00000000485893897586329,"Xarope de frutose, que contenha, em peso, no estado seco, um teor de frutose (levulose) superior a 50 %, com exceção do açúcar invertido",5
-"52",17029000,0.00339178332388916,"Outros açúcares, xaropes de açúcares, sucedâneos do mel, etc, que contenham, em peso, no estado seco, 50 % de frutose (levulose)",3490251
-"53",17039000,0.00000173269763879285,"Outros melaços da extração ou refinação do açúcar",1783
-"54",17041000,0.00513264495194926,"Gomas de mascar, mesmo revestidas de açúcar, sem cacau",5281652
-"55",18050000,0.0217092787167423,"Cacau em pó, sem adição de açúcar ou outros edulcorantes",22339526
-"56",18061000,0.000210281273846231,"Cacau em pó, com adição de açúcar ou outros edulcorantes",216386
-"57",20058000,0.00737912776983768,"Milho doce (Zea mays var. saccharata), preparados ou conservados, exceto em vinagre ou em ácido acético, não congelados",7593353
-"58",20060000,0.00128749638334158,"Produtos hortícolas, frutas, cascas de frutas e outras partes de plantas, conservados com açúcar (passados por calda, glaceados ou cristalizados)",1324874
-"59",20071000,0.00302883127205792,"Preparações homogeneizadas de frutas, obtidos por cozimento, com ou sem adição de açúcar ou de outros edulcorantes",3116762
-"60",20091100,0.268356262894212,"Suco (sumo) de laranja, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes, congelado",276146978
-"61",20091200,0.147167566052067,"Suco (sumo) de laranja, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes, não congelado, com valor Brix não superior a 20",151440023
-"62",20091900,0.14765613236609,"Outros sucos de laranjas, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes",151942773
-"63",20098911,0.0000000447022385779422,"Suco de pêssego com valor Brix igual ou superior a 60, com adição de açúcar e outros edulcorantes ou não",46
-"64",20098912,0.00616732685322549,"Suco de acerola (Malpighia spp.), com adição de açúcar e outros edulcorantes ou não",6346372
-"65",20098913,0.000429839233985179,"Suco de maracujá (Passiflora edulis) com adição de açúcar e outros edulcorantes ou não",442318
-"66",20098919,0.00000320981508745529,"Suco de outras frutas ou produtos hortícolas, com adição de açúcar e outros edulcorantes ou não",3303
-"67",20098990,0.0253431178600164,"Sucos (sumo) de outras frutas, não fermentado, sem adição de açúcar",26078860
-"68",20099000,0.0012508133376494,"Misturas de sucos (sumos), não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes",1287126
-"69",21031010,0.000543579221107778,"Molho de soja, preparado, em embalagens imediatas de conteúdo inferior ou igual a 1 kg",559360
-"70",21031090,0.000166482797917799,"Outros molhos de soja, preparados",171316
-"71",21069050,0.00117625777800376,"Gomas de mascar, sem açúcar",1210406
-"72",21069060,0.000263143614540238,"Caramelos, confeitos, pastilhas e produtos semelhantes, sem açúcar",270783
-"73",22011000,0.000867073773091623,"Águas minerais e águas gaseificadas, não adicionadas de açúcar ou de outros edulcorantes nem aromatizadas",892246
-"74",22019000,0.0000804475090477781,"Outras águas, não adicionadas de açúcar ou de outros edulcorantes nem aromatizadas; gelo e neve",82783
-"75",22021000,0.00531332071061555,"Águas, incluindo as águas minerais e as águas gaseificadas, adicionadas de açúcar ou de outros edulcorantes ou aromatizadas",5467573
-"76",22084000,0.00495123257813422,"Rum e outras aguardentes provenientes da destilação, após fermentação, de produtos da cana-de-açúcar",5094973
-"77",23021000,0.0157043492655437,"Sêmeas, farelos e outros resíduos, mesmo em pellets, da peneiração, moagem ou de outros tratamentos de milho",16160266
-"78",23032000,0.00721013678762054,"Polpas de beterraba, bagaços de cana-de-açúcar e outros desperdícios da indústria do açúcar",7419456
-"79",23040010,0.529925889263001,"Farinhas e pellets, da extração do óleo de soja",545310295
-"80",23040090,2.18045203150329,"Bagaços e outros resíduos sólidos, da extração do óleo de soja",2243753258
-"81",29400019,0.00021945106348148,"Outros açúcares quimicamente puros",225822
-"82",29400099,0.00000248388960446131,"Outros éteres e ésteres de açúcares e seus sais",2556
-"83",35040020,0.00742147050764894,"Proteínas de soja em pó, com teor de proteínas superior ou igual a 90 %, em peso, em base seca",7636925
-"84",82151000,0.000000861975774318147,"Colheres, garfos, conchas, escumadeiras, pás para tortas, facas especiais para peixe ou para manteiga, pinças para açúcar e artefatos semelhantes, sortidos que contenham pelo menos um objeto prateado, dourado ou platinado",887
-"85",84383000,0.00135662742351457,"Máquinas e aparelhos para a indústria de açúcar",1396012
+"","CO_NCM","NCM_percentual","NO_NCM_POR","TotExpNCM","CO_ISIC_CLASSE","NO_ISIC_CLASSE"
+"1",4011010,0.000276670900649041,"Leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, não superior a 1 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",284703,1050,"Fabricação de produtos lácteos"
+"2",4011090,0.0000276872060722642,"Outros leites e cremes, com um teor, em peso, de matérias gordas, não superior a 1 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",28491,1050,"Fabricação de produtos lácteos"
+"3",4012010,0.000508373292864263,"Leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 1 %, mas não superior a 6 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",523132,1050,"Fabricação de produtos lácteos"
+"4",4012090,0.00000318940754375666,"Outros leites e cremes, com um teor, em peso, de matérias gordas, superior a 1 %, mas não superior a 6 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",3282,1050,"Fabricação de produtos lácteos"
+"5",4014010,0.00000041689696412907,"Leite, com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",429,1050,"Fabricação de produtos lácteos"
+"6",4014021,0.00000326229162839461,"Creme de leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",3357,1050,"Fabricação de produtos lácteos"
+"7",4014029,0.0000111298856181124,"Outros cremes de leite, com um teor, em peso, de matérias gordas, superior a 6 %, mas não superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",11453,1050,"Fabricação de produtos lácteos"
+"8",4015010,0.00000445856240425215,"Leite, com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",4588,1050,"Fabricação de produtos lácteos"
+"9",4015021,0.000682512806820227,"Creme de leite UHT (Ultra High Temperature), com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",702327,1050,"Fabricação de produtos lácteos"
+"10",4015029,0.00624540708720422,"Outros cremes de leite, com um teor, em peso, de matérias gordas, superior a 10 %, não concentrados nem adicionados de açúcar ou de outros edulcorantes",6426719,1050,"Fabricação de produtos lácteos"
+"11",4021010,0.0000695780625587719,"Leite em pó, grânulos ou outras formas sólidas, com um teor, em peso, de matérias gordas, não superior a 1,5 %, com um teor de arsênio, chumbo ou cobre, considerados isoladamente,inferior a 5 ppm, concentrados ou adicionados de açúcar/outros edulcorantes.",71598,1050,"Fabricação de produtos lácteos"
+"12",4021090,0.0000344790309727259,"Outros leites e cremes, em pó, com um teor, em peso, de matérias gordas, não superior a 1,5 %, concentrados ou adicionados de açúcar ou de outros edulcorantes",35480,1050,"Fabricação de produtos lácteos"
+"13",4022110,0.000237479670657523,"Leite integral, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",244374,1050,"Fabricação de produtos lácteos"
+"14",4022120,0.00000244113094147371,"Leite parcialmente desnatado, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",2512,1050,"Fabricação de produtos lácteos"
+"15",4022130,0.0000131823014415171,"Creme de leite, em pó, com um teor, em peso, de matérias gordas, superior a 1,5 %, sem adição de açúcar ou de outros edulcorantes",13565,1050,"Fabricação de produtos lácteos"
+"16",4029100,0.00000129539313096515,"Outros leites, cremes de leite, concentrados, sem adição de açúcar ou de outros edulcorantes",1333,1050,"Fabricação de produtos lácteos"
+"17",4041000,0.000178793405707046,"Soro de leite, modificado ou não, mesmo concentrado ou adicionado de açúcar ou de outros edulcorantes",183984,1050,"Fabricação de produtos lácteos"
+"18",6029081,0.00000237310579581163,"Mudas de cana-de-açúcar",2442,130,"Cultivo de plantas"
+"19",7099911,0.0000194396430546338,"Milho doce, frescos ou refrigerados, para semeadura",20004,113,"Cultivo de hortaliças e melões, raízes e tubérculos"
+"20",7099919,0.00000433417356647005,"Milho doce, frescos ou refrigerados, exceto para semeadura",4460,113,"Cultivo de hortaliças e melões, raízes e tubérculos"
+"21",7104000,0.0000421580981301802,"Milho doce congelado, não cozidos ou cozidos em água ou vapor, congelados",43382,1030,"Processamento e conservação de frutas e legumes"
+"22",8111000,0.0000146215191661678,"Morangos, não cozidos ou cozidos em água ou vapor, congelados, mesmo adicionados de açúcar ou de outros edulcorantes",15046,1030,"Processamento e conservação de frutas e legumes"
+"23",8112000,0.0000000252664826744891,"Framboesas, amoras, incluindo as silvestres, amoras-framboesas e groselhas, não cozidas ou cozidas em água ou vapor, congeladas, mesmo adicionadas de açúcar ou de outros edulcorantes",26,1030,"Processamento e conservação de frutas e legumes"
+"24",8119000,0.0046080253107253,"Outras frutas não cozidas ou cozidas em água ou vapor, congeladas, mesmo adicionadas de açúcar ou de outros edulcorantes",4741802,1030,"Processamento e conservação de frutas e legumes"
+"25",10051000,0.0236963612466774,"Milho para semeadura",24384296,111,"Cultivo de cereais (exceto arroz), leguminosas e oleaginosas"
+"26",10059010,2.89453863291133,"Milho em grão, exceto para semeadura",2978570679,111,"Cultivo de cereais (exceto arroz), leguminosas e oleaginosas"
+"27",10059090,0.00100762830084642,"Milho, exceto em grão",1036881,111,"Cultivo de cereais (exceto arroz), leguminosas e oleaginosas"
+"28",11022000,0.0224304949160808,"Farinha de milho",23081680,1061,"Fabricação de produtos de moagem de grãos"
+"29",11031300,0.00539893424358247,"Grumos e sêmolas, de milho",5555672,1061,"Fabricação de produtos de moagem de grãos"
+"30",11042300,0.00373273118467431,"Outros grãos trabalhados (por exemplo, descascados, em pérolas, cortados ou partidos), de milho",3841097,1061,"Fabricação de produtos de moagem de grãos"
+"31",11081200,0.011994516316687,"Amido de milho",12342732,1062,"Fabricação de amidos e féculas"
+"32",12011000,0.000302045251768794,"Soja, mesmo triturada, para semeadura",310814,111,"Cultivo de cereais (exceto arroz), leguminosas e oleaginosas"
+"33",12019000,14.2169913163122,"Soja, mesmo triturada, exceto para semeadura",14629728205,111,"Cultivo de cereais (exceto arroz), leguminosas e oleaginosas"
+"34",12081000,0.00019592408096035,"Farinha de soja",201612,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"35",12129200,0.000000031097209445525,"Cana-de-açúcar fresca, refrigerada, congelada, seca, em pó",32,129,"Cultivo de outras culturas perenes"
+"36",12129300,0.00000217583287339158,"Cana-de-açúcar, fresca, regrigerada, congelada ou seca",2239,129,"Cultivo de outras culturas perenes"
+"37",15071000,0.305725013716117,"Óleo de soja, em bruto, mesmo degomado",314600590,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"38",15079011,0.0769033756358763,"Óleo de soja, refinado, em recipientes com capacidade inferior ou igual a 5 litros",79135976,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"39",15079019,0.00639515375571356,"Óleo de soja, refinado, em recipientes com capacidade menor que 5 litros",6580813,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"40",15079090,0.0000446682260051112,"Outros óleos de soja",45965,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"41",15152100,0.012950731212442,"Óleo de milho, em bruto",13326707,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"42",15152910,0.00018992912205193,"Óleo de milho, refinado, em recipientes com capacidade inferior ou igual a 5 litros",195443,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"43",15152990,0.0000134796685068399,"Outros óleos de milho",13871,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"44",17011200,0.00000314567709297389,"Açúcar de beterraba, em bruto",3237,1072,"Fabricação de açúcar"
+"45",17011300,0.000678823900349751,"Açúcar de cana mencionado na nota 2 da posição 1701",698531,1072,"Fabricação de açúcar"
+"46",17011400,3.15001259886143,"Outros açúcares de cana",3241461371,1072,"Fabricação de açúcar"
+"47",17019100,0.000149857452317985,"Outros açúcares de cana, beterraba, com aromatizante corante",154208,1072,"Fabricação de açúcar"
+"48",17019900,0.615153088963734,"Outros açúcares de cana, beterraba, sacarose químicamente pura, sol.",633011746,1072,"Fabricação de açúcar"
+"49",17022000,0.00000160442164983006,"Açúcar e xarope, de bordo (ácer)",1651,1072,"Fabricação de açúcar"
+"50",17024020,0.000000883355105811945,"Xarope de glicose, que contenham, em peso, no estado seco, um teor de frutose (levulose) igual ou superior a 20 % e inferior a 50 %, com exceção do açúcar invertido",909,1079,"Fabricação de outros produtos alimentícios n.c"
+"51",17026020,0.00000000485893897586329,"Xarope de frutose, que contenha, em peso, no estado seco, um teor de frutose (levulose) superior a 50 %, com exceção do açúcar invertido",5,1079,"Fabricação de outros produtos alimentícios n.c"
+"52",17029000,0.00339178332388916,"Outros açúcares, xaropes de açúcares, sucedâneos do mel, etc, que contenham, em peso, no estado seco, 50 % de frutose (levulose)",3490251,1079,"Fabricação de outros produtos alimentícios n.c"
+"53",17039000,0.00000173269763879285,"Outros melaços da extração ou refinação do açúcar",1783,1072,"Fabricação de açúcar"
+"54",17041000,0.00513264495194926,"Gomas de mascar, mesmo revestidas de açúcar, sem cacau",5281652,1073,"Fabricação de cacau, chocolate e produtos de confeitaria"
+"55",18050000,0.0217092787167423,"Cacau em pó, sem adição de açúcar ou outros edulcorantes",22339526,1073,"Fabricação de cacau, chocolate e produtos de confeitaria"
+"56",18061000,0.000210281273846231,"Cacau em pó, com adição de açúcar ou outros edulcorantes",216386,1073,"Fabricação de cacau, chocolate e produtos de confeitaria"
+"57",20058000,0.00737912776983768,"Milho doce (Zea mays var. saccharata), preparados ou conservados, exceto em vinagre ou em ácido acético, não congelados",7593353,1030,"Processamento e conservação de frutas e legumes"
+"58",20060000,0.00128749638334158,"Produtos hortícolas, frutas, cascas de frutas e outras partes de plantas, conservados com açúcar (passados por calda, glaceados ou cristalizados)",1324874,1073,"Fabricação de cacau, chocolate e produtos de confeitaria"
+"59",20071000,0.00302883127205792,"Preparações homogeneizadas de frutas, obtidos por cozimento, com ou sem adição de açúcar ou de outros edulcorantes",3116762,1079,"Fabricação de outros produtos alimentícios n.c"
+"60",20091100,0.268356262894212,"Suco (sumo) de laranja, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes, congelado",276146978,1030,"Processamento e conservação de frutas e legumes"
+"61",20091200,0.147167566052067,"Suco (sumo) de laranja, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes, não congelado, com valor Brix não superior a 20",151440023,1030,"Processamento e conservação de frutas e legumes"
+"62",20091900,0.14765613236609,"Outros sucos de laranjas, não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes",151942773,1030,"Processamento e conservação de frutas e legumes"
+"63",20098911,0.0000000447022385779422,"Suco de pêssego com valor Brix igual ou superior a 60, com adição de açúcar e outros edulcorantes ou não",46,1030,"Processamento e conservação de frutas e legumes"
+"64",20098912,0.00616732685322549,"Suco de acerola (Malpighia spp.), com adição de açúcar e outros edulcorantes ou não",6346372,1030,"Processamento e conservação de frutas e legumes"
+"65",20098913,0.000429839233985179,"Suco de maracujá (Passiflora edulis) com adição de açúcar e outros edulcorantes ou não",442318,1030,"Processamento e conservação de frutas e legumes"
+"66",20098919,0.00000320981508745529,"Suco de outras frutas ou produtos hortícolas, com adição de açúcar e outros edulcorantes ou não",3303,1030,"Processamento e conservação de frutas e legumes"
+"67",20098990,0.0253431178600164,"Sucos (sumo) de outras frutas, não fermentado, sem adição de açúcar",26078860,1030,"Processamento e conservação de frutas e legumes"
+"68",20099000,0.0012508133376494,"Misturas de sucos (sumos), não fermentados, sem adição de álcool, com ou sem adição de açúcar ou de outros edulcorantes",1287126,1030,"Processamento e conservação de frutas e legumes"
+"69",21031010,0.000543579221107778,"Molho de soja, preparado, em embalagens imediatas de conteúdo inferior ou igual a 1 kg",559360,1079,"Fabricação de outros produtos alimentícios n.c"
+"70",21031090,0.000166482797917799,"Outros molhos de soja, preparados",171316,1079,"Fabricação de outros produtos alimentícios n.c"
+"71",21069050,0.00117625777800376,"Gomas de mascar, sem açúcar",1210406,1079,"Fabricação de outros produtos alimentícios n.c"
+"72",21069060,0.000263143614540238,"Caramelos, confeitos, pastilhas e produtos semelhantes, sem açúcar",270783,1079,"Fabricação de outros produtos alimentícios n.c"
+"73",22011000,0.000867073773091623,"Águas minerais e águas gaseificadas, não adicionadas de açúcar ou de outros edulcorantes nem aromatizadas",892246,1104,"Fabricação de refrigerantes; produção de águas minerais e outras águas engarrafadas"
+"74",22019000,0.0000804475090477781,"Outras águas, não adicionadas de açúcar ou de outros edulcorantes nem aromatizadas; gelo e neve",82783,1104,"Fabricação de refrigerantes; produção de águas minerais e outras águas engarrafadas"
+"75",22021000,0.00531332071061555,"Águas, incluindo as águas minerais e as águas gaseificadas, adicionadas de açúcar ou de outros edulcorantes ou aromatizadas",5467573,1104,"Fabricação de refrigerantes; produção de águas minerais e outras águas engarrafadas"
+"76",22084000,0.00495123257813422,"Rum e outras aguardentes provenientes da destilação, após fermentação, de produtos da cana-de-açúcar",5094973,1101,"Fabricação de aguardentes e outras bebidas destiladas"
+"77",23021000,0.0157043492655437,"Sêmeas, farelos e outros resíduos, mesmo em pellets, da peneiração, moagem ou de outros tratamentos de milho",16160266,8999,"Não classificado"
+"78",23032000,0.00721013678762054,"Polpas de beterraba, bagaços de cana-de-açúcar e outros desperdícios da indústria do açúcar",7419456,8999,"Não classificado"
+"79",23040010,0.529925889263001,"Farinhas e pellets, da extração do óleo de soja",545310295,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"80",23040090,2.18045203150329,"Bagaços e outros resíduos sólidos, da extração do óleo de soja",2243753258,1040,"Fabricação de óleos e gorduras vegetais e animais"
+"81",29400019,0.00021945106348148,"Outros açúcares quimicamente puros",225822,2100,"Fabricação de produtos farmacêuticos, produtos químicos medicinais e botânicos"
+"82",29400099,0.00000248388960446131,"Outros éteres e ésteres de açúcares e seus sais",2556,2100,"Fabricação de produtos farmacêuticos, produtos químicos medicinais e botânicos"
+"83",35040020,0.00742147050764894,"Proteínas de soja em pó, com teor de proteínas superior ou igual a 90 %, em peso, em base seca",7636925,2029,"Fabricação de outros produtos químicos n.c"
+"84",82151000,0.000000861975774318147,"Colheres, garfos, conchas, escumadeiras, pás para tortas, facas especiais para peixe ou para manteiga, pinças para açúcar e artefatos semelhantes, sortidos que contenham pelo menos um objeto prateado, dourado ou platinado",887,2593,"Fabricação de cutelaria, ferramentas manuais e ferragens em geral"
+"85",84383000,0.00135662742351457,"Máquinas e aparelhos para a indústria de açúcar",1396012,2825,"Fabricação de máquinas para processamento de alimentos, bebidas e tabaco"
