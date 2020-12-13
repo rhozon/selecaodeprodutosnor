@@ -56,6 +56,9 @@ knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
 [em construção...]
 
 
+![](https://vidadeempresa.com.br/wp-content/uploads/2018/12/shutterstock_x1ZxQ2N.jpghttps://vidadeempresa.com.br/wp-content/uploads/2018/12/shutterstock_x1ZxQ2N.jpg){width=80%}
+
+
 ## Download dos dados e conversão do formato
 
 No chunk abaixo rodamos um procedimento de busca e coleta da base de dados completa das exportações e importações nacionais no período compreendido entre jan/1997 até o último mês disponível. Ao rodar o chunk a cada mês ele atualiza os arquivos, (se houver nova publicação no SECEX) sem a necessidade de baixá-los do site toda vez. 
@@ -135,23 +138,40 @@ Agrego por período e organizo de modo decrescente temporalmente:
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 expper<-exp%>%
   group_by(AnoMes)%>%
-  summarise(Total_AnoMes =sum(VL_FOB, na.rm = TRUE))
+  summarise(TotalExp_AnoMes =sum(VL_FOB, na.rm = TRUE))
 
 arrange(expper, AnoMes)
 ```
 
 Vamos ver num gráfico:
 
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE, fig.width=8}
 library(plotly)
 library(ggplot2)
 
-ggplotly(ggplot(expper, aes(x=AnoMes, y=Total_AnoMes))+
-  geom_bar(stat="identity")+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)))
+ggplotly(ggplot(expper, aes(x=AnoMes, y=paste("US$ (FOB):",round(TotalExp_AnoMes/10^7,digits=2)), group=1))+
+  geom_line(color="red")+
+  geom_point(color="red")+ 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  labs(title="Exportações brasileiras em 2020 (em milhões de US$ FOB)"))
 
 
 ```
+
+Agora seleciono algumas variáveis daqui e construo um dataframe:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020 <- exp%>%
+  select(AnoMes, CO_NCM, CO_PAIS, SG_UF_NCM, CO_VIA, CO_URF, VL_FOB)
+
+exp2020<-as.data.frame(exp2020)
+
+glimpse(exp2020)
+
+```
+
 
 
 
@@ -166,7 +186,13 @@ ncm <- read.csv("NCM.csv", sep = ";", encoding = "latin1")
 glimpse(ncm)
 ```
 
-Então agrupo as exportações (em US$ FOB) por NCM: (O agruoamento é necessário por uma questão de limitação de processamento e memória)
+
+
+
+
+
+
+Então agrupo as exportações (em US$ FOB) por NCM: (O agrupamento é necessário por uma questão de limitação de processamento e memória)
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 #agrupa exp por ncm
@@ -187,6 +213,10 @@ library(tidyverse)
 expncm <- left_join(expncm, ncm %>%
                              select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))%>%
                              mutate(TotExpNCM = expncm$Total_NCM)
+
+expncm <- left_join(expncm, ncm %>%
+                      select(CO_NCM, CO_ISIC_CLASSE), by = c("CO_NCM" = "CO_NCM"))
+
 expncm<-expncm%>%
   select(-Total_NCM) #tiro fora a soma pra nao ficar em duplicidade
 
@@ -194,13 +224,138 @@ glimpse(expncm)
 
 ```
 
-Vamos ver como fica a classificação:
+
+Baixo a tabela de NCM ISIC por classe pra saber os nomes (mais agregados) dos grupos de macroprodutos:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+ncmisicdwlnd<-download.file("http://www.mdic.gov.br/balanca/bd/tabelas/NCM_ISIC.csv","NCM_ISIC.csv")
+ncmisic <- read.csv("NCM_ISIC.csv", sep = ";", encoding = "latin1")
+
+glimpse(ncmisic)
+```
+
+Agora faço o join pra casar o código isic com os nomes:
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+expncm <- left_join(expncm, ncmisic %>%
+                      select(CO_ISIC_CLASSE, NO_ISIC_CLASSE), by = c("CO_ISIC_CLASSE" = "CO_ISIC_CLASSE"))
+    
+
+glimpse(expncm)
+
+```
+A seguir insiro os nomes dos produtos (NCMs) na tabela de exportações:
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020 <- left_join(exp2020, ncm %>%
+                             select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))
+
+
+```
+
+
+
+Faço um agrupamento por NCM e período:
+
+
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020resumo<- exp2020%>%
+  group_by(CO_NCM, AnoMes)%>%
+  summarise(ExportNCM = sum(VL_FOB, na.rm = TRUE))
+
+glimpse(exp2020resumo)
+
+```
+
+Agora faço o join pra inserir a variável de nome de NCM e nome de ISIC:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020resumo <- left_join(exp2020resumo, ncm %>%
+                             select(CO_NCM, NO_NCM_POR), by = c("CO_NCM" = "CO_NCM"))
+
+exp2020resumo <- left_join(exp2020resumo, ncm %>%
+                      select(CO_NCM, CO_ISIC_CLASSE), by = c("CO_NCM" = "CO_NCM"))
+
+exp2020resumo <- left_join(exp2020resumo, ncmisic %>%
+                      select(CO_ISIC_CLASSE, NO_ISIC_CLASSE), by = c("CO_ISIC_CLASSE" = "CO_ISIC_CLASSE"))
+
+glimpse(exp2020resumo)
+```
+
+
+
+
+
+
+Vamos filtrar por um grupo mais agregado ao longo do tempo usando os grupos ISIC:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020resumoa<-exp2020resumo%>%
+  group_by(AnoMes, NO_ISIC_CLASSE)%>%
+  summarise(Total_ISIC = sum(ExportNCM))
+
+arrange(exp2020resumoa,AnoMes)
+
+```
+
+
+Insiro a soma do ISIC na tabela exp2020resumo:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+exp2020resumo <- left_join(exp2020resumo, exp2020resumoa %>%
+                             select(NO_ISIC_CLASSE, Total_ISIC), by = c("NO_ISIC_CLASSE" = "NO_ISIC_CLASSE"))
+
+exp2020resumo<-exp2020resumo%>%
+  select(-AnoMes.y)%>%
+  rename(AnoMes = AnoMes.x)
+
+glimpse(exp2020resumo)
+```
+
+
+Agora podemos ver como fica numa visualização gráfica:
+
+```{r}
+#library(highcharter)
+
+#treemap <- exp2020resumo %>%
+#  hchart(
+#    "treemap", 
+#    hcaes(x = NO_ISIC_CLASSE, value = Total_ISIC, color = Total_ISIC)
+#    )
+
+#treemap
+```
+
+
+
+Em seguida faremos um gráfico animado:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+```
+
+
+
+
+
+
+Caso queiramos ver como fica a lista de importância por produtos em 2020 até o último mês disppnível, veremos como fica a classificação:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
 arrange(expncm,desc(TotExpNCM))
 
 ```
+
+
 
 Podemos filtrar aqueles que possuem a string "soja" no nome do produto (NCM):
 
@@ -252,7 +407,8 @@ arrange(topten, desc(TotExpNCM))
 ```  
 
 
-Tentando interagir com esse treemap:
+Vamos ver como fica a participação acumulada (de jan 2020 até o último mês disponível) 
+
 
 ```{r message=FALSE, warning=FALSE}
 library(highcharter)
@@ -266,6 +422,22 @@ tmap <- expncm %>%
 tmap
 ```
 
+
+Também podemos transformo esses dados resumidos em um dataframe, classificando pelo ISIC:
+
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
+expncmdf<-as.data.frame(expncm)
+
+glimpse(expncmdf)
+
+expncmdf<-expncmdf%>%
+  group_by(NO_ISIC_CLASSE)%>%
+  summarise(ISIC_TotExp = sum(TotExpNCM))
+
+arrange(expncmdf,desc(ISIC_TotExp))
+
+```
 
 
 
@@ -531,9 +703,10 @@ Então agrupo as exportações (em US$ FOB) por NCM: (O agrupamento é necessár
 #agrupa exp por pais
 exppais<-exp%>%
   group_by(CO_PAIS)%>%
-  summarise(Total_PAIS = sum(VL_FOB))
+  summarise(Total_PAIS = sum(VL_FOB,na.rm=TRUE))%>%
+  mutate(Participacao_pais = (Total_PAIS/sum(Total_PAIS))*100)
 
-arrange(exppais, desc(Total_PAIS))
+arrange(exppais, desc(Participacao_pais))
 ```
 
 
