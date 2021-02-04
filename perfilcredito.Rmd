@@ -1,0 +1,190 @@
+---
+title: "Análise do Perfil de Crédito de Clientes "
+author: "Ozon, R. H"
+date: "fev/2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+<!-- ================================================================================= -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
+# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
+knitr::opts_chunk$set(opts.label="kill_prefix")
+```
+
+
+***
+
+*Maximize o dashboard no canto inferior direito do painel.*
+
+
+
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTA0MWU0YzAtZDBkMS00ZGY4LTkyOWItMWVlZmZjNzU0YzI5IiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
+
+
+***
+
+# Intro
+
+Escrever a intro
+
+# Análise preliminar 
+
+[Baixe o script .R e rode em seu RStudio localmente.](https://github.com/rhozontecnofit/NotebookExemplo/raw/main/scriptdrive.R) 
+
+Em seguida conecto no Meu Drive:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+#install.packages("googledrive")
+library(googledrive)
+```
+
+Mostra os arquivos disponíveis no Meu Drive
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+drive_find(n_max=30) # Mostra os arquivos no Meu Drive
+```
+
+Em seguida chamo a função para leitura do dataset:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+cred_clientes <- read.csv(file="dados_analise_clientes_cred.csv", head=TRUE, sep=";") # Lê os dados
+
+str(cred_clientes) # Mostra o dataset
+
+```
+
+
+## Análise dos grupos
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+library(dplyr) # Biblioteca pra manipulação de dados
+
+agrupa_alunos_ativos<-cred_clientes%>%
+  group_by(cliente_nome)%>%
+  summarise(qtd_alunos_ativos = sum(alunos_ativos, na.rm = TRUE))
+agrupa_alunos_ativos%>%
+  arrange(desc(qtd_alunos_ativos)) # Mostra a academia com mais alunos ativos no período
+```
+
+Um gráfico do tipo treemap nos mostra as dimensões por nome de clientes ativos:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+
+library(highcharter) # Biblioteca para treemap
+
+tmap <- agrupa_alunos_ativos %>%
+  hchart(
+    "treemap", 
+    hcaes(x = cliente_nome, value = qtd_alunos_ativos, color = qtd_alunos_ativos)
+    )
+
+tmap # Treemap do número de alunos ativos no periodo todo
+```
+ 
+
+Vejamos agora o agrupamento por recebíveis:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+agrupa_recebiveis<-cred_clientes%>%
+  group_by(cliente_nome)%>%
+  summarise(soma_recebiveis = sum(alunos_ativos, na.rm = TRUE))
+agrupa_recebiveis%>%
+  arrange(desc(soma_recebiveis)) # Mostra a academia com mais recebiveis ativos no período
+```
+
+E o treemap:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+
+tmap_recebiveis <- agrupa_recebiveis %>%
+  hchart(
+    "treemap", 
+    hcaes(x = cliente_nome, value = soma_recebiveis, color = soma_recebiveis)
+    )
+
+tmap_recebiveis # Treemap do volume de recebíveis no período
+
+```
+
+
+Agrupando e classificando as contas a pagar:
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+agrupa_conta_pagar<-cred_clientes%>%
+  group_by(cliente_nome)%>%
+  summarise(soma_conta_pagar = sum(total_conta_pagar, na.rm = TRUE))
+agrupa_conta_pagar%>%
+  arrange(desc(soma_conta_pagar)) # Mostra a academia com mais contas a pagar no período
+```
+
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+tmap_conta_pagar <- agrupa_conta_pagar %>%
+  hchart(
+    "treemap", 
+    hcaes(x = cliente_nome, value = soma_conta_pagar, color = soma_conta_pagar)
+    )
+
+tmap_conta_pagar # Treemap das contas futuras empenhadas a pagar
+```
+
+Dos clientes selecionados que utilizam a máquina de cartão de crédito, agrupamos:
+
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+agrupa_cc_maquina<-cred_clientes%>%
+  group_by(cliente_nome)%>%
+  summarise(soma_cc_maquina = sum(total_valor_cartao_credito_maquina, na.rm = TRUE))
+agrupa_cc_maquina%>%
+  arrange(desc(soma_cc_maquina)) # Mostra a academia com mais uso de cartão de crédito máquina no período
+```
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+tmap_cc_maquina <- agrupa_cc_maquina %>%
+  hchart(
+    "treemap", 
+    hcaes(x = cliente_nome, value = soma_cc_maquina, color = soma_cc_maquina)
+    )
+
+tmap_cc_maquina # Treemap do uso de máquina de cartão de crédito como forma de recebimento
+```
+
+
+Agrupando por cartão de crédito recorrência temos:
+
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+agrupa_cc_recorrencia <- cred_clientes%>%
+  group_by(cliente_nome)%>%
+  summarise(soma_cc_recorrencia = sum(total_valor_cartao_credito_recorrencia, na.rm = TRUE))
+agrupa_cc_recorrencia%>%
+  arrange(desc(soma_cc_recorrencia)) # Mostra a academia com mais uso de cartão de crédito recorrencia no período
+```
+
+```{r comment=NA, warning=FALSE, message=FALSE}
+tmap_cc_recorrencia <- agrupa_cc_recorrencia%>%
+  hchart(
+    "treemap", 
+    hcaes(x = cliente_nome, value = soma_cc_recorrencia, color = soma_cc_recorrencia)
+    )
+
+tmap_cc_recorrencia # Treemap da recorrência no recebimento via cartão de crédito
+```
+
+
+
+
+# Identificação de tendência
+
+# Considerações finais
+
+***
+
+## Referências

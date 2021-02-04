@@ -56,6 +56,8 @@ navbar:
           href: homeworkI.html 
         - text: "Homework II: Econometrics (Shangai University of Finance)"
           href: problemset2.html 
+        - text: "Análise de Perfil de Crédito"
+          href: perfilcredito.html           
 
   right:
     - icon: fa-question fa-lg
