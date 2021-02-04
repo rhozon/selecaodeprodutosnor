@@ -34,7 +34,7 @@ knitr::opts_chunk$set(opts.label="kill_prefix")
 
 Escrever a intro
 
-# Análise preliminar 
+# Conectando e carregando o dataset 
 
 [Baixe o script .R e rode em seu RStudio localmente.](https://github.com/rhozontecnofit/NotebookExemplo/raw/main/scriptdrive.R) 
 
