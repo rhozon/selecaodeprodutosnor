@@ -140,6 +140,8 @@ Tutoriais disponíveis:
 
 ### *Homework II: Econometrics (Shangai University of Finance)*
 
+### *Análise preliminar do Índice de Inclusão Financeira no Brasil vs variáveis de política monetária*
+
 *** 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
