@@ -5,10 +5,10 @@ library(googledrive) # Carrega a biblio do Google Drive
 
 drive_find() # Lista todos os arquivos
 
-drive_download("~/dados_analise_clientes_cred.CSV",
+drive_download("~/dataset_credclientes.csv",
                overwrite = TRUE)
 
-cred_clientes <- read.csv(file="dados_analise_clientes_cred.csv", head=TRUE, sep=";") # Lê os dados
+cred_clientes <- read.csv(file="dataset_credclientes.csv", head=TRUE, sep=";") # Lê os dados
 
 str(cred_clientes) # Mostra o dataset
 

@@ -1,0 +1,194 @@
+---
+title: "Análise preliminar Índice de Inclusão Financeira no Brasil (Shangai University of Finance)"
+author: "Rodrigo H. Ozon, Felipe Stringari"
+date: "28/01/2021"
+output:
+  html_document:
+    theme: cerulean
+    highlight: tango
+    toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***
+
+### Resumo 
+
++ Espaço dedicado a descrição dos resultados preliminares do(s) modelo(s) econométrico(s) proposto(s) para a pesquisa. 
+
++ Os dados podem ser baixados em [repositório do Github](https://github.com/felipestringari/data-set/blob/main/new%20dataset.xlsx?raw=true) e os resultados aqui apresentados em [New_Dataset(2)](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/new%20dataset%20(2).xlsx?raw=true) 
+
+***
+
+### Característica dos dados
+
+Descrever o que é cada variável e o que mede cada uma delas.
+
+Para avaliarmos os impactos das principais variáveis macroeconômicas (política monetária) no Índice de Inclusão Financeira no Brasil, selecionamos as seguintes variáveis:
+
++ $\mbox{exchange_rate}_{t}$ é a taxa de câmbio R\$/US\$ PTAX fim de período apurada pelo Banco Central do Brasil;
+
++ $\mbox{interest_rate}_{t}$ é a taxa de juros básica da economia brasileira, definida pelo Comitê de Política Monetária (COPOM/BACEN);
+
++ $\mbox{inflation}_{t}$ taxa de inflação acumulada no mês captada pelo IPCA, levantada pelo IBGE.
+
++ $IFI_{t}$ Índice de Inclusão Financeira, apurado para o Brasil conforme metodologia de Sarma (data) e outros.
+
+
+Como o subscrito $t$ indica que todas essas variáveis se comportam em função do tempo, avaliamos graficamente cada uma delas e e primeiramente testamos a estacionariedade de cada uma destas séries temporais:
+
+<center>
+![](C:/Users/rodri/Downloads/seriestemporais.png){width=80%}
+</center>
+
+
+Os padrões de comportamento cíclico e sazonais notáveís das séries parecem mais proeminente em ``interest_rate`` e em ``inflation``, já os componentes de tendência são perceptíveis em ``exchange_rate`` e em ``IFI``. Pela inspeção puramente visual, pode-se suspeitar de que ``inflation`` possa ser estacionária em nível.
+
+Os gráficos de densidade kernel nos eixos verticais demonstram uma notável divergência em relação à normalidade em suas distribuições de probabilidade.
+
+
+### Testes de Raiz Unitária
+
+A tabela a seguir demonstra os resultados dos testes de raiz unitária para detectar a hipótese do passeio aleatório. 
+
+<center>
+![](C:/Users/rodri/Downloads/groupunitroottest.png){width=50%}
+</center>
+
+
+O resultado do teste acima verifica se o resíduo da equação de longo prazo se mostra estacionário em nível, quando o valor absoluto da estatística $\tau$ ($tau$) for maior do que os valores críticos tabulados. 
+
+Somente o método de Im. Pesaran and Shin apontou essa condição. Os métodos de teste mais populares como Augmented Dickey-Fuller (ADF) e Phillips-Perron (PP) nos levam a concluir que a combinação de todas essas variáveis não se mostraram estacionárias
+em nível, apresentando assim raiz unitária, sugerindo que a influência dos comportamentos no passado são suficientes para explicar com relativa previsibilidade estatística as oscilações no futuro.
+
+Neste trabalho serão considerados os resultados obtidos pelo teste EG para fins práticos de análise, pois conforme destaca
+GUJARATI (2000, p.732): *”A valiosa contribuição dos conceitos de raiz unitária, cointegração, etc, é nos obrigar a verificar se os resíduos da regressão são estacionários.”*
+
+Seguindo a recomendação mencionada pelo autor acima, procedemos com a estimação da regressão cointegrante de longo prazo com a seguinte especificação:
+
+\begin{equation}\label{eqlp}
+\widehat{IFI}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}+\mbox{inflation}_{t}+\mu_{t}
+\end{equation}
+
+Os resultados da saída dessa regressão são apresentados conforme a saída do software Eviews 10, a seguir:
+
+
+<center>
+![](C:/Users/rodri/Downloads/regrcointegrante.png){width=50%}
+</center>
+
+Nota-se o elevado grau de explicação e ajuste do modelo especificado medido pelo parâmetro $R^{2}$ denotando que cerca de 90\% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no IFI.
+
+
+[explicar aqui o resultado apontado pelo teste $t$ na inflação]
+
+
+O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.
+
+
+Através da combinação linear destas variáveis, pode-se mostrar que as séries são estacionárias e evitar o problema correlato de regressão espúria, não estacionariedade e tendência estocástica. Desta forma, roda-se o teste de Engle Granger de raiz unitária para os resíduos estimados da equação de regressão de longo prazo:
+
+
+
+<center>
+![](C:/Users/rodri/Downloads/testeEGcointegracao.png){width=50%}
+
+</center>
+
+
+Pelo resultado do teste de EG verifica-se que o resíduo da equação de longo prazo se mostra estacionária em nível, uma vez que o valor absoluto da estatística $\tau$ (*tau*) foi superior do que os valores críticos tabulados.
+
+Os testes DF e ADF para o teste EG se mostram altamente significativos, evidenciando desta forma que apesar das variáveis de controle monetário e IFI serem não-estacionárias, as mesmas são co-integradas.
+
+
+### Estimação do Mecanismo de Correção de Erro (VEC de curto prazo)
+
+
+Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento de IFI de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo. 
+
+
+Por meio da estimativa da equação de curto prazo, 
+
+
+\begin{equation}    
+
+\Delta IFI_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}+\Delta\mbox{inflation}_{t}+a_{4}\widehat{\mu}_{t-1}+\epsilon_{t} 
+
+\end{equation}
+
+
+Onde:
+
++ $\Delta$ é o operador de diferença
++ $\widehat{\mu}_{t-1}$ é o valor defasado de um período da equação de longo prazo, termo de erro de equilíbrio; 
++ $\epsilon_{t}$ é o termo de erro com as propriedades usuais 
+
+
+foram obtidos os seguintes resultados:
+
+
+<center>
+![](C:/Users/rodri/Downloads/meccorrecaoerrosvec.png){width=50%}
+</center>
+
+
+
+Mostrando que alterações a curto prazo nos preços do Brent têm efeitos positivos significativos na dinâmica de inclusão financeira e que cerca de -1% da discrepância entre o valor efetivo e o valor de longo prazo, ou equilíbrio do IFI, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo (em especial maiores que 1 para a inflação) somam valores não-nulos para os efeitos em IFI confirmando a relação de longo prazo entre as séries temporais de controle monetário, considerando que as mudanças significativas no IFI se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.
+
+O gráfico a seguir ilustra os valores estimados e efetivos e os resíduos das regressões de curto e longo prazo: 
+
+<center>
+![](C:/Users/rodri/Downloads/vecvslp.png){width=80%}
+
+</center>
+
+
+
+### Resultados da modelagem VAR
+
+[descrever aqui o passo a passo pra construção do VAR e VEC, testes JJ, estatística traço, critério Akaike, Schwarz, HQ e finalmente funções de impulso-resposta]
+
+
+
+***
+
+#### Referências
+
+**Eviews 10 User´s Guide**, *Quantitative Micro Software*. LLC, Estados Unidos, 2017.
+
+GUJARATI, D.N. **Econometria Básica.** ed. Pearson Education do Brasil, São Paulo, 2000. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

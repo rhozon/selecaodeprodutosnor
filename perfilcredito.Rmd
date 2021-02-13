@@ -25,7 +25,7 @@ knitr::opts_chunk$set(opts.label="kill_prefix")
 
 
 
-<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTA0MWU0YzAtZDBkMS00ZGY4LTkyOWItMWVlZmZjNzU0YzI5IiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTA0MWU0YzAtZDBkMS00ZGY4LTkyOWItMWVlZmZjNzU0YzI5IiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
 
 
 ***
@@ -54,11 +54,12 @@ drive_find(n_max=30) # Mostra os arquivos no Meu Drive
 Em seguida chamo a função para leitura do dataset:
 
 ```{r comment=NA, warning=FALSE, message=FALSE}
-cred_clientes <- read.csv(file="dados_analise_clientes_cred.csv", head=TRUE, sep=";") # Lê os dados
+cred_clientes <- read.csv(file="dataset_credclientes.csv", head=TRUE, sep=";") # Lê os dados
 
 str(cred_clientes) # Mostra o dataset
 
 ```
+
 
 
 ## Análise dos grupos
@@ -67,7 +68,7 @@ str(cred_clientes) # Mostra o dataset
 library(dplyr) # Biblioteca pra manipulação de dados
 
 agrupa_alunos_ativos<-cred_clientes%>%
-  group_by(cliente_nome)%>%
+  group_by(nome_cliente)%>%
   summarise(qtd_alunos_ativos = sum(alunos_ativos, na.rm = TRUE))
 agrupa_alunos_ativos%>%
   arrange(desc(qtd_alunos_ativos)) # Mostra a academia com mais alunos ativos no período
@@ -82,7 +83,7 @@ library(highcharter) # Biblioteca para treemap
 tmap <- agrupa_alunos_ativos %>%
   hchart(
     "treemap", 
-    hcaes(x = cliente_nome, value = qtd_alunos_ativos, color = qtd_alunos_ativos)
+    hcaes(x = nome_cliente, value = qtd_alunos_ativos, color = qtd_alunos_ativos)
     )
 
 tmap # Treemap do número de alunos ativos no periodo todo
@@ -93,7 +94,7 @@ Vejamos agora o agrupamento por recebíveis:
 
 ```{r comment=NA, warning=FALSE, message=FALSE}
 agrupa_recebiveis<-cred_clientes%>%
-  group_by(cliente_nome)%>%
+  group_by(nome_cliente)%>%
   summarise(soma_recebiveis = sum(alunos_ativos, na.rm = TRUE))
 agrupa_recebiveis%>%
   arrange(desc(soma_recebiveis)) # Mostra a academia com mais recebiveis ativos no período
@@ -106,7 +107,7 @@ E o treemap:
 tmap_recebiveis <- agrupa_recebiveis %>%
   hchart(
     "treemap", 
-    hcaes(x = cliente_nome, value = soma_recebiveis, color = soma_recebiveis)
+    hcaes(x = nome_cliente, value = soma_recebiveis, color = soma_recebiveis)
     )
 
 tmap_recebiveis # Treemap do volume de recebíveis no período
@@ -118,7 +119,7 @@ Agrupando e classificando as contas a pagar:
 
 ```{r comment=NA, warning=FALSE, message=FALSE}
 agrupa_conta_pagar<-cred_clientes%>%
-  group_by(cliente_nome)%>%
+  group_by(nome_cliente)%>%
   summarise(soma_conta_pagar = sum(total_conta_pagar, na.rm = TRUE))
 agrupa_conta_pagar%>%
   arrange(desc(soma_conta_pagar)) # Mostra a academia com mais contas a pagar no período
@@ -129,7 +130,7 @@ agrupa_conta_pagar%>%
 tmap_conta_pagar <- agrupa_conta_pagar %>%
   hchart(
     "treemap", 
-    hcaes(x = cliente_nome, value = soma_conta_pagar, color = soma_conta_pagar)
+    hcaes(x = nome_cliente, value = soma_conta_pagar, color = soma_conta_pagar)
     )
 
 tmap_conta_pagar # Treemap das contas futuras empenhadas a pagar
@@ -140,7 +141,7 @@ Dos clientes selecionados que utilizam a máquina de cartão de crédito, agrupa
 
 ```{r comment=NA, warning=FALSE, message=FALSE}
 agrupa_cc_maquina<-cred_clientes%>%
-  group_by(cliente_nome)%>%
+  group_by(nome_cliente)%>%
   summarise(soma_cc_maquina = sum(total_valor_cartao_credito_maquina, na.rm = TRUE))
 agrupa_cc_maquina%>%
   arrange(desc(soma_cc_maquina)) # Mostra a academia com mais uso de cartão de crédito máquina no período
@@ -150,7 +151,7 @@ agrupa_cc_maquina%>%
 tmap_cc_maquina <- agrupa_cc_maquina %>%
   hchart(
     "treemap", 
-    hcaes(x = cliente_nome, value = soma_cc_maquina, color = soma_cc_maquina)
+    hcaes(x = nome_cliente, value = soma_cc_maquina, color = soma_cc_maquina)
     )
 
 tmap_cc_maquina # Treemap do uso de máquina de cartão de crédito como forma de recebimento
@@ -162,7 +163,7 @@ Agrupando por cartão de crédito recorrência temos:
 
 ```{r comment=NA, warning=FALSE, message=FALSE}
 agrupa_cc_recorrencia <- cred_clientes%>%
-  group_by(cliente_nome)%>%
+  group_by(nome_cliente)%>%
   summarise(soma_cc_recorrencia = sum(total_valor_cartao_credito_recorrencia, na.rm = TRUE))
 agrupa_cc_recorrencia%>%
   arrange(desc(soma_cc_recorrencia)) # Mostra a academia com mais uso de cartão de crédito recorrencia no período
@@ -172,14 +173,35 @@ agrupa_cc_recorrencia%>%
 tmap_cc_recorrencia <- agrupa_cc_recorrencia%>%
   hchart(
     "treemap", 
-    hcaes(x = cliente_nome, value = soma_cc_recorrencia, color = soma_cc_recorrencia)
+    hcaes(x = nome_cliente, value = soma_cc_recorrencia, color = soma_cc_recorrencia)
     )
 
 tmap_cc_recorrencia # Treemap da recorrência no recebimento via cartão de crédito
 ```
 
 
+# Agrupamento Conjunto
 
+Agrupamos aqui a combinação de variáveis (p. ex. ``alunos_ativos`` x ``total_em_recebiveis``) e denais para ranquearmos e gerarmos os arquivos dessas listas no formato .csv.
+
+
+```{r}
+
+library(tidyr)   
+
+grupo_cred_clientes <- cred_clientes %>%
+  group_by(nome_cliente, alunos_ativos, total_em_recebiveis) %>% 
+  summarise(soma_recebiveis = sum(total_em_recebiveis, na.rm = TRUE,
+            soma_total_alunos = sum(alunos_ativos, na.rm = TRUE)))
+
+grupo_cred_clientes%>%
+  arrange(desc(soma_recebiveis))
+      
+```
+
+
+
+0
 
 # Identificação de tendência
 
