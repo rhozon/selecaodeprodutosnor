@@ -40,7 +40,7 @@ Para avaliarmos os impactos das principais variáveis macroeconômicas (polític
 Como o subscrito $t$ indica que todas essas variáveis se comportam em função do tempo, avaliamos graficamente cada uma delas e e primeiramente testamos a estacionariedade de cada uma destas séries temporais:
 
 <center>
-![](C:/Users/rodri/Downloads/seriestemporais.png){width=80%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/seriestemporais.png?raw=true){width=80%}
 </center>
 
 
@@ -54,7 +54,7 @@ Os gráficos de densidade kernel nos eixos verticais demonstram uma notável div
 A tabela a seguir demonstra os resultados dos testes de raiz unitária para detectar a hipótese do passeio aleatório. 
 
 <center>
-![](C:/Users/rodri/Downloads/groupunitroottest.png){width=50%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/groupunitroottest.png?raw=true){width=50%}
 </center>
 
 
@@ -81,7 +81,7 @@ Os resultados da saída dessa regressão são apresentados conforme a saída do 
 
 
 <center>
-![](C:/Users/rodri/Downloads/regrcointegrante.png){width=50%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/regrcointegrante.png?raw=true){width=50%}
 </center>
 
 O grau de explicação e ajuste do modelo especificado medido pelo parâmetro $R^{2}$ denota que cerca de 40\% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.
@@ -98,7 +98,7 @@ Através da combinação linear destas variáveis, pode-se mostrar que as série
 
 
 <center>
-![](C:/Users/rodri/Downloads/testeEGcointegracao.png){width=50%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testeEGcointegracao.png?raw=true){width=50%}
 
 </center>
 
@@ -137,7 +137,7 @@ foram obtidos os seguintes resultados:
 
 
 <center>
-![](C:/Users/rodri/Downloads/meccorrecaoerrosvec.png){width=50%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/meccorrecaoerrosvec.png?raw=true){width=50%}
 </center>
 
 
@@ -147,7 +147,7 @@ Mostrando que alterações a curto prazo nas variáveis de política monetária 
 O gráfico a seguir ilustra os valores estimados e efetivos e os resíduos das regressões de curto e longo prazo: 
 
 <center>
-![](C:/Users/rodri/Downloads/vecvslp.png){width=80%}
+![](https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/vecvslp.png?raw=true){width=80%}
 
 </center>
 
