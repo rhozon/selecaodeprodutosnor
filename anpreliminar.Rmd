@@ -4,13 +4,10 @@ author: "Rodrigo H. Ozon, Felipe Stringari"
 date: "28/01/2021"
 output:
   html_document:
-    theme: cerulean
-    highlight: tango
     toc: true
-    toc_float:
-      collapsed: false
-      smooth_scroll: false
+    toc_float: true
 ---
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -72,8 +69,13 @@ GUJARATI (2000, p.732): *”A valiosa contribuição dos conceitos de raiz unit�
 Seguindo a recomendação mencionada pelo autor acima, procedemos com a estimação da regressão cointegrante de longo prazo com a seguinte especificação:
 
 \begin{equation}\label{eqlp}
-\widehat{IFI}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}+\mbox{inflation}_{t}+\mu_{t}
+\widehat{inflation}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\mbox{IFI}_{t}+ t+\mu_{t}
 \end{equation}
+
+Onde:
+
++ $t$ representa a tendência linear da série temporal ou discretização do tempo;
++ O método utilizado de mínimos quadrados ordinários dinâmicos com critério de Schwarz para definição dos lags ótimos
 
 Os resultados da saída dessa regressão são apresentados conforme a saída do software Eviews 10, a seguir:
 
@@ -82,13 +84,13 @@ Os resultados da saída dessa regressão são apresentados conforme a saída do 
 ![](C:/Users/rodri/Downloads/regrcointegrante.png){width=50%}
 </center>
 
-Nota-se o elevado grau de explicação e ajuste do modelo especificado medido pelo parâmetro $R^{2}$ denotando que cerca de 90\% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no IFI.
+O grau de explicação e ajuste do modelo especificado medido pelo parâmetro $R^{2}$ denota que cerca de 40\% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.
 
 
-[explicar aqui o resultado apontado pelo teste $t$ na inflação]
+[explicar aqui o resultado apontado pelo teste $t$ pois parecem insignificativos, todos apresentaram valores-p $>$ 0.05]
 
 
-O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.
+[*RETIRAR ESSE PARÁGRAFO]O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.
 
 
 Através da combinação linear destas variáveis, pode-se mostrar que as séries são estacionárias e evitar o problema correlato de regressão espúria, não estacionariedade e tendência estocástica. Desta forma, roda-se o teste de Engle Granger de raiz unitária para os resíduos estimados da equação de regressão de longo prazo:
@@ -101,6 +103,8 @@ Através da combinação linear destas variáveis, pode-se mostrar que as série
 </center>
 
 
+As to the tests themselves, the Engle-Granger $\tau$-statistic ($t-$statistic) and normalized autocorrelation coefficient (which we term the $z$-statistic) both reject the null hypothesis of no cointegration (unit root in the residuals) at the 5% level. In addition, the $\tau$-statistic rejects at a 1% significance level. On balance, the evidence clearly suggests that inflation and monetary policy control variables are cointegrated.
+
 Pelo resultado do teste de EG verifica-se que o resíduo da equação de longo prazo se mostra estacionária em nível, uma vez que o valor absoluto da estatística $\tau$ (*tau*) foi superior do que os valores críticos tabulados.
 
 Os testes DF e ADF para o teste EG se mostram altamente significativos, evidenciando desta forma que apesar das variáveis de controle monetário e IFI serem não-estacionárias, as mesmas são co-integradas.
@@ -109,7 +113,7 @@ Os testes DF e ADF para o teste EG se mostram altamente significativos, evidenci
 ### Estimação do Mecanismo de Correção de Erro (VEC de curto prazo)
 
 
-Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento de IFI de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo. 
+Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento da inflação de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo. 
 
 
 Por meio da estimativa da equação de curto prazo, 
@@ -117,7 +121,7 @@ Por meio da estimativa da equação de curto prazo,
 
 \begin{equation}    
 
-\Delta IFI_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}+\Delta\mbox{inflation}_{t}+a_{4}\widehat{\mu}_{t-1}+\epsilon_{t} 
+\Delta inflation_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}\mbox{IFI}_{t}+a_{4}\widehat{\mu}_{t-1}+a_{5}t+\epsilon_{t} 
 
 \end{equation}
 
@@ -138,7 +142,7 @@ foram obtidos os seguintes resultados:
 
 
 
-Mostrando que alterações a curto prazo nos preços do Brent têm efeitos positivos significativos na dinâmica de inclusão financeira e que cerca de -1% da discrepância entre o valor efetivo e o valor de longo prazo, ou equilíbrio do IFI, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo (em especial maiores que 1 para a inflação) somam valores não-nulos para os efeitos em IFI confirmando a relação de longo prazo entre as séries temporais de controle monetário, considerando que as mudanças significativas no IFI se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.
+Mostrando que alterações a curto prazo nas variáveis de política monetária e de inclusão financeira têm efeitos positivos significativos na dinâmica de preços e que cerca de menos de 1% da discrepância entre o valor efetivo e o valor de longo prazo, ou de equilíbrio da inflação, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo somam valores não-nulos para os efeitos na dinâmica de preços confirmando a relação de longo prazo entre as séries temporais de controle monetário e de inclusão financeira, considerando que as mudanças significativas nos níveis gerais de preços se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.
 
 O gráfico a seguir ilustra os valores estimados e efetivos e os resíduos das regressões de curto e longo prazo: 
 
