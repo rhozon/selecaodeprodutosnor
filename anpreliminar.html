@@ -515,7 +515,7 @@ div.tocify {
 <ul>
 <li><p><span class="math inline">\(\mbox{exchange_rate}_{t}\)</span> é a taxa de câmbio R$/US$ PTAX fim de período apurada pelo Banco Central do Brasil;</p></li>
 <li><p><span class="math inline">\(\mbox{interest_rate}_{t}\)</span> é a taxa de juros básica da economia brasileira, definida pelo Comitê de Política Monetária (COPOM/BACEN);</p></li>
-<li><p><span class="math inline">\(\mbox{inflation}_{t}\)</span> taxa de inflação acumulada no mês captada pelo IPCA, levantada pelo IBGE.</p></li>
+<li><p><span class="math inline">\(\mbox{inflation}_{t}\)</span> taxa de inflação acumulada no mês captada pelo IPC-BR, levantada pelo FGV/SP.</p></li>
 <li><p><span class="math inline">\(IFI_{t}\)</span> Índice de Inclusão Financeira, apurado para o Brasil conforme metodologia de Sarma (data) e outros.</p></li>
 </ul>
 <p>Como o subscrito <span class="math inline">\(t\)</span> indica que todas essas variáveis se comportam em função do tempo, avaliamos graficamente cada uma delas e e primeiramente testamos a estacionariedade de cada uma destas séries temporais:</p>
@@ -532,11 +532,11 @@ div.tocify {
 <img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/groupunitroottest.png?raw=true" style="width:50.0%" />
 </center>
 <p>O resultado do teste acima verifica se o resíduo da equação de longo prazo se mostra estacionário em nível, quando o valor absoluto da estatística <span class="math inline">\(\tau\)</span> (<span class="math inline">\(tau\)</span>) for maior do que os valores críticos tabulados.</p>
-<p>Somente o método de Im. Pesaran and Shin apontou essa condição. Os métodos de teste mais populares como Augmented Dickey-Fuller (ADF) e Phillips-Perron (PP) nos levam a concluir que a combinação de todas essas variáveis não se mostraram estacionárias em nível, apresentando assim raiz unitária, sugerindo que a influência dos comportamentos no passado são suficientes para explicar com relativa previsibilidade estatística as oscilações no futuro.</p>
+<p>Os métodos de teste mais populares como Augmented Dickey-Fuller (ADF) e Phillips-Perron (PP) nos levam a concluir que a combinação de todas essas variáveis não se mostraram estacionárias em nível, apresentando assim raiz unitária, sugerindo que a influência dos comportamentos no passado são suficientes para explicar com relativa previsibilidade estatística as oscilações no futuro.</p>
 <p>Neste trabalho serão considerados os resultados obtidos pelo teste EG para fins práticos de análise, pois conforme destaca GUJARATI (2000, p.732): <em>”A valiosa contribuição dos conceitos de raiz unitária, cointegração, etc, é nos obrigar a verificar se os resíduos da regressão são estacionários.”</em></p>
 <p>Seguindo a recomendação mencionada pelo autor acima, procedemos com a estimação da regressão cointegrante de longo prazo com a seguinte especificação:</p>
 <p><span class="math display">\[\begin{equation}\label{eqlp}
-\widehat{inflation}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\mbox{IFI}_{t}+ t+\mu_{t}
+log(\widehat{inflation}_{t})=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\Delta log(\mbox{IFI}_{t})+ t+\mu_{t}
 \end{equation}\]</span></p>
 <p>Onde:</p>
 <ul>
@@ -547,9 +547,10 @@ div.tocify {
 <center>
 <img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/regrcointegrante.png?raw=true" style="width:50.0%" />
 </center>
-<p>O grau de explicação e ajuste do modelo especificado medido pelo parâmetro <span class="math inline">\(R^{2}\)</span> denota que cerca de 40% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.</p>
-<p>[explicar aqui o resultado apontado pelo teste <span class="math inline">\(t\)</span> pois parecem insignificativos, todos apresentaram valores-p <span class="math inline">\(&gt;\)</span> 0.05]</p>
-<p>[*RETIRAR ESSE PARÁGRAFO]O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.</p>
+<p>O grau de explicação e ajuste do modelo especificado medido pelo parâmetro <span class="math inline">\(R^{2}\)</span> denota que cerca de 47% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.</p>
+<p>Os valores da estatística <span class="math inline">\(t\)</span> se mostraram signficativos a 5% para a taxa de juros e a 10% para a variação logarítmica do IFI [explicar melhor pq dessa tranformação] e para a taxa de câmbio.</p>
+<p>O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.</p>
+<p>[explicar a relação inversa do cambio e inflação]</p>
 <p>Através da combinação linear destas variáveis, pode-se mostrar que as séries são estacionárias e evitar o problema correlato de regressão espúria, não estacionariedade e tendência estocástica. Desta forma, roda-se o teste de Engle Granger de raiz unitária para os resíduos estimados da equação de regressão de longo prazo:</p>
 <center>
 <p><img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testeEGcointegracao.png?raw=true" style="width:50.0%" /></p>
@@ -560,7 +561,7 @@ div.tocify {
 </div>
 <div id="estimação-do-mecanismo-de-correção-de-erro-vec-de-curto-prazo" class="section level3">
 <h3>Estimação do Mecanismo de Correção de Erro (VEC de curto prazo)</h3>
-<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento da inflação de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo.</p>
+<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da equação de longo prazo pode ser usado para ligar o comportamento da inflação de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo.</p>
 <p>Por meio da estimativa da equação de curto prazo,</p>
 <p><span class="math display">\[\begin{equation}    
 
