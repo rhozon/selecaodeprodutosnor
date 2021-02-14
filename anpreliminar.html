@@ -16,7 +16,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/cerulean.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -24,7 +24,8 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -37,6 +38,21 @@
   ul.task-list{list-style: none;}
     </style>
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
 
 
 
@@ -307,12 +323,6 @@ div.tocify {
   border-radius: 0px;
 }
 
-.tocify-subheader {
-  display: inline;
-}
-.tocify-subheader .tocify-item {
-  font-size: 0.95em;
-}
 
 </style>
 
@@ -526,29 +536,35 @@ div.tocify {
 <p>Neste trabalho serão considerados os resultados obtidos pelo teste EG para fins práticos de análise, pois conforme destaca GUJARATI (2000, p.732): <em>”A valiosa contribuição dos conceitos de raiz unitária, cointegração, etc, é nos obrigar a verificar se os resíduos da regressão são estacionários.”</em></p>
 <p>Seguindo a recomendação mencionada pelo autor acima, procedemos com a estimação da regressão cointegrante de longo prazo com a seguinte especificação:</p>
 <p><span class="math display">\[\begin{equation}\label{eqlp}
-\widehat{IFI}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}+\mbox{inflation}_{t}+\mu_{t}
+\widehat{inflation}_{t}=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\mbox{IFI}_{t}+ t+\mu_{t}
 \end{equation}\]</span></p>
+<p>Onde:</p>
+<ul>
+<li><span class="math inline">\(t\)</span> representa a tendência linear da série temporal ou discretização do tempo;</li>
+<li>O método utilizado de mínimos quadrados ordinários dinâmicos com critério de Schwarz para definição dos lags ótimos</li>
+</ul>
 <p>Os resultados da saída dessa regressão são apresentados conforme a saída do software Eviews 10, a seguir:</p>
 <center>
 <img src="C:/Users/rodri/Downloads/regrcointegrante.png" style="width:50.0%" />
 </center>
-<p>Nota-se o elevado grau de explicação e ajuste do modelo especificado medido pelo parâmetro <span class="math inline">\(R^{2}\)</span> denotando que cerca de 90% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no IFI.</p>
-<p>[explicar aqui o resultado apontado pelo teste <span class="math inline">\(t\)</span> na inflação]</p>
-<p>O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.</p>
+<p>O grau de explicação e ajuste do modelo especificado medido pelo parâmetro <span class="math inline">\(R^{2}\)</span> denota que cerca de 40% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.</p>
+<p>[explicar aqui o resultado apontado pelo teste <span class="math inline">\(t\)</span> pois parecem insignificativos, todos apresentaram valores-p <span class="math inline">\(&gt;\)</span> 0.05]</p>
+<p>[*RETIRAR ESSE PARÁGRAFO]O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.</p>
 <p>Através da combinação linear destas variáveis, pode-se mostrar que as séries são estacionárias e evitar o problema correlato de regressão espúria, não estacionariedade e tendência estocástica. Desta forma, roda-se o teste de Engle Granger de raiz unitária para os resíduos estimados da equação de regressão de longo prazo:</p>
 <center>
 <p><img src="C:/Users/rodri/Downloads/testeEGcointegracao.png" style="width:50.0%" /></p>
 </center>
+<p>As to the tests themselves, the Engle-Granger <span class="math inline">\(\tau\)</span>-statistic (<span class="math inline">\(t-\)</span>statistic) and normalized autocorrelation coefficient (which we term the <span class="math inline">\(z\)</span>-statistic) both reject the null hypothesis of no cointegration (unit root in the residuals) at the 5% level. In addition, the <span class="math inline">\(\tau\)</span>-statistic rejects at a 1% significance level. On balance, the evidence clearly suggests that inflation and monetary policy control variables are cointegrated.</p>
 <p>Pelo resultado do teste de EG verifica-se que o resíduo da equação de longo prazo se mostra estacionária em nível, uma vez que o valor absoluto da estatística <span class="math inline">\(\tau\)</span> (<em>tau</em>) foi superior do que os valores críticos tabulados.</p>
 <p>Os testes DF e ADF para o teste EG se mostram altamente significativos, evidenciando desta forma que apesar das variáveis de controle monetário e IFI serem não-estacionárias, as mesmas são co-integradas.</p>
 </div>
 <div id="estimação-do-mecanismo-de-correção-de-erro-vec-de-curto-prazo" class="section level3">
 <h3>Estimação do Mecanismo de Correção de Erro (VEC de curto prazo)</h3>
-<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento de IFI de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo.</p>
+<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da euqação de longo prazo pode ser usado para ligar o comportamento da inflação de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo.</p>
 <p>Por meio da estimativa da equação de curto prazo,</p>
 <p><span class="math display">\[\begin{equation}    
 
-\Delta IFI_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}+\Delta\mbox{inflation}_{t}+a_{4}\widehat{\mu}_{t-1}+\epsilon_{t} 
+\Delta inflation_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}\mbox{IFI}_{t}+a_{4}\widehat{\mu}_{t-1}+a_{5}t+\epsilon_{t} 
 
 \end{equation}\]</span></p>
 <p>Onde:</p>
@@ -561,7 +577,7 @@ div.tocify {
 <center>
 <img src="C:/Users/rodri/Downloads/meccorrecaoerrosvec.png" style="width:50.0%" />
 </center>
-<p>Mostrando que alterações a curto prazo nos preços do Brent têm efeitos positivos significativos na dinâmica de inclusão financeira e que cerca de -1% da discrepância entre o valor efetivo e o valor de longo prazo, ou equilíbrio do IFI, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo (em especial maiores que 1 para a inflação) somam valores não-nulos para os efeitos em IFI confirmando a relação de longo prazo entre as séries temporais de controle monetário, considerando que as mudanças significativas no IFI se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.</p>
+<p>Mostrando que alterações a curto prazo nas variáveis de política monetária e de inclusão financeira têm efeitos positivos significativos na dinâmica de preços e que cerca de menos de 1% da discrepância entre o valor efetivo e o valor de longo prazo, ou de equilíbrio da inflação, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo somam valores não-nulos para os efeitos na dinâmica de preços confirmando a relação de longo prazo entre as séries temporais de controle monetário e de inclusão financeira, considerando que as mudanças significativas nos níveis gerais de preços se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.</p>
 <p>O gráfico a seguir ilustra os valores estimados e efetivos e os resíduos das regressões de curto e longo prazo:</p>
 <center>
 <p><img src="C:/Users/rodri/Downloads/vecvslp.png" style="width:80.0%" /></p>
@@ -633,8 +649,8 @@ $(document).ready(function ()  {
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
     };
-    options.showAndHide = false;
-    options.smoothScroll = false;
+    options.showAndHide = true;
+    options.smoothScroll = true;
 
     // tocify
     var toc = $("#TOC").tocify(options).data("toc-tocify");
