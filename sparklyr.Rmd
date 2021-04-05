@@ -1,0 +1,926 @@
+---
+title: "Lendo os microdados do CAGED com ``sparklyr``"
+author: "Rodrigo H. Ozon"
+date: "31/03/2021"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA)
+
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+#require(knitr)
+#require(pander)
+#opts_chunk$set(render=pander) # retira aqueles indices do tipo [1] ao lado da saida do resultado do output do R.
+
+
+```
+
+
+
+***
+
+## Resumo 
+
+
+Este artigo curto visa mostrar num exemplo real como ler dados em grande volume usando o Spark no R. Ainda muito preliminar é passível de melhorias, ajustes e sugestões de avanços no futuro próximo. Utilizarei aqui a leitura de um dataset considerado grande (um pouco mais de 36 milhões de registros) dos microdados do CAGED de jan/2020 a fev/2021.
+
+<small>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+When you think of the computation power that Spark provides and the ease of use of the R language, it is natural to want them to work together, seamlessly. This is also what the R community expected: an R package that would provide an interface to Spark that was easy to use, compatible with other R packages, and available in CRAN. With this goal, we started developing ``sparklyr``.
+</p>
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+Officially, ``sparklyr`` is an R interface for Apache Spark. It’s available in CRAN and works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s easy to install, it serves the R community, it embraces other packages and practices from the R community, and so on. It’s hosted in GitHub and licensed under Apache 2.0, which allows you to clone, modify, and contribute back to this project.
+</p>
+</small>
+
+
+
+
+***
+
+
+
+$$\\[1in]$$
+
+***
+
+<center>
+
+![](https://miro.medium.com/max/1050/0*X3mDFasBDcJ-WH2V.png){width=30%}
+
+</center>
+
+***
+
+
+$$\\[1in]$$
+
+# Carregando as bibliotecas 
+
+```{r}
+
+library(googledrive) # Pacote para abrir os csvs que foram salvos no Drive
+library(DBI) # O pacote DBI pode ser usado para querys SQL dentro do R com o dplyr
+library(DT) # Pacote para gerar tabelas interativas de outputs
+library(pryr) # Pacote para mostrar tamanho dos dataframes
+library(dplyr) # O dplyr roda com o sparklyr
+
+
+library(sparklyr)
+
+```
+
+
+# Setando o uso da memória local
+
+```{r cache=TRUE}
+
+memory.limit() # Mostra o total alocado na minha memoria local
+
+paste(round(memory.limit(size=10000000000)/2^30, 2),"Gb") # Aumento a alocacao da memoria no R ao limite maximo
+
+paste(round(memory.limit()/2^30, 2), "Gb") # Mostra o total alocado na minha maquina
+
+```
+
+Configuro o Spark pra usar minha memória:
+
+```{r}
+
+config <- spark_config()
+
+config$`sparklyr.shell.driver-memory` <- "7G" # Minha máquina possui 8Gb
+config$`sparklyr.shell.executor-memory` <- "7G"
+
+```
+
+# Conectando no Spark
+
+```{r}
+
+spark_conn <- spark_connect(master="local", config = config)
+
+spark_conn # Mostra a conexao local do Spark
+
+```
+
+
+# Os microdados do CAGED
+
+
+Vamos utilizar como exemplo os "maravilhosos" microdados do Ministério do Trabalho e Emprego, a saber o Cadastro Geral de Admitidos e Desligados (CAGED):
+
+(*veja [esse artigo](https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/) a respeito do novo CAGED. Vale lembrar que se você tentar hoje (`r format(Sys.time(), '%B %d, %Y')`) reproduzir o mesmo código utilizado nesse site notará que o pacote ``ecoseries`` parece ter sido descontinuado do CRAN.*)
+
+
+Primeiro baixe os microdados do CAGED referente aos mêses desejados para sua análise no seguinte endereço:
+ 
+- ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2021/Janeiro/ 
+
+E também baixe [aqui](ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx) o dicionário desses microdados do CAGED.
+
+Caso você queira acessar o link acima, destaco que não recomendo a tentativa pelo navegador Google Chrome (não abre nada), tente usando p. ex. o excelente "Internet Explorer" (heheheh).
+
+Em seguida, você deverá extrair todos os arquivos de dados no formato .txt para alguma pasta específica que você precise o armazenar. 
+
+O próximo passo seria então você utilizar os comandos do R para lêr todos eles e em seguida criar como .csvs todos os meses que você deseja. (utilize o comando ``write.csv()`` para isso)
+
+Pra facilitar e reduzir o seu tempo com isso, [criei uma pasta no Google Drive](https://drive.google.com/drive/folders/1TYjbFV5krTTBW9dGYn2WtKn1jwzI-iYG?usp=sharing) para agilizar nosso trabalho.
+
+Para acessar os arquivos sem precisar baixá-los em sua máquina crie um script do R e rode os seguintes comandos:
+
+
+```{r eval = FALSE, cache=TRUE}
+
+library(googledrive)
+
+drive_find() #Lista todos os arquivos que estao no seu drive
+
+library(googlesheets4) 
+
+gs4_find()
+
+```
+
+Em seguida o RStudio vai lhe perguntar no Console qual conta do Google sua desejas autenticar. Siga os passos e *voila*!
+
+Após a sua autenticação e na medida em que você vai reproduzindo esses códigos aqui no seu RStudio partimos pro nosso próximo passo. Veremos então os dados que estão nessa pasta compartilhada:
+
+
+```{r cache=TRUE}
+
+Datasets_CAGED <- drive_ls(path = "Datasets_CAGED") # Lista todos os arquivos que estao no seu drive
+Datasets_CAGED
+
+```
+
+Agora leremos os arquivos da pasta:
+
+```{r eval = FALSE, cache=TRUE}
+
+
+jan2020 <- spark_read_csv(spark_conn,"caged_mov_012020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+fev2020 <- spark_read_csv(spark_conn,"caged_mov_022020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+mar2020 <- spark_read_csv(spark_conn,"caged_mov_032020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+abr2020 <- spark_read_csv(spark_conn,"caged_mov_042020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+mai2020 <- spark_read_csv(spark_conn,"caged_mov_052020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jun2020 <- spark_read_csv(spark_conn,"caged_mov_062020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jul2020 <- spark_read_csv(spark_conn,"caged_mov_072020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+ago2020 <- spark_read_csv(spark_conn,"caged_mov_082020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+set2020 <- spark_read_csv(spark_conn,"caged_mov_092020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+out2020 <- spark_read_csv(spark_conn,"caged_mov_102020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+nov2020 <- spark_read_csv(spark_conn,"caged_mov_112020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+dez2020 <- spark_read_csv(spark_conn,"caged_mov_122020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jan2021 <- spark_read_csv(spark_conn,"caged_mov_012021.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+fev2021 <- spark_read_csv(spark_conn,"caged_mov_022021.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+```
+
+
+
+
+
+
+
+```{r chunkleituraspark, echo=FALSE}
+
+jan2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_012020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+fev2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_022020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+mar2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_032020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+abr2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_042020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+mai2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_052020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jun2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_062020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jul2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_072020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+ago2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_082020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+set2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_092020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+out2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_102020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+nov2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_112020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+dez2020 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_122020.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+jan2021 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_012021.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+fev2021 <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/caged_mov_022021.csv", header = TRUE, delimiter = ",", charset = "UTF-8")
+
+```
+
+Confiro quais datasets estão carregados dentro do Spark
+
+```{r chunkdastabelasnospark}
+
+src_tbls(spark_conn)
+
+```
+Como as ordens das colunas em todos essas tabelas estão exatamente na mesma ordem e com a nomenclatura exatamente iguais, posso juntá-las em um único dataframe:
+
+
+```{r chunkbindrows}
+
+caged_microdados <- sdf_bind_rows(
+                                  jan2020,
+                                  fev2020,
+                                  mar2020,
+                                  abr2020,
+                                  mai2020,
+                                  jun2020,
+                                  jul2020,
+                                  ago2020,
+                                  set2020,
+                                  out2020,
+                                  nov2020,
+                                  dez2020,
+                                  jan2021,
+                                  fev2021)
+
+caged_microdados <- caged_microdados %>% # Corrijo as grafias dos nomes
+  select(-`_c0`) %>%
+    rename(competencia = "competincia",
+           salario = "salirio",
+           saldomovimentacao ="saldomovimentaiio",
+           graudeinstrucao = "graudeinstruiio",
+           racacor = "raiacor",
+           regiao = "regiio",
+           secao = "seiio",
+           cbo2002ocupacao = "cbo2002ocupaiio",
+           tipomovimentacao = "tipomovimentaiio")
+
+glimpse(caged_microdados)
+
+sdf_nrow(caged_microdados) # Conta o numero de linhas no dataframe
+
+```
+
+
+
+
+
+Começamos substituindo a coluna de datas (``competencias``) e a de seções econômicas do IBGE:
+
+
+
+```{r chunk22}
+
+caged_microdados <- caged_microdados %>% 
+ 
+  mutate(
+    
+    competencia = as.character(competencia), # Transformo em caracter a data
+    competencia = case_when(
+                            competencia == "202001" ~"2020/01",
+                            competencia == "202002" ~"2020/02",
+                            competencia == "202003" ~"2020/03",
+                            competencia == "202004" ~"2020/04",
+                            competencia == "202005" ~"2020/05",
+                            competencia == "202006" ~"2020/06",
+                            competencia == "202007" ~"2020/07",
+                            competencia == "202008" ~"2020/08",
+                            competencia == "202009" ~"2020/09",
+                            competencia == "202010" ~"2020/10",
+                            competencia == "202011" ~"2020/11",
+                            competencia == "202012" ~"2020/12",
+                            competencia == "202101" ~"2021/01",
+                            competencia == "202102" ~"2021/02")
+         )
+
+```
+
+```{r chunk23}
+
+caged_microdados <- caged_microdados %>% 
+  
+  mutate(
+    
+    secao = case_when(
+    secao ==  "A"	~"Agricultura, Pecuária, Produção Florestal, Pesca e AqÜIcultura",
+    secao ==  "B"	~"Indústrias Extrativas",
+    secao ==  "C"	~"Indústrias de Transformação",
+    secao ==  "D"	~"Eletricidade e Gás",
+    secao ==  "E"	~"Água, Esgoto, Atividades de Gestão de Resíduos e Descontaminação",
+    secao ==  "F"	~"Construção",
+    secao ==  "G"	~"Comércio, Reparação de Veículos Automotores e Motocicletas",
+    secao ==  "H"	~"Transporte, Armazenagem e Correio",
+    secao ==  "I"	~"Alojamento e Alimentação",
+    secao ==  "J"	~"Informação e Comunicação",
+    secao ==  "K"	~"Atividades Financeiras, de Seguros e Serviços Relacionados",
+    secao ==  "L"	~"Atividades Imobiliárias",
+    secao ==  "M"	~"Atividades Profissionais, Científicas e Técnicas",
+    secao ==  "N"	~"Atividades Administrativas e Serviços Complementares",
+    secao ==  "O"	~"Administração Pública, Defesa e Seguridade Social",
+    secao ==  "P"	~"Educação",
+    secao ==  "Q"	~"Saúde Humana e Serviços Sociais",
+    secao ==  "R"	~"Artes, Cultura, Esporte e Recreação",
+    secao ==  "S"	~"Outras Atividades de Serviços",
+    secao ==  "T"	~"Serviços Domésticos",
+    secao ==  "U"	~"Organismos Internacionais e Outras Instituições Extraterritoriais",
+    secao ==  "Z"	~"Não identificado")
+    
+       )
+
+```
+
+
+
+
+
+Agora façamos as relacionadas a região e localidades:
+
+
+```{r chunk24}
+
+caged_microdados <- caged_microdados %>%
+  
+ mutate(
+    
+  regiao = case_when(
+    regiao ==  1 ~ "Norte",
+    regiao ==  2 ~ "Nordeste",
+    regiao ==  3 ~ "Sudeste",
+    regiao ==  4 ~ "Sul",
+    regiao ==  5 ~ "Centro-Oeste",
+    regiao ==  9 ~ "Não identificado"),
+    
+   uf = case_when(
+    uf ==  11 ~ "Rondônia",
+    uf ==  12 ~ "Acre",
+    uf ==  13 ~ "Amazonas",
+    uf ==  14 ~ "Roraima",
+    uf ==  15 ~ "Pará",
+    uf ==  16 ~ "Amapá",
+    uf ==  17 ~ "Tocantins",
+    uf ==  21 ~ "Maranhão",
+    uf ==  22 ~ "Piauí",
+    uf ==  23 ~ "Ceará",
+    uf ==  24 ~ "Rio Grande do Norte",
+    uf ==  25 ~ "Paraíba",
+    uf ==  26 ~ "Pernambuco",
+    uf ==  27 ~ "Alagoas",
+    uf ==  28 ~ "Sergipe",
+    uf ==  29 ~ "Bahia",
+    uf ==  31 ~ "Minas gerais",
+    uf ==  32 ~ "Espírito Santo",
+    uf ==  33 ~ "Rio de Janeiro",
+    uf ==  35 ~ "São Paulo",
+    uf ==  41 ~ "Paraná",
+    uf ==  42 ~ "Santa Catarina",
+    uf ==  43 ~ "Rio Grande do Sul",
+    uf ==  50 ~ "Mato Grosso do Sul",
+    uf ==  51 ~ "Mato Grosso",
+    uf ==  52 ~ "Goiás",
+    uf ==  53 ~ "Distrito Federal",
+    uf ==  99 ~ "Não identificado")
+    
+    )
+
+```
+
+Para as demais variáveis
+
+
+```{r chunk25}
+
+caged_microdados <- caged_microdados %>%
+  
+ mutate(
+    
+  salario = as.numeric(salario), # Salario como numerica
+  idade = as.numeric(idade), # idade como numerica
+
+  fonte = case_when(
+    fonte ==  1	~ "Dado Original/Sem Imputação",
+    fonte ==  2	~ "Desligamentos Imputados do CAGED",
+    fonte ==  3	~ "Desligamentos Imputados do EmpregadorWEB"),
+    
+  categoria = case_when(
+    categoria ==  101	~ "Empregado - Geral, inclusive o empregado público da administração direta ou indireta contratado pela CLT",
+    categoria ==  102	~ "Empregado - Trabalhador rural por pequeno prazo da Lei 11.718/2008",
+    categoria ==  103	~ "Empregado - Aprendiz",
+    categoria ==  104	~ "Empregado - Doméstico",
+    categoria ==  105	~ "Empregado - Contrato a termo firmado nos termos da Lei 9.601/1998",
+    categoria ==  106	~ "Trabalhador temporário - Contrato nos termos da Lei 6.019/1974",
+    categoria ==  107	~ "Empregado - Contrato de trabalho Verde e Amarelo - sem acordo para antecipação mensal da multa rescisória do FGTS",
+    categoria ==  108	~ "Empregado - Contrato de trabalho Verde e Amarelo - com acordo para antecipação mensal da multa rescisória do FGTS",
+    categoria ==  111	~ "Empregado - Contrato de trabalho intermitente",
+    categoria ==  999	~ "Não Identificado"),
+    
+  graudeinstrucao = case_when(
+    graudeinstrucao ==  1	~"Analfabeto",
+    graudeinstrucao ==  2	~"Até 5ª Incompleto",
+    graudeinstrucao ==  3	~"5ª Completo Fundamental",
+    graudeinstrucao ==  4	~"6ª a 9ª Fundamental",
+    graudeinstrucao ==  5	~"Fundamental Completo",
+    graudeinstrucao ==  6	~"Médio Incompleto",
+    graudeinstrucao ==  7	~"Médio Completo",
+    graudeinstrucao ==  8	~"Superior Incompleto",
+    graudeinstrucao ==  9	~"Superior Completo",
+    graudeinstrucao ==  10 ~"Mestrado",
+    graudeinstrucao ==  11 ~"Doutorado",
+    graudeinstrucao ==  80 ~"Pós-Graduação completa",
+    graudeinstrucao ==  99 ~"Não Identificado"),
+    
+  sexo = case_when(
+    sexo ==  1	~"Homem",
+    sexo ==  3	~"Mulher",
+    sexo ==  9	~"Não Identificado"),
+    
+  tipoempregador = case_when(
+    tipoempregador ==  0 ~"CNPJ RAIZ",
+    tipoempregador ==  2 ~"CPF",
+    tipoempregador ==  9 ~"Não Identificado"),
+    
+  tipoestabelecimento = case_when(
+    tipoestabelecimento ==  1	~"CNPJ",
+    tipoestabelecimento ==  3	~"CAEPF(Cadastro de Atividade Econômica de Pessoa Física)",
+    tipoestabelecimento ==  4	~"CNO(Cadastro Nacional de Obra)",
+    tipoestabelecimento ==  5	~"CEI(CAGED)",
+    tipoestabelecimento ==  9	~"Não Identificado")
+  )
+    
+```
+
+
+
+
+```{r chunk26}
+
+caged_microdados <- caged_microdados %>%
+  
+ mutate(
+    
+  tipomovimentacao = case_when(
+    tipomovimentacao ==  10 ~"Admissão por primeiro emprego",
+    tipomovimentacao ==  20 ~"Admissão por reemprego",
+    tipomovimentacao ==  25 ~"Admissão por contrato trabalho prazo determinado",
+    tipomovimentacao ==  31 ~"Desligamento por demissão sem justa causa",
+    tipomovimentacao ==  32 ~"Desligamento por demissão com justa causa",
+    tipomovimentacao ==  33 ~"Culpa Recíproca",
+    tipomovimentacao ==  35 ~"Admissão por reintegração",
+    tipomovimentacao ==  40 ~"Desligamento a pedido",
+    tipomovimentacao ==  43 ~"Término contrato trabalho prazo determinado",
+    tipomovimentacao ==  45 ~"Desligamento por Término de contrato",
+    tipomovimentacao ==  50 ~"Desligamento por aposentadoria",
+    tipomovimentacao ==  60 ~"Desligamento por morte",
+    tipomovimentacao ==  70 ~"Admissão por transferência",
+    tipomovimentacao ==  80 ~"Desligamento por transferência",
+    tipomovimentacao ==  90 ~"Desligamento por Acordo entre empregado e empregador",
+    tipomovimentacao ==  98 ~"Desligamento de Tipo Ignorado",
+    tipomovimentacao ==  99 ~"Não Identificado"),
+    
+  indtrabparcial = case_when(
+    indtrabparcial == 0	~"Não",
+    indtrabparcial == 1	~"Sim",
+    indtrabparcial == 9	~"Não Identificado"),
+    
+  indtrabintermitente = case_when(
+    indtrabintermitente ==  0	~"Não",
+    indtrabintermitente ==  1	~"Sim",
+    indtrabintermitente ==  9	~"Não Identificado"),
+    
+   tipodedeficiincia = case_when(
+    tipodedeficiincia ==  0	~"Não Deficiente",
+    tipodedeficiincia ==  1	~"Física",
+    tipodedeficiincia ==  2	~"Auditiva",
+    tipodedeficiincia ==  3	~"Visual",
+    tipodedeficiincia ==  4	~"Intelectual (Mental)",
+    tipodedeficiincia ==  5	~"Múltipla",
+    tipodedeficiincia ==  6	~"Reabilitado",
+    tipodedeficiincia ==  9	~"Não Identificado" ),
+    
+   racacor = case_when(
+    racacor ==  1	~"Branca",
+    racacor ==  2	~"Preta",
+    racacor ==  3	~"Parda",
+    racacor ==  4	~"Amarela",
+    racacor ==  5	~"Indígena",
+    racacor ==  6	~"Não informada",
+    racacor ==  9	~"Não Identificado"),
+    
+   indicadoraprendiz = case_when(
+    indicadoraprendiz == 0 ~"Não",
+    indicadoraprendiz == 1	~"Sim",
+    indicadoraprendiz == 9	~"Não Identificado"),
+    
+   tamestabjan = case_when(
+    tamestabjan ==  1	~"Nenhum vínculo",
+    tamestabjan ==  2	~"De 1 a 4 vínculos",
+    tamestabjan ==  3	~"De 5 a 9 vínculos",
+    tamestabjan ==  4	~"De 10 a 19 vínculos",
+    tamestabjan ==  5	~"De 20 a 49 vínculos",
+    tamestabjan ==  6	~"De 50 a 99 vínculos",
+    tamestabjan ==  7	~"De 100 a 249 vínculos",
+    tamestabjan ==  8	~"De 250 a 499 vínculos",
+    tamestabjan ==  9	~"De 500 a 999 vínculos",
+    tamestabjan ==  10 ~"1000 ou mais vínculos",
+    tamestabjan ==  99 ~"Não Identificado")
+
+  )
+
+```
+
+Vamos dar uma olhada nos dados novamente:
+
+```{r chunk27}
+
+glimpse(caged_microdados)
+
+head(caged_microdados)
+
+
+```
+
+Ainda precisaremos incluir as substituições faltantes que são ``municipio``, ``subclasse`` e ``cbo2002ocupacao``, mas pra isso teremos de utilizar as abas de descritores específicas do Layout do CAGED.
+
+```{r}
+
+library(readxl)
+
+url<-'ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/Layout%20Novo%20Caged%20Movimenta%E7%E3o.xlsx'
+dicionario_temp <- tempfile()
+download.file(url, dicionario_temp, mode="wb")
+
+municipio <- read_excel(path = dicionario_temp, sheet = 4) 
+head(municipio)
+
+subclasse_cnae <- read_excel(path = dicionario_temp, sheet = "subclasse") 
+head(subclasse_cnae)
+
+cbo2002_ocup <- read_excel(path = dicionario_temp, sheet = 9) 
+head(cbo2002_ocup)
+
+```
+
+
+Preciso modificar as variáveis das planilhas
+
+```{r eval = FALSE, cache=TRUE}
+
+municipio <- municipio %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(municipio = "Código",
+         descricao_municipio = "Descrição")
+#write.csv(municipio,"municipio.csv")
+
+municipio_spark <- spark_read_csv(spark_conn,"municipio.csv", header = TRUE, delimiter = ",")
+
+municipio_spark <- municipio_spark %>%
+  select(-`_c0`) %>%
+  mutate(municipio = as.character(municipio))
+glimpse(municipio_spark)
+
+
+subclasse_cnae <- subclasse_cnae %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(subclasse = "Código",
+         descricao_subclasse = "Descrição")
+#write.csv(subclasse_cnae,"subclasse_cnae.csv")
+
+subclasse_cnae_spark <- spark_read_csv(spark_conn,"subclasse_cnae.csv", header = TRUE, delimiter = ",")
+
+subclasse_cnae_spark <- subclasse_cnae_spark %>%
+  select(-`_c0`) %>%
+  mutate(subclasse = as.character(subclasse))
+glimpse(subclasse_cnae_spark)
+
+cbo2002_ocup <- cbo2002_ocup %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(cbo2002ocupacao = "Código",
+         descricao_cbo = "Descrição")
+#write.csv(cbo2002_ocup,"cbo2002_ocup.csv")
+cbo2002_ocup_spark <- spark_read_csv(spark_conn,"cbo2002_ocup.csv", header = TRUE, delimiter = ",")       
+
+cbo2002_ocup_spark <- cbo2002_ocup_spark %>%
+  select(-`_c0`) %>%
+  mutate(cbo2002ocupacao = as.character(cbo2002ocupacao))
+glimpse(cbo2002_ocup_spark) 
+
+
+```
+
+```{r echo=FALSE}
+
+municipio <- municipio %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(municipio = "Código",
+         descricao_municipio = "Descrição")
+#write.csv(municipio,"municipio.csv")
+
+municipio_spark <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/municipio.csv", header = TRUE, delimiter = ",")
+
+municipio_spark <- municipio_spark %>%
+  select(-`_c0`) %>%
+  mutate(municipio = as.character(municipio))
+glimpse(municipio_spark)
+
+
+subclasse_cnae <- subclasse_cnae %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(subclasse = "Código",
+         descricao_subclasse = "Descrição")
+#write.csv(subclasse_cnae,"subclasse_cnae.csv")
+
+subclasse_cnae_spark <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/subclasse_cnae.csv", header = TRUE, delimiter = ",")
+
+subclasse_cnae_spark <- subclasse_cnae_spark %>%
+   select(-`_c0`) %>%
+  mutate(subclasse = as.character(subclasse))
+glimpse(subclasse_cnae_spark)
+
+cbo2002_ocup <- cbo2002_ocup %>%
+  mutate(Código = as.character(Código)) %>%
+  rename(cbo2002ocupacao = "Código",
+         descricao_cbo = "Descrição")
+#write.csv(cbo2002_ocup,"cbo2002_ocup.csv")
+cbo2002_ocup_spark <- spark_read_csv(spark_conn,"C:/Users/rodri/Documents/Scripts do R/cbo2002_ocup.csv", header = TRUE, delimiter = ",")       
+
+cbo2002_ocup_spark <- cbo2002_ocup_spark %>%
+  select(-`_c0`) %>%
+  mutate(cbo2002ocupacao = as.character(cbo2002ocupacao))
+glimpse(cbo2002_ocup_spark) 
+
+```
+
+
+Converto os dados para caracteres no dataset dos últimos 3 meses disponíveis:
+
+```{r}
+
+caged_microdados <- caged_microdados %>%
+  
+  mutate(
+    
+    municipio = as.character(municipio),
+    subclasse = as.character(subclasse),
+    cbo2002ocupacao = as.character(cbo2002ocupacao)
+    
+        )
+
+glimpse(caged_microdados)
+
+```
+
+Insiro os dados faltantes no dataset dos últimos 3 meses disponíveis:
+
+
+
+```{r}
+
+caged_microdados <- left_join(caged_microdados, municipio_spark %>%
+                                    select(municipio, descricao_municipio), by = c("municipio"="municipio"))
+
+caged_microdados <- left_join(caged_microdados, subclasse_cnae_spark %>%
+                                            select(subclasse, descricao_subclasse), by = c("subclasse"="subclasse"))
+
+caged_microdados <- left_join(caged_microdados, cbo2002_ocup_spark %>%
+                                    select(cbo2002ocupacao, descricao_cbo), by = c("cbo2002ocupacao"="cbo2002ocupacao"))
+
+glimpse(caged_microdados)
+
+sdf_nrow(caged_microdados)
+
+```
+
+Podemos retirar as colunas ``municipio, subclasse e cbo2002ocupacao`` e regorganizar o dataset:
+
+```{r}
+
+caged_microdados <- caged_microdados %>%
+  select(-municipio, -subclasse, -cbo2002ocupacao)
+
+caged_microdados <- caged_microdados %>%
+  select( # Faco esse select pra organizar a ordem das colunas no dataframe
+    competencia,
+    regiao,
+    uf,
+    descricao_municipio,
+    secao,
+    descricao_subclasse,
+    saldomovimentacao,
+    descricao_cbo,
+    categoria,
+    graudeinstrucao,
+    idade,
+    horascontratuais,
+    racacor,
+    sexo,
+    tipoempregador,
+    tipoestabelecimento,
+    tipomovimentacao,
+    tipodedeficiincia,
+    indtrabintermitente,
+    indtrabparcial,
+    salario,
+    tamestabjan,
+    indicadoraprendiz,
+    fonte )
+
+glimpse(caged_microdados)
+
+```
+
+## Pesquisa do saldo de admissões/desligamentos no período
+
+Ok, finalmente de possa de nosso dataframe em mãos podemos filtrar nossa análise com o intuito de avaliarmos o fluxo do mercado formal de trabalho em determinada categoria profissional numa certa localidade.
+
+Deste modo farei a seguinte investigação:
+
+*No estado do Paraná, selecionamos...* 
+
+- Qual é o saldo de admitidos e desligados da CBO economista nos meses de nov/2020 a jan/2021 ?
+
+- Qual é o salário de contratação destes profissionais ? *Obs.: Não utilize a média dos salários para essa avaliação;
+
+- Qual é o tamanho do estabelecimento que os contrata/demite ?
+
+- Qual é o grau de instrução desses profissionais ?
+
+- Quais são as subclasses CNAEs do tipo de estabelecimento que mais os contrata/demite ?
+
+- Qual é o modelo de contrato formal firmado de trabalho (*variável ``categoria``)
+
+- Quantas horas contratuais semanais eles foram contratatados/trabalhavam ?
+
+- Enfim, utilize praticamente todas as colunas do dataset ``caged_ultimos_3meses`` para sanar as demais dúvidas.
+
+
+```{r}
+
+minha_pesquisa <- caged_microdados %>%
+  filter(grepl("economista", descricao_cbo ) | grepl("Economista", descricao_cbo) & 
+         uf == "Paraná")
+
+
+glimpse(minha_pesquisa)
+
+sdf_nrow(minha_pesquisa)
+
+
+```
+
+Como temos poucas linhas podemos gerar uma tabela interativa:
+
+```{r}
+
+minha_pesquisa <- minha_pesquisa %>%
+  as.data.frame( ) %>% # Transformo pra dataframe local pq eh pequeno!
+  mutate(salario = round(salario,2))
+  
+datatable(minha_pesquisa) # Nao eh mais um objeto Spark
+
+```
+
+Ótimo, na tabela interativa acima podemos ordenar do maior para o menor simplesmente clicando no título da coluna que desejamos. Também podemos segmentar ainda mais nossa pesquisa quando digitamos p. ex. "Curitiba" no campo Search da tabela interativa.
+
+Agora também podemos gerar um gráfico interativo com os filtros que temos interesse:
+
+```{r fig.width=9}
+
+library(ggplot2)
+library(plotly)
+
+grafico <- minha_pesquisa %>%
+  filter(descricao_municipio == "Pr-Curitiba") %>%
+  group_by(competencia) %>%
+  summarise(fluxo = sum(saldomovimentacao, na.rm=TRUE)) 
+
+ggplotly(
+ggplot(grafico, aes(x = competencia, y = fluxo))+
+  geom_col()+
+  ggtitle("Fluxo de admitidos e desligados dos economistas em Curitiba/PR de jan 2020 a jan 2021")
+)
+  
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Desconecta do Spark
+
+```{r}
+
+spark_disconnect(sc=spark_conn)
+
+```
+
+
+
+
+
+
+$$\\[1in]$$
+
+
+
+
+***
+
+
+# Referências 
+
+AWS, **Running sparklyr – RStudio’s R Interface to Spark on Amazon EMR**, Disponível em: $<$ https://aws.amazon.com/pt/blogs/big-data/running-sparklyr-rstudios-r-interface-to-spark-on-amazon-emr/ $>$
+
+CRAN, **package ´sparklyr´**, disponível em: $<$ [https://cran.r-project.org/](https://cran.r-project.org/web/packages/sparklyr/sparklyr.pdf) $>$
+
+*Data Science in Spark with Sparklyr : : CHEAT SHEET* disponível em: $<$ https://science.nu/wp-content/uploads/2018/07/r-sparklyr.pdf $>$
+
+Luraschi, J., Kuo, K., Ruiz, E. *Mastering Spark with R*, Bookdown disponível em: $<$ [https://therinspark.com/](https://therinspark.com/) $>$ Acesso em março de 2021. 
+
+Wilher, V. **Um pesadelo chamado novo CAGED**, Disponível em: $<$ https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/ $>$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

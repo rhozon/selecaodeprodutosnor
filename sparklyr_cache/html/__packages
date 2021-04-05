@@ -1,0 +1,8 @@
+base
+googledrive
+DBI
+DT
+pryr
+dplyr
+sparklyr
+readxl

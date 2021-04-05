@@ -46,6 +46,8 @@ navbar:
           href: varinstrumentais.html 
         - text: "Fluxo de Salarios Microdados CAGED"
           href: rmarkdownepowerbi.html
+        - text: "Big Data com o R: Lendo os microdados do CAGED com ``sparklyr``"
+          href: sparklyr.html           
         - text: "Automação da visualização da base de dados da balança comercial brasileira"
           href: automsecex.html 
         - text: "Webscrapping CoinMarketCap x Icoinomia"
