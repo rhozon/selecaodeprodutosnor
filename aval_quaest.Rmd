@@ -247,6 +247,16 @@ ggtitle("Percentual de avaliação dos optantes pelo Candidato 2")+
 
 ```
 
+
+Enfim, concluímos que ``300`` ou ``57,36%`` dos respondentes da intenção de voto no ``Candidato 2`` avaliam seu governo como ``Boa`` seguido de 26,54% como avaliação ``Ótima`` somando cerca de 86,81% com avaliação positiva de sua geoverno.
+
+
+
+
+
+
+
+
 # Visualização dos dados da pesquisa
 
 Para utilizarmos todos os resultados obtidos com os entrevistados, por todas as perguntas levantadas, criamos um dashboard que nos permite cruzar diferentes fitros de categorização.
@@ -257,9 +267,11 @@ A tabela acima demonstra o conjunto de dados completo e variável conforme filtr
 
 A árvore de classificação hierárquica nos possibilita visualmente cruzarmos diferentes combinações com as variáveis/perguntas respondidas pelos entrevistados.
 
+<center>
+
 <iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiN2UyOWEzNWQtM2RmNS00NTg1LWI5N2YtNmRlZTk3YjJlNWNmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
 
-
+</center>
 
 
 
