@@ -34,7 +34,7 @@ knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs
 ## Resumo 
 
 
-Este artigo curto visa mostrar num exemplo real como ler dados em grande volume usando o Spark no R. Ainda muito preliminar é passível de melhorias, ajustes e sugestões de avanços no futuro próximo. Utilizarei aqui a leitura de um dataset considerado grande (um pouco mais de 36 milhões de registros) dos microdados do CAGED de jan/2020 a fev/2021.
+Este artigo curto visa mostrar num exemplo real como ler grande volumes de dados usando o Spark no R. Ainda muito preliminar é passível de melhorias, ajustes e sugestões de avanços no futuro próximo. Utilizarei aqui a leitura de um dataset considerado grande (um pouco mais de 36 milhões de registros) dos microdados do CAGED de jan/2020 a fev/2021.
 
 <small>
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
@@ -44,6 +44,10 @@ When you think of the computation power that Spark provides and the ease of use 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
 Officially, ``sparklyr`` is an R interface for Apache Spark. It’s available in CRAN and works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s easy to install, it serves the R community, it embraces other packages and practices from the R community, and so on. It’s hosted in GitHub and licensed under Apache 2.0, which allows you to clone, modify, and contribute back to this project.
 </p>
+
+*Mastering Spark with R*
+
+Javier Luraschi, Kevin Kuo, Edgar Ruiz 
 </small>
 
 
@@ -116,6 +120,12 @@ spark_conn <- spark_connect(master="local", config = config)
 spark_conn # Mostra a conexao local do Spark
 
 ```
+
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+A local cluster is really helpful to get started, test code, and troubleshoot with ease. (Luraschi, Kuo e Ruiz, 2021)
+</p>
+
 
 
 # Os microdados do CAGED
@@ -786,7 +796,7 @@ minha_pesquisa <- caged_microdados %>%
 
 glimpse(minha_pesquisa)
 
-sdf_nrow(minha_pesquisa)
+sdf_nrow(minha_pesquisa) # Mostra quantas linhas 
 
 
 ```
@@ -891,7 +901,7 @@ CRAN, **package ´sparklyr´**, disponível em: $<$ [https://cran.r-project.org/
 
 *Data Science in Spark with Sparklyr : : CHEAT SHEET* disponível em: $<$ https://science.nu/wp-content/uploads/2018/07/r-sparklyr.pdf $>$
 
-Luraschi, J., Kuo, K., Ruiz, E. *Mastering Spark with R*, Bookdown disponível em: $<$ [https://therinspark.com/](https://therinspark.com/) $>$ Acesso em março de 2021. 
+Luraschi, J., Kuo, K., Ruiz, E. **Mastering Spark with R**, Bookdown disponível em: $<$ [https://therinspark.com/](https://therinspark.com/) $>$ Acesso em março de 2021. 
 
 Wilher, V. **Um pesadelo chamado novo CAGED**, Disponível em: $<$ https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/ $>$
 

@@ -1,0 +1,299 @@
+---
+title: "Avaliação técnica — Quaest"
+author: "Rodrigo Hermont Ozon"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+```
+
+
+***
+
+# Sobre o autor
+
+![](https://rhozon.github.io/site/me.jpg)
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> 
+  
+  <a href="https://app.powerbi.com/view?r=eyJrIjoiMTgyNGY1ZWMtOWE5MS00YzRiLTg3YzAtNWU0YzQ1YzY1YzZhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9">Rodrigo Hermont Ozon</a>
+  
+  </strong> 
+  
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">Econometrista/Data Scientist</a> 
+  
+</div>
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Economista e mestre em Desenvolvimento Econômico pela UFPR, experiente por mais de 12 anos em sua carreira com análise de dados, modelagem, tratamento e apresentação de informações em conhecimento e tomada de decisão inteligente.
+
+
+Possui conhecimento em métodos estatísticos e econométricos para além dos modelos de machine learning, prefere inferência causal pois compreende que quem gera os dados são seres humanos inteligentes com decisões não automáticas e sim baseadas em princípios econômicos!
+
+</p>
+
+
+***
+
+<center>
+
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTgyNGY1ZWMtOWE5MS00YzRiLTg3YzAtNWU0YzQ1YzY1YzZhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true"></iframe>
+
+</center>
+
+***
+
+
+
+
+$$\\[1in]$$
+
+
+
+***
+
+
+
+
+***
+
+# Descrição do teste
+
+Pode ser vista neste repo do Github 
+
++ [quaest-pesquisa/avaliacao_tecnica](https://github.com/quaest-pesquisa/avaliacao_tecnica/blob/main/estagio_processamento/instrucoes.md)
+
+# Lendo os dados
+
+```{r}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+suppressMessages(library(DT))
+library(readxl)
+
+url<-"https://github.com/quaest-pesquisa/avaliacao_tecnica/blob/main/estagio_processamento/bd_surveyquaest.xlsx?raw=true"
+bd_surveyquaest <- tempfile()
+download.file(url, bd_surveyquaest, mode="wb")
+bd_surveyquaest<-read_excel(path = bd_surveyquaest, sheet = 1) # Carrego a leitura dos dados diretamente no repositorio do Github
+
+glimpse(bd_surveyquaest) # Gero um preview dos dados
+
+
+```
+
+O dicionário dessas variáveis pode ser consultado no repositório:
+
++ ``sbjnum``: id do respondente
++ ``sexo``: sexo do respondente
++ ``idade``: idade (numérica) do respondente
++ ``rendaf``: renda familiar do respondente
++ ``esc``: escolaridade do respondente
++ ``aval_gov``: avaliação do governo
++ ``voto1``: intenção de voto do respondente.
+
+
+# Qual o % de intenção de voto para cada candidato ? 
+
+```{r}
+
+perc_int_voto <- bd_surveyquaest %>%
+  group_by(voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(total_de_votos/sum(total_de_votos)*100,"%")) %>%
+  arrange(desc(total_de_votos))
+
+datatable(perc_int_voto)
+```
+
+
+Podemos gerar um gráfico:
+
+
+```{r fig.width=9}
+
+ggplotly(ggplot(perc_int_voto,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
+  geom_bar(position="dodge",stat ="identity")+
+  geom_text(aes(label=percentual_int_voto), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle("Percentual de intenção de voto por candidato")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+```
+
+Conforme facilmente mostrados pela tabela e o gráfico acima gerados podemos concluir que:
+
++ O Candidato 2 foi o que obteve maior percentual de intenção de voto dentre os demais entrevistados com 52,3\%;
+
++ Em seguida, os votos do tipo Ninguém/Branco/Nulo atingiram um percentual de 14,2\%;
+
++ Logo após, NS/NR chegaram a 14\%;
+
++ Após os acima mencionados, temos o Candidato 1 com irrisórios 4,2\% das intenções de voto;
+
++ Os demais candidatos se somarmos os seus percentuais de intenção de votos atingem cerca de 15,3%
+
+# Qual o candidato com maior % de intenção de voto entre as MULHERES?
+
+Separando/filtrando SOMENTE o grupo das mulheres (``feminino``) temos:
+
+```{r}
+
+int_voto_sexo <- bd_surveyquaest %>%
+  filter(sexo == "Feminino") %>%
+  group_by(sexo,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_sexo)
+
+
+```
+
+
+
+Podemos gerar um gráfico:
+
+```{r fig.width=9}
+
+ggplotly(ggplot(int_voto_sexo,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
+  geom_bar(position="dodge",stat ="identity")+
+  geom_text(aes(label=percentual_int_voto), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle("Percentual de intenção de voto por candidato entre as mulheres")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+```
+
+Por fim podemos concluir que o candidato com maior % de intenção de voto entre as MULHERES foi o Candidato 2 com um total de 295 votos no grupo das votantes do sexo feminino detendo cerca de 54,13% das intenções.
+
+# O candidato que lidera as intenções de voto é o candidato de situação ou oposição ao governo ?
+
+Os dados apresentados nas variáveis coletadas neste dataset são insifucientes para respondermos quem é situação ou quem é oposição. Podemos fazer um exercício para investigarmos as avaliações dadas pelos respondentes da pesquisa:
+
+```{r}
+
+avaliacao_do_governo <- bd_surveyquaest %>%
+  filter(voto1 == "Candidato 2") %>% # Filtra somente o Candidato 2 pra tabela
+  group_by(voto1, aval_gov) %>%
+  summarise(contagem = n()) %>%
+  mutate(percentual = paste(round((contagem/sum(contagem))*100,2),"%")  ) %>%
+  arrange(desc(contagem))
+datatable(avaliacao_do_governo)
+
+```
+
+
+Podemos mostrar isso graficamente:
+
+```{r fig.width=9}
+
+ggplotly(ggplot(avaliacao_do_governo,aes(x= reorder(aval_gov,-contagem), contagem))+
+  geom_bar(position="dodge",stat ="identity")+
+  geom_text(aes(label=percentual), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle("Percentual de avaliação dos optantes pelo Candidato 2")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+
+```
+
+# Visualização dos dados da pesquisa
+
+Para utilizarmos todos os resultados obtidos com os entrevistados, por todas as perguntas levantadas, criamos um dashboard que nos permite cruzar diferentes fitros de categorização.
+
+Para isso, no painel abaixo, selecione conforme as combinações de categorização que desejar e em seguida observe a árvore hierárquica demonstrando os percentuais para cada grupo de variável filtrada/selecionada.
+
+A tabela acima demonstra o conjunto de dados completo e variável conforme filtro selecionado. Os gráficos de avaliação do governo apresentam os percentuais classificados pelos respondentes seguido do gráfico das médias das idades dos respondentes.
+
+A árvore de classificação hierárquica nos possibilita visualmente cruzarmos diferentes combinações com as variáveis/perguntas respondidas pelos entrevistados.
+
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiN2UyOWEzNWQtM2RmNS00NTg1LWI5N2YtNmRlZTk3YjJlNWNmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$$\\[1in]$$
+
+
+***
+
+# Referências
+
+R Core Team (2020). **R: A language and environment for statistical computing.** R Foundation for Statistical Computing, Vienna, Austria.
+URL https://www.R-project.org/. 
