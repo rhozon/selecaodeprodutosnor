@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo Hermont Ozon" />
+
+
+<title>Avaliação técnica — Quaest</title>
+
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<link href="site_libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="site_libs/datatables-binding-0.16/datatables.js"></script>
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="site_libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="site_libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<script src="site_libs/plotly-binding-4.9.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.57.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.57.1/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fas fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fas fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fas fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="perfilcredito.html">Análise de Perfil de Crédito</a>
+    </li>
+    <li>
+      <a href="aval_quaest.html">Avaliação Quaest</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fas fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fas fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fas fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fas fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Avaliação técnica — Quaest</h1>
+<h4 class="author">Rodrigo Hermont Ozon</h4>
+<h4 class="date">abril 26, 2021</h4>
+
+</div>
+
+
+<hr />
+<div id="sobre-o-autor" class="section level1">
+<h1>Sobre o autor</h1>
+<p><img src="https://rhozon.github.io/site/me.jpg" /></p>
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+<div class="alert alert-info">
+<p><strong></p>
+<p><a href="https://app.powerbi.com/view?r=eyJrIjoiMTgyNGY1ZWMtOWE5MS00YzRiLTg3YzAtNWU0YzQ1YzY1YzZhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9">Rodrigo Hermont Ozon</a></p>
+<p></strong></p>
+<p><a href="https://www.linkedin.com/in/rodrigohermontozon/">Econometrista/Data Scientist</a></p>
+</div>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Economista e mestre em Desenvolvimento Econômico pela UFPR, experiente por mais de 12 anos em sua carreira com análise de dados, modelagem, tratamento e apresentação de informações em conhecimento e tomada de decisão inteligente.
+
+
+Possui conhecimento em métodos estatísticos e econométricos para além dos modelos de machine learning, prefere inferência causal pois compreende que quem gera os dados são seres humanos inteligentes com decisões não automáticas e sim baseadas em princípios econômicos!
+
+</p>
+<hr />
+<center>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiMTgyNGY1ZWMtOWE5MS00YzRiLTg3YzAtNWU0YzQ1YzY1YzZhIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9" frameborder="0" allowFullScreen="true">
+</iframe>
+</center>
+<hr />
+<p><span class="math display">\[\\[1in]\]</span></p>
+<hr />
+<hr />
+</div>
+<div id="descrição-do-teste" class="section level1">
+<h1>Descrição do teste</h1>
+<p>Pode ser vista neste repo do Github</p>
+<ul>
+<li><a href="https://github.com/quaest-pesquisa/avaliacao_tecnica/blob/main/estagio_processamento/instrucoes.md">quaest-pesquisa/avaliacao_tecnica</a></li>
+</ul>
+</div>
+<div id="lendo-os-dados" class="section level1">
+<h1>Lendo os dados</h1>
+<pre class="r"><code>library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(plotly)
+suppressMessages(library(DT))
+library(readxl)
+
+url&lt;-&quot;https://github.com/quaest-pesquisa/avaliacao_tecnica/blob/main/estagio_processamento/bd_surveyquaest.xlsx?raw=true&quot;
+bd_surveyquaest &lt;- tempfile()
+download.file(url, bd_surveyquaest, mode=&quot;wb&quot;)
+bd_surveyquaest&lt;-read_excel(path = bd_surveyquaest, sheet = 1) # Carrego a leitura dos dados diretamente no repositorio do Github
+
+glimpse(bd_surveyquaest) # Gero um preview dos dados</code></pre>
+<pre><code>Rows: 1,000
+Columns: 7
+$ sbjnum   &lt;dbl&gt; 136037235, 136037575, 136038074, 136041069, 136041107, 136...
+$ sexo     &lt;chr&gt; &quot;Masculino&quot;, &quot;Masculino&quot;, &quot;Masculino&quot;, &quot;Masculino&quot;, &quot;Mascu...
+$ idade    &lt;dbl&gt; 57, 32, 70, 50, 24, 58, 32, 17, 45, 24, 30, 24, 35, 21, 71...
+$ rendaf   &lt;chr&gt; &quot;De R$ 2.091,00 a R$ 3.135,00 (+ de 2SM até 3 SM)&quot;, &quot;De R$...
+$ esc      &lt;chr&gt; &quot;Ensino médio completo&quot;, &quot;Ensino médio completo&quot;, &quot;Ensino ...
+$ aval_gov &lt;chr&gt; &quot;Regular positiva&quot;, &quot;Boa&quot;, &quot;Boa&quot;, &quot;Ótima&quot;, &quot;Boa&quot;, &quot;Regular...
+$ voto1    &lt;chr&gt; &quot;Candidato 2&quot;, &quot;Ninguém/Branco/Nulo&quot;, &quot;Candidato 2&quot;, &quot;Cand...</code></pre>
+<p>O dicionário dessas variáveis pode ser consultado no repositório:</p>
+<ul>
+<li><code>sbjnum</code>: id do respondente</li>
+<li><code>sexo</code>: sexo do respondente</li>
+<li><code>idade</code>: idade (numérica) do respondente</li>
+<li><code>rendaf</code>: renda familiar do respondente</li>
+<li><code>esc</code>: escolaridade do respondente</li>
+<li><code>aval_gov</code>: avaliação do governo</li>
+<li><code>voto1</code>: intenção de voto do respondente.</li>
+</ul>
+</div>
+<div id="qual-o-de-intenção-de-voto-para-cada-candidato" class="section level1">
+<h1>Qual o % de intenção de voto para cada candidato ?</h1>
+<pre class="r"><code>perc_int_voto &lt;- bd_surveyquaest %&gt;%
+  group_by(voto1) %&gt;%
+  summarise(total_de_votos = n()) %&gt;%
+  mutate(percentual_int_voto = paste(total_de_votos/sum(total_de_votos)*100,&quot;%&quot;)) %&gt;%
+  arrange(desc(total_de_votos))
+
+datatable(perc_int_voto)</code></pre>
+<div id="htmlwidget-308897bec906f5be4e5f" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-308897bec906f5be4e5f">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["Candidato 2","Ninguém/Branco/Nulo","NS/NR","Candidato 1","Candidato 8","Candidato 5","Candidato 10","Candidato 9","Candidato 3","Candidato 4","Candidato 6","Candidato 7","Candidato 12","Candidato 14","Candidato 11","Candidato 13"],[523,142,140,42,26,25,20,19,16,12,10,7,6,6,3,3],["52.3 %","14.2 %","14 %","4.2 %","2.6 %","2.5 %","2 %","1.9 %","1.6 %","1.2 %","1 %","0.7 %","0.6 %","0.6 %","0.3 %","0.3 %"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>voto1<\/th>\n      <th>total_de_votos<\/th>\n      <th>percentual_int_voto<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":2},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>Podemos gerar um gráfico:</p>
+<pre class="r"><code>ggplotly(ggplot(perc_int_voto,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
+  geom_bar(position=&quot;dodge&quot;,stat =&quot;identity&quot;)+
+  geom_text(aes(label=percentual_int_voto), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle(&quot;Percentual de intenção de voto por candidato&quot;)+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x</code></pre>
+<div id="htmlwidget-89bd48825175ee8db9af" style="width:864px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-89bd48825175ee8db9af">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"y":[523,142,140,42,26,25,20,19,16,12,10,7,6,6,3,3],"text":["reorder(voto1, -total_de_votos): Candidato 2<br />total_de_votos: 523","reorder(voto1, -total_de_votos): Ninguém/Branco/Nulo<br />total_de_votos: 142","reorder(voto1, -total_de_votos): NS/NR<br />total_de_votos: 140","reorder(voto1, -total_de_votos): Candidato 1<br />total_de_votos:  42","reorder(voto1, -total_de_votos): Candidato 8<br />total_de_votos:  26","reorder(voto1, -total_de_votos): Candidato 5<br />total_de_votos:  25","reorder(voto1, -total_de_votos): Candidato 10<br />total_de_votos:  20","reorder(voto1, -total_de_votos): Candidato 9<br />total_de_votos:  19","reorder(voto1, -total_de_votos): Candidato 3<br />total_de_votos:  16","reorder(voto1, -total_de_votos): Candidato 4<br />total_de_votos:  12","reorder(voto1, -total_de_votos): Candidato 6<br />total_de_votos:  10","reorder(voto1, -total_de_votos): Candidato 7<br />total_de_votos:   7","reorder(voto1, -total_de_votos): Candidato 12<br />total_de_votos:   6","reorder(voto1, -total_de_votos): Candidato 14<br />total_de_votos:   6","reorder(voto1, -total_de_votos): Candidato 11<br />total_de_votos:   3","reorder(voto1, -total_de_votos): Candidato 13<br />total_de_votos:   3"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"y":[523,142,140,42,26,25,20,19,16,12,10,7,6,6,3,3],"text":["52.3 %","14.2 %","14 %","4.2 %","2.6 %","2.5 %","2 %","1.9 %","1.6 %","1.2 %","1 %","0.7 %","0.6 %","0.6 %","0.3 %","0.3 %"],"hovertext":["percentual_int_voto: 52.3 %<br />reorder(voto1, -total_de_votos): Candidato 2<br />total_de_votos: 523","percentual_int_voto: 14.2 %<br />reorder(voto1, -total_de_votos): Ninguém/Branco/Nulo<br />total_de_votos: 142","percentual_int_voto: 14 %<br />reorder(voto1, -total_de_votos): NS/NR<br />total_de_votos: 140","percentual_int_voto: 4.2 %<br />reorder(voto1, -total_de_votos): Candidato 1<br />total_de_votos:  42","percentual_int_voto: 2.6 %<br />reorder(voto1, -total_de_votos): Candidato 8<br />total_de_votos:  26","percentual_int_voto: 2.5 %<br />reorder(voto1, -total_de_votos): Candidato 5<br />total_de_votos:  25","percentual_int_voto: 2 %<br />reorder(voto1, -total_de_votos): Candidato 10<br />total_de_votos:  20","percentual_int_voto: 1.9 %<br />reorder(voto1, -total_de_votos): Candidato 9<br />total_de_votos:  19","percentual_int_voto: 1.6 %<br />reorder(voto1, -total_de_votos): Candidato 3<br />total_de_votos:  16","percentual_int_voto: 1.2 %<br />reorder(voto1, -total_de_votos): Candidato 4<br />total_de_votos:  12","percentual_int_voto: 1 %<br />reorder(voto1, -total_de_votos): Candidato 6<br />total_de_votos:  10","percentual_int_voto: 0.7 %<br />reorder(voto1, -total_de_votos): Candidato 7<br />total_de_votos:   7","percentual_int_voto: 0.6 %<br />reorder(voto1, -total_de_votos): Candidato 12<br />total_de_votos:   6","percentual_int_voto: 0.6 %<br />reorder(voto1, -total_de_votos): Candidato 14<br />total_de_votos:   6","percentual_int_voto: 0.3 %<br />reorder(voto1, -total_de_votos): Candidato 11<br />total_de_votos:   3","percentual_int_voto: 0.3 %<br />reorder(voto1, -total_de_votos): Candidato 13<br />total_de_votos:   3"],"textfont":{"size":9.4488188976378,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":75.4630867834751,"l":28.4931506849315},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Percentual de intenção de voto por candidato","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,16.6],"tickmode":"array","ticktext":["Candidato 2","Ninguém/Branco/Nulo","NS/NR","Candidato 1","Candidato 8","Candidato 5","Candidato 10","Candidato 9","Candidato 3","Candidato 4","Candidato 6","Candidato 7","Candidato 12","Candidato 14","Candidato 11","Candidato 13"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"categoryorder":"array","categoryarray":["Candidato 2","Ninguém/Branco/Nulo","NS/NR","Candidato 1","Candidato 8","Candidato 5","Candidato 10","Candidato 9","Candidato 3","Candidato 4","Candidato 6","Candidato 7","Candidato 12","Candidato 14","Candidato 11","Candidato 13"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-26.15,549.15],"tickmode":"array","ticktext":["0","100","200","300","400","500"],"tickvals":[0,100,200,300,400,500],"categoryorder":"array","categoryarray":["0","100","200","300","400","500"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"25bc59882705":{"x":{},"y":{},"type":"bar"},"25bc3ddd7bbb":{"label":{},"x":{},"y":{}}},"cur_data":"25bc59882705","visdat":{"25bc59882705":["function (y) ","x"],"25bc3ddd7bbb":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>Conforme facilmente mostrados pela tabela e o gráfico acima gerados podemos concluir que:</p>
+<ul>
+<li><p>O Candidato 2 foi o que obteve maior percentual de intenção de voto dentre os demais entrevistados com 52,3%;</p></li>
+<li><p>Em seguida, os votos do tipo Ninguém/Branco/Nulo atingiram um percentual de 14,2%;</p></li>
+<li><p>Logo após, NS/NR chegaram a 14%;</p></li>
+<li><p>Após os acima mencionados, temos o Candidato 1 com irrisórios 4,2% das intenções de voto;</p></li>
+<li><p>Os demais candidatos se somarmos os seus percentuais de intenção de votos atingem cerca de 15,3%</p></li>
+</ul>
+</div>
+<div id="qual-o-candidato-com-maior-de-intenção-de-voto-entre-as-mulheres" class="section level1">
+<h1>Qual o candidato com maior % de intenção de voto entre as MULHERES?</h1>
+<p>Separando/filtrando SOMENTE o grupo das mulheres (<code>feminino</code>) temos:</p>
+<pre class="r"><code>int_voto_sexo &lt;- bd_surveyquaest %&gt;%
+  filter(sexo == &quot;Feminino&quot;) %&gt;%
+  group_by(sexo,voto1) %&gt;%
+  summarise(total_de_votos = n()) %&gt;%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),&quot;%&quot;)) %&gt;%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_sexo)</code></pre>
+<div id="htmlwidget-f50d185b3e88505fc96e" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f50d185b3e88505fc96e">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"],["Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino","Feminino"],["Candidato 2","NS/NR","Ninguém/Branco/Nulo","Candidato 10","Candidato 5","Candidato 8","Candidato 1","Candidato 3","Candidato 6","Candidato 9","Candidato 14","Candidato 4","Candidato 12","Candidato 7","Candidato 13","Candidato 11"],[295,83,72,14,14,14,11,9,7,7,6,4,3,3,2,1],["54.13 %","15.23 %","13.21 %","2.57 %","2.57 %","2.57 %","2.02 %","1.65 %","1.28 %","1.28 %","1.1 %","0.73 %","0.55 %","0.55 %","0.37 %","0.18 %"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>sexo<\/th>\n      <th>voto1<\/th>\n      <th>total_de_votos<\/th>\n      <th>percentual_int_voto<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":3},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>Podemos gerar um gráfico:</p>
+<pre class="r"><code>ggplotly(ggplot(int_voto_sexo,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
+  geom_bar(position=&quot;dodge&quot;,stat =&quot;identity&quot;)+
+  geom_text(aes(label=percentual_int_voto), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle(&quot;Percentual de intenção de voto por candidato entre as mulheres&quot;)+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x</code></pre>
+<div id="htmlwidget-b3a3ceab35c51e0d6cd5" style="width:864px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b3a3ceab35c51e0d6cd5">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999],"base":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"y":[295,83,72,14,14,14,11,9,7,7,6,4,3,3,2,1],"text":["reorder(voto1, -total_de_votos): Candidato 2<br />total_de_votos: 295","reorder(voto1, -total_de_votos): NS/NR<br />total_de_votos:  83","reorder(voto1, -total_de_votos): Ninguém/Branco/Nulo<br />total_de_votos:  72","reorder(voto1, -total_de_votos): Candidato 10<br />total_de_votos:  14","reorder(voto1, -total_de_votos): Candidato 5<br />total_de_votos:  14","reorder(voto1, -total_de_votos): Candidato 8<br />total_de_votos:  14","reorder(voto1, -total_de_votos): Candidato 1<br />total_de_votos:  11","reorder(voto1, -total_de_votos): Candidato 3<br />total_de_votos:   9","reorder(voto1, -total_de_votos): Candidato 6<br />total_de_votos:   7","reorder(voto1, -total_de_votos): Candidato 9<br />total_de_votos:   7","reorder(voto1, -total_de_votos): Candidato 14<br />total_de_votos:   6","reorder(voto1, -total_de_votos): Candidato 4<br />total_de_votos:   4","reorder(voto1, -total_de_votos): Candidato 12<br />total_de_votos:   3","reorder(voto1, -total_de_votos): Candidato 7<br />total_de_votos:   3","reorder(voto1, -total_de_votos): Candidato 13<br />total_de_votos:   2","reorder(voto1, -total_de_votos): Candidato 11<br />total_de_votos:   1"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"y":[295,83,72,14,14,14,11,9,7,7,6,4,3,3,2,1],"text":["54.13 %","15.23 %","13.21 %","2.57 %","2.57 %","2.57 %","2.02 %","1.65 %","1.28 %","1.28 %","1.1 %","0.73 %","0.55 %","0.55 %","0.37 %","0.18 %"],"hovertext":["percentual_int_voto: 54.13 %<br />reorder(voto1, -total_de_votos): Candidato 2<br />total_de_votos: 295","percentual_int_voto: 15.23 %<br />reorder(voto1, -total_de_votos): NS/NR<br />total_de_votos:  83","percentual_int_voto: 13.21 %<br />reorder(voto1, -total_de_votos): Ninguém/Branco/Nulo<br />total_de_votos:  72","percentual_int_voto: 2.57 %<br />reorder(voto1, -total_de_votos): Candidato 10<br />total_de_votos:  14","percentual_int_voto: 2.57 %<br />reorder(voto1, -total_de_votos): Candidato 5<br />total_de_votos:  14","percentual_int_voto: 2.57 %<br />reorder(voto1, -total_de_votos): Candidato 8<br />total_de_votos:  14","percentual_int_voto: 2.02 %<br />reorder(voto1, -total_de_votos): Candidato 1<br />total_de_votos:  11","percentual_int_voto: 1.65 %<br />reorder(voto1, -total_de_votos): Candidato 3<br />total_de_votos:   9","percentual_int_voto: 1.28 %<br />reorder(voto1, -total_de_votos): Candidato 6<br />total_de_votos:   7","percentual_int_voto: 1.28 %<br />reorder(voto1, -total_de_votos): Candidato 9<br />total_de_votos:   7","percentual_int_voto: 1.1 %<br />reorder(voto1, -total_de_votos): Candidato 14<br />total_de_votos:   6","percentual_int_voto: 0.73 %<br />reorder(voto1, -total_de_votos): Candidato 4<br />total_de_votos:   4","percentual_int_voto: 0.55 %<br />reorder(voto1, -total_de_votos): Candidato 12<br />total_de_votos:   3","percentual_int_voto: 0.55 %<br />reorder(voto1, -total_de_votos): Candidato 7<br />total_de_votos:   3","percentual_int_voto: 0.37 %<br />reorder(voto1, -total_de_votos): Candidato 13<br />total_de_votos:   2","percentual_int_voto: 0.18 %<br />reorder(voto1, -total_de_votos): Candidato 11<br />total_de_votos:   1"],"textfont":{"size":9.4488188976378,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":75.4630867834751,"l":28.4931506849315},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Percentual de intenção de voto por candidato entre as mulheres","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,16.6],"tickmode":"array","ticktext":["Candidato 2","NS/NR","Ninguém/Branco/Nulo","Candidato 10","Candidato 5","Candidato 8","Candidato 1","Candidato 3","Candidato 6","Candidato 9","Candidato 14","Candidato 4","Candidato 12","Candidato 7","Candidato 13","Candidato 11"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"categoryorder":"array","categoryarray":["Candidato 2","NS/NR","Ninguém/Branco/Nulo","Candidato 10","Candidato 5","Candidato 8","Candidato 1","Candidato 3","Candidato 6","Candidato 9","Candidato 14","Candidato 4","Candidato 12","Candidato 7","Candidato 13","Candidato 11"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-14.75,309.75],"tickmode":"array","ticktext":["0","100","200","300"],"tickvals":[0,100,200,300],"categoryorder":"array","categoryarray":["0","100","200","300"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"25bcf477279":{"x":{},"y":{},"type":"bar"},"25bc6abc2c07":{"label":{},"x":{},"y":{}}},"cur_data":"25bcf477279","visdat":{"25bcf477279":["function (y) ","x"],"25bc6abc2c07":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>Por fim podemos concluir que o candidato com maior % de intenção de voto entre as MULHERES foi o Candidato 2 com um total de 295 votos no grupo das votantes do sexo feminino detendo cerca de 54,13% das intenções.</p>
+</div>
+<div id="o-candidato-que-lidera-as-intenções-de-voto-é-o-candidato-de-situação-ou-oposição-ao-governo" class="section level1">
+<h1>O candidato que lidera as intenções de voto é o candidato de situação ou oposição ao governo ?</h1>
+<p>Os dados apresentados nas variáveis coletadas neste dataset são insifucientes para respondermos quem é situação ou quem é oposição. Podemos fazer um exercício para investigarmos as avaliações dadas pelos respondentes da pesquisa:</p>
+<pre class="r"><code>avaliacao_do_governo &lt;- bd_surveyquaest %&gt;%
+  filter(voto1 == &quot;Candidato 2&quot;) %&gt;% # Filtra somente o Candidato 2 pra tabela
+  group_by(voto1, aval_gov) %&gt;%
+  summarise(contagem = n()) %&gt;%
+  mutate(percentual = paste(round((contagem/sum(contagem))*100,2),&quot;%&quot;)  ) %&gt;%
+  arrange(desc(contagem))
+datatable(avaliacao_do_governo)</code></pre>
+<div id="htmlwidget-dab5d1e0f101aca40d26" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dab5d1e0f101aca40d26">{"x":{"filter":"none","data":[["1","2","3","4","5","6","7"],["Candidato 2","Candidato 2","Candidato 2","Candidato 2","Candidato 2","Candidato 2","Candidato 2"],["Boa","Ótima","Regular positiva","Regular negativa","NS/NR","Péssima","Ruim"],[300,154,59,7,1,1,1],["57.36 %","29.45 %","11.28 %","1.34 %","0.19 %","0.19 %","0.19 %"]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>voto1<\/th>\n      <th>aval_gov<\/th>\n      <th>contagem<\/th>\n      <th>percentual<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":3},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+<p>Podemos mostrar isso graficamente:</p>
+<pre class="r"><code>ggplotly(ggplot(avaliacao_do_governo,aes(x= reorder(aval_gov,-contagem), contagem))+
+  geom_bar(position=&quot;dodge&quot;,stat =&quot;identity&quot;)+
+  geom_text(aes(label=percentual), 
+            position=position_dodge(width=0.9),
+            vjust=-0.25,
+            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle(&quot;Percentual de avaliação dos optantes pelo Candidato 2&quot;)+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x</code></pre>
+<div id="htmlwidget-40e0c721ef6589bf13e8" style="width:864px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-40e0c721ef6589bf13e8">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9],"base":[0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7],"y":[300,154,59,7,1,1,1],"text":["reorder(aval_gov, -contagem): Boa<br />contagem: 300","reorder(aval_gov, -contagem): Ótima<br />contagem: 154","reorder(aval_gov, -contagem): Regular positiva<br />contagem:  59","reorder(aval_gov, -contagem): Regular negativa<br />contagem:   7","reorder(aval_gov, -contagem): NS/NR<br />contagem:   1","reorder(aval_gov, -contagem): Péssima<br />contagem:   1","reorder(aval_gov, -contagem): Ruim<br />contagem:   1"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1,2,3,4,5,6,7],"y":[300,154,59,7,1,1,1],"text":["57.36 %","29.45 %","11.28 %","1.34 %","0.19 %","0.19 %","0.19 %"],"hovertext":["percentual: 57.36 %<br />reorder(aval_gov, -contagem): Boa<br />contagem: 300","percentual: 29.45 %<br />reorder(aval_gov, -contagem): Ótima<br />contagem: 154","percentual: 11.28 %<br />reorder(aval_gov, -contagem): Regular positiva<br />contagem:  59","percentual: 1.34 %<br />reorder(aval_gov, -contagem): Regular negativa<br />contagem:   7","percentual: 0.19 %<br />reorder(aval_gov, -contagem): NS/NR<br />contagem:   1","percentual: 0.19 %<br />reorder(aval_gov, -contagem): Péssima<br />contagem:   1","percentual: 0.19 %<br />reorder(aval_gov, -contagem): Ruim<br />contagem:   1"],"textfont":{"size":9.4488188976378,"color":"rgba(0,0,0,1)"},"type":"scatter","mode":"text","hoveron":"points","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":66.3119637590192,"l":28.4931506849315},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Percentual de avaliação dos optantes pelo Candidato 2","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0.5,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,7.6],"tickmode":"array","ticktext":["Boa","Ótima","Regular positiva","Regular negativa","NS/NR","Péssima","Ruim"],"tickvals":[1,2,3,4,5,6,7],"categoryorder":"array","categoryarray":["Boa","Ótima","Regular positiva","Regular negativa","NS/NR","Péssima","Ruim"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-45,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-15,315],"tickmode":"array","ticktext":["0","100","200","300"],"tickvals":[0,100,200,300],"categoryorder":"array","categoryarray":["0","100","200","300"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"25bc3779231c":{"x":{},"y":{},"type":"bar"},"25bc38616006":{"label":{},"x":{},"y":{}}},"cur_data":"25bc3779231c","visdat":{"25bc3779231c":["function (y) ","x"],"25bc38616006":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="visualização-dos-dados-da-pesquisa" class="section level1">
+<h1>Visualização dos dados da pesquisa</h1>
+<p>Para utilizarmos todos os resultados obtidos com os entrevistados, por todas as perguntas levantadas, criamos um dashboard que nos permite cruzar diferentes fitros de categorização.</p>
+<p>Para isso, no painel abaixo, selecione conforme as combinações de categorização que desejar e em seguida observe a árvore hierárquica demonstrando os percentuais para cada grupo de variável filtrada/selecionada.</p>
+<p>A tabela acima demonstra o conjunto de dados completo e variável conforme filtro selecionado. Os gráficos de avaliação do governo apresentam os percentuais classificados pelos respondentes seguido do gráfico das médias das idades dos respondentes.</p>
+<p>A árvore de classificação hierárquica nos possibilita visualmente cruzarmos diferentes combinações com as variáveis/perguntas respondidas pelos entrevistados.</p>
+<iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiN2UyOWEzNWQtM2RmNS00NTg1LWI5N2YtNmRlZTk3YjJlNWNmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&amp;pageName=ReportSection" frameborder="0" allowFullScreen="true">
+</iframe>
+<p><span class="math display">\[\\[1in]\]</span></p>
+<hr />
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<p>R Core Team (2020). <strong>R: A language and environment for statistical computing.</strong> R Foundation for Statistical Computing, Vienna, Austria. URL <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
