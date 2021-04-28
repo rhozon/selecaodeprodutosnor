@@ -25,9 +25,63 @@ knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs
 
 ***
 
+
+$$\\[1in]$$
+
+$$\\[1in]$$
+
+
+***
+
 # Sobre o autor
 
 ![](https://rhozon.github.io/site/me.jpg)
+
+```{r echo=FALSE}
+
+# Libraries
+library(igraph)
+library(networkD3)
+library(dplyr)
+
+# A = Economia
+# B = Econometria
+# C = Microeconometria
+# D = Modelos preditivos
+# E = Métodos estatísticos
+# K = Data Viz
+# M = Data Science
+# Z = Linguagem R
+
+
+# create a dataset:
+data <- data_frame(
+  from=c("Economia", "Economia", "Econometria", "Modelos preditivos", "Microeconometria", "Modelos preditivos", "Métodos estatísticos", "Econometria", "Microeconometria", "Modelos preditivos", "Data Viz", "Economia", "Data Science"),
+  to=c("Econometria", "Métodos estatísticos", "Analytics", "Economia", "Microeconometria", "Economia", "Econometria", "Linguagem R", "Economia", "Microeconometria", "Economia", "Econometria", "Data Viz")
+)
+
+# Plot
+p <- simpleNetwork(data, height="100px", width="100px",        
+        Source = 1,                 # column number of source
+        Target = 2,                 # column number of target
+        linkDistance = 10,          # distance between node. Increase this value to have more space between nodes
+        charge = -900,                # numeric value indicating either the strength of the node repulsion (negative value) or attraction (positive value)
+        fontSize = 14,               # size of the node names
+        fontFamily = "serif",       # font og node names
+        linkColour = "#666",        # colour of edges, MUST be a common colour for the whole graph
+        nodeColour = "#69b3a2",     # colour of nodes, MUST be a common colour for the whole graph
+        opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
+        zoom = T                    # Can you zoom on the figure?
+        )
+
+p
+
+
+```
+
+
+
+
 
 <style>
 p.comment {
@@ -108,7 +162,7 @@ library(readxl)
 url<-"https://github.com/quaest-pesquisa/avaliacao_tecnica/blob/main/estagio_processamento/bd_surveyquaest.xlsx?raw=true"
 bd_surveyquaest <- tempfile()
 download.file(url, bd_surveyquaest, mode="wb")
-bd_surveyquaest<-read_excel(path = bd_surveyquaest, sheet = 1) # Carrego a leitura dos dados diretamente no repositorio do Github
+bd_surveyquaest <- read_excel(path = bd_surveyquaest, sheet = 1) # Carrego a leitura dos dados diretamente no repositorio do Github
 
 glimpse(bd_surveyquaest) # Gero um preview dos dados
 
@@ -125,83 +179,53 @@ O dicionário dessas variáveis pode ser consultado no repositório:
 + ``aval_gov``: avaliação do governo
 + ``voto1``: intenção de voto do respondente.
 
+# Crie uma função em alguma linguagem de programação, preferencialmente em R ou Python, que automatize a construção de tabelas de contingência
 
-# Qual o % de intenção de voto para cada candidato ? 
+Como o objetivo é identificar se há uma diferença sociodemográfica na intenção de voto, podemos criar tabelas de contingência para cada pergunta do survey buscando comparar com a intenção de voto.
+
+Deste modo, **no R não há necessidade de se criar uma função pra isso**, uma vez que estas já estão disponíveis em seu core e em pacotes específicos. Em especial utilizaremos o pacote ``DescTools`` com a função ``Freq`` para gerarmos as tabelas univariadas de frequências absoluta e relativa(s):
 
 ```{r}
 
-perc_int_voto <- bd_surveyquaest %>%
-  group_by(voto1) %>%
-  summarise(total_de_votos = n()) %>%
-  mutate(percentual_int_voto = paste(total_de_votos/sum(total_de_votos)*100,"%")) %>%
-  arrange(desc(total_de_votos))
+# Exemplos de funções do R para criacao de tabelas de contingencia
 
-datatable(perc_int_voto)
+library(DescTools)
+
+Freq(bd_surveyquaest$sexo, ord="desc") # Tabela de contingencia do sexo dos entrevistados
+
+t(prop.table(table(bd_surveyquaest$sexo, 
+                   bd_surveyquaest$voto1))*100) # Tabela de Contingencia do sexo pela intencao de voto (em %)
+
 ```
 
 
-Podemos gerar um gráfico:
+Todavia as possibilidades de manipulação dos outputs gerados por essas funções prontas ainda são limitados:
+
+ + no que diz respeito ao print como tibble, 
+ 
+ + em relação a ordenação por participação
+
+Deste modo, ao utilizarmos o pacote ``dplyr`` e o pacote ``DT`` podemos gerar tabelas de frequências e resultados personalizadas para uma melhor visualização e interpretação:
 
 
 ```{r fig.width=9}
 
-ggplotly(ggplot(perc_int_voto,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
-  geom_bar(position="dodge",stat ="identity")+
-  geom_text(aes(label=percentual_int_voto), 
-            position=position_dodge(width=0.9),
-            vjust=-0.25,
-            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
-ggtitle("Percentual de intenção de voto por candidato")+
-  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
-        axis.title.y = element_blank())+
-  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
-
-```
-
-Conforme facilmente mostrados pela tabela e o gráfico acima gerados podemos concluir que:
-
-+ O Candidato 2 foi o que obteve maior percentual de intenção de voto dentre os demais entrevistados com 52,3\%;
-
-+ Em seguida, os votos do tipo Ninguém/Branco/Nulo atingiram um percentual de 14,2\%;
-
-+ Logo após, NS/NR chegaram a 14\%;
-
-+ Após os acima mencionados, temos o Candidato 1 com irrisórios 4,2\% das intenções de voto;
-
-+ Os demais candidatos se somarmos os seus percentuais de intenção de votos atingem cerca de 15,3%
-
-# Qual o candidato com maior % de intenção de voto entre as MULHERES?
-
-Separando/filtrando SOMENTE o grupo das mulheres (``feminino``) temos:
-
-```{r}
-
 int_voto_sexo <- bd_surveyquaest %>%
-  filter(sexo == "Feminino") %>%
   group_by(sexo,voto1) %>%
   summarise(total_de_votos = n()) %>%
   mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
   arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
 
-datatable(int_voto_sexo)
-
-
-```
-
-
-
-Podemos gerar um gráfico:
-
-```{r fig.width=9}
+datatable(int_voto_sexo) # Tabela de contigencia do sexo pela intenção de voto
 
 ggplotly(ggplot(int_voto_sexo,aes(x= reorder(voto1,-total_de_votos),total_de_votos))+
-  geom_bar(position="dodge",stat ="identity")+
-  geom_text(aes(label=percentual_int_voto), 
-            position=position_dodge(width=0.9),
-            vjust=-0.25,
-            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
-ggtitle("Percentual de intenção de voto por candidato entre as mulheres")+
+  geom_bar(position="dodge",stat ="identity", aes(fill=sexo))+
+  geom_text(aes(label=percentual_int_voto),
+            angle = 45,
+            #position = position_dodge(width = 0.3),
+            #vjust = 0.15,
+            size = 2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
+ggtitle("Percentual de intenção de voto por candidato pelo sexo dos entrevistados")+
   theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
         axis.title.y = element_blank())+
@@ -209,52 +233,220 @@ ggtitle("Percentual de intenção de voto por candidato entre as mulheres")+
 
 ```
 
-Por fim podemos concluir que o candidato com maior % de intenção de voto entre as MULHERES foi o Candidato 2 com um total de 295 votos no grupo das votantes do sexo feminino detendo cerca de 54,13% das intenções.
+Selecione no gráfico interativo acima, qual sexo do entrevistado desejas visualizar por intenção de voto. Da mesma maneira a tabela acima gerada também possibilita as seleções de filtragem por ordem de classificação (ascendente ou decrescente).
 
-# O candidato que lidera as intenções de voto é o candidato de situação ou oposição ao governo ?
+Podemos partir para a construção de uma tabela de cruzamento dos dados das faixas de idades pela intenção de voto.
 
-Os dados apresentados nas variáveis coletadas neste dataset são insifucientes para respondermos quem é situação ou quem é oposição. Podemos fazer um exercício para investigarmos as avaliações dadas pelos respondentes da pesquisa:
+```{r fig.width=11}
+
+int_voto_idades <- bd_surveyquaest %>%
+  group_by(idade,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_idades) # Tabela de contigencia do sexo pela intenção de voto
+
+ggplotly(
+ggplot(int_voto_idades,aes(x= reorder(voto1,-total_de_votos), 
+                                    y = total_de_votos, 
+                                    group=idade,
+                                    colour=voto1))+
+  geom_bar(position="dodge",stat ="identity")+
+ggtitle("Volume de intenção de voto por candidato pelas idades dos entrevistados")+
+  theme(plot.title = element_text(hjust = -0.25))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()) # Nao mostre reorder(-valores) como label no eixo x
+)
+
+```
+
+
+Verifique que, como o Candidato 2 é o que apresenta maior intenção de votos de um modo geral, ao cruzarmos as idades dos respondentes, verificamos um pico nas pessoas de 60 anos de idade nessa escolha. (utilize o zoom no gráfico para o outlier no gráfico acima do candidato 2)
+
+
+Partimos então para uma análise dos níveis de renda da família pelas intenções de voto dos participantes da pesquisa. Deste modo, construimos nossa tabela de contigência interativa. Primeiro, vamos verificar os níveis de estratificação das possibilidades de faixa de renda que poderiam ser apontados pelos respondentes:
 
 ```{r}
 
-avaliacao_do_governo <- bd_surveyquaest %>%
-  filter(voto1 == "Candidato 2") %>% # Filtra somente o Candidato 2 pra tabela
-  group_by(voto1, aval_gov) %>%
-  summarise(contagem = n()) %>%
-  mutate(percentual = paste(round((contagem/sum(contagem))*100,2),"%")  ) %>%
-  arrange(desc(contagem))
-datatable(avaliacao_do_governo)
+levels(as.factor(bd_surveyquaest$rendaf))
+
+```
+
+Assim, construimos a tabela de contingência:
+
+```{r}
+
+int_voto_renda <- bd_surveyquaest %>%
+  group_by(rendaf,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_renda) # Tabela de contigencia das rendas familiares pela intenção de voto
 
 ```
 
 
-Podemos mostrar isso graficamente:
+Visualmente podemos comparar o cruzamento das faixas de renda pela intenção de voto
 
-```{r fig.width=9}
+```{r fig.width=11}
 
-ggplotly(ggplot(avaliacao_do_governo,aes(x= reorder(aval_gov,-contagem), contagem))+
+ggplotly(ggplot(int_voto_renda,aes(x= reorder(voto1,-total_de_votos),total_de_votos, group=voto1, colour=rendaf))+
   geom_bar(position="dodge",stat ="identity")+
-  geom_text(aes(label=percentual), 
-            position=position_dodge(width=0.9),
-            vjust=-0.25,
-            size=2.5)+ # Insere os rotulos acima das barras de tamanho 2.5
-ggtitle("Percentual de avaliação dos optantes pelo Candidato 2")+
+ ggtitle("Volume de intenção de voto por candidato pela renda familiar dos entrevistados")+
   theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
         axis.title.y = element_blank())+
   theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
 
+```
+
+Veja p. ex., que o Candidato 2 possui uma maior quantidade de intenções de voto nos possíveis eleitores com faixa de renda familiar de ``De R\$ 1.046,00 a R\$ 2.090,00 (+ de 1SM até 2 SM)`` com 138 optantes.
+
+Agora, fazemos o mesmo procedimento para cruzarmos as escolaridades pelas intenções de voto. As posibilidades de escolha dos respondentes na sua escolaridade eram:
+
+```{r}
+
+levels(as.factor(bd_surveyquaest$esc))
 
 ```
 
 
-Enfim, concluímos que ``300`` ou ``57,36%`` dos respondentes da intenção de voto no ``Candidato 2`` avaliam seu governo como ``Boa`` seguido de 26,54% como avaliação ``Ótima`` somando cerca de 86,81% com avaliação positiva de sua geoverno.
+Então construimos as tabelas de contingência:
+
+```{r}
+
+int_voto_esc <- bd_surveyquaest %>%
+  group_by(esc,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_renda) # Tabela de contigencia das rendas familiares pela intenção de voto
+
+```
 
 
+Graficamente:
+
+```{r fig.width=11}
+
+ggplotly(ggplot(int_voto_esc,aes(x= reorder(voto1,-total_de_votos),total_de_votos, group=voto1, colour=esc))+
+  geom_bar(position="dodge",stat ="identity")+
+ ggtitle("Volume de intenção de voto por candidato pela escolaridade dos entrevistados")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+```
 
 
+Deixaremos então o último cruzamento como dentro de uma subseção (a seguir) para um melhor detalhamento.
+
+# Quem avalia o governo de forma positiva, vota em qual candidato ? E quem avalia de forma negativa ?
+
+Para respondermos o cruzamento da quantidade de avaliações positivas e negativas dos candidatos devemos construir inicialmente uma variável que seja capaz de capturar isso.
+
+Os níveis de critério para escolha do respondente foram:
+
+```{r}
+
+as_tibble(levels(as.factor(bd_surveyquaest$aval_gov)))
+
+```
 
 
+Para criarmos essa variável fazemos:
+
+```{r}
+
+bd_surveyquaest <- bd_surveyquaest %>%
+  mutate(avaliacao = case_when(
+                         aval_gov == "Boa" ~ "Positiva",
+                         aval_gov == "NS/NR" ~ "Nula",
+                         aval_gov == "Ótima" ~ "Positiva",
+                         aval_gov == "Péssima" ~"Negativa",
+                         aval_gov == "Regular negativa" ~ "Negativa",
+                         aval_gov == "Regular positiva" ~"Positiva",
+                         aval_gov == "Ruim" ~"Negativa"
+                         ))
+
+glimpse(bd_surveyquaest)
+
+```
+
+
+Agora podemos fazer um cruzamento da intenção de voto por tipo de avaliação. Comecemos por aqueles que fazem uma avaliação positiva:
+
+```{r}
+
+int_voto_aval <- bd_surveyquaest %>%
+  filter(avaliacao == "Positiva") %>%
+  group_by(avaliacao,aval_gov,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_aval) # Tabela de contigencia das avaliacoes positivas pela intenção de voto
+
+```
+
+Veremos somente os que fazem avaliação negativa na tabela de contingência interativa abaixo:
+
+```{r}
+
+int_voto_aval <- bd_surveyquaest %>%
+  filter(avaliacao == "Negativa") %>%
+  group_by(avaliacao,aval_gov,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%")) %>%
+  arrange(desc(total_de_votos)) # Mostre os resultados em ordem decrescente por percentual de intencao de votos
+
+datatable(int_voto_aval) # Tabela de contigencia das avaliacoes negativas pela intenção de voto
+
+
+```
+
+
+Podemos então gerar um gráfico que represente o cruzamento entre as variáveis intenção de voto e avaliação do governo. 
+
+```{r fig.width=11}
+
+int_voto_aval <- bd_surveyquaest %>%
+  group_by(avaliacao,aval_gov,voto1) %>%
+  summarise(total_de_votos = n()) %>%
+  mutate(percentual_int_voto = paste(round(total_de_votos/sum(total_de_votos)*100,2),"%"))
+
+ggplotly(ggplot(int_voto_aval,aes(x= reorder(voto1,-total_de_votos),total_de_votos, group=voto1, colour=aval_gov))+
+  geom_bar(position="dodge",stat ="identity")+
+ ggtitle("Volume de intenção de voto por candidato pela avaliação dos entrevistados")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+```
+
+
+O mesmo gráfico acima criado pode ser "resumido" ao utilizarmos a variável de classificação ``Positiva, Negativa, Nula`` que criamos anteriormente:
+
+```{r fig.width=11}
+
+ggplotly(ggplot(int_voto_aval,aes(x= reorder(voto1,-total_de_votos),total_de_votos, group=voto1, colour=avaliacao))+
+  geom_bar(position="dodge",stat ="identity")+
+ ggtitle("Volume de intenção de voto por candidato pela avaliação dos entrevistados")+
+  theme(plot.title = element_text(hjust = 0.5))+ # Centraliza o titulo do grafico acima
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
+        axis.title.y = element_blank())+
+  theme(axis.title.x=element_blank()))# Nao mostre reorder(-valores) como label no eixo x
+
+```
+
+
+O que nos facilita a interpretação e visualização da estatística que demonstra que uma maior soma de entrevistados fizeram mais avaliações positivas do que negativas ou nulas de seus candidatos. (desmarque a opção das opções de avaliações positivas no gráfico acima, p. ex.)
 
 
 # Visualização dos dados da pesquisa
@@ -267,37 +459,7 @@ A tabela acima demonstra o conjunto de dados completo e variável conforme filtr
 
 A árvore de classificação hierárquica nos possibilita visualmente cruzarmos diferentes combinações com as variáveis/perguntas respondidas pelos entrevistados.
 
-<center>
-
 <iframe width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiN2UyOWEzNWQtM2RmNS00NTg1LWI5N2YtNmRlZTk3YjJlNWNmIiwidCI6IjNlNmRhYTJjLTlhYzUtNDhlYS1iMDBlLWE2MWFiYmZmYWNkYiJ9&pageName=ReportSection" frameborder="0" allowFullScreen="true"></iframe>
-
-</center>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 $$\\[1in]$$
