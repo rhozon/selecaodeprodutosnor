@@ -62,8 +62,8 @@ navbar:
           href: problemset2.html 
         - text: "Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)"
           href: anpreliminar.html          
-        - text: "Análise de Perfil de Crédito"
-          href: perfilcredito.html           
+        - text: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
+          href: fcast.html           
         - text: "Avaliação Quaest"
           href: aval_quaest.html 
         - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"

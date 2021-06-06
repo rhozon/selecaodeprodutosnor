@@ -127,58 +127,6 @@ p
 $$\\[1in]$$
 
 
-# Introdução
-
-
-```{r include = FALSE}
-
-library(quantmod)
-library(dygraphs)
-
-CORN <- getSymbols(params$symbol1, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-CN21.CBT <- getSymbols(params$symbol2, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-Cz21.CBT <- getSymbols(params$symbol3, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-CU21.CBT <- getSymbols(params$symbol4, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-CH22.CBT <- getSymbols(params$symbol5, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-CK22.CBT <- getSymbols(params$symbol6, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-ZC_F <- getSymbols(params$symbol7, auto.assign = FALSE,
-                    from = "2018-01-01", end = Sys.Date())
-
-```
-
-
-
-Esse relatório capta dinamicamente as cotações dos seguintes ativos relacionados as negociações da _commoditie_ milho:
-  
-* ``r params$symbol1`` [CORN (Teucrium Corn Fund)](https://finance.yahoo.com/quote/CORN?p=CORN) $\Rightarrow$ <mark>última cotação ``r Sys.Date()``.</mark>
-
-* ``r params$symbol2`` [CN21.CBT](https://finance.yahoo.com/quote/CN21.CBT/history?p=CN21.CBT) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-* ``r params$symbol3`` [Cz21.CBT](https://finance.yahoo.com/quote/CZ21.CBT/) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-* ``r params$symbol4`` [CU21.CBT](https://finance.yahoo.com/quote/CU21.CBT/) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-* ``r params$symbol5`` [CH22.CBT](https://finance.yahoo.com/quote/CH22.CBT/) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-* ``r params$symbol6`` [CK22.CBT](https://finance.yahoo.com/quote/CK22.CBT/) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-* ``r params$symbol7`` [ZC=F](https://finance.yahoo.com/quote/ZC%3DF/history?p=ZC%3DF) $\Rightarrow$ **Não utilizado como objeto de análise aqui ainda**
-
-Os dados são oriundos do [Yahoo finance](http://finance.yahoo.com). As séries temporais se iniciam em 01/01/2018 e terminam no último valor de fechamento disponível na série, quase que em _real time_.
-
-
 ***
 
 # Conceitos iniciais
@@ -1162,8 +1110,6 @@ coef(garchM.vol) # Coeficientes estimados dos retornos de volume
 
 ```
 
-
-
 Veremos o padrão de resultado do modelo estimado para preços:
 
 ```{r fig.width=8, fig.height=4}
@@ -1182,8 +1128,7 @@ Essas são as estimativas para os preços. Vejamos agora para o volume:
 
 # Padrao da variância condicional de volume
 
-plot.ts(sigma(garchM.vol), ylab="sigma(t)", col="blue")
-
+#plot.ts(sigma(garchM.vol), ylab="sigma(t)", col="blue")
 
 ```
 
@@ -1318,10 +1263,23 @@ infocriteria(garchM.vol22) # GARCH(2,2) retornos do volume
 [CONTINUAR ESCREVENDO]
 
 
+
+
+
+***
+
+&nbsp;
+
+
+## Seleção de modelos pela acurácia e ajuste
+
+
+&nbsp;
+
 ***
 
 
-
+## Simulação de cenários
 
 
 
@@ -1367,11 +1325,11 @@ Granger, C. W. J. **Investigating causal relations by econometric models and cro
 
 Gujarati, D. N., Porter, D. **Econometria Básica**, quinta ed. São Paulo, 2011.
 
-J. Durbin, S. J. Koopman,  **A simple and efficient simulation smoother for state space time series analysis** Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616, https://doi.org/10.1093/biomet/89.3.603 Published: 01 August 2002.
-
 Hyndman, R., J., Athanasopoulos, G. **Forecasting:Principles and Practice**, Monash University, Australia, 2018.
 
 Hull, J.C. **Options, Futures & Other Derivatives,** 5Th ed, 2002, Prentice Hall
+
+J. Durbin, S. J. Koopman,  **A simple and efficient simulation smoother for state space time series analysis** Biometrika, Volume 89, Issue 3, August 2002, Pages 603–616, https://doi.org/10.1093/biomet/89.3.603 Published: 01 August 2002.
 
 Koop, G. **Analysis of economic data.** Nova York: John Wiley & Sons, 2000.
 
@@ -1383,4 +1341,4 @@ Shleifer, A. **Inefficient Markets: an introduction to Behavioral Finance.** Oxf
 
 Thurman W.N. & Fisher M.E, **Chickens, Eggs, and Causality, or Which Came First?**, _American Journal of Agricultural Economics_, 1988, 237-238.
 
- 
+*** 
