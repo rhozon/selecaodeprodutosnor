@@ -66,6 +66,8 @@ navbar:
           href: perfilcredito.html           
         - text: "Avaliação Quaest"
           href: aval_quaest.html 
+        - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"
+          href: exerbolsadeestudos.html 
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
