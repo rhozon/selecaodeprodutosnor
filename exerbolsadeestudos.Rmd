@@ -2,8 +2,12 @@
 title: "Elasticidade-preço da demanda: Preço ideal para bolsas de estudos, método frequentista x bayesiano"
 author: "Rodrigo H. Ozon"
 date: "04/06/2021"
-output: html_document
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
+
 
 ```{r setup, include=FALSE}
 
@@ -144,7 +148,7 @@ $$\\[1in]$$
 ***
 
 
-## Preparação dos dados da pesquisa amostrada
+# Preparação dos dados da pesquisa amostrada
 
 O resultado da pesquisa foi disponibilizado num repositório que pode ser lido diretamente "na nuvem" pelo _chunk_ a seguir:
 
@@ -174,7 +178,7 @@ glimpse(dataset)
 ```
 
 
-### Brainstorm da equipe multidisciplinar de analistas do EAD
+# Brainstorm da equipe multidisciplinar de analistas do EAD
 
 
 Logo, os investidores da plataforma questionaram se até qual nível de baixa de preços sem comprometimento da qualidade dos cursos oferecidos, quanto as nossas vendas mudariam ? Assim, outros questionamentos interessantes foram levantados pela equipe no _brainstorm:_
@@ -190,7 +194,7 @@ Logo, os investidores da plataforma questionaram se até qual nível de baixa de
 
 Um econometrista que participa dessa conversa com a equipe começa a pensar e tenta instigar o surgimento de alguns _insights_ a partir destas interessantes questões debatidas e propõe o seguinte caminho rumo às repostas...
 
-## Elasticidade-preço da demanda e nível de preço ótimo
+# Elasticidade-preço da demanda e nível de preço ótimo
 
 A elasticidade-preço da demanda é a relação percentual entre a variação de quantidade demanda e variação nos preços (%), ou seja, uma análise de sensibilidade sobre a razão entre as duas variáveis, que serve para medir a reação do mercado consumidor às mudanças no preço e consequentemente na função demanda por qualquer produto/serviço.
 
@@ -229,7 +233,7 @@ Ademais outras questões precisam ser verificadas como p. ex. :
 
 + Qual é a estrutura de mercado em que estamos envolvidos ? (monopólio, concorrência perfeita, oligopólio...) A compreensão dos movimentos tomados pelos "tubarões" ou _grandes players_ deste mercado exerce demasiada influência para os que estão na base da pirâmide ?
 
-## Modelo de elasticidade-preço da demanda proposto para preço ótimo
+## Modelo de elasticidade-preço da demanda proposto para preço ótimo (abordagem frequentista)
 
 Obviamente, nem todos os dados que fossem capazes de arranhar a superfície para obtenção de todas essas respostas para as perguntas levantadas acima estarão disponíveis facilmente numa situação real (a menos que a empresa disponha de uma boa grana pra comprar uma pesquisa primária para obtenção precisa desses dados, hehehe), e tendo isso em mente, considerando as restrições orçamentárias da empresa que detinha uma pesquisa amostral feita com muito esmero pela equipe de marketing do EAD atendido, o econometrista consultor, propõe que estimemos a elasticidade-preço da demanda para esse experimento com os dados que estão disponíveis para tal finalidade, mesmo sabendo que a ausência de informações relacionadas ao nível de qualidade dos cursos oferecidos e eventual dados referentes a faixa de renda dos compradores não estejam presente diretamente nos dados da pesquisa amostrada.
 
@@ -285,9 +289,6 @@ Um modelo que considera os efeitos do tempo na análise é incluído e expresso 
 $$
 ln(\mbox{nro_matriculas})_{t} = \alpha + \beta_{2}ln(\mbox{preco_medio})_{t}+u_{t}
 $$
-
-
-
 
 
 
@@ -641,7 +642,7 @@ Com esta visualização, podemos ver como a demanda é fortemente afetada pelos 
 Isso também é consistente com o que vimos anteriormente ao examinar os resumos numéricos das distribuições. Nesses resumos, a média era consideravelmente mais alta quando o valor cobrado pela média dos cursos ficava em R\$ 1,00. Assim, essas visualizações nos fornecem outra ferramenta para ajudar a comunicar as previsões feitas por nosso modelo.
 
 
-## Últimas considerações
+# Últimas considerações
 
 <p >
 <p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
@@ -671,7 +672,7 @@ $$\\[1in]$$
 
 ***
 
-#### Apêndice: Como medir a elasticidade: o modelo log-linear
+# Apêndice: Como medir a elasticidade: o modelo log-linear
 
 Transcrito de Gujarati e Porter (p. 177-178, 2011).
 

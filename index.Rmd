@@ -136,6 +136,13 @@ Tutoriais disponíveis:
 ***
 
 
+#### *Estimando elasticidade-preço da demanda para um EAD utilizando regressão/inferência bayesiana
+
++ Veja como essa rica abordagem é mais rica do ponto de vista de inferência dos reais valores dos parâmetros estimados
+
+***
+
+
 ### *Homework I: Econometrics (Shangai University of Finance)*
 
 ### *Homework II: Econometrics (Shangai University of Finance)*

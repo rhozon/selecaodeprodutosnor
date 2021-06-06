@@ -126,6 +126,7 @@ A operação teve início em 17 de março de 2014 e conta com 71 fases operacion
 ### ``r params$symbol3`` Preço de Fechamento do pregão
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
+
 presAnnotation <- function(dygraph, x, text) {
   dygraph %>%
     dyAnnotation(x, text, attachAtBottom = TRUE, width = 100, height=20)
@@ -178,7 +179,7 @@ presAnnotation <- function(dygraph, x, text) {
 dygraph(Cl(ativo2))%>% 
 dyAnnotation("2019-01-25", text = "A", tooltip = "Rompimento da barragem em Brumadinho")%>%
 presAnnotation("2019-01-25", text = "Rompimento da barragem em Brumadinho")%>%
-  dyShading(from = "2019-01-25", to = "2019-02-26")%>%
+dyShading(from = "2019-01-25", to = "2019-02-26")%>%
   
 dyAnnotation("2020-03-02", text = "A", tooltip = "Corona Day")%>%
 presAnnotation("2020-03-02", text = "Corona Day")%>%   
