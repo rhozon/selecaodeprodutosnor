@@ -1260,7 +1260,7 @@ infocriteria(garchM.vol22) # GARCH(2,2) retornos do volume
 
 
 
-[CONTINUAR ESCREVENDO]
+<mark>[CONTINUAR ESCREVENDO]</mark>
 
 
 
