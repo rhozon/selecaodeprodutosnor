@@ -1,0 +1,364 @@
+---
+title: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
+author: "Rodrigo Hermont Ozon"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+params:
+  symbol1: CORN
+  symbol2: CN21.CBT
+  symbol3: Cz21.CBT
+  symbol4: CU21.CBT
+  symbol5: CH22.CBT
+  symbol6: CK22.CBT
+  symbol7: ZC=F
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+```
+
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong>Economic Time Series Forecasting</strong> 
+ 
+</div>
+
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Forecasting envolve fazer previsões sobre o futuro. É necessário em muitas situações: 
+
+- decidir se construirá outra usina de geração de energia nos próximos dez anos requer previsões de demanda futura; 
+
+- agendar equipe em um call center na próxima semana exige previsões de volumes de chamadas; 
+
+- armazenar um estoque requer previsões de necessidades de estoque. 
+
+As previsões podem ser exigidas com vários anos de antecedência (para o caso de investimentos de capital), ou apenas alguns minutos antes (para roteamento de telecomunicações). Quaisquer que sejam as circunstâncias ou horizontes de tempo envolvidos, a previsão (forecasting) é uma ajuda importante para um planejamento eficaz e inteligente.
+
+</p>
+
+***
+
+
+
+![](https://rhozon.github.io/site/me.jpg)
+
+```{r echo=FALSE}
+
+# Libraries
+library(igraph)
+library(networkD3)
+library(dplyr)
+
+# A = Economia
+# B = Econometria
+# C = Microeconometria
+# D = Modelos preditivos
+# E = Métodos estatísticos
+# K = Data Viz
+# M = Data Science
+# Z = Linguagem R
+# Y = Séries Temporais (forecasting)
+
+
+# create a dataset:
+data <- data_frame(
+  from=c("Economia", "Economia", "Econometria", "Modelos preditivos", "Microeconometria", "Modelos preditivos", "Métodos estatísticos", "Econometria", "Microeconometria", "Modelos preditivos", "Data Viz", "Economia", "Data Science", "Séries Temporais (forecasting)"),
+  
+  to=c("Econometria", "Métodos estatísticos", "Analytics", "Economia", "Microeconometria", "Economia", "Econometria", "Linguagem R", "Economia", "Microeconometria", "Economia", "Econometria", "Data Viz", "Econometria")
+)
+
+# Plot
+p <- simpleNetwork(data, height="100px", width="100px",        
+        Source = 1,                 # column number of source
+        Target = 2,                 # column number of target
+        linkDistance = 10,          # distance between node. Increase this value to have more space between nodes
+        charge = -900,                # numeric value indicating either the strength of the node repulsion (negative value) or attraction (positive value)
+        fontSize = 14,               # size of the node names
+        fontFamily = "serif",       # font og node names
+        linkColour = "#666",        # colour of edges, MUST be a common colour for the whole graph
+        nodeColour = "#69b3a2",     # colour of nodes, MUST be a common colour for the whole graph
+        opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
+        zoom = T                    # Can you zoom on the figure?
+        )
+
+p
+
+
+```
+
+
+***
+
+$$\\[1in]$$
+
+
+# Introdução
+
+
+```{r include = FALSE}
+
+library(quantmod)
+library(dygraphs)
+
+CORN <- getSymbols(params$symbol1, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+CN21.CBT <- getSymbols(params$symbol2, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+Cz21.CBT <- getSymbols(params$symbol3, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+CU21.CBT <- getSymbols(params$symbol4, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+CH22.CBT <- getSymbols(params$symbol5, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+CK22.CBT <- getSymbols(params$symbol6, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+ZC_F <- getSymbols(params$symbol7, auto.assign = FALSE,
+                    from = "2018-01-01", end = Sys.Date())
+
+```
+
+
+
+Esse relatório capta dinamicamente as cotações dos seguintes ativos relacionados as negociações da _commoditie_ milho:
+  
+
+* ``r params$symbol1`` [CORN (Teucrium Corn Fund)](https://finance.yahoo.com/quote/CORN?p=CORN) $\Rightarrow$ última cotação 
+
+* ``r params$symbol2`` [CN21.CBT](https://finance.yahoo.com/quote/CN21.CBT/history?p=CN21.CBT) 
+
+* ``r params$symbol3`` [Cz21.CBT](https://finance.yahoo.com/quote/CZ21.CBT/) 
+
+* ``r params$symbol4`` [CU21.CBT](https://finance.yahoo.com/quote/CU21.CBT/) 
+
+* ``r params$symbol5`` [CH22.CBT](https://finance.yahoo.com/quote/CH22.CBT/)
+
+* ``r params$symbol6`` [CK22.CBT](https://finance.yahoo.com/quote/CK22.CBT/)
+
+* ``r params$symbol7`` [ZC=F](https://finance.yahoo.com/quote/ZC%3DF/history?p=ZC%3DF)
+
+
+
+Os dados são oriundos do [Yahoo finance](http://finance.yahoo.com). As séries temporais se iniciam em 01/01/2018 e terminam no último valor de fechamento disponível na série, quase que em _real time_.
+
+
+***
+
+
+# Dados diários e intradiários 
+
+Os dados diários e intradiários são desafiadores por um motivo diferente - eles muitas vezes envolvem vários padrões sazonais e, portanto, precisamos usar um método que lida com essa sazonalidade complexa.
+
+Claro, se a série temporal for relativamente curta, de modo que apenas um tipo de sazonalidade está presente, então será possível usar um dos
+métodos comuns como por exemplo, ETS ou um ARIMA sazonal. Mas quando a série temporal é longa o suficiente para que alguns dos mais longos períodos sazonais tornam-se aparentes, será necessário usar STL, dinâmico regressão harmônica ou TBATS.
+
+No entanto, observe que mesmo esses modelos permitem apenas sazonalidade regular. A captura de sazonalidade associada a eventos móveis, como Páscoa ou o ano novo chinês é mais difícil. Mesmo com dados mensais, isso pode ser complicado, pois os festivais podem cair em março ou abril (para a Páscoa), em janeiro ou fevereiro (para o Ano Novo Chinês), ou em qualquer época do ano (para outro tipo de feriado). 
+
+A melhor maneira de lidar com os efeitos móveis dos feriados é usar variáveis _dummy_. No entanto, nem os modelos STL, ETS ou TBATS permitem covariáveis. Entre os modelos discutidos aqui (e implementados no pacote de previsão para R), a única escolha é um modelo de regressão dinâmica, onde os preditores incluem qualquer efeitos de feriados fictícios (e possivelmente também a sazonalidade usando termos de Fourier).
+
+
+***
+
+
+
+
+Carregando as bibliotecas necessárias
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(plotly)
+library(ggplot2)
+library(forecast)
+library(prophet)
+library(DT)
+library(fpp2)
+library(tsbox)
+library(lubridate)
+library(data.table)
+
+```
+
+
+***
+
+
+
+```{r}
+
+glimpse(CORN) # Perfil dos dados
+
+```
+
+
+```{r fig.width=11}
+
+dygraph(Cl(CORN))
+
+```
+
+
+
+
+```{r}
+
+CORN <- as.data.table(CORN)
+CORN_df <- as.data.frame(CORN)
+
+CORN_df <- CORN_df %>%
+  rename(Date = "index")
+
+glimpse(CORN_df)
+
+tail(CORN_df)
+
+```
+
+
+
+
+```{r fig.width=11}
+
+CORN <- ts(CORN[,-1], start = c(2018, 1), frequency = 365.25) # freq = 52 semanal
+
+glimpse(CORN)
+
+head(CORN)
+
+tail(CORN)
+
+ggplotly(
+  autoplot(CORN)
+)
+
+```
+
+```{r fig.width=11}
+
+treino <- window(log(CORN[,5]), start = 2019.692)
+
+
+ggplotly(
+  autoplot(treino)
+)
+
+```
+
+
+```{r}
+
+bizdays(CORN, "Sao Paulo")
+
+```
+
+
+
+```{r }
+
+horizonte <- 30
+
+ses <- ses(treino, h = horizonte)
+round(accuracy(ses),2)
+
+naive <- naive(treino, h = horizonte)
+round(accuracy(naive),2)
+
+ARIMA <- auto.arima(treino, seasonal=FALSE, stepwise=FALSE, approximation=FALSE)
+round(accuracy(ARIMA),2)
+
+NNAR <- nnetar(treino, h = horizonte)
+round(accuracy(NNAR),2)
+
+#TBATS <- tbats(treino, biasadj=TRUE, h = horizonte)
+#round(accuracy(TBATS),2)
+
+```
+
+
+```{r eval=FALSE}
+
+h <- 30
+
+ETS <- forecast(ets(treino), h = h)
+accuracy(ETS)
+
+ARIMA <- forecast(auto.arima(treino, lambda=0, biasadj=TRUE), h = h)
+accuracy(ARIMA)
+
+NNAR <- forecast(nnetar(treino, h = h)
+accuracy(NNAR)
+
+TBATS <- forecast(tbats(treino, biasadj=TRUE), h = h)
+accuracy(TBATS)
+
+Combination <- (ETS[["mean"]] + ARIMA[["mean"]] + NNAR[["mean"]] + TBATS[["mean"]])/4
+#accuracy(Combination)
+
+```
+
+
+
+```{r fig.width=11, eval=FALSE}
+
+ggplot(treino, aes(x = Date, y = treino$CORN.Close)) +
+  autolayer(ETS, series="ETS", PI=FALSE) +
+  autolayer(ARIMA, series="ARIMA", PI=FALSE) +
+  autolayer(NNAR, series="NNAR", PI=FALSE) +
+  autolayer(TBATS, series="TBATS", PI=FALSE) +
+  autolayer(Combination, series="Combination") +
+  xlab("Período (diário") + ylab("US$/bushel") +
+  
+  ggtitle("Cotação do ativo CORN na Bolsa de Chicago")
+
+```
+
+
+
+
+***
+
+# Referências
+
+[Bookdown Forecasting in R](https://otexts.com/fpp2/)
+
+
+
+
