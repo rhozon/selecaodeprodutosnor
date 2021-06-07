@@ -368,7 +368,7 @@ $(document).ready(function () {
       <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
     </li>
     <li>
-      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com ``sparklyr``</a>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
     </li>
     <li>
       <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
@@ -392,7 +392,13 @@ $(document).ready(function () {
       <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
     </li>
     <li>
-      <a href="perfilcredito.html">Análise de Perfil de Crédito</a>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="aval_quaest.html">Avaliação Quaest</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
     </li>
   </ul>
 </li>
@@ -441,7 +447,7 @@ $(document).ready(function () {
 <hr />
 <div id="resumo" class="section level2">
 <h2>Resumo</h2>
-<p>Este artigo curto visa mostrar num exemplo real como ler dados em grande volume usando o Spark no R. Ainda muito preliminar é passível de melhorias, ajustes e sugestões de avanços no futuro próximo. Utilizarei aqui a leitura de um dataset considerado grande (um pouco mais de 36 milhões de registros) dos microdados do CAGED de jan/2020 a fev/2021.</p>
+<p>Este artigo curto visa mostrar num exemplo real como ler grande volumes de dados usando o Spark no R. Ainda muito preliminar é passível de melhorias, ajustes e sugestões de avanços no futuro próximo. Utilizarei aqui a leitura de um dataset considerado grande (um pouco mais de 36 milhões de registros) dos microdados do CAGED de jan/2020 a fev/2021.</p>
 <small>
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
 When you think of the computation power that Spark provides and the ease of use of the R language, it is natural to want them to work together, seamlessly. This is also what the R community expected: an R package that would provide an interface to Spark that was easy to use, compatible with other R packages, and available in CRAN. With this goal, we started developing <code>sparklyr</code>.
@@ -449,7 +455,8 @@ When you think of the computation power that Spark provides and the ease of use 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic">
 Officially, <code>sparklyr</code> is an R interface for Apache Spark. It’s available in CRAN and works like any other CRAN package, meaning that it’s agnostic to Spark versions, it’s easy to install, it serves the R community, it embraces other packages and practices from the R community, and so on. It’s hosted in GitHub and licensed under Apache 2.0, which allows you to clone, modify, and contribute back to this project.
 </p>
-<p></small></p>
+<p><em>Mastering Spark with R</em></p>
+<p>Javier Luraschi, Kevin Kuo, Edgar Ruiz </small></p>
 <hr />
 <p><span class="math display">\[\\[1in]\]</span></p>
 <hr />
@@ -529,7 +536,7 @@ attr(,&quot;file&quot;)
 [1] &quot;C:\\Users\\rodri\\Documents\\R\\win-library\\4.0\\sparklyr\\conf\\config-template.yml&quot;
 
 $state
-&lt;environment: 0x000000001923ed28&gt;
+&lt;environment: 0x0000000018750328&gt;
 
 $extensions
 $extensions$jars
@@ -582,21 +589,24 @@ can read    &quot;yes&quot;
 can write   &quot;yes&quot;             
 
 $output_file
-[1] &quot;C:\\Users\\rodri\\AppData\\Local\\Temp\\RtmpovLklP\\file423826007774_spark.log&quot;
+[1] &quot;C:\\Users\\rodri\\AppData\\Local\\Temp\\RtmpMf5pyC\\file2c083fbf5c47_spark.log&quot;
 
 $sessionId
-[1] 98798
+[1] 80103
 
 $home_version
 [1] &quot;3.0.1&quot;
 
 attr(,&quot;class&quot;)
 [1] &quot;spark_connection&quot;       &quot;spark_shell_connection&quot; &quot;DBIConnection&quot;         </code></pre>
+<p style="font-family: times, serif; font-size:11pt; font-style:italic">
+A local cluster is really helpful to get started, test code, and troubleshoot with ease. (Luraschi, Kuo e Ruiz, 2021)
+</p>
 </div>
 <div id="os-microdados-do-caged" class="section level1">
 <h1>Os microdados do CAGED</h1>
 <p>Vamos utilizar como exemplo os “maravilhosos” microdados do Ministério do Trabalho e Emprego, a saber o Cadastro Geral de Admitidos e Desligados (CAGED):</p>
-<p>(<em>veja <a href="https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/">esse artigo</a> a respeito do novo CAGED. Vale lembrar que se você tentar hoje (abril 05, 2021) reproduzir o mesmo código utilizado nesse site notará que o pacote <code>ecoseries</code> parece ter sido descontinuado do CRAN.</em>)</p>
+<p>(<em>veja <a href="https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/">esse artigo</a> a respeito do novo CAGED. Vale lembrar que se você tentar hoje (junho 06, 2021) reproduzir o mesmo código utilizado nesse site notará que o pacote <code>ecoseries</code> parece ter sido descontinuado do CRAN.</em>)</p>
 <p>Primeiro baixe os microdados do CAGED referente aos mêses desejados para sua análise no seguinte endereço:</p>
 <ul>
 <li><a href="ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2021/Janeiro/" class="uri">ftp://ftp.mtps.gov.br/pdet/microdados/NOVO%20CAGED/Movimenta%E7%F5es/2021/Janeiro/</a></li>
@@ -665,20 +675,20 @@ jan2021 &lt;- spark_read_csv(spark_conn,&quot;caged_mov_012021.csv&quot;, header
 fev2021 &lt;- spark_read_csv(spark_conn,&quot;caged_mov_022021.csv&quot;, header = TRUE, delimiter = &quot;,&quot;, charset = &quot;UTF-8&quot;)</code></pre>
 <p>Confiro quais datasets estão carregados dentro do Spark</p>
 <pre class="r"><code>src_tbls(spark_conn)</code></pre>
-<pre><code> [1] &quot;caged_mov_012020_ca5bec37_908c_47cb_a6cf_64aad69ad411&quot;
- [2] &quot;caged_mov_012021_1761d1df_577b_48b5_a26d_3089348b4fde&quot;
- [3] &quot;caged_mov_022020_21d38308_f799_4edc_88e1_ba4fc1404d8e&quot;
- [4] &quot;caged_mov_022021_a85f7dc4_ccca_4d86_b39e_8ad70aae5a36&quot;
- [5] &quot;caged_mov_032020_f0d09cec_b5eb_478a_9373_25c98289c986&quot;
- [6] &quot;caged_mov_042020_03579b01_cb80_4ad3_ad6c_65d8769513e9&quot;
- [7] &quot;caged_mov_052020_bc8296b9_69e0_44c5_a684_0a5b5474f0c1&quot;
- [8] &quot;caged_mov_062020_116b895e_2977_44f6_ae05_4fc0ce6fd55b&quot;
- [9] &quot;caged_mov_072020_2c67df18_3191_4047_8eb4_1459c129de25&quot;
-[10] &quot;caged_mov_082020_ef9c3951_9fe0_417e_b2d2_bde3ea9861ef&quot;
-[11] &quot;caged_mov_092020_cb948293_2e32_4610_a21d_e5a927a50707&quot;
-[12] &quot;caged_mov_102020_c797fd7f_445d_44f5_bdaf_b66c4a71af4a&quot;
-[13] &quot;caged_mov_112020_96d344ec_a7bc_4b81_857e_4c6126a8e482&quot;
-[14] &quot;caged_mov_122020_a1f2a0b7_186f_4c5d_820b_22113ec6af9c&quot;</code></pre>
+<pre><code> [1] &quot;caged_mov_012020_703491c1_1ac8_467d_83ec_c77c62b6dd2a&quot;
+ [2] &quot;caged_mov_012021_269c4a30_6067_4f4f_98b6_99df3df34622&quot;
+ [3] &quot;caged_mov_022020_0fa73933_a686_4d14_a7d5_643836fd372a&quot;
+ [4] &quot;caged_mov_022021_72fc2e86_1c85_4e61_abb5_e822e5d40e23&quot;
+ [5] &quot;caged_mov_032020_e9942f4a_6ec0_457f_9a3e_39c704c5ad52&quot;
+ [6] &quot;caged_mov_042020_83a45e48_273e_47ec_87fe_cd7904aec885&quot;
+ [7] &quot;caged_mov_052020_f13c080f_0ace_4b34_b227_e0c5837df18e&quot;
+ [8] &quot;caged_mov_062020_7a6c13bc_3075_4594_bde1_70ce29c1d27b&quot;
+ [9] &quot;caged_mov_072020_371db071_9a19_47e0_aadb_5f151daddbc8&quot;
+[10] &quot;caged_mov_082020_0f0c6b41_7c8d_4bb5_b03a_ce7cd008a4fd&quot;
+[11] &quot;caged_mov_092020_e0b9e92b_9d2d_47c3_bec2_36dc9175e076&quot;
+[12] &quot;caged_mov_102020_230236cd_7ebe_4d57_ab6c_51a4f6a0c301&quot;
+[13] &quot;caged_mov_112020_37f379d7_2449_409b_9ded_1957237dbd02&quot;
+[14] &quot;caged_mov_122020_bc1694ff_5c7b_437c_b2f2_bfb166d95bec&quot;</code></pre>
 <p>Como as ordens das colunas em todos essas tabelas estão exatamente na mesma ordem e com a nomenclatura exatamente iguais, posso juntá-las em um único dataframe:</p>
 <pre class="r"><code>caged_microdados &lt;- sdf_bind_rows(
                                   jan2020,
@@ -712,30 +722,30 @@ glimpse(caged_microdados)</code></pre>
 <pre><code>Rows: ??
 Columns: 24
 Database: spark_connection
-$ competencia         &lt;int&gt; 202001, 202001, 202001, 202001, 202001, 202001,...
-$ regiao              &lt;int&gt; 2, 4, 4, 3, 3, 2, 3, 3, 5, 4, 3, 2, 2, 2, 5, 3,...
-$ uf                  &lt;int&gt; 22, 42, 42, 35, 32, 23, 31, 35, 51, 42, 33, 23,...
-$ municipio           &lt;int&gt; 221100, 420460, 420460, 350160, 320530, 230440,...
-$ secao               &lt;chr&gt; &quot;Q&quot;, &quot;G&quot;, &quot;Q&quot;, &quot;I&quot;, &quot;Q&quot;, &quot;G&quot;, &quot;E&quot;, &quot;N&quot;, &quot;I&quot;, &quot;N...
-$ subclasse           &lt;int&gt; 8640202, 4789099, 8640202, 5611203, 8610102, 47...
-$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, ...
-$ cbo2002ocupacao     &lt;int&gt; 421125, 521110, 515215, 513435, 422205, 521110,...
-$ categoria           &lt;int&gt; 999, 101, 101, 101, 101, 999, 101, 101, 101, 10...
-$ graudeinstrucao     &lt;int&gt; 7, 7, 8, 5, 7, 7, 4, 7, 7, 4, 9, 7, 5, 6, 7, 2,...
-$ idade               &lt;chr&gt; &quot;49&quot;, &quot;18&quot;, &quot;34&quot;, &quot;19&quot;, &quot;19&quot;, &quot;27&quot;, &quot;28&quot;, &quot;59&quot;,...
-$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, ...
-$ racacor             &lt;int&gt; 6, 1, 1, 6, 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1,...
-$ sexo                &lt;int&gt; 3, 3, 3, 1, 1, 1, 1, 1, 3, 3, 1, 3, 1, 1, 3, 1,...
-$ tipoempregador      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-$ tipoestabelecimento &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...
-$ tipomovimentacao    &lt;int&gt; 20, 20, 31, 10, 20, 31, 20, 20, 40, 20, 20, 31,...
-$ tipodedeficiincia   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-$ indtrabintermitente &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-$ indtrabparcial      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 1, 0, 0, 0, 0,...
-$ salario             &lt;chr&gt; &quot;1039&quot;, &quot;1298&quot;, &quot;1408.25&quot;, &quot;1396.48999023438&quot;, ...
-$ tamestabjan         &lt;int&gt; 2, 4, 3, 6, 9, 2, 10, 10, 5, 8, 6, 3, 8, 8, 5, ...
-$ indicadoraprendiz   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
-$ fonte               &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,...</code></pre>
+$ competencia         &lt;int&gt; 202001, 202001, 202001, 202001, 202001, 202001, 20~
+$ regiao              &lt;int&gt; 2, 4, 4, 3, 3, 2, 3, 3, 5, 4, 3, 2, 2, 2, 5, 3, 5,~
+$ uf                  &lt;int&gt; 22, 42, 42, 35, 32, 23, 31, 35, 51, 42, 33, 23, 23~
+$ municipio           &lt;int&gt; 221100, 420460, 420460, 350160, 320530, 230440, 31~
+$ secao               &lt;chr&gt; &quot;Q&quot;, &quot;G&quot;, &quot;Q&quot;, &quot;I&quot;, &quot;Q&quot;, &quot;G&quot;, &quot;E&quot;, &quot;N&quot;, &quot;I&quot;, &quot;N&quot;, ~
+$ subclasse           &lt;int&gt; 8640202, 4789099, 8640202, 5611203, 8610102, 47890~
+$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1,~
+$ cbo2002ocupacao     &lt;int&gt; 421125, 521110, 515215, 513435, 422205, 521110, 51~
+$ categoria           &lt;int&gt; 999, 101, 101, 101, 101, 999, 101, 101, 101, 101, ~
+$ graudeinstrucao     &lt;int&gt; 7, 7, 8, 5, 7, 7, 4, 7, 7, 4, 9, 7, 5, 6, 7, 2, 5,~
+$ idade               &lt;chr&gt; &quot;49&quot;, &quot;18&quot;, &quot;34&quot;, &quot;19&quot;, &quot;19&quot;, &quot;27&quot;, &quot;28&quot;, &quot;59&quot;, &quot;1~
+$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, 44,~
+$ racacor             &lt;int&gt; 6, 1, 1, 6, 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 3, 1, 3,~
+$ sexo                &lt;int&gt; 3, 3, 3, 1, 1, 1, 1, 1, 3, 3, 1, 3, 1, 1, 3, 1, 1,~
+$ tipoempregador      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ tipoestabelecimento &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,~
+$ tipomovimentacao    &lt;int&gt; 20, 20, 31, 10, 20, 31, 20, 20, 40, 20, 20, 31, 20~
+$ tipodedeficiincia   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ indtrabintermitente &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ indtrabparcial      &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 1, 0, 0, 0, 0, 0,~
+$ salario             &lt;chr&gt; &quot;1039&quot;, &quot;1298&quot;, &quot;1408.25&quot;, &quot;1396.48999023438&quot;, &quot;15~
+$ tamestabjan         &lt;int&gt; 2, 4, 3, 6, 9, 2, 10, 10, 5, 8, 6, 3, 8, 8, 5, 3, ~
+$ indicadoraprendiz   &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ fonte               &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,~</code></pre>
 <pre class="r"><code>sdf_nrow(caged_microdados) # Conta o numero de linhas no dataframe</code></pre>
 <pre><code>[1] 36110048</code></pre>
 <p>Começamos substituindo a coluna de datas (<code>competencias</code>) e a de seções econômicas do IBGE:</p>
@@ -966,40 +976,40 @@ $ fonte               &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 <pre><code>Rows: ??
 Columns: 24
 Database: spark_connection
-$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;20...
-$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;,...
-$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;S...
-$ municipio           &lt;int&gt; 221100, 420460, 420460, 350160, 320530, 230440,...
-$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, R...
-$ subclasse           &lt;int&gt; 8640202, 4789099, 8640202, 5611203, 8610102, 47...
-$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, ...
-$ cbo2002ocupacao     &lt;int&gt; 421125, 521110, 515215, 513435, 422205, 521110,...
-$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusi...
-$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior I...
-$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24,...
-$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, ...
-$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não infor...
-$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;,...
-$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RA...
-$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;,...
-$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reempre...
-$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Defici...
-$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 11...
-$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De...
-$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/S...</code></pre>
+$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/~
+$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;, &quot;N~
+$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;São ~
+$ municipio           &lt;int&gt; 221100, 420460, 420460, 350160, 320530, 230440, 31~
+$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, Repa~
+$ subclasse           &lt;int&gt; 8640202, 4789099, 8640202, 5611203, 8610102, 47890~
+$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1,~
+$ cbo2002ocupacao     &lt;int&gt; 421125, 521110, 515215, 513435, 422205, 521110, 51~
+$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusive ~
+$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior Inco~
+$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24, 51~
+$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, 44,~
+$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não informad~
+$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;, &quot;H~
+$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;~
+$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;C~
+$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reemprego&quot;~
+$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Deficient~
+$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 1112.~
+$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De 5 ~
+$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/Sem ~</code></pre>
 <pre class="r"><code>head(caged_microdados)</code></pre>
 <pre><code># Source: spark&lt;?&gt; [?? x 24]
-  competencia regiao uf    municipio secao subclasse saldomovimentac~
-  &lt;chr&gt;       &lt;chr&gt;  &lt;chr&gt;     &lt;int&gt; &lt;chr&gt;     &lt;int&gt;            &lt;int&gt;
-1 2020/01     Norde~ Piauí    221100 Saúd~   8640202                1
-2 2020/01     Sul    Sant~    420460 Comé~   4789099                1
-3 2020/01     Sul    Sant~    420460 Saúd~   8640202               -1
-4 2020/01     Sudes~ São ~    350160 Aloj~   5611203                1
-5 2020/01     Sudes~ Espí~    320530 Saúd~   8610102                1
-6 2020/01     Norde~ Ceará    230440 Comé~   4789001               -1
+  competencia regiao  uf      municipio secao         subclasse saldomovimentac~
+  &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;             &lt;int&gt;            &lt;int&gt;
+1 2020/01     Nordes~ Piauí      221100 Saúde Humana~   8640202                1
+2 2020/01     Sul     Santa ~    420460 Comércio, Re~   4789099                1
+3 2020/01     Sul     Santa ~    420460 Saúde Humana~   8640202               -1
+4 2020/01     Sudeste São Pa~    350160 Alojamento e~   5611203                1
+5 2020/01     Sudeste Espíri~    320530 Saúde Humana~   8610102                1
+6 2020/01     Nordes~ Ceará      230440 Comércio, Re~   4789001               -1
 # ... with 17 more variables: cbo2002ocupacao &lt;int&gt;, categoria &lt;chr&gt;,
 #   graudeinstrucao &lt;chr&gt;, idade &lt;dbl&gt;, horascontratuais &lt;int&gt;, racacor &lt;chr&gt;,
 #   sexo &lt;chr&gt;, tipoempregador &lt;chr&gt;, tipoestabelecimento &lt;chr&gt;,
@@ -1088,18 +1098,18 @@ glimpse(cbo2002_ocup_spark) </code></pre>
 <pre><code>Rows: ??
 Columns: 2
 Database: spark_connection
-$ municipio           &lt;chr&gt; &quot;110001&quot;, &quot;110002&quot;, &quot;110003&quot;, &quot;110004&quot;, &quot;110005...
-$ descricao_municipio &lt;chr&gt; &quot;Ro-Alta Floresta D Oeste&quot;, &quot;Ro-Ariquemes&quot;, &quot;Ro...</code></pre>
+$ municipio           &lt;chr&gt; &quot;110001&quot;, &quot;110002&quot;, &quot;110003&quot;, &quot;110004&quot;, &quot;110005&quot;, ~
+$ descricao_municipio &lt;chr&gt; &quot;Ro-Alta Floresta D Oeste&quot;, &quot;Ro-Ariquemes&quot;, &quot;Ro-Ca~</code></pre>
 <pre><code>Rows: ??
 Columns: 2
 Database: spark_connection
-$ subclasse           &lt;chr&gt; &quot;111301&quot;, &quot;111302&quot;, &quot;111303&quot;, &quot;111399&quot;, &quot;112101...
-$ descricao_subclasse &lt;chr&gt; &quot;Cultivo de Arroz&quot;, &quot;Cultivo de Milho&quot;, &quot;Cultiv...</code></pre>
+$ subclasse           &lt;chr&gt; &quot;111301&quot;, &quot;111302&quot;, &quot;111303&quot;, &quot;111399&quot;, &quot;112101&quot;, ~
+$ descricao_subclasse &lt;chr&gt; &quot;Cultivo de Arroz&quot;, &quot;Cultivo de Milho&quot;, &quot;Cultivo d~</code></pre>
 <pre><code>Rows: ??
 Columns: 2
 Database: spark_connection
-$ cbo2002ocupacao &lt;chr&gt; &quot;10105&quot;, &quot;10110&quot;, &quot;10115&quot;, &quot;10205&quot;, &quot;10210&quot;, &quot;10215...
-$ descricao_cbo   &lt;chr&gt; &quot;Oficial General da Aeronautica&quot;, &quot;Oficial General ...</code></pre>
+$ cbo2002ocupacao &lt;chr&gt; &quot;10105&quot;, &quot;10110&quot;, &quot;10115&quot;, &quot;10205&quot;, &quot;10210&quot;, &quot;10215&quot;, ~
+$ descricao_cbo   &lt;chr&gt; &quot;Oficial General da Aeronautica&quot;, &quot;Oficial General do ~</code></pre>
 <p>Converto os dados para caracteres no dataset dos últimos 3 meses disponíveis:</p>
 <pre class="r"><code>caged_microdados &lt;- caged_microdados %&gt;%
   
@@ -1115,30 +1125,30 @@ glimpse(caged_microdados)</code></pre>
 <pre><code>Rows: ??
 Columns: 24
 Database: spark_connection
-$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;20...
-$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;,...
-$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;S...
-$ municipio           &lt;chr&gt; &quot;221100&quot;, &quot;420460&quot;, &quot;420460&quot;, &quot;350160&quot;, &quot;320530...
-$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, R...
-$ subclasse           &lt;chr&gt; &quot;8640202&quot;, &quot;4789099&quot;, &quot;8640202&quot;, &quot;5611203&quot;, &quot;86...
-$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, ...
-$ cbo2002ocupacao     &lt;chr&gt; &quot;421125&quot;, &quot;521110&quot;, &quot;515215&quot;, &quot;513435&quot;, &quot;422205...
-$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusi...
-$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior I...
-$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24,...
-$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, ...
-$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não infor...
-$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;,...
-$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RA...
-$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;,...
-$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reempre...
-$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Defici...
-$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 11...
-$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De...
-$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/S...</code></pre>
+$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/~
+$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;, &quot;N~
+$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;São ~
+$ municipio           &lt;chr&gt; &quot;221100&quot;, &quot;420460&quot;, &quot;420460&quot;, &quot;350160&quot;, &quot;320530&quot;, ~
+$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, Repa~
+$ subclasse           &lt;chr&gt; &quot;8640202&quot;, &quot;4789099&quot;, &quot;8640202&quot;, &quot;5611203&quot;, &quot;86101~
+$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1,~
+$ cbo2002ocupacao     &lt;chr&gt; &quot;421125&quot;, &quot;521110&quot;, &quot;515215&quot;, &quot;513435&quot;, &quot;422205&quot;, ~
+$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusive ~
+$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior Inco~
+$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24, 51~
+$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, 44,~
+$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não informad~
+$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;, &quot;H~
+$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;~
+$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;C~
+$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reemprego&quot;~
+$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Deficient~
+$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 1112.~
+$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De 5 ~
+$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/Sem ~</code></pre>
 <p>Insiro os dados faltantes no dataset dos últimos 3 meses disponíveis:</p>
 <pre class="r"><code>caged_microdados &lt;- left_join(caged_microdados, municipio_spark %&gt;%
                                     select(municipio, descricao_municipio), by = c(&quot;municipio&quot;=&quot;municipio&quot;))
@@ -1153,33 +1163,33 @@ glimpse(caged_microdados)</code></pre>
 <pre><code>Rows: ??
 Columns: 27
 Database: spark_connection
-$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;20...
-$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;,...
-$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;S...
-$ municipio           &lt;chr&gt; &quot;221100&quot;, &quot;420460&quot;, &quot;420460&quot;, &quot;350160&quot;, &quot;320530...
-$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, R...
-$ subclasse           &lt;chr&gt; &quot;8640202&quot;, &quot;4789099&quot;, &quot;8640202&quot;, &quot;5611203&quot;, &quot;86...
-$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, ...
-$ cbo2002ocupacao     &lt;chr&gt; &quot;421125&quot;, &quot;521110&quot;, &quot;515215&quot;, &quot;513435&quot;, &quot;422205...
-$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusi...
-$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior I...
-$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24,...
-$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, ...
-$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não infor...
-$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;,...
-$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RA...
-$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;,...
-$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reempre...
-$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Defici...
-$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 11...
-$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De...
-$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/S...
-$ descricao_municipio &lt;chr&gt; &quot;Pi-Teresina&quot;, &quot;Sc-Criciuma&quot;, &quot;Sc-Criciuma&quot;, &quot;S...
-$ descricao_subclasse &lt;chr&gt; &quot;Laborat&lt;U+FFFD&gt;rios Cl&lt;U+FFFD&gt;nicos&quot;, &quot;Com&lt;U+FFFD&gt;rcio Varejista de...
-$ descricao_cbo       &lt;chr&gt; &quot;Operador de Caixa&quot;, &quot;Vendedor de Comercio Vare...</code></pre>
+$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/~
+$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;, &quot;N~
+$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;São ~
+$ municipio           &lt;chr&gt; &quot;221100&quot;, &quot;420460&quot;, &quot;420460&quot;, &quot;350160&quot;, &quot;320530&quot;, ~
+$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, Repa~
+$ subclasse           &lt;chr&gt; &quot;8640202&quot;, &quot;4789099&quot;, &quot;8640202&quot;, &quot;5611203&quot;, &quot;86101~
+$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1,~
+$ cbo2002ocupacao     &lt;chr&gt; &quot;421125&quot;, &quot;521110&quot;, &quot;515215&quot;, &quot;513435&quot;, &quot;422205&quot;, ~
+$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusive ~
+$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior Inco~
+$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24, 51~
+$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, 44,~
+$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não informad~
+$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;, &quot;H~
+$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;~
+$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;C~
+$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reemprego&quot;~
+$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Deficient~
+$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 1112.~
+$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De 5 ~
+$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/Sem ~
+$ descricao_municipio &lt;chr&gt; &quot;Pi-Teresina&quot;, &quot;Sc-Criciuma&quot;, &quot;Sc-Criciuma&quot;, &quot;Sp-A~
+$ descricao_subclasse &lt;chr&gt; &quot;Laborat&lt;U+FFFD&gt;rios Cl&lt;U+FFFD&gt;nicos&quot;, &quot;Com&lt;U+FFFD&gt;rcio Varejista de Ou~
+$ descricao_cbo       &lt;chr&gt; &quot;Operador de Caixa&quot;, &quot;Vendedor de Comercio Varejis~</code></pre>
 <pre class="r"><code>sdf_nrow(caged_microdados)</code></pre>
 <pre><code>[1] 36110048</code></pre>
 <p>Podemos retirar as colunas <code>municipio, subclasse e cbo2002ocupacao</code> e regorganizar o dataset:</p>
@@ -1217,30 +1227,30 @@ glimpse(caged_microdados)</code></pre>
 <pre><code>Rows: ??
 Columns: 24
 Database: spark_connection
-$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;20...
-$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;,...
-$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;S...
-$ descricao_municipio &lt;chr&gt; &quot;Pi-Teresina&quot;, &quot;Sc-Criciuma&quot;, &quot;Sc-Criciuma&quot;, &quot;S...
-$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, R...
-$ descricao_subclasse &lt;chr&gt; &quot;Laborat&lt;U+FFFD&gt;rios Cl&lt;U+FFFD&gt;nicos&quot;, &quot;Com&lt;U+FFFD&gt;rcio Varejista de...
-$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, ...
-$ descricao_cbo       &lt;chr&gt; &quot;Operador de Caixa&quot;, &quot;Vendedor de Comercio Vare...
-$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusi...
-$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior I...
-$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24,...
-$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, ...
-$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não infor...
-$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;,...
-$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RA...
-$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;,...
-$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reempre...
-$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Defici...
-$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 11...
-$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De...
-$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/S...</code></pre>
+$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/~
+$ regiao              &lt;chr&gt; &quot;Nordeste&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sudeste&quot;, &quot;Sudeste&quot;, &quot;N~
+$ uf                  &lt;chr&gt; &quot;Piauí&quot;, &quot;Santa Catarina&quot;, &quot;Santa Catarina&quot;, &quot;São ~
+$ descricao_municipio &lt;chr&gt; &quot;Pi-Teresina&quot;, &quot;Sc-Criciuma&quot;, &quot;Sc-Criciuma&quot;, &quot;Sp-A~
+$ secao               &lt;chr&gt; &quot;Saúde Humana e Serviços Sociais&quot;, &quot;Comércio, Repa~
+$ descricao_subclasse &lt;chr&gt; &quot;Laborat&lt;U+FFFD&gt;rios Cl&lt;U+FFFD&gt;nicos&quot;, &quot;Com&lt;U+FFFD&gt;rcio Varejista de Ou~
+$ saldomovimentacao   &lt;int&gt; 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1,~
+$ descricao_cbo       &lt;chr&gt; &quot;Operador de Caixa&quot;, &quot;Vendedor de Comercio Varejis~
+$ categoria           &lt;chr&gt; &quot;Não Identificado&quot;, &quot;Empregado - Geral, inclusive ~
+$ graudeinstrucao     &lt;chr&gt; &quot;Médio Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior Inco~
+$ idade               &lt;dbl&gt; 49, 18, 34, 19, 19, 27, 28, 59, 19, 44, 26, 24, 51~
+$ horascontratuais    &lt;int&gt; 44, 44, 44, 44, 30, 44, 44, 0, 44, 24, 40, 22, 44,~
+$ racacor             &lt;chr&gt; &quot;Não informada&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Não informad~
+$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Homem&quot;, &quot;H~
+$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;~
+$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;C~
+$ tipomovimentacao    &lt;chr&gt; &quot;Admissão por reemprego&quot;, &quot;Admissão por reemprego&quot;~
+$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Deficient~
+$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ salario             &lt;dbl&gt; 1039.00, 1298.00, 1408.25, 1396.49, 1501.76, 1112.~
+$ tamestabjan         &lt;chr&gt; &quot;De 1 a 4 vínculos&quot;, &quot;De 10 a 19 vínculos&quot;, &quot;De 5 ~
+$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/Sem ~</code></pre>
 <div id="pesquisa-do-saldo-de-admissõesdesligamentos-no-período" class="section level2">
 <h2>Pesquisa do saldo de admissões/desligamentos no período</h2>
 <p>Ok, finalmente de possa de nosso dataframe em mãos podemos filtrar nossa análise com o intuito de avaliarmos o fluxo do mercado formal de trabalho em determinada categoria profissional numa certa localidade.</p>
@@ -1265,31 +1275,31 @@ glimpse(minha_pesquisa)</code></pre>
 <pre><code>Rows: ??
 Columns: 24
 Database: spark_connection
-$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;20...
-$ regiao              &lt;chr&gt; &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;...
-$ uf                  &lt;chr&gt; &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná...
-$ descricao_municipio &lt;chr&gt; &quot;Pr-Ibipora&quot;, &quot;Pr-Curitiba&quot;, &quot;Pr-Curitiba&quot;, &quot;Pr...
-$ secao               &lt;chr&gt; &quot;Atividades Profissionais, Científicas e Técnic...
-$ descricao_subclasse &lt;chr&gt; &quot;Atividades de Contabilidade&quot;, &quot;Sociedades de F...
-$ saldomovimentacao   &lt;int&gt; -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, -1, -1, 1, 1...
-$ descricao_cbo       &lt;chr&gt; &quot;Economista do Setor Publico&quot;, &quot;Economista Fina...
-$ categoria           &lt;chr&gt; &quot;Empregado - Geral, inclusive o empregado públi...
-$ graudeinstrucao     &lt;chr&gt; &quot;Superior Completo&quot;, &quot;Médio Completo&quot;, &quot;Superio...
-$ idade               &lt;dbl&gt; 31, 35, 34, 22, 41, 39, 22, 42, 31, 27, 23, 49,...
-$ horascontratuais    &lt;int&gt; 44, 33, 44, 44, 44, 44, 44, 40, 40, 44, 44, 44,...
-$ racacor             &lt;chr&gt; &quot;Branca&quot;, &quot;Parda&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Branca&quot;...
-$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Mulher&quot;, &quot;Homem&quot;,...
-$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RA...
-$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;,...
-$ tipomovimentacao    &lt;chr&gt; &quot;Desligamento por demissão sem justa causa&quot;, &quot;A...
-$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Defici...
-$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ salario             &lt;dbl&gt; 2900.00, 2727.33, 2700.00, 1500.00, 4549.60, 60...
-$ tamestabjan         &lt;chr&gt; &quot;De 5 a 9 vínculos&quot;, &quot;Nenhum vínculo&quot;, &quot;De 20 a...
-$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;...
-$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/S...</code></pre>
-<pre class="r"><code>sdf_nrow(minha_pesquisa)</code></pre>
+$ competencia         &lt;chr&gt; &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/01&quot;, &quot;2020/~
+$ regiao              &lt;chr&gt; &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;Sul&quot;, &quot;~
+$ uf                  &lt;chr&gt; &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná&quot;, &quot;Paraná&quot;, ~
+$ descricao_municipio &lt;chr&gt; &quot;Pr-Ibipora&quot;, &quot;Pr-Curitiba&quot;, &quot;Pr-Curitiba&quot;, &quot;Pr-Ma~
+$ secao               &lt;chr&gt; &quot;Atividades Profissionais, Científicas e Técnicas&quot;~
+$ descricao_subclasse &lt;chr&gt; &quot;Atividades de Contabilidade&quot;, &quot;Sociedades de Fome~
+$ saldomovimentacao   &lt;int&gt; -1, 1, -1, 1, 1, 1, -1, 1, -1, -1, -1, -1, 1, 1, 1~
+$ descricao_cbo       &lt;chr&gt; &quot;Economista do Setor Publico&quot;, &quot;Economista Finance~
+$ categoria           &lt;chr&gt; &quot;Empregado - Geral, inclusive o empregado público ~
+$ graudeinstrucao     &lt;chr&gt; &quot;Superior Completo&quot;, &quot;Médio Completo&quot;, &quot;Superior I~
+$ idade               &lt;dbl&gt; 31, 35, 34, 22, 41, 39, 22, 42, 31, 27, 23, 49, 24~
+$ horascontratuais    &lt;int&gt; 44, 33, 44, 44, 44, 44, 44, 40, 40, 44, 44, 44, 40~
+$ racacor             &lt;chr&gt; &quot;Branca&quot;, &quot;Parda&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;Branca&quot;, &quot;~
+$ sexo                &lt;chr&gt; &quot;Mulher&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;Mulher&quot;, &quot;Homem&quot;, &quot;M~
+$ tipoempregador      &lt;chr&gt; &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;, &quot;CNPJ RAIZ&quot;~
+$ tipoestabelecimento &lt;chr&gt; &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;CNPJ&quot;, &quot;C~
+$ tipomovimentacao    &lt;chr&gt; &quot;Desligamento por demissão sem justa causa&quot;, &quot;Admi~
+$ tipodedeficiincia   &lt;chr&gt; &quot;Não Deficiente&quot;, &quot;Não Deficiente&quot;, &quot;Não Deficient~
+$ indtrabintermitente &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ indtrabparcial      &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ salario             &lt;dbl&gt; 2900.00, 2727.33, 2700.00, 1500.00, 4549.60, 6013.~
+$ tamestabjan         &lt;chr&gt; &quot;De 5 a 9 vínculos&quot;, &quot;Nenhum vínculo&quot;, &quot;De 20 a 49~
+$ indicadoraprendiz   &lt;chr&gt; &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;Não&quot;, &quot;~
+$ fonte               &lt;chr&gt; &quot;Dado Original/Sem Imputação&quot;, &quot;Dado Original/Sem ~</code></pre>
+<pre class="r"><code>sdf_nrow(minha_pesquisa) # Mostra quantas linhas </code></pre>
 <pre><code>[1] 1012</code></pre>
 <p>Como temos poucas linhas podemos gerar uma tabela interativa:</p>
 <pre class="r"><code>minha_pesquisa &lt;- minha_pesquisa %&gt;%
@@ -1315,7 +1325,7 @@ ggplot(grafico, aes(x = competencia, y = fluxo))+
   ggtitle(&quot;Fluxo de admitidos e desligados dos economistas em Curitiba/PR de jan 2020 a jan 2021&quot;)
 )</code></pre>
 <div id="htmlwidget-364f0731b13ce36fcbc8" style="width:864px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-364f0731b13ce36fcbc8">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999],"base":[0,-2,-4,0,-17,0,-6,0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"y":[8,2,4,1,17,8,6,6,0,8,10,7,14,6],"text":["competencia: 2020/01<br />fluxo:   8","competencia: 2020/02<br />fluxo:  -2","competencia: 2020/03<br />fluxo:  -4","competencia: 2020/04<br />fluxo:   1","competencia: 2020/05<br />fluxo: -17","competencia: 2020/06<br />fluxo:   8","competencia: 2020/07<br />fluxo:  -6","competencia: 2020/08<br />fluxo:   6","competencia: 2020/09<br />fluxo:   0","competencia: 2020/10<br />fluxo:   8","competencia: 2020/11<br />fluxo:  10","competencia: 2020/12<br />fluxo:   7","competencia: 2021/01<br />fluxo:  14","competencia: 2021/02<br />fluxo:   6"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":43.1050228310502,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Fluxo de admitidos e desligados dos economistas em Curitiba/PR de jan 2020 a jan 2021","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,14.6],"tickmode":"array","ticktext":["2020/01","2020/02","2020/03","2020/04","2020/05","2020/06","2020/07","2020/08","2020/09","2020/10","2020/11","2020/12","2021/01","2021/02"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"categoryorder":"array","categoryarray":["2020/01","2020/02","2020/03","2020/04","2020/05","2020/06","2020/07","2020/08","2020/09","2020/10","2020/11","2020/12","2021/01","2021/02"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"competencia","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-18.55,15.55],"tickmode":"array","ticktext":["-10","0","10"],"tickvals":[-10,0,10],"categoryorder":"array","categoryarray":["-10","0","10"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"fluxo","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"423855623fdb":{"x":{},"y":{},"type":"bar"}},"cur_data":"423855623fdb","visdat":{"423855623fdb":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-364f0731b13ce36fcbc8">{"x":{"data":[{"orientation":"v","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999,0.899999999999999],"base":[0,-2,-4,0,-17,0,-6,0,0,0,0,0,0,0],"x":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"y":[8,2,4,1,17,8,6,6,0,8,10,7,14,6],"text":["competencia: 2020/01<br />fluxo:   8","competencia: 2020/02<br />fluxo:  -2","competencia: 2020/03<br />fluxo:  -4","competencia: 2020/04<br />fluxo:   1","competencia: 2020/05<br />fluxo: -17","competencia: 2020/06<br />fluxo:   8","competencia: 2020/07<br />fluxo:  -6","competencia: 2020/08<br />fluxo:   6","competencia: 2020/09<br />fluxo:   0","competencia: 2020/10<br />fluxo:   8","competencia: 2020/11<br />fluxo:  10","competencia: 2020/12<br />fluxo:   7","competencia: 2021/01<br />fluxo:  14","competencia: 2021/02<br />fluxo:   6"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(89,89,89,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":46.6849315068493,"r":7.30593607305936,"b":43.1050228310502,"l":43.1050228310502},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Fluxo de admitidos e desligados dos economistas em Curitiba/PR de jan 2020 a jan 2021","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,14.6],"tickmode":"array","ticktext":["2020/01","2020/02","2020/03","2020/04","2020/05","2020/06","2020/07","2020/08","2020/09","2020/10","2020/11","2020/12","2021/01","2021/02"],"tickvals":[1,2,3,4,5,6,7,8,9,10,11,12,13,14],"categoryorder":"array","categoryarray":["2020/01","2020/02","2020/03","2020/04","2020/05","2020/06","2020/07","2020/08","2020/09","2020/10","2020/11","2020/12","2021/01","2021/02"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"competencia","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-18.55,15.55],"tickmode":"array","ticktext":["-10","0","10"],"tickvals":[-10,0,10],"categoryorder":"array","categoryarray":["-10","0","10"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"fluxo","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"2c088965436":{"x":{},"y":{},"type":"bar"}},"cur_data":"2c088965436","visdat":{"2c088965436":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="desconecta-do-spark" class="section level2">
 <h2>Desconecta do Spark</h2>
@@ -1329,7 +1339,7 @@ ggplot(grafico, aes(x = competencia, y = fluxo))+
 <p>AWS, <strong>Running sparklyr – RStudio’s R Interface to Spark on Amazon EMR</strong>, Disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://aws.amazon.com/pt/blogs/big-data/running-sparklyr-rstudios-r-interface-to-spark-on-amazon-emr/" class="uri">https://aws.amazon.com/pt/blogs/big-data/running-sparklyr-rstudios-r-interface-to-spark-on-amazon-emr/</a> <span class="math inline">\(&gt;\)</span></p>
 <p>CRAN, <strong>package ´sparklyr´</strong>, disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://cran.r-project.org/web/packages/sparklyr/sparklyr.pdf">https://cran.r-project.org/</a> <span class="math inline">\(&gt;\)</span></p>
 <p><em>Data Science in Spark with Sparklyr : : CHEAT SHEET</em> disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://science.nu/wp-content/uploads/2018/07/r-sparklyr.pdf" class="uri">https://science.nu/wp-content/uploads/2018/07/r-sparklyr.pdf</a> <span class="math inline">\(&gt;\)</span></p>
-<p>Luraschi, J., Kuo, K., Ruiz, E. <em>Mastering Spark with R</em>, Bookdown disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://therinspark.com/">https://therinspark.com/</a> <span class="math inline">\(&gt;\)</span> Acesso em março de 2021.</p>
+<p>Luraschi, J., Kuo, K., Ruiz, E. <strong>Mastering Spark with R</strong>, Bookdown disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://therinspark.com/">https://therinspark.com/</a> <span class="math inline">\(&gt;\)</span> Acesso em março de 2021.</p>
 <p>Wilher, V. <strong>Um pesadelo chamado novo CAGED</strong>, Disponível em: <span class="math inline">\(&lt;\)</span> <a href="https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/" class="uri">https://analisemacro.com.br/economia/comentario-de-conjuntura/um-pesadelo-chamado-novo-caged/</a> <span class="math inline">\(&gt;\)</span></p>
 </div>
 
