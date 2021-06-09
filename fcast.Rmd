@@ -312,13 +312,13 @@ ret<-function(x,k=1){
   return(diff(log(x),k))
 }
 
-grupo <- cbind(Cl(CORN), ret(Cl(CORN)), Vo(CORN), ret(Vo(CORN)))
+grupo <- cbind(Cl(CORN), ret(Cl(CORN),1), Vo(CORN), ret(Vo(CORN),1))
 
 dygraph(Cl(CORN), group = "grupo") %>% dyRangeSelector() # Grafico das cotacoes de Fechamento
-dygraph(ret(Cl(CORN)), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
+dygraph(ret(Cl(CORN),1), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
 
 dygraph(Vo(CORN), group = "grupo") %>% dyRangeSelector()  # Grafico do Volume negociado
-dygraph(ret(Vo(CORN)), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
+dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
 
 ```
 
@@ -565,11 +565,11 @@ ggAcf(CORN[,"CORN.Volume"], na.action = na.interp) # Funcao de Autocorrelacao do
 )
 
 ggplotly(
-ggAcf(ret(CORN[,"CORN.Close"]), na.action = na.interp) # Funcao de Autocorrelacao dos retornos do Fechamento
+ggAcf(ret(CORN[,"CORN.Close"],1), na.action = na.interp) # Funcao de Autocorrelacao dos retornos do Fechamento
 )
 
 ggplotly(
-ggAcf(ret(CORN[,"CORN.Volume"]), na.action = na.interp) # Funcao de Autocorrelacao dos retornos do Volume
+ggAcf(ret(CORN[,"CORN.Volume"],1), na.action = na.interp) # Funcao de Autocorrelacao dos retornos do Volume
 )
 
 ```
@@ -600,9 +600,9 @@ Observe que o resultado da estatística do teste apresenta valores superiores pa
 
 ```{r}
 
-ret(CORN[,"CORN.Close"]) %>% ur.kpss() %>% summary() # Teste para retorno dos precos
+ret(CORN[,"CORN.Close"],1) %>% ur.kpss() %>% summary() # Teste para retorno dos precos
 
-ret(CORN[,"CORN.Volume"]) %>% ur.kpss() %>% summary() # Teste para retorno do volume
+ret(CORN[,"CORN.Volume"],1) %>% ur.kpss() %>% summary() # Teste para retorno do volume
 
 ```
 
@@ -886,7 +886,97 @@ na qual a heterocedasticidade observada ao longo de diferentes períodos pode se
 
 </p>
 
+### Uma breve digressão a respeito dos retornos
 
+
+Observemos os gráficos do ativo CORN para preço e volume novamente
+
+```{r fig.width=9, fig.height=3}
+
+dygraph(Cl(CORN), group = "grupo") %>% dyRangeSelector() # Grafico das cotacoes de Fechamento
+dygraph(ret(Cl(CORN),1), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
+
+dygraph(Vo(CORN), group = "grupo") %>% dyRangeSelector()  # Grafico do Volume negociado
+dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
+
+```
+
+
+
+No caso do ``CORN``, você pode ver que o retorno médio diário é próximo a zero e que sua variabilidade muda com o tempo. Existem períodos com baixa variabilidade e períodos com alta variabilidade. Você pode quantificar essa variabilidade calculando o desvio padrão de retorno.
+
+Os investidores chamam isso de volatilidade do retorno e a denotam pelo caractere grego sigma com o índice t ($\sigma_{t}$) para enfatizar que seu valor muda a cada dia.
+
+Obter a volatilidade certa é, portanto, de extrema importância. Podemos estimar o desvio padrão de retorno no R simplesmente aplicando a função ``sd()`` à série de retorno.
+
+
+```{r}
+
+dlnCORNclose <- diff(log(Cl(CORN)), lag=1) # ln(Pt/Pt-1), o mesmo que a funcao ret()
+
+dlnCORNclose <- dlnCORNclose[-1,]
+
+sd(dlnCORNclose)
+
+```
+
+Para os retornos diários do ``CORN``, isso dá a você uma volatilidade diária de cerca de ``r round(sd(dlnCORNclose),2)*100`` %. A fórmula subjacente é que o desvio padrão é igual à raiz quadrada do desvio quadrado médio do retorno de sua média.
+
+Os operadores financeiros anualizam a volatilidade diária multiplicando-a pela raiz quadrada do número de dias de negociação em um ano, ou seja, 252.
+
+```{r}
+
+sqrt(252) * sd(dlnCORNclose)
+
+```
+
+O que nos fornece o desvio padrão dos retornos anuais. Para o CORN, obtemos uma volatilidade anualizada de ``r round((sqrt(252) * sd(dlnCORNclose))*100,2)`` %.
+
+Ao avaliarmos a dinâmica da distribuição de retorno quando calculamos esse desvio padrão anualizado em subamostras de um ano, obtemos números diferentes ao longo do tempo: obviamente eles variam entre um mínimo e um máximo.
+
+Esta estimativa de volatilidade móvel pode ser calculada quando retiramos da volatilidade amostras de estimativa rotativa/periódica. Em seguida, "rolamos" a amostra no tempo, adicionando a observação mais recente e removendo a mais distante. Uma questão prática é, então, escolher o comprimento da janela de estimativa. Normalmente, a duração da janela é um múltiplo de 22, que é o número de dias de negociação em um mês.
+
+```{r fig.width = 9, fig.height = 3}
+
+library(PerformanceAnalytics)
+
+chart.RollingPerformance(R = dlnCORNclose,
+                         width = 22,
+                         FUN = "sd.annualized",
+                         scale = 252,
+                         main = "Volatilidade mensalizada")
+
+```
+
+Esse gráfico nos facilita ao observermos as mudanças entre os períodos de baixa e alta volatilidade.
+
+Logo, quanto mais curta a janela, mais responsiva é a estimativa de volatilidade móvel aos retornos recentes. Quanto mais longa for a janela, mais suave será. A função ``sd.annualized`` permite calcular a volatilidade anualizada assumindo que o número de dias de negociação em um ano é igual ao número especificado no argumento ``scale``.
+
+```{r fig.width=9}
+
+# Plota dois graficos um em cima do outro
+par(mfrow=c(3,1)) 
+
+# Volatilidade movel para um mes
+chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22,
+     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para um mês")
+
+# Volatilidade movel para trimestre
+chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22*3,
+     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para trimestre")
+
+# Volatilidade movel para o semestre
+chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22*6,
+     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para trimestre")
+
+```
+
+
+
+
+
+
+### O modelo ARCH
 
 O modelo ARCH assume que a média condicional do termo de erro em um modelo de série temporal é constante (zero), ao contrário da série não estacionária que discutimos até agora), mas sua variância condicional não. As equações que o descrevem são:
 
@@ -930,8 +1020,8 @@ Primeiramente transformo as variáveis de volume e fechamento para objeto ``ts()
 fech_diario <- ts(Cl(CORN))
 vol_diario <- ts(Vo(CORN))
 
-ret_fech_diario <- ts(ret(Cl(CORN)))
-ret_vol_diario <- ts(ret(Vo(CORN)))
+ret_fech_diario <- ts(ret(Cl(CORN),1))
+ret_vol_diario <- ts(ret(Vo(CORN),1))
 
 ```
 
