@@ -1,0 +1,489 @@
+---
+title: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"
+author: "Rodrigo Hermont Ozon"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+params:
+  symbol1: CORN
+  symbol2: CN21.CBT
+  symbol3: Cz21.CBT
+  symbol4: CU21.CBT
+  symbol5: CH22.CBT
+  symbol6: CK22.CBT
+  symbol7: ZC=F
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+```
+
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong>Economic Time Series Forecasting</strong> 
+ 
+</div>
+
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+A maioria dos meus alunos e das pessoas que me conhecem sabem que eu tenho uma curiosidade enorme pelas Sagradas Escrituras, sua história de diferentes interpretações, suas maravilhas e principalmente por seus mistérios. Dentre um deles que me desperta extremo interesse aquele que diz respeito ao atributo de onisciência de Deus me encanta, pois quem crê sabe que somente Ele sabe o que será do futuro com 100% de certeza e do mesmo modo, ele é eterno! Ou seja, a dimensão de tempo e espaço em que Deus É, difere muito do nosso _chronos x kairós_. 
+
+Com o lançamento do algoritmo ``Prophet`` para R e Python lançado pela equipe do Facebook, fica a dúvida de todo econometrista ou futurólogo analista de séries temporais... se a capacidade de prever o que irá acontecer fora da amostra para cenários onde os dados são não-lineares, cheios de outliers (soluços), agrupamentos de volatilidades e quebras estruturais, fora as componentes tradicionais de ciclo, tendência e sazonalidade (quando identificadas) são capturadas e modeladas e desenhadas com grau de erro pequeno no futuro próximo.
+
+</p>
+
+***
+
+<p >
+<p style="font-family: times, serif; font-size:10pt; font-style:italic"; class="quote">
+
+Anunciai-nos as coisas que ainda hão de vir, para que saibamos que sois deuses; ou fazei bem, ou fazei mal, para que nos assombremos, e juntamente o vejamos.
+
+Isaías 41:23
+
+</p>
+
+***
+
+![](https://rhozon.github.io/site/me.jpg)
+
+```{r echo=FALSE}
+
+# Libraries
+library(igraph)
+library(networkD3)
+library(dplyr)
+
+# A = Economia
+# B = Econometria
+# C = Microeconometria
+# D = Modelos preditivos
+# E = Métodos estatísticos
+# K = Data Viz
+# M = Data Science
+# Z = Linguagem R
+# Y = Séries Temporais (forecasting)
+
+
+# create a dataset:
+data <- data_frame(
+  from=c("Economia", "Economia", "Econometria", "Modelos preditivos", "Microeconometria", "Modelos preditivos", "Métodos estatísticos", "Econometria", "Microeconometria", "Modelos preditivos", "Data Viz", "Economia", "Data Science", "Séries Temporais (forecasting)"),
+  
+  to=c("Econometria", "Métodos estatísticos", "Analytics", "Economia", "Microeconometria", "Economia", "Econometria", "Linguagem R", "Economia", "Microeconometria", "Economia", "Econometria", "Data Viz", "Econometria")
+)
+
+# Plot
+p <- simpleNetwork(data, height="100px", width="100px",        
+        Source = 1,                 # column number of source
+        Target = 2,                 # column number of target
+        linkDistance = 10,          # distance between node. Increase this value to have more space between nodes
+        charge = -900,                # numeric value indicating either the strength of the node repulsion (negative value) or attraction (positive value)
+        fontSize = 14,               # size of the node names
+        fontFamily = "serif",       # font og node names
+        linkColour = "#666",        # colour of edges, MUST be a common colour for the whole graph
+        nodeColour = "#69b3a2",     # colour of nodes, MUST be a common colour for the whole graph
+        opacity = 0.9,              # opacity of nodes. 0=transparent. 1=no transparency
+        zoom = T                    # Can you zoom on the figure?
+        )
+
+p
+
+
+```
+
+
+***
+
+$$\\[1in]$$
+
+
+***
+
+
+
+
+# Intro
+
+Segundo os autores do pacote para R, o ``prophet``:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Implements a procedure for forecasting time series data based on an additive model where non-linear trends are fit with yearly, weekly, and daily seasonality, plus holiday effects. It works best with time series that have strong seasonal effects and several seasons of historical data. Prophet is robust to missing data and shifts in the trend, and typically handles outliers well.
+
+</p>
+
+Não pretendo aqui fazer uma reprodução extensiva da construção metodológica do ``prophet``, pois isso está bem claro na publicação de seus criadores em https://peerj.com/preprints/3190/. Só a título de ilustração os autores formalizam o ``prophet`` como:
+
+$$
+y_t = g(t) + s(t) + h(t) + \epsilon_t
+$$
+Onde: 
+ 
++ $g(t)$ representa a componente de crescimento ou tendência linear; (growth)
+
++ $s(t)$ padrões de sazonalidade; (seasonality)
+
++ $h(t)$ efeitos de feriados; (holidays)
+
++ $\epsilon_t$ termo de erro do tipo ruído branco (white noise)
+
+Sendo que:
+
++ $g(t)$ é selecionada automaticamente se não for especificada (leave in blank);
+
++ $s(t)$ são os termos de Fourier dos períodos relevantes. Para sazonalidade anual usa-se 10 e 3 para semanal;
+
++ $h(t)$ os feriados são variáveis _dummies_
+
++ As quebras estruturais e inversões de tendência/trajetória são estimadas com métodos bayesianos e demais características do modelo;
+
+
+A intenção deles é _<mark>“make it easier for experts and non-experts to make high-quality forecasts that keep up with demand.”</mark>_ Ou seja, parece que a implementação deste algoritmo pronto resolve a maioria do trabalho dos analistas em análises exploratórias, tratamento de dados e ajustes de diferentes tipos de modelos a características comuns inerentes aos dados investigados. Todavia é possível customizar alguns inputs de parâmetros, como indicar a presença de períodos sazonais (semanal ou anual), feriados e changepoints (quebras estruturais). (https://facebook.github.io/prophet/)
+
+Os criadores Taylor e Letham (2017), utilizam vastamente o pacote ``Stan`` para sua interface, onde métodos bayesianos são vastamente empregados, o que me parece um ponto de melhoria no ensino e aplicação da econometria nas universidades tupiniquins, uma vez que a abordagem frequentista dela ainda é muito proeminente nos livros-texto traduzidos. Ademais ressaltamos a falta de ensinos da econometria com vasto uso de recursos computacionais nas universidades por aqui, o que noto como algo extremamente desanimador para o estudante num primeiro contato com a disciplina.
+
+Utilizei o ``stan`` para um exemplo de aplicação simples (com dados artificiais) demonstrando a vantagem significativa no uso da inferência bayesiana contra a frequentista num modelos de elasticidade-preço da demanda que você [pode consultar aqui.](https://rhozon.github.io/selecaodeprodutosnor/exerbolsadeestudos.html) caso tenha interesse em conhecer um pouco mais.
+
+De toda maneira deixo aqui as minhas recomendações de literatura (para aqueles que cursaram Joel Idiomas) para esse tema:
+
++ [An introduction to Bayesian inference in econometrics, Arnold Zellner](https://book4you.org/book/541542/081168), um clássico e talvez a obra pioneira na inferência bayesiana na econometria;
+
++ [Bayesian econometrics, Gary Koop](https://book4you.org/book/717848/2c76a4), talvez o livro mais popular na literatura e mais conceituado sobre o tema;
+
++ [Bayesian Econometric Methods (Econometric Exercises) Gary Koop, Dale J. Poirier, Justin L. Tobias](https://book4you.org/book/973110/3efcb4), para aquele estudante "guerreiro" que tem a curiosidade de aprender a respeito desses métodos com o R na sua linha frente (apesar de na minha humilde opinião, ele falhar bastante nisso não colocando alguns scripts como solução)
+
++ [Bayesian Data Analisys, Andrew Gelman, et. alli](https://book4you.org/book/461047/005375) Leitura com robustez teórica bem fundamentada de inferência bayesiana com alguns scripts do R no final. Senti um pouco da falta de alguns exemplos com dados prontos do R para alguns casos.]
+
++ [Bayesian Computation With R, Jim Albert (auth.)](https://book4you.org/book/611974/452345?dsource=recommend), uma leitura um pouco mais light no rigor teórico, mas com um pouco mais de exemplos aplicados interessantes.
+
+
+Em linhas gerais podemos diferenciar as abordagens de método considerando que: _os frequentistas assumem que os parâmetros do modelo são fixos e os dados são aleatórios, enquanto os bayesianos assumem que os dados são fixos e os parâmetros do modelo são aleatórios. Isso pode ser visto na interpretação de um valor p. Dito de outra forma, os bayesianos estão interessados em determinar a faixa de valores dos parâmetros que dariam origem ao seu conjunto de dados observados_
+
+Uma interpretação interessante aparece na diferença do intervalo de confiança (frequentista) e do intervalo confiável (bayesiano). _Um intervalo confiável será muito semelhante a um intervalo de confiança. Um intervalo de confiança nos informa a probabilidade de que um intervalo contenha o valor verdadeiro. No entanto, o <mark>intervalo de confiança não pode nos dizer nada sobre a probabilidade de quaisquer valores específicos para o parâmetro de interesse. Os intervalos confiáveis nos dizem quais são os valores prováveis. Isso nos permite fazer inferências sobre os valores reais dos parâmetros, ao invés dos limites dos intervalos.</mark>_
+
+_Muitas vezes, pode ser o caso, mas as inferências são muito diferentes. <mark>No cenário bayesiano, podemos perguntar qual é a probabilidade de que o parâmetro esteja entre 0,60 e 0,65, e vemos uma chance de 31% de o valor verdadeiro estar nessa faixa. Como faríamos algo semelhante com intervalos de confiança de um modelo frequentista? Não podemos. Apenas os métodos bayesianos nos permitem fazer inferências sobre os valores reais do parâmetro.</mark>_
+
+Sem extender muito o assunto a respeito das distinções de método frequentista e bayesiano, (para maiores detalhes consulte [Orloff e Blum, 2014](https://ocw.mit.edu/courses/mathematics/18-05-introduction-to-probability-and-statistics-spring-2014/readings/MIT18_05S14_Reading20.pdf)) caímos no forte questionamento a respeito de muitos modelos de projeção de séries temporais econômicas:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"A experiência prática com o modelo BVAR tem sido muito boa. Dela se tem produzido previsões melhores comparando-se com muitos modelos de equações simultâneas estruturais. Isso foi, contudo, criticado como "econometria não-teórica", simplesmente porque não usa nenhuma teoria econômica." (Maddala, p. 292, 2003)
+
+</p>
+
+Eu como grande entusiasta no uso de modelos VAR e de suas funções de impulso-resposta, gostava muito de estudar as direções de impacto e reajuste as trajetórias "de equilíbrio" de algumas séries temporais econômicas em questão, mesmo sabendo da extrema complexidade e dificuldade envolvida na modelagem dos reais movimentos causadores de tais oscilações. [Na minha monografia de graduação utilizei uma combinação de GARCH com VAR (não bayesiano) para avaliação da dinâmica das séries de preços do petróleo no mercado internacional, utilizando as teorias de expectativas dos agentes com a replicação da News Impact Curve do seminal trabalho do prof. Robert Engle.](http://www.leg.ufpr.br/doku.php/projetos:ehlers:volprev)
+
+
+Sabemos que a grande maioria dos modelos de projeção para o futuro fora da amostra são ateóricos na sua construção. Muitos deles são univariados, outros múltiplos, mas como acredito que agora posso fazer uso da fala do renomado econometrista do MIT, prof. Josh Angrist, ressalto a sua crítica construtiva quando ele distingue a econometria do pop _data science_:
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Eu diria que a principal diferença é a abordagem do problema da previsão.
+
+Os cientistas de dados geralmente se preocupam com as abordagens do tipo de ajuste de curva para a previsão. Portanto, qualquer modelo que se adapte bem aos dados servirá. Se é uma experiência passada, podemos estar interessados em usá-la para extrapolar para o futuro.
+
+Grande parte da agenda de ciência de dados está ligada aos problemas de marketing de alguém. Você está tentando descobrir quem comprará algo, quem tomará alguma ação. A econometria, na minha opinião, lida com uma classe de problemas mais difícil.
+
+Econometristas estão mais preocupados com relacionamentos causais. Em outras palavras, se manipularmos algo, por exemplo, seguro de saúde ou política monetária, como será o mundo em resposta a essa mudança?
+
+Não assumimos que o passado seja um bom guia para isso, porque entendemos que a variação e a variável estão associadas a muitas variáveis potenciais de confusão - diríamos outras coisas em movimento que talvez também afetem os resultados.
+
+A simples relação observada geralmente é enganosa, porque há fatores que não são bem controlados, e temos em mente que existe um projeto de pesquisa que envolve mais do que o ajuste de curvas De fato, somos bastante indiferentes ao ajuste de curvas na economia.
+
+Acho que queremos saber, por exemplo, se importa se você estuda em uma faculdade particular cara - isso muda seu curso de vida na forma de ganhos mais altos? Essa não é realmente uma questão de ajuste de curva, é uma questão causal."
+
+</p>
+
+<small> ([Josh Angrist in Mastering Econometrics](https://mru.org/courses/mastering-econometrics/whats-difference-between-econometrics-and-data-science)) </small>
+
+
+## Exemplo de aplicação para uma série temporal financeira
+
+Conforme destaca o prof. Pedro Morettin em seu renomado livro Econometria Financeira:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+<mark>Séries econômicas e financeiras apresentam algumas características que são comuns a outras séries temporais, como:
+
+(a) tendências;
+
+(b) sazonalidade;
+
+(c) pontos influentes (atípicos);
+
+(d) heteroscedasticidade condicional;
+
+(e) não-linearidade.</mark>
+
+O leitor está, certamente, familiarizado com as caracteríticas acima; para detalhes, veja Franses (1998). <mark>Dessas, a última talvez seja a mais complicada de definir. De um modo bastante geral, podemos dizer que uma série econômica ou financeira é não-linear quando responde de maneira diferente a choques grandes ou pequenos, ou ainda, a choques negativos ou positivos.</mark> (Morettin, p. 18, 2006)
+
+</p>
+
+
+A maioria dos trabalhos aplicados para esse tipo de dado utiliza modelos que tratam a heterocedasticidade para as variâncias condicionais na série de retornos logaritmizados ($r_t = log(\frac{P_t}{P_{t-1}})$) ([vide modelos da família ARCH e GARCH, p. ex. aqui](https://rhozon.github.io/selecaodeprodutosnor/cotacoes.html))
+
+
+Utilizaremos aqui os preços do ativo ``CORN`` disponível no Yahoo Finances:
+
+ + [CORN (Teucrium Corn Fund)](https://finance.yahoo.com/quote/CORN?p=CORN) $\Rightarrow$ <mark>última cotação ``r Sys.Date()-1``.</mark>
+ 
+Vejamos as disponibilidades de cada um deles:
+
+```{r}
+
+library(quantmod)
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                    from = "1994-01-01", end = Sys.Date())
+
+data_inicio <- start(CORN)
+data_inicio # Mostra o primeiro registro disponivel na serie
+data_fim <- end(CORN)
+data_fim # Mostra o ultimo registro disponivel na serie
+
+```
+
+Uma breve inspeção do dataset:
+
+```{r}
+
+library(dplyr)
+glimpse(CORN)
+
+head(CORN) # Primeiras 5 observacoes do conjunto de dados
+
+tail(CORN) # Ultimas 5 observacoes do dataset
+
+```
+
+Como toda boa análise de séries temporais, precisamos inspecionar visualmente seu padrão:
+
+
+```{r fig.width=8, fig.height=3}
+
+library(dygraphs)
+
+# Função log retornos
+ret<-function(x,k=1){
+  return(diff(log(x),k))
+}
+
+grupo <- cbind(Cl(CORN), ret(Cl(CORN),1), Vo(CORN), ret(Vo(CORN),1))
+
+dygraph(Cl(CORN), group = "grupo") %>% dyRangeSelector() # Grafico das cotacoes de Fechamento
+dygraph(ret(Cl(CORN),1), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
+
+dygraph(Vo(CORN), group = "grupo") %>% dyRangeSelector()  # Grafico do Volume negociado
+dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
+
+```
+
+Talvez a primeira limitação do ``prophet`` consista no fato de existir a necessidade da conversão de tipo (classe) de objeto de um ``xts`` aqui apresentado para um ``dataframe``:
+
+```{r}
+
+library(lubridate)
+library(data.table)
+
+CORN_dt <- as.data.table(CORN)
+glimpse(CORN_dt)
+
+CORN_dt <- CORN_dt %>%
+  rename(ds = "index") %>%
+  mutate(ds = as.Date(ds, format = "%y/%m/%d")) %>%
+  as.data.frame()
+
+
+glimpse(CORN_dt)
+
+```
+
+Seleciono as colunas que serão necessárias para projetar, uma vez que o ``prophet`` obriga que tenhamos uma coluna nominada ``y`` e outra ``ds`` contendo as datas:
+
+```{r}
+
+CORN <- CORN_dt %>%
+  select(ds, CORN.Close) %>%
+  mutate(ds = as.Date(ds, format = "%y/%m/%d")) %>%
+  rename(y = "CORN.Close")%>%
+  as.data.frame()
+
+glimpse(CORN)
+
+```
+
+Ajusto o modelo ``prophet`` aos dados das cotações:
+
+```{r}
+
+library(prophet)
+
+modelo_prophet <- prophet(CORN)
+
+projecao_prophet_dataframe <- make_future_dataframe(modelo_prophet, periods = 365) # Proximos 12 meses
+
+projecao_prophet <- predict(modelo_prophet, projecao_prophet_dataframe)
+
+```
+
+Pode-se visualizar o ajuste aos componentes da série temporal:
+
+```{r fig.width=9, fig.height=5}
+
+prophet_plot_components(modelo_prophet, projecao_prophet)
+                        
+```
+
+Então visualizamos essa projeção fora da amostra chamando:
+
+```{r fig.width=9, fig.height=6}
+library(plotly)
+
+ggplotly(
+plot(modelo_prophet, projecao_prophet) + 
+  add_changepoints_to_plot(modelo_prophet) # Identificacao de quebras estruturais na serie
+)
+
+```
+
+Note que no gráfico gerado acima, o ponto de último corte/quebra estrutural pode ser utilizado como 
+
+```{r fig.width=9, fig.height=6}
+
+dyplot.prophet(modelo_prophet, projecao_prophet) # Projeção dos precos do ativo CORN com prophet
+
+```
+
+Como temos 16 colunas como output do ``prophet`` selecionamos somente as que precisamos comparar:
+
+```{r}
+
+glimpse(projecao_prophet)
+
+tail(projecao_prophet[c("ds", "yhat", "yhat_lower", "yhat_upper")])
+
+```
+
+
+A validação cruzada é obtida para avaliarmos a acurácia do ``prophet``:
+
+```{r}
+
+val_cruzada <- cross_validation(modelo_prophet, 30, units = "days") 
+
+```
+
+E mais objetivamente com as medidas de ajuste:
+
+```{r}
+
+as_tibble(performance_metrics(val_cruzada, rolling_window = 0.01)) # Para os prox 30 dias
+
+```
+
+
+Veremos o gráfico da métrica de validação cruzada no horizonte projetado:
+
+```{r fig.width=9, fig.height=6}
+
+ggplotly(
+plot_cross_validation_metric(val_cruzada,
+                             metric = "smape",
+                             rolling_window = 0.01)
+)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$$\\[1in]$$
+
+***
+
+
+<p >
+<p style="font-family: times, serif; font-size:10pt; font-style:italic"; class="quote">
+
+"Havendo Deus antigamente falado muitas vezes, e de muitas maneiras, aos pais, pelos profetas, a nós falou-nos nestes últimos dias pelo Filho,"
+
+Hebreus 1:1
+
+</p>
+
+***
+
+
+
+$$\\[1in]$$
+
+
+***
+
+# Referências
+
+Franses, P.H. **Time Series Models for Business and Economic Forecasting.** Cambridge: Cambridge University Press, 1998.
+
+R Core Team (2020). **R: A language and environment for statistical computing.** R Foundation for Statistical Computing, Vienna, Austria.
+URL https://www.R-project.org/. 
+
+Stan Development Team. YEAR. **Stan Modeling Language Users Guide and Reference Manual**, VERSION. https://mc-stan.org
+
+Orloff, J., Blum, J. **Comparison of frequentist and Bayesian inference**, 18.05 class 20, disponível em: https://ocw.mit.edu/courses/mathematics/18-05-introduction-to-probability-and-statistics-spring-2014/readings/MIT18_05S14_Reading20.pdf,
+MIT, EUA, 2014.
+
+``prophet``: **Automatic Forecasting Procedure**, disponível em: https://cran.r-project.org/web/packages/prophet/index.html 
+
+Morettin, P. **Econometria Financeira: Um curso de séries temporais financeiras**, 2a. ed. revista e ampliada, São Paulo, 2006.
+
+Taylor, S., J. **Forecasting at Scale**, disponível em: https://peerj.com/preprints/3190/ 
+
+*** 
+

@@ -357,6 +357,13 @@ Embora a análise de regressão lide com a dependência de uma variável sobre o
 
 Nesses modelos, uma premissa básica é que a relação de causa e efeito, se houver, entre o $Y$ e os $X$ é unidirecional. As variáveis explanatórias são a causa e a variável dependente é o "efeito".
 
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Grager parte da premissa de que o futuro não pode "causar" o presente ou o passado. Se o evento A ocorre após o evento B, sabemos que A não pode "causar" B. Ao mesmo tempo, se A ocorre antes de B, isso não implica necessariamente que A causa B. Por exemplo, a previsão do tempo ocorre antes da chuva. Isso não significa que a previsão "cause" a chuva. Na prática, observamos A e B como séries temporais e gostaríamos de saber se A precede B, ou se B precede A, ou se eles são contemporâneos. Por exemplo, se os preços precedem movimentos nas taxas de juros, ou ocorre o contrário, ou os movimentos são contemporâneos ? Esse é o propósito da causalidade de Granger, que não é causalidade conforme ela é geralmente compreendida." (Maddala, p. 202, 2003)
+
+</p>
+
 Entretanto, há situações nas quais existe um fluxo de influência de mão dupla entre as variáveis econômicas; ou seja, uma variável econômica afeta outra(s) variável(eis) econômica(s) e é, por sua vez, afetada por ela(s).
 
 Em outras palavras, a existência de uma relação entre variáveis não prova causalidade ou a direção da influência. Mas, em regressões envolvendo dados de séries temporais, a situação pode ser um pouco diferente, porque, como coloca o autor,
@@ -375,6 +382,16 @@ Essa é a ideia aproximada do chamado teste de causalidade de Granger (Granger, 
 <p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
 
 [. . .] a afirmação “ yi causa yj” é uma abreviação da afirmação mais exata, porém mais longa: “yi contém informações úteis para prever yj (no sentido dos mínimos quadrados lineares), acima e além das histórias passadas das outras variáveis no sistema”. Para poupar espaço, dizemos simplesmente que yi causa yj.
+
+</p>
+
+
+A clara e exata definição do termo aqui utilizado "causalidade" precisa ser bem esclarecido, uma vez que sua utilização na literatura econométrica esteja bem difundido:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Conforme mencionado anteriormente, Leamer sugere o uso da palavra "simples procedência" em vez das palavras complicadas da causalidade de Granger, uma vez que tudo que estamos testando é se uma certa variável precede a outra -- não estamos testando causalidade como ela é geralmente compreendida. Contudo, é muito tarde para reclamar sobre o termo, pois ele já foi bem estabelecido na literatura econométrica. Então, é importante compreender o que ele significa." (Maddala, p. 202, 2003)
 
 </p>
 
@@ -497,6 +514,13 @@ Em relação ao padrão de heterocedasticidade condicional e pontos atípicos pr
 
 Já modelos que captam tendência e sazonalidade, em especial podem ser ajustados a cada série univariada ou em conjunto com a aplicação de modelos SARIMA e suas variantes p. ex. Modelos de Suavização Exponencial e Holt Winters também são muito utilizados em séries com essa característica.
 
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Por muito tempo houve pouca comunicação entre econometristas e analistas de séries temporais. Os econometristas enfatizavam a teoria econômica e um estudo de relações contemporâneas. Variáveis defasadas foram introduzidas, mas não de maneira sistemática, e nenhuma tentativa séria foi feita para se estudar a estrutura temporal dos dados. As teorias eram impostas aos dados mesmo quando a estrutura temporal dos dados não estavam em conformidade com elas. Os analistas de séries temporais, todavia, não acreditavam em teorias econômicas e consideravam melhor permitir que os dados determinassem o modelo. Desde meados da década de 1970, essas duas abordagens -- a abordagem de séries temporais e a abordagem econométrica -- têm convergido. Agora, os econometristas usam alguns elementos básicos de análise de séries temporais na checagem da especificação dos seus modelos econométricos, e algumas teorias econômicas têm influenciado a direção dos trabalhos de séries temporais." (Maddala, p. 273, 2003)
+
+</p>
+
 ## Características comuns de séries temporais
 
 Além das características especificadas anteriormente como _fatos estilizados_ a respeito das séries temporais financeiras, descritas por Morettin (2006) anteriomente, destacamos alguns aspectos comuns na teoria de análise de séries temporais:
@@ -530,12 +554,22 @@ A maioria dos estudos empíricos na econometria das séries temporais embasados 
 ou em termos não exatos, uma série temporal, por exemplo, $Y_t$, é estacionária se sua média e sua variância não mudam sistematicamente ao longo do tempo.
 
 
+" _Na verdade, a maior parte das séries temporais que encontramos são não-estacionárias. Um modelo simples de série temporal não-estacionária é_ $X_{t} = \mu_t + e_t$, _em que a média_ $\mu_t$ _é uma função de tempo e_ $e_t$, _é uma série fracamente estacionária._ $\mu_t$, _por exemplo, pode ser uma função linear de_ $t$, _(uma tendência linear) ou uma função quadrática de_ $t$ _(uma tendência parabólica) (...) É claro que, separadamente de uma tendência linear, picos de períodos de férias dominam os movimentos da série._" (Maddala, p. 276, 2003) 
+
+
 <p >
 <p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
 
 <mark>"Por que as séries temporais estacionárias são tão importantes?</mark> Porque, se uma série temporal é não estacionária, podemos estudar seu comportamento apenas pelo período de tempo em consideração. Cada conjunto de dados de série temporal, portanto, será específico a cada episódio. Como consequência, não é possível generalizá-lo para outros períodos. <mark>Sendo assim, para o propósito de previsão, tal série temporal (não estacionária) pode ser de pouco valor prático.</mark>" (Gujarati e Porter, p. 735, 2011)
 
 </p>
+
+
+
+
+
+
+
 
 
 ### Avaliando as funções de autocorrelação
@@ -609,6 +643,9 @@ ret(CORN[,"CORN.Volume"],1) %>% ur.kpss() %>% summary() # Teste para retorno do 
 Note que nas séries de retornos, os valores das estatísticas de teste se mostraram inferiores aos valores críticos do teste KPSS a 10, 5, 2.5 e 1 pct.
 
 Portanto, <mark>concluímos que podemos trabalhar com as séries de retornos dos preços e volume do ativo em questão para construção com confiabilidade estatística de modelos preditivos acurados.</mark>
+
+
+
 
 
 ## Avaliando a decomposição das séries
@@ -967,9 +1004,51 @@ chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22*3,
 
 # Volatilidade movel para o semestre
 chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22*6,
-     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para trimestre")
+     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para semestre")
+
+# Volatilidade movel para doze meses
+chart.RollingPerformance(R = dlnCORNclose["2010::2021"], width = 22*12,
+     FUN = "sd.annualized", scale = 252, main = "Volatilidade móvel para doze meses")
 
 ```
+
+
+Logo, podemos de outra forma, obter os desvios-padrão para os anos disponíveis na série histórica a saber:
+
+```{r}
+
+# Como anteriormente, o desvio padrao dos retornos para dados diarios   
+sd(dlnCORNclose)
+
+# Calcula a volatilidade anualizada para a série completa 
+sqrt(252) * sd(dlnCORNclose)
+
+# Calcula o desvio padrao anualizado para o cada ano disponivel na serie
+sqrt(252) * sd(dlnCORNclose["2010"])
+sqrt(252) * sd(dlnCORNclose["2011"])
+sqrt(252) * sd(dlnCORNclose["2012"])
+sqrt(252) * sd(dlnCORNclose["2013"])
+sqrt(252) * sd(dlnCORNclose["2014"])
+sqrt(252) * sd(dlnCORNclose["2015"])
+sqrt(252) * sd(dlnCORNclose["2016"])
+sqrt(252) * sd(dlnCORNclose["2017"])
+sqrt(252) * sd(dlnCORNclose["2018"])
+sqrt(252) * sd(dlnCORNclose["2019"])
+sqrt(252) * sd(dlnCORNclose["2020"])
+sqrt(115) * sd(dlnCORNclose["2021"]) # Numero aproximado de dias uteis ate a data de hoje -1
+
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1175,6 +1254,19 @@ hhat <- ts(garch.fech@fit$sigma^2)
 plot.ts(hhat) # GARCH(1,1) na volatilidade da Serie de Retornos de precos
 
 ```
+
+
+
+```{r fig.width=9}
+
+# Uso o metodo sigma para ver as volatilidades estimadas
+garchvolatilidade <- sigma(garch.fech)
+
+# Plota a volatilidade para 2021
+plot(garchvolatilidade["2021"])
+
+```
+
 
 
 Como existem muitas variantes dos modelos da família GARCH, estimo aqui sua variante popularmente conhecida em trabalhos empíricos, o GARCH-M, ou GARCH na média.
@@ -1424,6 +1516,8 @@ J. Durbin, S. J. Koopman,  **A simple and efficient simulation smoother for stat
 Koop, G. **Analysis of economic data.** Nova York: John Wiley & Sons, 2000.
 
 Kwiatkowski, D., Phillips, P. C. B., Schmidt, P., & Shin, Y. **Testing the null hypothesis of stationarity against the alternative of a unit root: How sure are we that economic time series have a unit root?** Journal of Econometrics, 54(1-3), 159–178, 1992. https://doi.org/10.1016/0304-4076(92)90104-Y
+
+Maddala, G. S., **Introdução à Econometria**, 3a ed. LTC, Rio de Janeiro, 2003.
 
 Morettin, P. **Econometria Financeira: Um curso de séries temporais financeiras**, 2a. ed. revista e ampliada, São Paulo, 2006.
 
