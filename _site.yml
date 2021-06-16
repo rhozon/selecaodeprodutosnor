@@ -68,6 +68,8 @@ navbar:
           href: aval_quaest.html 
         - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"
           href: exerbolsadeestudos.html 
+        - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"
+          href: prophet.html 
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
