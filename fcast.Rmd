@@ -170,6 +170,7 @@ library(lubridate)
 library(data.table)
 library(funtimes)
 library(tseries)
+library(xts)
 library(strucchange)
 
 ```
@@ -207,6 +208,9 @@ data_inicio # Mostra o primeiro registro disponivel na serie
 data_fim <- end(CORN)
 data_fim # Mostra o ultimo registro disponivel na serie
 
+periodicidade <- periodicity(CORN)
+periodicidade
+
 ```
 
 ```{r}
@@ -238,10 +242,7 @@ data_fim # Mostra o ultimo registro disponivel na serie
 CU21.CBT <- getSymbols("CU21.CBT", auto.assign = FALSE,
                     from = "1994-01-01", end = Sys.Date())
 
-data_inicio <- start(CU21.CBT)
-data_inicio # Mostra o primeiro registro disponivel na serie
-data_fim <- end(CU21.CBT)
-data_fim # Mostra o ultimo registro disponivel na serie
+periodicity(CU21.CBT)
 
 ```
 
@@ -250,10 +251,7 @@ data_fim # Mostra o ultimo registro disponivel na serie
 CH22.CBT <- getSymbols("CH22.CBT", auto.assign = FALSE,
                     from = "1994-01-01", end = Sys.Date())
 
-data_inicio <- start(CH22.CBT)
-data_inicio # Mostra o primeiro registro disponivel na serie
-data_fim <- end(CH22.CBT)
-data_fim # Mostra o ultimo registro disponivel na serie
+periodicity(CH22.CBT)
 
 ```
 
@@ -262,10 +260,7 @@ data_fim # Mostra o ultimo registro disponivel na serie
 CK22.CBT <- getSymbols("CK22.CBT", auto.assign = FALSE,
                     from = "1994-01-01", end = Sys.Date())
 
-data_inicio <- start(CK22.CBT)
-data_inicio # Mostra o primeiro registro disponivel na serie
-data_fim <- end(CK22.CBT)
-data_fim # Mostra o ultimo registro disponivel na serie
+periodicity(CK22.CBT)
 
 ```
 
@@ -274,10 +269,7 @@ data_fim # Mostra o ultimo registro disponivel na serie
 ZC_F <- getSymbols("ZC=F", auto.assign = FALSE,
                     from = "1994-01-01", end = Sys.Date())
 
-data_inicio <- start(ZC_F)
-data_inicio # Mostra o primeiro registro disponivel na serie
-data_fim <- end(ZC_F)
-data_fim # Mostra o ultimo registro disponivel na serie
+periodicity(ZC_F)
 
 ```
 
@@ -297,6 +289,10 @@ data_inicio <- start(CORN)
 data_inicio # Mostra o primeiro registro disponivel na serie
 data_fim <- end(CORN)
 data_fim # Mostra o ultimo registro disponivel na serie
+
+periodicity(CORN)
+
+last(CORN, "1 week") # Mostra as cotacoes da ultima semana
 
 ```
 
@@ -1262,8 +1258,8 @@ plot.ts(hhat) # GARCH(1,1) na volatilidade da Serie de Retornos de precos
 # Uso o metodo sigma para ver as volatilidades estimadas
 garchvolatilidade <- sigma(garch.fech)
 
-# Plota a volatilidade para 2021
-plot(garchvolatilidade["2021"])
+# Plota a volatilidade para 2020
+plot(garchvolatilidade["2020"])
 
 ```
 
