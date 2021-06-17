@@ -128,7 +128,9 @@ Tutoriais disponíveis:
 
 + Análise de preço x volume de séries temporais financeiras com dados diários
 
+### *Comparativo de performance preditiva em séries temporais financeiras: ``prophet`` vs outros métodos*
 
++ Compara desempenho via métricas de acurácia do ``prophet`` vs outros métodos conhecidos de forecasting
 
 ***
 

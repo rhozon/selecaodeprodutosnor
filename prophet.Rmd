@@ -231,6 +231,10 @@ Acho que queremos saber, por exemplo, se importa se você estuda em uma faculdad
 <small> ([Josh Angrist in Mastering Econometrics](https://mru.org/courses/mastering-econometrics/whats-difference-between-econometrics-and-data-science)) </small>
 
 
+
+
+
+
 ## Exemplo de aplicação para uma série temporal financeira
 
 Conforme destaca o prof. Pedro Morettin em seu renomado livro Econometria Financeira:
@@ -275,6 +279,8 @@ data_inicio <- start(CORN)
 data_inicio # Mostra o primeiro registro disponivel na serie
 data_fim <- end(CORN)
 data_fim # Mostra o ultimo registro disponivel na serie
+
+periodicity(CORN)
 
 ```
 
@@ -430,9 +436,373 @@ plot_cross_validation_metric(val_cruzada,
 ```
 
 
+Obviamente que quanto mais longe no futuro projetarmos, maiores serão os erros de previsão.
+
+Até aqui rodamos o script convencional do uso do ``prophet`` conforme algumas buscas ou vídeos de alguns indianos que você possa assistir no Youtube mostrando quais os comandos chamar.
+
+Mas e se quisermos avaliar a capacidade preditiva do ``prophet`` em relação a outros métodos já conhecidos de projeção de séries temporais ?
 
 
 
+# ``prophet`` $versus$ outros modelos de projeção de séries temporais
+
+
+Como mencionado aqui, sabemos que quando falamos de projeção para fora do amostra, um futuro incerto, seja ele de curto ou longo prazo, temos a certeza da incerteza a ser considerada em nossa modelagem. Muitas críticas são feitas por renomados econometristas de que a maioria de muitos desses métodos quando empregados a problemas envolvendo dados econômicos reais pecam na sua confirmação com a realidade por serem considerados **ateóricos**.
+
+O que faremos agora é um procedimento comparativo do grau de ajuste de alguns desses conhecidos modelos na série de preços do ativo em questão com a grande finalidade de avaliarmos o seu grau mínimo de erro na sua capacidade de projetar o futuro.
+
+## Tratamento inicial da série temporal financeira
+
+Sabemos que os dias de trade não envolvem alguns feriados e finais de semana, e por este motivo faremos um tratamento desses _missings_ em nossa série temporal. Chamaremos esses _missings_ de gaps implícitos e faremos um tratamento na série para eles:
+
+```{r}
+
+library(quantmod)
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                   from = "1994-01-01", end = Sys.Date())
+glimpse(CORN)
+
+periodicity(CORN) # avalia a disponibilidade da série
+
+```
+
+Em seguida preciso modificar o objeto de séries temporais do R no formato ``xts`` para uma ``tsibble``:
+
+```{r}
+
+library(tsibble)
+library(tsibbledata)
+library(dplyr)
+library(tidyverse)
+library(data.table)
+
+CORN <- as.data.table(CORN)
+CORN <- as_tsibble(CORN)
+glimpse(CORN)
+class(CORN)
+
+```
+
+Utilizando o comando ``fill_gaps()`` droparemos os gaps implícitos repetindo nos dias faltantes a última cotação disponível.
+
+```{r}
+
+library(tidyr)
+
+CORN <- CORN %>%
+  fill_gaps() %>%
+  fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down")
+print(CORN)
+
+```
+
+Agora podemos observar novamente se persistem esses gaps na série. Para isso, utilizarei ao invés do dygraph (interativo), uma visualização mais limitada com o pacote ``ggplot2``:
+
+```{r fig.width=9}
+
+library(plotly)
+library(fabletools)
+
+ggplotly(
+autoplot(CORN, CORN.Close) + xlab("Tempo") + ggtitle("Cotações de fechamento do ativo CORN") 
+)
+
+```
+
+## A definição da amostra de treinamento
+
+Este ponto é interessante de destacar, pois como nosso objetivo aqui consiste em obtermos desempenho de ajuste dos modelos _in the sample_, recortamos a série temporal sem considerarmos suas "quebras estruturais" (vide p. ex. teste de Chow) para tal finalidade.
+
+Diferentemente da conhecida abordagem empregada em algoritmos de "machine learning" aqui nosso foco não é o mesmo! (conforme citação da explicação do prof. Josh Angrist feita aqui).
+
+Selecionei a amostra de treino do seu início até 2019 com a bola de cristal apontada para os próximos 365 dias adiante.
+
+```{r}
+
+library(fpp3)
+
+treino <- CORN %>%
+  filter(year(index) <= 2019)
+
+tail(treino) # Testo pra ver se filtrou corretamente
+
+```
+
+Em seguida soluciono o problema dos gaps implícitos:
+
+```{r}
+
+treino <- treino %>%
+  fill_gaps() %>%
+  fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down")
+print(treino)
+
+```
+
+## Estimação dos modelos de projeção de séries temporais
+
+Por questões de limitação de processamento computacional, rodei somente 4 modelos diferentes para compararmos seu desempenho visual e de ajuste em relação aos dados reais. Sem detalhar muito as componentes de definição do ARIMA, ou do ETS, veremos se o ``prophet`` fica mais "bem comportado" em relação a eles:
+
+```{r}
+
+library(fable)
+library(fable.prophet)
+
+modelos1 <- treino %>%
+   model(
+    arima = ARIMA(CORN.Close, stepwise = FALSE, approximation = FALSE), # Argumentos do ARIMA para usar uma estimativa mais lenta, mas melhor, ao selecionar a ordem do modelo
+    ets = ETS(CORN.Close),
+    prophet_aditivo = prophet(CORN.Close ~ growth("linear") + season(period = "day", order = 10) + 
+                                                              season(period = "week", order = 5)),
+    prophet_multiplicativo = prophet(CORN.Close ~ season(period = "day", order = 10,
+                                                         type = "multiplicative") +
+                                                  season(period = "week", order = 5,
+                                                         type = "multiplicative"))
+  ) %>%
+  mutate(combinadas = 
+           (arima + ets + prophet_aditivo + prophet_multiplicativo) / 4 ) # Media aritmetica simples. Nao use a funcao mean()
+
+```
+
+Agora faço a projeção com os modelos para 365 passos à frente:
+
+```{r}
+
+ajuste_fcst_modelos1 <- modelos1 %>%
+                  forecast(h = 365)
+
+```
+
+Delimito as bandas de confiança das projeções para 95% para visualizar graficamente:
+
+```{r fig.width=9}
+
+ajuste_fcst_modelos1 %>%
+  autoplot(CORN, level = c(95))
+
+```
+
+
+Tento fazer o mesmo para modelos diferentes para comparar novamente:
+
+```{r}
+
+modelos2 <- treino %>%
+   model(
+    sarima = ARIMA(log(CORN.Close) ~ 0 + pdq(1,1,1) + PDQ(1,1,2)), 
+    nntwk = NNETAR(sqrt(CORN.Close)),
+    prophet_aditivo = prophet(CORN.Close ~ growth("linear") + season(period = "day", order = 1) + 
+                                                              season(period = "week", order = 1)),
+    prophet_multiplicativo = prophet(CORN.Close ~ season(period = "day", order = 1,
+                                                         type = "multiplicative") +
+                                                  season(period = "week", order = 1,
+                                                         type = "multiplicative"))
+  ) %>%
+  mutate(combinadas = 
+           (sarima + nntwk + prophet_aditivo + prophet_multiplicativo) / 4 ) # Media aritmetica simples. Nao use a funcao mean()
+
+```
+
+
+Para 365 dias à frente:
+
+
+```{r}
+
+ajuste_fcst_modelos2 <- modelos2 %>%
+                  forecast(h = 365)
+
+```
+ 
+Visualmente temos:
+
+
+```{r fig.width=9}
+
+ajuste_fcst_modelos1 %>%
+  autoplot(CORN, level = c(95))
+
+```
+
+
+E finalmente comparamos a acurácia dos modelos contra o ``prophet``:
+
+```{r}
+
+ajuste_fcst_modelos1 %>% 
+  accuracy(CORN) %>%
+    arrange(RMSE) # Seleção da acuracia pelo menor RMSE para o conjunto de modelos1
+
+ajuste_fcst_modelos2 %>% 
+  accuracy(CORN) %>%
+    arrange(RMSE) # Seleção da acuracia pelo menor RMSE para o conjunto de modelos2
+
+
+```
+
+
+## Projeção com distribuições combinadas
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$$\\[1in]$$
+
+***
+
+
+
+
+# 10 erros comuns de qualquer "cientista de dados" x dados econômicos x modelagem econométrica
+
+
+Além de seu professor te massacrar com uma série de derivações de provas e fórmulas matemáticas na sala de aula convencional, por mais que você não se desestimule com isso, destaco 10 erros daqueles que já trabalham com a econometria na prática:
+
+
+## Deixar de usar seu bom senso e conhecimento da teoria econômica
+
+Uma das características que diferenciam a pesquisa aplicada em econometria de outras aplicações de análise estatística é o uso da teoria econômica e bom senso para motivar a conexão entre as explicativas e variáveis dependentes.
+
+Em econometria, você deve ser capaz de fazer um caso forte para o independente variáveis ($Xs$) causando mudanças na variável dependente ($Y$). Você precisa de teoria e bom senso para justificar sua abordagem. Isso permite que você forneça uma interpretação sensata de seus resultados, além das típicas medidas de significância estatística e ajuste.
+
+## Começar com as perguntas erradas sobre o fenômeno investigado
+
+Ficar obcecado com os detalhes técnicos da estimativa de modelos econométricos pode ser fácil. No entanto, você deve sempre dar um passo para trás e se perguntar por que você está fazendo o que está fazendo. Por que outras pessoas acharão meu tópico interessante e importante? O valor da minha variável dependente é susceptível de ser influenciado por minhas variáveis independentes no mesmo período, ou devo usar valores defasados para as variáveis independentes? Posso explicar porque algumas variáveis são lineares, outros estão em logs e alguns são polinômios? Você deveria se perguntar esses tipos de perguntas antes de estimar um modelo econométrico, vamos caminhar sozinhos antes de lidar com complicações como heteroscedasticidade e autocorrelação.
+
+As perguntas conceituais são mais importantes do que as técnicas.
+
+
+## Ignorar os trabalhos e contribuições de outros econometristas
+
+Deixar de conectar o seu trabalho com o de outras pessoas que examinaram a sua questão de pesquisa ou algo intimamente relacionado a ela é um erro grave.
+
+Compreender como outras pessoas lidaram com questões semelhantes pode ajudá-lo a descobrir e definir qual modelo usar, pode render refinamentos em seu trabalho e permite aos leitores entenderem melhor a relevância do seu tópico.
+
+Em sua revisão de literatura, concentre-se em artigos ou segmentos de artigos que são diretamente relacionado ao seu trabalho. Resuma a abordagem, os dados e as descobertas de outros pesquisadores. Por fim, seja claro sobre como seu trabalho se encaixa com o que já foi feito por outros, o que foi melhorado e / ou quão novo
+dimensões do tópico foram exploradas 
+
+
+## Não se familiarizar com os dados
+
+Os alunos muitas vezes presumem que os dados com os quais estão trabalhando estão completos para todas as variáveis e que as informações relatadas são precisas. Você pode reduzir suas chances de obter surpresas indesejáveis em seus resultados, fazendo alguns trabalho exploratório que inclui estatísticas descritivas, gráficos de linha (para dados de série temporal), distribuições de frequência e até mesmo listagens de alguns valores de dados individuais.
+
+Uma série de resultados indesejáveis pode resultar da falha em se familiarizar com seus dados de análise. Esses três exemplos são talvez os mais comuns:
+
++ As variáveis que você pensava que eram medidas continuamente estão na verdade em categorias ou grupos. Por exemplo, em algumas pesquisas, os entrevistados são perguntados sobre seu nível de educação. Quando os dados são disponibilizados para pesquisadores, essas informações podem ser convertidas em anos de educação ou códigos podem ser usados para colocar indivíduos em categorias de educação (ensino médio, diploma universitário de dois anos e assim por diante). Se for o último, você precisa criar variáveis fictícias antes de prosseguir com estimativa (você pode aprender como lidar com dados categóricos e criar variáveis _dummy_ p. ex.
+
++ As medições que você acreditava serem valores reais estão faltando na verdade (missing data). Em alguns conjuntos de dados, os valores ausentes recebem um código em vez de à esquerda em branco. Por exemplo, se uma variável mede a idade de um entrevistado, você pode ver 998 ou 999 para algumas observações. Nesse caso, 998 pode indicar o entrevistado não sabia a resposta e 999 pode indicar que ele ou ela se recusou a responder à pergunta; você precisa ler o livro de códigos de dados para encontrar o significado preciso de tais valores (se o livro de código não estiver disponível, pode ser necessário entrar em contato diretamente com o provedor de dados). Em qualquer caso, o valor deve ser tratado como ausente e recodificado como tal antes de realizar qualquer estimativa.
+
++ Os valores de dados que parecem perfeitamente legítimos são, na verdade, censurados valores. Em algumas pesquisas, a confidencialidade do entrevistado é mantida por limitar o valor de certas variáveis. Renda do entrevistado, por exemplo, pode ser “codificado no topo” em algum valor. Se a renda do entrevistado for superior o valor limite, então a resposta é simplesmente atribuída ao valor de limite.
+
+
+## Complicar excessivamente o(s) modelo(s); (Keep it simple, stupid)
+
+
+A arte da econometria consiste em encontrar a especificação adequada ou forma funcional para modelar seu resultado específico de interesse. Em muitos casos, no entanto, a teoria pode ser vaga sobre os elementos específicos na definição e especificação do modelo.
+
+Dada a incerteza de escolher a especificação "perfeita", muitos econometristas cometem o erro de especificar demais seus modelos (o que significa
+eles incluem inúmeras variáveis irrelevantes) ou favorecem uma estimativa complicada sobre métodos e técnicas mais simples. Pode resultar em propriedades indesejáveis do estimador e dificuldade de interpretação do significado dos resultados.
+
+Super especificação incluindo muitas variáveis irrelevantes em um modelo de regressão aumenta os erros padrão de seus coeficientes e reduz o
+chances de você encontrar significância estatística. Se a teoria e o bom senso não forem bastante conclusivos sobre o efeito hipotético de uma variável, é provavelmente melhor evitar incluí-lo. 
+
+O excesso de especificação também pode se manifestar com formas funcionais complicadas que não são necessárias para lidar com preocupações teóricas ou questões de dados. Algumas funções podem ser mais difíceis para interpretar e distrair os leitores do ponto principal da análise econométrica.
+
+Consequentemente, a sofisticação adicional em seu modelo deve ser apresentada conforme necessário e não simplesmente para exibir suas habilidades econométricas.
+
+
+## Obsessão por medidas de melhor ajuste e significância estatística
+
+
+Depois de estimar um modelo econométrico, concentre sua atenção e guie o leitor (se você estiver escrevendo um artigo de pesquisa) para os resultados que são mais relevantes para abordar sua questão de pesquisa.
+
+A importância de seus resultados não deve ser determinada com base no ajuste (Valores de R ao quadrado) ou significância estatística sozinha. Claro, coeficientes estatisticamente insignificantes sugerem que sua variável independente provavelmente não afetará sua variável dependente. No entanto, se a falta de um relacionamento for nova ou inesperada, esta descoberta pode ser significativa! A importância de tal descoberta é que pode sugerir que a teoria econômica padrão não é válida.
+
+<mark>A principal descoberta em muitos dos melhores artigos que usam econometria envolve resultados de insignificância estatística. Por exemplo, alguns pesquisadores descobrem que os aumentos do salário mínimo não estão relacionados a mudanças no emprego, apesar do fato de que muitos livros didáticos de microeconomia tenham usado salários mínimos como um exemplo de piso de preço como causa nas reduções no emprego.</mark>
+
+
+## Esquecer da significância econômica
+
+<mark>Você pode usar medidas de significância estatística para determinar quais variáveis provavelmente não afetarão a variável dependente, mas você não pode usar para determinar quais variáveis têm um efeito relevante.</mark>
+
+Depois de estabelecer que uma variável é estatisticamente significativa, não se esqueça para focar sua atenção no coeficiente. Às vezes, as variáveis podem ter coeficientes que são altamente estatisticamente significativos, embora não sejam econômicos a significância está associada ao resultado.
+
+O elemento mais importante na discussão de seus resultados é a avaliação de significância estatística e magnitude para as variáveis primárias de interesse.
+
+Se uma variável tem um coeficiente estatisticamente significativo, mas a magnitude é muito pequena para ter alguma importância, então você deve ser claro sobre a falta de importância econômica.
+
+
+## Supor que seus resultados sejam robustos sempre
+
+
+Na maioria dos casos, a teoria econômica permite uma quantidade considerável de flexibilidade na determinação da especificação exata do modelo econométrico.
+
+Você vai querer ver se pequenos ajustes mudam seus resultados.
+
+Não presuma que apenas um modelo econométrico pode ser aplicado à sua pesquisa questão e que os resultados não mudarão com modificações razoáveis para sua especificação. Você deseja realizar uma análise de robustez (ou sensibilidade) para mostram que as estimativas do seu modelo não são sensíveis (são robustas) a pequenas variações nas especificações.
+
+A validade dos seus dados, seleção de variável e especificação do modelo são todos aprimorados com verificações de robustez bem-sucedidas. Se você não puder mostrar nenhuma prova disso, os leitores terão dúvidas sobre seus resultados e conclusões.
+
+
+## Ser inflexível com as complexidades do mundo real
+
+As soluções ou previsões derivadas do uso de teorias econômicas usam lógica dedução e / ou prova matemática que geralmente depende da suposição do \textit{ceteris paribus} (todas as demais constantes). 
+
+Os dados que você usa para testar hipóteses econômicas, no entanto, são derivados de um mundo onde os agentes (indivíduos, empresas ou o que
+você) estão envolvidos com o ambiente circundante de maneiras que não são susceptíveis de satisfazer a suposição _ceteris paribus_ porque muitos das variáveis que definem suas circunstâncias específicas variam consideravelmente de uma observação para outro.
+
+Não desista de uma questão de pesquisa ou conjunto de dados porque você não pode obter dados para todas as variáveis que você acha que são necessárias para testar uma hipótese. E se você aplica esse critério, nenhuma pergunta de pesquisa é apropriada e nenhum conjunto de dados sempre é bom o suficiente. Muito provavelmente, você precisará usar algumas _proxies_ (variáveis que medem aproximadamente o que você gostaria de capturar) e usar técnicas econométricas para lidar com quaisquer problemas de estimativa.
+
+Normalmente, os dados que você adquire não contêm todas as informações estruturadas da forma proposta pelo modelo teórico. Use _proxies_ que parecem apropriadas e que outros considerariam aceitáveis. Além disso, evite forçar um determinado conjunto de dados em uma estimativa que não é apropriada para a questão da pesquisa - por exemplo, usando dados agregados de nível estadual quando a teoria aplica-se a indivíduos ou usando dados transversais quando um elemento de tempo é parte da sua história.
+
+
+
+## Ignorar quando encontra resultados bizarros
+
+
+A maioria dos projetos de pesquisa econométrica contém resultados de estimativa para várias variações de modelos relacionados. Você quer se concentrar em suas variáveis primárias de interesse (variáveis essenciais), mas certifique-se de examinar todos os seus resultados. 
+
+Este significa não ignorar resultados irracionais (principalmente estimativas insignificantes, coeficientes com o sinal errado e magnitudes que são muito grandes) e proceder ao relatório e interpretação. Se alguns resultados não passam pelo teste do bom senso, então os testes estatísticos provavelmente não terão sentido e podem até indicar que você cometeu um erro com suas variáveis, a estimativa, técnica, ou ambos.
+
+Aborde quaisquer problemas de estimativa que levem a resultados perversos antes de você tirar conclusões sobre seus resultados. Você deve verificar a precisão dos seu dados, a integridade das informações, a construção de suas variáveis, e a especificação do seu modelo. A correção de problemas de estimativa que são adversos pode afetar outras estimativas e também pode alterar drasticamente suas conclusões.
 
 
 
@@ -483,7 +853,8 @@ MIT, EUA, 2014.
 
 Morettin, P. **Econometria Financeira: Um curso de séries temporais financeiras**, 2a. ed. revista e ampliada, São Paulo, 2006.
 
-Taylor, S., J. **Forecasting at Scale**, disponível em: https://peerj.com/preprints/3190/ 
+Taylor, S., J. **Forecasting at Scale**, The American Statistician, 72(1), 37–45., Disponível em: https://peerj.com/preprints/3190/ 
+
 
 *** 
 
