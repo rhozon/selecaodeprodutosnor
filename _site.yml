@@ -70,6 +70,9 @@ navbar:
           href: exerbolsadeestudos.html 
         - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"
           href: prophet.html 
+        - text: "Forecasting de séries temporais com algoritmos de machine learning"
+          href: prophet_boost.html           
+          
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
