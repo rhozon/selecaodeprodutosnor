@@ -641,10 +641,61 @@ ajuste_fcst_modelos2 %>%
 
 ```
 
+## Forecasting com o ``prophet`` bivariado
+
+Rodaremos a estimativa do fechamento contra o volume:
+
+```{r}
+
+fit <- treino %>%
+  model(
+    prophet(CORN.Close ~ CORN.Volume +
+              season(period = "day", order = 10) +
+              season(period = "week", order = 5) +
+              season(period = "year", order = 3))
+  )
+
+```
+
+Em seguida avaliamos a decomposição do modelo:
+
+```{r}
+
+fit %>%
+  components() %>%
+  autoplot()
+
+```
+
+Naturalmente observamos o padrão dos resíduos:
+
+
+```{r fig.width=9}
+
+fit %>% gg_tsresiduals()
+
+```
+
+
+Projeta para os próximos 365 dias:
+
+```{r}
+
+fc <- fit %>%
+  forecast(h = 365)
+
+```
+
+
+
+
+
+
 
 ## Projeção com distribuições combinadas
 
 
+[continuar escrevendo...]
 
 
 
