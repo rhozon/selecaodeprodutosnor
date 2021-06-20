@@ -1,5 +1,5 @@
 
-# Script comparativo das acuracias Prophet x ARIMA x ETS x 
+# Script comparativo das acuracias Prophet x ARIMA x ETS x modelos
 
 
 library(quantmod)
@@ -7,6 +7,8 @@ library(quantmod)
 CORN <- getSymbols("CORN", auto.assign = FALSE,
                    from = "1994-01-01", end = Sys.Date())
 glimpse(CORN)
+
+periodicity(CORN) # avalia a disponibilidade da série
 
 library(tsibble)
 library(tsibbledata)
@@ -28,21 +30,25 @@ CORN <- CORN %>%
   fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down")
 print(CORN)
 
+library(plotly)
 library(fabletools)
-autoplot(CORN, CORN.Close)
+
+ggplotly(
+autoplot(CORN, CORN.Close) + xlab("Tempo") + ggtitle("Cotações de fechamento do ativo CORN") 
+)
 
 #-----------------------
 #Treino
 
 library(fpp3)
 
-glimpse(CORN)
-
 
 treino <- CORN %>%
   filter(year(index) <= 2020)
 
-# Tira os gaps implicitos
+tail(treino)
+
+# Tira os gaps implicitos da amostra de treino
 
 treino <- treino %>%
   fill_gaps() %>%
@@ -50,28 +56,27 @@ treino <- treino %>%
 print(treino)
 
 
-
+library(fable)
+library(fable.prophet)
 
 ajuste <- treino %>%
    model(
     arima = ARIMA(CORN.Close, stepwise = FALSE, approximation = FALSE),
     ets = ETS(CORN.Close),
-    stl = STL(CORN.Close),
-    theta = THETA(CORN.Close),
-    snaive = SNAIVE(CORN.Close),
-    nntwk = NNETAR(CORN.Close),
     prophet = prophet(CORN.Close ~ growth("linear") + season(period = "day", order = 10) + 
                                                       season(period = "week", order = 5))
   ) %>%
   mutate(combinadas = 
-           (arima + ets + stl + theta + snaive + nntwk + prophet) / 7 ) # Media aritmetica simples. Nao use a funcao mean()
+           (arima + ets + prophet) / 3 ) # Media aritmetica simples. Nao use a funcao mean()
 
 ajuste_fcst <- ajuste %>%
                   forecast(h = 365)
 
+
 ajuste_fcst %>%
-  autoplot(CORN)
-    
+  autoplot(CORN, level = c(95))
+
+
 ajuste_fcst %>% accuracy(CORN)
 
 
