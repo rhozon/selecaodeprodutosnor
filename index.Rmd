@@ -132,6 +132,10 @@ Tutoriais disponíveis:
 
 + Compara desempenho via métricas de acurácia do ``prophet`` vs outros métodos conhecidos de forecasting
 
+### *Comparativos de algoritmos de machine learning para forecasting em séries temporais*
+
++ Veja a performance de alguns modelos preditivos (futurólogos) para séries financeiras. Será que posso ficar rico operando com eles ?
+
 ***
 
 &nbsp;
