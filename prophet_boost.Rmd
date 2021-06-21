@@ -352,6 +352,7 @@ model_fit_ets_croston <- exp_smoothing(
 
 ```
 
+
 ```{r}
 
 # Modelo 11: ets theta  ----
@@ -362,6 +363,7 @@ model_fit_ets_theta <- exp_smoothing(
       data = training(splits))
 
 ```
+
 
 ```{r}
 
@@ -374,6 +376,7 @@ model_fit_naive <- naive_reg(
 
 ```
 
+
 ```{r}
 
 # Modelo 13: snaive  ----
@@ -385,6 +388,7 @@ model_fit_snaive <- naive_reg(
       data = training(splits))
 
 ```
+
 
 ```{r}
 
@@ -470,6 +474,7 @@ list(model_fit_prophet_xb) %>%
 ## Calibração dos modelos
 
 
+
 ```{r}
 
 calibration_tbl <- models_tbl %>%
@@ -478,6 +483,7 @@ calibration_tbl <- models_tbl %>%
 calibration_tbl
 
 ```
+
 
 ## Projeção (forecasting)
 
@@ -497,6 +503,7 @@ calibration_tbl %>%
 
 
 ## Modelo combinado de projeção
+
 
 O modelo do tipo ``ensemble`` é um modelo misto com os pesos ajustados pela acurácia de cada um dos 14 univariados estimados até aqui
 
@@ -536,6 +543,7 @@ model_fit_ensemble
 
 Construimos a projeção com o modelo misto:
 
+
 ```{r fig.width=9}
 
 # Calibragem
@@ -556,7 +564,9 @@ calibration_tbl %>%
 
 ```
 
+
 ## Reamostragens
+
 
 A reamostragem de séries temporais é uma estratégia importante para avaliar a estabilidade dos modelos ao longo do tempo. No entanto, é um tanto quanto penoso fazer isso, pois requer vários _loops for_ para gerar as previsões para vários modelos e, potencialmente, vários grupos de séries temporais. 
 
@@ -594,6 +604,7 @@ model_fit_ensemble_resample %>%
 
 ## Revisão das projeções (forecast forward)
 
+
 Constrói a projeção para fora da amostra desde a última observação para os próximos 24 meses:
 
 ```{r fig.width=9}
@@ -621,7 +632,7 @@ Na forma bivariada inserimos o volume de negociação como variável explicativa
 ```{r}
 
 # Modelo 1: auto_arima ----
-model_fit_arima_no_boost <- arima_reg() %>%
+model_fit_arima_no_boost_biv <- arima_reg() %>%
   set_engine(engine = "auto_arima") %>%
   fit(CORN.Close ~ CORN.Volume + index, 
       data = training(splits))
@@ -632,7 +643,7 @@ model_fit_arima_no_boost <- arima_reg() %>%
 ```{r}
 
 # Modelo 2: arima_boost ----
-model_fit_arima_boosted <- arima_boost(
+model_fit_arima_boosted_biv <- arima_boost(
   min_n = 2,
   learn_rate = 0.9
 ) %>%
@@ -646,7 +657,7 @@ model_fit_arima_boosted <- arima_boost(
 ```{r }
 
 # Modelo 3: ets ----
-model_fit_ets <- exp_smoothing() %>%
+model_fit_ets_biv <- exp_smoothing() %>%
   set_engine(engine = "ets") %>%
   fit(CORN.Close ~ CORN.Volume + index, 
       data = training(splits))
@@ -657,7 +668,7 @@ model_fit_ets <- exp_smoothing() %>%
 ```{r }
 
 # Modelo 4: tbats ----
-model_fit_tbats <- seasonal_reg() %>%
+model_fit_tbats_biv <- seasonal_reg() %>%
   set_engine(engine = "tbats") %>%
   fit(CORN.Close ~ CORN.Volume + index,
       data = training(splits))
@@ -665,10 +676,10 @@ model_fit_tbats <- seasonal_reg() %>%
 ```
 
 
-```{r eval=FALSE}
+```{r }
 
 # Modelo 5: prophet xgb ----
-model_fit_prophet_xb <- prophet_boost(
+model_fit_prophet_xb_biv <- prophet_boost(
   learn_rate = 0.8 ) %>%
   set_engine("prophet_xgboost") %>%
   fit(CORN.Close ~  CORN.Volume + index,
@@ -680,7 +691,7 @@ model_fit_prophet_xb <- prophet_boost(
 ```{r }
 
 # Modelo 6: stlm_ets  ----
-model_fit_stlm_ets <- seasonal_reg() %>%
+model_fit_stlm_ets_biv <- seasonal_reg() %>%
   set_engine("stlm_ets") %>%
   fit(CORN.Close ~  CORN.Volume + index,
       data = training(splits))
@@ -691,7 +702,7 @@ model_fit_stlm_ets <- seasonal_reg() %>%
 ```{r }
 
 # Modelo 7: stlm arima  ----
-model_fit_stlm_arima <- seasonal_reg() %>%
+model_fit_stlm_arima_biv <- seasonal_reg() %>%
   set_engine("stlm_arima") %>%
   fit(CORN.Close ~  CORN.Volume + index,
       data = training(splits))
@@ -702,7 +713,7 @@ model_fit_stlm_arima <- seasonal_reg() %>%
 ```{r }
 
 # Modelo 8: arima xgb padrao  ----
-model_fit_arima_padrao <-arima_boost(
+model_fit_arima_padrao_biv <-arima_boost(
                         # Padroes p, d, q
                         seasonal_period = 7,
                         non_seasonal_ar = 5,
@@ -725,7 +736,7 @@ model_fit_arima_padrao <-arima_boost(
 ```{r }
 
 # Modelo 9: ets padrao  ----
-model_fit_ets_padrao <- exp_smoothing(
+model_fit_ets_padrao_biv <- exp_smoothing(
                         seasonal_period = 7, # padrao de 7 dias de trade
                         error = "multiplicative",
                         trend = "additive",
@@ -741,7 +752,7 @@ model_fit_ets_padrao <- exp_smoothing(
 ```{r }
 
 # Modelo 10: ets croston  ----
-model_fit_ets_croston <- exp_smoothing(
+model_fit_ets_croston_biv <- exp_smoothing(
   smooth_level = 0.2
 ) %>%
   set_engine("croston") %>%
@@ -754,7 +765,7 @@ model_fit_ets_croston <- exp_smoothing(
 ```{r }
 
 # Modelo 11: ets theta  ----
-model_fit_ets_theta <- exp_smoothing(
+model_fit_ets_theta_biv <- exp_smoothing(
 ) %>%
   set_engine("theta") %>%
   fit(CORN.Close ~ CORN.Volume + index,
@@ -766,7 +777,7 @@ model_fit_ets_theta <- exp_smoothing(
 ```{r }
 
 # Modelo 12: naive  ----
-model_fit_naive <- naive_reg(
+model_fit_naive_biv <- naive_reg(
 ) %>%
   set_engine("naive") %>%
   fit(CORN.Close ~ CORN.Volume + index,
@@ -778,7 +789,7 @@ model_fit_naive <- naive_reg(
 ```{r }
 
 # Modelo 13: snaive  ----
-model_fit_snaive <- naive_reg(
+model_fit_snaive_biv <- naive_reg(
                       seasonal_period = 7
 ) %>%
   set_engine("snaive") %>%
@@ -791,12 +802,12 @@ model_fit_snaive <- naive_reg(
 ```{r }
 
 # Modelo 14: rede neural autoregressiva  ----
-model_fit_nnetar <-  nnetar_reg(
+model_fit_nnetar_biv <-  nnetar_reg(
 ) %>%
 set_engine("nnetar")
 
 set.seed(123) 
-model_fit_nnetar <- model_fit_nnetar %>%
+model_fit_nnetar_biv <- model_fit_nnetar_biv %>%
   fit(CORN.Close ~  CORN.Volume + index,
       data = training(splits))
 
@@ -813,22 +824,22 @@ Avalio o ajuste de cada método para a mesma amostra da série temporal:
 
 models_tbl_bivariada <- modeltime_table(
 
-  # -- Modelo --                           -- Numero --
+  # -- Modelo --                                -- Numero --
   
-  model_fit_arima_no_boost,                 # Modelo 1
-  model_fit_arima_boosted,                  # Modelo 2
-  model_fit_ets,                            # Modelo 3
-  model_fit_tbats,                          # Modelo 4
-  model_fit_prophet_xb,                     # Modelo 5
-  model_fit_stlm_ets,                       # Modelo 6
-  model_fit_stlm_arima,                     # Modelo 7
-  model_fit_arima_padrao,                   # Modelo 8
-  model_fit_ets_padrao,                     # Modelo 9
-  model_fit_ets_croston,                    # Modelo 10
-  model_fit_ets_theta,                      # Modelo 11
-  model_fit_naive,                          # Modelo 12
-  model_fit_snaive,                         # Modelo 13
-  model_fit_nnetar                          # Modelo 14
+  model_fit_arima_no_boost_biv,                 # Modelo 1
+  model_fit_arima_boosted_biv,                  # Modelo 2
+  model_fit_ets_biv,                            # Modelo 3
+  model_fit_tbats_biv,                          # Modelo 4
+  model_fit_prophet_xb_biv,                     # Modelo 5
+  model_fit_stlm_ets_biv,                       # Modelo 6
+  model_fit_stlm_arima_biv,                     # Modelo 7
+  model_fit_arima_padrao_biv,                   # Modelo 8
+  model_fit_ets_padrao_biv,                     # Modelo 9
+  model_fit_ets_croston_biv,                    # Modelo 10
+  model_fit_ets_theta_biv,                      # Modelo 11
+  model_fit_naive_biv,                          # Modelo 12
+  model_fit_snaive_biv,                         # Modelo 13
+  model_fit_nnetar_biv                          # Modelo 14
 
   ) 
 
@@ -962,17 +973,19 @@ calibration_tbl_bivariada %>%
 
 A reamostragem de séries temporais é uma estratégia importante para avaliar a estabilidade dos modelos ao longo do tempo. No entanto, é um tanto quanto penoso fazer isso, pois requer vários _loops for_ para gerar as previsões para vários modelos e, potencialmente, vários grupos de séries temporais. 
 
-```{r}
+```{r }
 
-resamples_tscv_bivariada <- training(splits) %>%
+resamples_tscv <- training(splits) %>%
     time_series_cv(
-                  assess = "7 years",
-                  initial = "1 years",
+                  assess = "2 years",
+                  initial = "5 years",
                   skip = "1 years",
-# Normally we do more than one slice, but this speeds up the example
+
 slice_limit = 1
 )
+
 # Fit and generate resample predictions
+
 model_fit_ensemble_resample_bivariada <- calibration_tbl_bivariada %>%
 modeltime_fit_resamples(
             resamples = resamples_tscv,
@@ -980,25 +993,18 @@ modeltime_fit_resamples(
 )
 # A new data frame is created from the Modeltime Table
 # with a column labeled, '.resample_results'
+
 model_fit_ensemble_resample_bivariada
 
 ```
 
-Plota o gráfico
-
-```{r eval=FALSE}
-
-model_fit_ensemble_resample %>%
-  plot_modeltime_resamples(.interactive = TRUE)
-
-```
 
 
 ## Revisão das projeções (forecast forward) (bivariado)
 
 Constrói a projeção para fora da amostra desde a última observação para os próximos 24 meses:
 
-```{r fig.width=9}
+```{r  fig.width=9, eval=FALSE}
 
 refit_tbl_bivariada <- calibration_tbl_bivariada %>%
     modeltime_refit(data = CORN)
@@ -1011,6 +1017,89 @@ refit_tbl_bivariada %>%
     )
 
 ```
+
+
+
+
+# Modelo bivariado combinado
+
+Seleciono somente alguns modelos que julguei como melhor ajuste:
+
+```{r eval=FALSE}
+
+models_tbl_selecao <- modeltime_table(
+
+  # -- Modelo --                                -- Numero --
+  
+  model_fit_arima_no_boost_biv,                 # Modelo 1
+  model_fit_arima_boosted_biv,                  # Modelo 2
+  model_fit_prophet_xb_biv,                     # Modelo 5
+  model_fit_arima_padrao_biv,                   # Modelo 8
+
+  ) 
+
+models_tbl_selecao
+
+```
+
+
+Fazemos a calibração
+
+```{r eval=FALSE}
+
+calibration_tbl_selecao <- models_tbl_selecao %>%
+  
+  modeltime_calibrate(new_data = testing(splits), quiet = FALSE)
+
+
+calibration_tbl_selecao
+
+```
+
+
+Criamos o ensemble:
+
+```{r eval=FALSE}
+
+model_fit_ensemble_selecao <- models_tbl_selecao %>%
+  
+  ensemble_average(type = "mean")
+
+```
+
+Construimos a projeção com o modelo misto:
+
+```{r eval=FALSE}
+
+# Calibragem
+
+calibration_tbl_selecao <- modeltime_table(
+    model_fit_ensemble_selecao
+) %>%
+    modeltime_calibrate(testing(splits), quiet = FALSE)
+
+# Forecast vs amostra de teste (dados originais pra frente antes do corte pra amostra treino)
+
+calibration_tbl_selecao %>%
+    modeltime_forecast(
+        new_data    = testing(splits),
+        actual_data = CORN
+    ) %>%
+    plot_modeltime_forecast(.interactive = TRUE)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1030,7 +1119,7 @@ refit_tbl_bivariada %>%
 
 
 
-
+&nbsp;
 
 
 
@@ -1061,8 +1150,9 @@ HANSEN, B. **Econometrics**, University of Wisconsin, Department of Economics. D
 
 USAI, D. **Time Series Machine Learning Analysis and Demand Forecasting with H2O & TSstudio**, Disponível em: https://rpubs.com/DiegoUsai/565288
 
+***
 
-
+&nbsp;
 
 
 
