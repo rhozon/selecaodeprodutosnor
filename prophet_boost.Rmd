@@ -164,6 +164,8 @@ library(dplyr)
 library(tidyverse)
 library(data.table)
 library(tidyr)
+library(TSstudio)
+library(h2o)
 
 ```
 
@@ -191,6 +193,8 @@ CORN <- CORN %>%
 class(CORN)
 
 glimpse(CORN)
+
+
 
 ```
 
@@ -1090,10 +1094,117 @@ calibration_tbl_selecao %>%
 ```
 
 
+# AutoML com o pacote ``h2o``
+
+O pacote ``h2o`` possui uma implementação automática de recomendação de modelo preditivo para os dados que o separamos.
+
+
+``H2o`` é uma biblioteca de código aberto, distribuída e baseada em Java para aplicações de machine learning. Ele tem APIs para R (o pacote ``h2o``) e Python, e inclui aplicativos para modelos de aprendizagem supervisionados e não supervisionados. Isso inclui algoritmos como deep learning (DL), Gradient Boost Machine(GBM), XGBoost, Random Forest Distribuída (RF) e o Modelo Linear Generalizado (GLM).
+
+A principal vantagem do pacote ``h2o`` é que ele se baseia em processamento distribuído e, portanto, pode ser usado na memória ou ampliado com o uso de computação externa potência. Além disso, os algoritmos do pacote ``h2o`` fornecem vários métodos para que possamos treinar e ajustar modelos de aprendizado de máquina, como o método de validação cruzada e a função grid search integrada.
+
+O pacote ``h2o`` é baseado no uso de computação distribuída e paralela para acelerar o tempo de computação e possibilita escalonar para big data. Tudo isso é feito em qualquer parte da memória (com base na RAM interna do computador) ou processamento paralelo distribuído (para exemplo, AWS, Google Cloud e assim por diante) clusters. Portanto, vamos carregar o pacote e em seguida, definir o cluster na memória com a função ``h2o.init``:
+
+```{r}
+
+h2o.init(max_mem_size = "16G")
+
+```
+
+
+O comando ``h2o.init`` permite que você defina o tamanho da memória do cluster com o argumento ``max_mem_size``. A saída da função, conforme mostrado no código anterior, fornece informações sobre a configuração do cluster.
+
+Quaisquer dados usados em todo o processo de treinamento e teste dos modelos pelo pacote ``H2o`` deve ser carregado no próprio cluster. A função ``as.h2o`` nos permite transformar qualquer objeto ``data.frame`` em um cluster ``h2o``:
+
+```{r}
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                   from = "1994-01-01", end = Sys.Date())
+
+# Convete para tsibble
+CORN <- CORN %>%
+  as.data.table() %>%
+  as_tsibble()
+
+# Separa treino
+
+treino <- CORN %>%
+  filter_index(~"2020-06") # Amostra de treino ate junho 2020
+
+# Retiro os gaps implícitos
+CORN <- CORN %>%
+  fill_gaps() %>%
+  fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down") 
+print(CORN)
+
+# Separo treino sem gaps implicitos
+
+treino <- treino %>%
+  fill_gaps() %>%
+  fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down")
+print(treino)
+
+treino <- as.h2o(treino)
+
+teste <- CORN %>%
+  filter_index("2020-06" ~ .) 
+
+teste <- as.h2o(teste)
+
+```
+
+Em seguida rodaremos o autoML para duas configurações:
+
++ univariada $\rightarrow$ CORN.Close no tempo;
+
++ bivariada $\rightarrow$ CORN.Close $x$ CORN.Volume no tempo;
+
+
+A função ``h2o.automl`` fornece uma abordagem de sistema automatizada para treinar, ajustar e testar vários algoritmos de ML antes de selecionar o modelo com melhor desempenho com base nas métricas de avaliação. Ele utiliza algoritmos como RF, GBM, DL e outros usando diferentes abordagens de ajuste.
+
+```{r}
+
+autoML_univariada <- h2o.automl(training_frame = treino,
+                      y = "CORN.Close",
+                      nfolds = 5,
+                      max_runtime_secs = 60*20,
+                      seed = 1234)
+
+autoML_univariada@leaderboard
+
+autoML_bivariada <- h2o.automl(training_frame = treino,
+                      y = "CORN.Close",
+                      x = "CORN.Volume",
+                      nfolds = 5,
+                      max_runtime_secs = 60*20,
+                      seed = 1234)
+
+autoML_bivariada@leaderboard
+
+```
+
+
+Você pode ver que, neste caso, os modelos de topo são modelos os modelos sugeridos com diferentes configurações de tunelamento. Selecionaremos o modelo líder e testaremos seu desempenho no conjunto de teste:
 
 
 
+```{r}
 
+teste$pred_autoML_univariada <- h2o.predict(autoML_univariada@leader, teste)
+
+teste_univariada <- as.data.frame(teste)
+
+mape_autoML_univariada <- mean(abs(teste_univariada$CORN.Close - teste_univariada$pred_autoML_univariada) / teste_univariada$CORN.Close)
+mape_autoML_univariada
+
+teste$pred_autoML_bivariada <- h2o.predict(autoML_bivariada@leader, teste)
+
+teste_bivariada <- as.data.frame(teste)
+
+mape_autoML_bivariada <- mean(abs(teste_bivariada$CORN.Close - teste_bivariada$pred_autoML_bivariada) / teste_bivariada$CORN.Close)
+mape_autoML_bivariada
+
+```
 
 
 
