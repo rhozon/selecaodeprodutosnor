@@ -162,6 +162,8 @@ Tutoriais disponíveis:
 
 ### *Análise preliminar do Índice de Inclusão Financeira no Brasil vs variáveis de política monetária*
 
+### *Análise de Intervenção em Séries Temporais: o uso do algoritmo do Google ``CausalImpact``*
+
 *** 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }

@@ -360,21 +360,25 @@ arrange(expncm,desc(TotExpNCM))
 Podemos filtrar aqueles que possuem a string "soja" no nome do produto (NCM):
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 expncmsoja<-expncm%>%
   filter(grepl("soja", NO_NCM_POR ) | grepl("Soja", NO_NCM_POR))
 
 arrange(expncmsoja, desc(NCM_percentual))
+
 ```
 
 Ou então poderíamos filtrar com base em diferentes strings de produtos:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 expncmprodutos<-expncm%>%
   filter(grepl("soja", NO_NCM_POR ) | grepl("Soja", NO_NCM_POR) |
          grepl("milho", NO_NCM_POR ) | grepl("Milho", NO_NCM_POR) |
          grepl("açúcar", NO_NCM_POR ) | grepl("Açúcar", NO_NCM_POR))
 
 arrange(expncmprodutos,desc(NCM_percentual))
+
 ```
 
 Você poderia exportar esta tabela filtrada para um arquivo do tipo .csv:
@@ -400,10 +404,12 @@ Ou seja, cerca de `r round((sum(expncmprodutos$TotExpNCM, na.rm=TRUE)/sum(expncm
 Finalmente eu crio a tabela com somente os 10 primeiros produtos exportados no Brasil, por ordem de valor em dólares FOB:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 topten<-expncm%>%
   top_n(TotExpNCM, n=10)
 
 arrange(topten, desc(TotExpNCM))
+
 ```  
 
 
@@ -450,9 +456,9 @@ Provavelmente o estado que mais exporta deverá ser o de São Paulo. Vamos verif
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
-expuf<-exp%>%
+expuf <- exp%>%
   group_by(SG_UF_NCM)%>%
-  summarise(TotalExp_UF = sum(VL_FOB, na.rm = TRUE))%>%
+  summarise(TotalExp_UF = sum(VL_FOB, na.rm = TRUE)) %>%
             mutate(ExpUFpercentual = (TotalExp_UF/sum(TotalExp_UF))*100)
 
 arrange(expuf, desc(TotalExp_UF))
@@ -481,6 +487,7 @@ round(k,digits = 0) # Numero ideal de classes a serem utilizadas
 amplitude <- (max(expuf$TotalExp_UF) - min(expuf$TotalExp_UF)) / k
 
 amplitude #Tamanho do intervalo
+
 ```
 
 Os intervalos de classe são obtidos então:
@@ -505,7 +512,6 @@ quiclassmax <- (quiclassmin + amplitude -1)
 sexclassmin <- quiclassmax +1
 sexclassmax <- (sexclassmin + amplitude -1)
 
-
 ```
 
 
@@ -524,7 +530,9 @@ Sexta:     | de ``r sexclassmin/10^7`` até ``r sexclassmax/10^7``
 
 Podemos também observar o novo dataset agrupado:
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 write.csv(expuf, "expuf.csv")
+
 ```
 
 
@@ -532,9 +540,9 @@ Renomeio o nome da coluna SG_UF_NCM pra fazer o join:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
-colnames(expuf)[1]<-"abbrev_state"
+colnames(expuf)[1] <- "abbrev_state"
 
-```` 
+```
 
 
 Vamos ver no mapa como fica. Inicialmente carrego as bibliotecas:
@@ -548,14 +556,16 @@ library(leaflet)
 library(tmaptools)
 library(geobr)
 
-uf<-read_state(code_state="all", showProgress = FALSE)
+uf <- read_state(code_state="all", showProgress = FALSE)
+
 ```
 
 Agora faço a junção:
 
 ```{r mapa2, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
 
-junta<-full_join(uf, expuf, by="abbrev_state")
+junta <- full_join(uf, expuf, by="abbrev_state")
+
 ```
 
 
@@ -578,6 +588,7 @@ junta$categorias_em_dolares<-
 Então geramos o mapa:
 
 ```{r mapa3, message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE, fig.height=8, fig.width=12}
+
 library(ggspatial) #pacote para carregar a escala no mapa (funcao annotation_scale)
 
 ggplot(junta)+
@@ -593,38 +604,46 @@ ggplot(junta)+
 Ou então de um modo mais simples gero um mapa com as classes de cores graduada de modo automático pelo R.
 
 
-
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 tm_shape(junta)+
   tm_polygons("TotalExp_UF", id="abbrev_state", palette = "Reds")
+
 ```
 
 Tento criar um mapa interativo:
 
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 tmap_mode("view")
 tmap_last()
+
 ```
 
 ```{r}
-str(junta) #Soh uma olhada nos dados que foram juntados
+
+str(junta) # Soh uma olhada nos dados que foram juntados
+
 ```
 
 Um outro modelo de mapa no R pode ser gerado usando:
 
-```{r}
-#library(viridis)
-#junta %>% 
-#   ggplot(aes(fill = TotalExp_UF), color = "black") +
-#    geom_sf() + 
-#    scale_fill_viridis(name = "Exportações por UF", direction = -1)
+```{r eval=FALSE}
+
+library(viridis)
+junta %>% 
+   ggplot(aes(fill = TotalExp_UF), color = "black") +
+    geom_sf() + 
+    scale_fill_viridis(name = "Exportações por UF", direction = -1)
+
 ```
 
 
 Uma visualização de mapa mais adequada pode ser obtida com uma certa interatividade. Primeiro gero os centróides dos pontos no mapa:
 
 ```{r}
+
 coord_pontos <- junta %>% 
                   mutate(ExpUFpercentual = TotalExp_UF/sum(TotalExp_UF,na.rm = FALSE)) %>% 
                   st_centroid()
@@ -634,11 +653,13 @@ coord_pontos <- junta %>%
 #  geom_sf(data = coord_pontos, aes(size = ExpUFpercentual), col = "blue", alpha = .65,
 #          show.legend = "point") + 
 #  scale_size_continuous(name = "Exportações UF/US$ 1 MIlhão")
+
 ```
 
 Em seguida geramos o mapa:
 
 ```{r}
+
 data.frame(st_coordinates(coord_pontos), 
            ExpUFpercentual = coord_pontos$ExpUFpercentual, 
            UF = coord_pontos$abbrev_state) %>% 
@@ -649,6 +670,7 @@ data.frame(st_coordinates(coord_pontos),
                      labelOptions = labelOptions(textsize = "13px"),
                      radius = ~ ExpUFpercentual*100,
                      fillOpacity = 0.5)
+
 ```
 
 
@@ -657,11 +679,13 @@ data.frame(st_coordinates(coord_pontos),
 Podemos ver que tipo de produto cada estado mais exporta:
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+
 epufncm<-exp%>%
   group_by(SG_UF_NCM, CO_NCM)%>%
   summarise(TotExpUFNCM = sum(VL_FOB))
 
 arrange(epufncm, desc(TotExpUFNCM))
+
 ```
 
 Preciso substituir a coluna de códigos do NCM pelo nomes, para vermos o primeiro produto mais exportado por UF:

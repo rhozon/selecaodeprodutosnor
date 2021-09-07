@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo Hermont Ozon, Econometrics Monitor" />
+
+
+<title>Time Series Intervention: Causal Impact estimatives</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<link href="site_libs/dygraphs-1.1.1/dygraph.css" rel="stylesheet" />
+<script src="site_libs/dygraphs-1.1.1/dygraph-combined.js"></script>
+<script src="site_libs/dygraphs-1.1.1/shapes.js"></script>
+<script src="site_libs/moment-2.8.4/moment.js"></script>
+<script src="site_libs/moment-timezone-0.2.5/moment-timezone-with-data.js"></script>
+<script src="site_libs/moment-fquarter-1.0.0/moment-fquarter.min.js"></script>
+<script src="site_libs/dygraphs-binding-1.1.1.6/dygraphs.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="aval_quaest.html">Avaliação Quaest</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
+    </li>
+    <li>
+      <a href="prophet.html">Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``</a>
+    </li>
+    <li>
+      <a href="prophet_boost.html">Forecasting de séries temporais com algoritmos de machine learning</a>
+    </li>
+    <li>
+      <a href="causalimpact.html">Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Time Series Intervention: Causal Impact estimatives</h1>
+<h4 class="author">Rodrigo Hermont Ozon, Econometrics Monitor</h4>
+<h4 class="date">setembro 07, 2021</h4>
+
+</div>
+
+
+<!-- ======================================================================================================================================= -->
+<!-- ======================================================================================================================================= -->
+<style type="text/css">
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+</style>
+<!-- ======================================================================================================================================= -->
+<!-- ======================================================================================================================================= -->
+<hr />
+<!-- ======================================================================================================================================= -->
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+<!-- ======================================================================================================================================= -->
+<div class="alert alert-info">
+<p><strong> Methodological applied example: Time Series Intervention Causality </strong></p>
+</div>
+<!-- ======================================================================================================================================= -->
+<hr />
+<p><left> <img src="https://scontent.fbfh4-1.fna.fbcdn.net/v/t31.18172-8/15800029_1031214843657178_2343076280101017537_o.png?_nc_cat=103&amp;ccb=1-5&amp;_nc_sid=09cbfe&amp;_nc_ohc=fzIenuN6yf4AX9NoV0g&amp;_nc_ht=scontent.fbfh4-1.fna&amp;oh=740b8f40ce2ac24f7d7a691cacbcd795&amp;oe=615CEAE1" style="width:20.0%" /> </left></p>
+<hr />
+<div id="resumo" class="section level1">
+<h1>Resumo</h1>
+<hr />
+<!-- ==================== ABSTRACT ========================================================================================================= -->
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Este documento busca proceder um simples exemplo de aplicação da metodologia proposta de análise de intervenção de séries temporais e seus impactos causais pelas prováveis fontes de origem/causadoras.
+
+Assumimos que existe um conjunto de séries temporais de controle que não foram afetadas pela intervenção. Dada uma série temporal de resposta (por exemplo, preços de ações) e um conjunto de séries temporais de controle (por exemplo, preços de ações em mercados não afetados), o modelo constrói uma série temporal estrutural Bayesiana. Esse modelo é então usado para tentar prever o contrafactual, ou seja, como a métrica de resposta teria evoluído após a intervenção se a intervenção nunca tivesse ocorrido.
+
+As intervenções (ou fatores externos independentes de uma série temporal) muitas vezes podem influenciar essa série. Por exemplo, uma campanha de marketing pode influenciar o número de vendas que uma empresa fará no futuro. Uma mudança na política governamental pode influenciar significativamente a atividade econômica.
+
+O principal problema na análise das intervenções é que não é possível analisar o que teria acontecido se a intervenção não tivesse ocorrido - pelo menos não diretamente e para contornar isso propusemos uma etapa prévia que envolve uma análise de possíveis pontos de quebras estruturais com o teste de inversão de tendência de (inicialmente proposto por Chow) Bai-Perron, para múltiplas quebras.
+
+</p>
+<!-- =================== END OF THE ABSTRACT =============================================================================================== -->
+<hr />
+<p>Please, if are not portuguese speaker, watch the video below and follow the links in the references at the end…</p>
+<center>
+<iframe width="460" height="215" src="https://www.youtube.com/embed/GTgZfCltMm8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+</center>
+<hr />
+</div>
+<div id="introdução" class="section level1">
+<h1>Introdução</h1>
+<p><em>Most economic data sets are observational, not experimental. This means that all variables must be treated as random and possibly jointly determined.</em> (Hansen, 2021, p. 4)</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>Embora a análise de regressão lide com a dependência de uma variável em relação a outras, isso não implica necessariamente uma causação. Nas palavras de Kendall e Stuart, <em>“uma relação estatística, por mais forte e sugestiva que seja, nunca pode estabelecer uma conexão causal: nossas ideias de causação devem vir de fora da estatística, em última análise, de alguma teoria”</em></p>
+<p>Importante notar que uma relação estatística por si própria não implica logicamente uma causação. Para atribuir causação, devemos recorrer a considerações <em>a priori</em> ou teóricas.</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Não há razão estatística para supor que a chuva não dependa do rendimento da lavoura. O fato de tratarmos o rendimento da lavoura como
+dependente (dentre outras coisas) da chuva decorre de considerações não estatísticas: o senso comum sugere que a relação não pode ser invertida, pois não podemos controlar a pluviosidade por meio de uma variação no rendimento da lavoura.
+
+</p>
+<p>Ao examinar uma série temporal, é bastante comum que uma intervenção influencie aquela série em um determinado ponto.</p>
+<p>Alguns exemplos disso podem ser:</p>
+<ul>
+<li><p>Uma campanha publicitária que resulta em uma mudança significativa nas vendas</p></li>
+<li><p>Uma mudança positiva na política de trânsito que resulta em menos mortes nas estradas</p></li>
+<li><p>Uma mudança na política econômica que afeta os preços dos ativos</p></li>
+</ul>
+<p>Por exemplo, suponha que uma empresa implemente uma campanha publicitária com a intenção de aumentar as vendas. Embora os dados de vendas possam ser registrados pós-intervenção - não é possível dizer quais seriam as vendas sem essa intervenção. Neste sentido, este artigo busca definir os passos a serem percorridos a fim de avaliarmos os possíveis impactos causados por uma mudança de posicionamento no mercado de empresas ditas como socialmente responsáveis e seus efeitos pós-intervenção nos seus valores de mercado, refletidos nos preços de suas ações.</p>
+<!-- ============================================================================================================================= -->
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+</div>
+<div id="teste-da-estabilidade-estrutural-em-séries-temporais-o-teste-de-chow-e-seus-avanços-para-o-teste-de-bai-perron-1998" class="section level1">
+<h1>Teste da estabilidade estrutural em séries temporais: O teste de Chow e seus avanços para o teste de Bai &amp; Perron (1998)</h1>
+<p>Quando utilizamos um modelo de regressão que envolve o uso de séries temporais, pode acontecer que se verifique uma mudança estrutural na relação entre o regressando e os regressores.</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Por mudança estrutural entendemos que os valores dos parâmetros do modelo não se mantêm iguais durante todo o período de tempo. Às vezes, a mudança estrutural decorre de forças externas (por exemplo, os embargos do petróleo impostos pela Opep em 1973 e 1979 ou a Guerra do Golfo de
+1990-1991) ou por mudanças na política econômica (como a passagem de um sistema de câmbio fixo para outro de taxa flutuante por volta de 1973) ou por ações tomadas pelo Congresso (como as mudanças tributárias promovidas pelo presidente Reagan ou alterações do salário mínimo) ou várias
+outras causas.
+
+</p>
+<p>(Gujarati, 2000, p. 268)</p>
+<p>Os primeiros métodos sugeridos na literatura para a identificação de quebra estrutural utilizavam a estatística (Chow 1960, Quandt 1960), que compara o modelo restrito (regressão até a data onde poderia existir uma quebra) contra o modelo irrestrito (toda informação), sendo a hipótese nula a ausência de quebra (Hansen 2001). A diferença entre os métodos está relacionada ao conhecimento ou não da data da quebra, sendo no primeiro caso sugerido o teste de Chow (Stock &amp; Watson 2004). No segundo caso, de uma quebra em data desconhecida, ou conhecida dentro de um intervalo, pode se utilizar a estatística da razão de verossimilhança de Quandt (Quandt 1960), também conhecido como estatística de sup-Wald (Stock &amp; Watson 2004).</p>
+<p>Segundo Hansen (2001) o teste sup-Wald é uma alternativa natural ao teste de Chow, pois esse último, por ser sensível à escolha da data da quebra, pode ser viesado. Contudo, o desconhecimento da data da quebra impedia a obtenção de valores críticos apropriados, fazendo com que o sup-Wald não tivesse aplicação prática. No início da década de 1990 esse tema foi abordado e solucionado por vários autores, sendo os trabalhos de Andrews (1993), Andrews &amp; Ploberger (1994) os mais abrangentes e reconhecidos (Hansen 2001).</p>
+<p>Segundo Zeileis et al. (2013) foi o trabalho de Bai (1994) que estabeleceu os primeiros fundamentos para os testes de estimação de quebra, seguidos dos trabalhos de Bai (1997a, 1997b apud Zeileis et al., 2013) e Bai &amp; Perron (1998). A forma operacional do teste Bai-Perron é a seguinte: a amostra é em subamostras nos candidatos a quebra e, nas subamostras, são estimados os parâmetros por MQO, com o cálculo e armazenamento da soma dos quadrados dos resíduos (SQR). Em seguida, o teste busca as datas das quebras que minimizam o SQR total, de toda a amostra (Hansen 2001).</p>
+<p>Logo, todos os testes de quebra estrutural se baseiam nos desvios da estabilidade num modelo clássico de regressão linear:</p>
+<p><span class="math display">\[
+y_i = x_{i}^{T}\beta + u_i
+\]</span></p>
+<p>Em muitas aplicações, é razoável supor que existem m pontos de interrupção/quebras, onde os coeficientes irão mudar de uma relação de regressão estável para uma diferente. Assim, existem <span class="math inline">\(m + 1\)</span> segmentos em que os coeficientes de regressão são constantes, e o modelo pode ser reescrito como:</p>
+<p><span class="math display">\[
+y_i = x_{i}^{T}\beta + u_i\quad (i= i_{j-1} + 1, \ldots, i_{j}, j =1, \ldots, m+1)
+\]</span></p>
+<p>Onde <span class="math inline">\(j\)</span> denota o indicador do segmento. Na prática, os pontos de interrupção <span class="math inline">\(i_j\)</span> raramente são dados exogenamente, mas tem que ser estimado. A função <code>breakpoints</code> estima os pontos de interrupção, minimizando a soma residual de quadrados (RSS) da equação acima.</p>
+</div>
+<div id="modelo-de-intervençãoimpacto-causal-em-séries-temporais" class="section level1">
+<h1>Modelo de intervenção/impacto causal em séries temporais</h1>
+<p>Inferir o impacto das intervenções no mercado é um problema importante e relevante. Em parte devido ao recente interesse em big data, muitas empresas começaram a entender que uma vantagem competitiva pode ser obtida através do uso sistemático de medidas de impacto para informar a tomada de decisões estratégicas.</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+The causal impact of a treatment is the difference between the observed value of the response and the (unobserved) value that would have been obtained under the alternative treatment, that is, the effect of treatment on the treated. In the present setting the response variable is a time series, so the causal effect of interest is the difference between the observed series and the series that would have been observed had the intervention not taken place. A powerful approach to constructing the counterfactual is based on the idea of combining a set of candidate predictor variables into a single “synthetic control”. (Brodsen et alii, 2015)
+
+</p>
+<p>De um modo geral, existem três fontes de informação disponíveis para a construção um controle sintético adequado. O primeiro é o comportamento da série temporal de resposta em si, antes da intervenção. O segundo é o comportamento de outras séries temporais que foram preditivos da série alvo antes da intervenção. Essas séries de controle podem ser baseado, por exemplo, no mesmo produto em uma região diferente que não recebeu a intervenção ou em uma métrica que reflita a atividade na indústria como um todo. Na prática, muitas vezes há muitas dessas séries disponíveis, e o desafio é escolher o subconjunto relevante para usar como controles contemporâneos. Esta seleção é feita na porção de pré-tratamento de controles potenciais; mas seu valor para prever o contrafactual reside em seu comportamento pós-tratamento. Desde que a série de controle não tenha recebido nenhuma intervenção, muitas vezes é razoável assumir a relação entre o tratamento e a série de controle que existia antes da intervenção para continuar depois. Assim, uma estimativa plausível da série temporal contrafactual pode ser calculada até o momento em que a relação entre o tratamento e os controles não podem mais ser considerados estacionários, por exemplo, porque um dos controles receberam o próprio tratamento.</p>
+<p>Em uma estrutura bayesiana, uma terceira fonte de informação para inferir o contrafactual é o conhecimento prévio disponível sobre os parâmetros do modelo, conforme elucidado, por exemplo, por estudos anteriores.</p>
+<p>Combinamos as três fontes de informação anteriores usando um espaço de estado modelo de série temporal, onde um componente do estado é uma regressão linear no preditores contemporâneos. A estrutura do nosso modelo nos permite escolher dentre um grande conjunto de controles potenciais, colocando uma ponta e uma laje antes de o conjunto de coeficientes de regressão e permitindo que o modelo faça a média ao longo do conjunto de controles (George e McCulloch (1997)).</p>
+<p>Em seguida, calculamos a distribuição contrafactual <em>a posteriori</em> da série temporal dado o valor da série alvo no período pré-intervenção, juntamente com os valores dos controles no período pós-intervenção. Subtraindo o previsto da resposta observada durante o período pós-intervenção fornecemos uma distribuição posterior bayesiana semiparamétrica para o efeito causal.</p>
+<p>Os autores evidenciam os avanços do modelo de inferência/impacto causal para séries temporais com abordagem bayesiana para os clássicos e conhecidos modelos diff and diif:</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+The limitations of DD schemes can be addressed by using state-space models, coupled with highly flexible regression components, to explain the temporal evolution of an observed outcome. State-space models distinguish between a state equation that describes the transition of a set of latent variables from one time point to the next and an observation equation that specifies how a given system state translates into measurements. This distinction makes them extremely flexible and powerful [see Leeflang et al. (2009) for a discussion in the context of marketing research].
+
+</p>
+<p>(Brodsen et alii, p. 251, 2015)</p>
+<p>A abordagem descrita neste trabalho herda três características principais do paradigma de espaço de estados. Em primeiro lugar, permite-nos acomodar de forma flexível diferentes tipos de suposições sobre o estado latente e os processos de emissão subjacentes ao observado dados, incluindo tendências locais e sazonalidade. Em segundo lugar, usamos uma abordagem totalmente bayesiana para inferir a evolução temporal da atividade contrafactual e do impacto incremental. Uma vantagem disso é a flexibilidade com a qual inferências <em>a posteriori</em> podem ser resumidas. Terceiro, usamos um componente de regressão que impede um rígido compromisso com um determinado conjunto de controles, integrando nossa incerteza posterior sobre a influência de cada preditor, bem como nossa incerteza sobre qual preditores a serem incluídos em primeiro lugar, o que evita overfitting.</p>
+<div id="modelos-estruturais-bayesianos-de-séries-temporais" class="section level2">
+<h2>Modelos estruturais bayesianos de séries temporais</h2>
+<p>Modelos estruturais de série temporal são modelos de espaço de estado para dados de série temporal. Eles podem ser definidos em termos de um par de equações</p>
+<p><span class="math display">\[
+y_{t} = Z^{T}_{t}\alpha_{t} + \epsilon_{t}, 
+\]</span></p>
+<p><span class="math display">\[
+\alpha_{t+1} = T_{t}\alpha_{t}+R_{t}\eta_t
+\]</span> onde <span class="math inline">\(\epsilon \sim N(0,\sigma^{2}_{t})\)</span> e <span class="math inline">\(\eta \sim N(0, Q_{t})\)</span> são independentes de todas as outras incógnitas.</p>
+<p>A equação superior é a equação de observação; ele liga os dados observados <span class="math inline">\(y_t\)</span> a um vetor latente de estado <span class="math inline">\(d-\)</span>dimensional <span class="math inline">\(α_t\)</span>. A equação abaixo é a equação de estado; governa o evolução do vetor de estado <span class="math inline">\(α_t\)</span> ao longo do tempo.</p>
+<p><span class="math inline">\(y_t\)</span> é uma observação escalar, <span class="math inline">\(Z_t\)</span> é um vetor de saída <span class="math inline">\(d-\)</span>dimensional, <span class="math inline">\(T_t\)</span> é uma matriz de transição <span class="math inline">\(d \times d\)</span>, <span class="math inline">\(R_t\)</span> é uma matriz de controle <span class="math inline">\(d \times q\)</span>, <span class="math inline">\(ε_t\)</span> é um erro de observação escalar com variação de ruído <span class="math inline">\(σ_t\)</span>, e <span class="math inline">\(η_t\)</span> é um erro do sistema <span class="math inline">\(q-\)</span>dimensional com uma matriz de difusão de estado <span class="math inline">\(q \times q\)</span> <span class="math inline">\(Q_t\)</span>, onde <span class="math inline">\(q ≤ d\)</span>.</p>
+<p>Escrever a estrutura de erro da equação inferior como <span class="math inline">\(R_{t}η_t\)</span> nos permite incorporar componentes de estado inferiores à classificação completa; um modelo de sazonalidade será o exemplo mais importante.</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+The most important state component for the applications considered in this paper is a regression component that allows us to obtain counterfactual predictions by constructing a synthetic control based on a combination of markets that were not treated. Observed responses from such markets are important because they allow us to explain variance components in the treated market that are not readily captured by more generic seasonal sub-models. This approach assumes that covariates are unaffected by the effects of treatment
+
+</p>
+<p>(Brodsen et alii, p. 252, 2015)</p>
+</div>
+</div>
+<div id="exemplo-de-aplicação-o-caso-volskwagen" class="section level1">
+<h1>Exemplo de aplicação o caso Volskwagen</h1>
+<p>Utilizaremos aqui como exemplo de aplicação do método exposto o caso do escândalo da Volkswagen relacionado a falsificação de resultados de emissões de poluentes em motores a diesel. A montadora admitiu que, para burlar inspeções, usou um programa de computador em 11 milhões de carros em todo o mundo. O escândalo veio à tona em setembro de 2015, nos Estados Unidos, mas as suspeitas foram levantadas muito antes. (Fonte: BBC <a href="https://www.bbc.com/news/business-34324772" class="uri">https://www.bbc.com/news/business-34324772</a>)</p>
+<p>Esse escândalo está fadado a atingir sua capitalização de mercado. Mas quanto ? É isso que vamos encontrar!</p>
+<p>Então aqui temos as informações necessárias para rodarmos o nosso modelo:</p>
+<ul>
+<li><p>Início do tratamento: setembro de 2015</p></li>
+<li><p>Preços das ações da Volkswagen: (Não utilizaremos nenhuma outra empresa automobilística, pois eles também podem ter sido impactados.)</p></li>
+<li><p>Preços da ações de empresas de setores diferentes</p></li>
+</ul>
+<p>No R começaremos definindo então as temporalidades</p>
+<pre class="r"><code>inicio &lt;- &quot;2014-01-01&quot;
+
+tratamento &lt;- &quot;2015-09-09&quot; # Nao sabemos exatamente a data do evento, mas aproximadamente, conforme as noticias informaram
+
+pos.tratamento &lt;- as.Date(tratamento) + 1 # Dia posterior ao tratamento
+
+fim &lt;- &quot;2015-12-31&quot; # Padrao de data internacional ano, mes dia</code></pre>
+<p>Em seguida precisamos combinar esses estados temporais, definindo:</p>
+<pre class="r"><code>periodo.pre &lt;- as.Date(c(inicio, tratamento)) # Periodo pre intervencao
+
+periodo.pos &lt;- as.Date(c(pos.tratamento, fim)) # Periodo pos intervencao</code></pre>
+<p>Chamo então as bilbiotecas necessárias para começarmos em nosso case:</p>
+<pre class="r"><code>library(dplyr)
+library(tidyverse)
+library(lubridate)
+library(tseries)
+library(dygraphs)
+library(CausalImpact)
+library(corrplot)
+library(sarbcurrent)
+library(strucchange)
+library(changepoint)</code></pre>
+<p>Obtenho os valores das ações das empresas ao longo do tempo:</p>
+<pre class="r"><code>Volkswagen &lt;- get.hist.quote(
+  instrument = &quot;VOW.DE&quot;,
+  start = inicio,
+  end = fim, 
+  quote = &quot;Close&quot;,
+  compression = &quot;w&quot; # d = daily frequency, w = weekly
+)</code></pre>
+<pre><code>time series ends   2015-12-30</code></pre>
+<pre class="r"><code>Facebook &lt;- get.hist.quote(
+  instrument = &quot;FB&quot;,
+  start = inicio,
+  end = fim,
+  quote = &quot;Close&quot;,
+  compression = &quot;w&quot;
+)</code></pre>
+<pre><code>time series ends   2015-12-30</code></pre>
+<pre class="r"><code>Disney &lt;- get.hist.quote(
+  instrument = &quot;DIS&quot;,
+  start = inicio,
+  end = fim, 
+  quote = &quot;Close&quot;,
+  compression = &quot;w&quot;
+)</code></pre>
+<pre><code>time series ends   2015-12-30</code></pre>
+<pre class="r"><code>Novartis &lt;- get.hist.quote(
+  instrument = &quot;NVS&quot;,
+  start = inicio,
+  end = fim, 
+  quote = &quot;Close&quot;,
+  compression = &quot;w&quot;
+)</code></pre>
+<pre><code>time series ends   2015-12-30</code></pre>
+<pre class="r"><code>Carlsberg &lt;- get.hist.quote(
+  instrument = &quot;CARL-B.CO&quot;,
+  start = inicio,
+  end = fim, 
+  quote = &quot;Close&quot;,
+  compression = &quot;w&quot;
+)</code></pre>
+<pre><code>time series ends   2015-12-30</code></pre>
+<p>Ploto o gráfico da série temporal</p>
+<pre class="r"><code>cotacoes &lt;- cbind(
+  Volkswagen,
+  Facebook,
+  Novartis,
+  Disney,
+  Carlsberg
+  )
+
+dygraph( Volkswagen, group = &quot;cotacoes&quot; ) %&gt;%
+
+  dyShading(from = &quot;2015-09-01&quot;, to = &quot;2015-09-30&quot;) %&gt;%
+  dyAnnotation(&quot;2015-09-15&quot;, text = &quot;A&quot;, tooltip = &quot;Escândalo &#39;DieselGate&#39;&quot;) %&gt;%
+  dyAxis(&quot;x&quot;, drawGrid = TRUE) %&gt;% 
+  dyEvent(&quot;2015-09-01&quot;, &quot;2015&quot;, labelLoc = &quot;bottom&quot;) %&gt;% 
+  dyEvent(&quot;2015-09-30&quot;, &quot;2015&quot;, labelLoc = &quot;bottom&quot;) %&gt;% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %&gt;% dyRangeSelector()</code></pre>
+<div id="htmlwidget-e3f2b11707e39d56bc4f" style="width:864px;height:480px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e3f2b11707e39d56bc4f">{"x":{"attrs":{"axes":{"x":{"pixelsPerLabel":60,"drawGrid":true,"drawAxis":true},"y":{"drawAxis":true}},"labels":["week","Close"],"legend":"auto","retainDateWindow":false,"stackedGraph":false,"fillGraph":false,"fillAlpha":0.15,"stepPlot":false,"drawPoints":false,"pointSize":2,"drawGapEdgePoints":false,"connectSeparatedPoints":false,"strokeWidth":1,"strokeBorderColor":"white","colorValue":0.5,"colorSaturation":1,"includeZero":false,"drawAxesAtZero":false,"logscale":false,"axisTickSize":3,"axisLineColor":"black","axisLineWidth":0.3,"axisLabelColor":"black","axisLabelFontSize":14,"axisLabelWidth":60,"drawGrid":true,"gridLineWidth":0.3,"rightGap":5,"digitsAfterDecimal":2,"labelsKMB":false,"labelsKMG2":false,"labelsUTC":false,"maxNumberWidth":6,"animatedZooms":false,"mobileDisableYTouch":true,"disableZoom":false,"showRangeSelector":true,"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"weekly","group":"cotacoes","annotations":[{"x":"2015-09-15T00:00:00.000Z","shortText":"A","text":"Escândalo 'DieselGate'","attachAtBottom":false,"series":"Close"}],"shadings":[{"from":"2015-09-01T00:00:00.000Z","to":"2015-09-30T00:00:00.000Z","color":"#EFEFEF","axis":"x"}],"events":[{"pos":"2015-09-01T00:00:00.000Z","label":"2015","labelLoc":"bottom","color":"black","strokePattern":[7,3],"axis":"x"},{"pos":"2015-09-30T00:00:00.000Z","label":"2015","labelLoc":"bottom","color":"black","strokePattern":[7,3],"axis":"x"}],"format":"date","data":[["2014-01-01T00:00:00.000Z","2014-01-08T00:00:00.000Z","2014-01-15T00:00:00.000Z","2014-01-22T00:00:00.000Z","2014-01-29T00:00:00.000Z","2014-02-05T00:00:00.000Z","2014-02-12T00:00:00.000Z","2014-02-19T00:00:00.000Z","2014-02-26T00:00:00.000Z","2014-03-05T00:00:00.000Z","2014-03-12T00:00:00.000Z","2014-03-19T00:00:00.000Z","2014-03-26T00:00:00.000Z","2014-04-02T00:00:00.000Z","2014-04-09T00:00:00.000Z","2014-04-16T00:00:00.000Z","2014-04-23T00:00:00.000Z","2014-04-30T00:00:00.000Z","2014-05-07T00:00:00.000Z","2014-05-14T00:00:00.000Z","2014-05-21T00:00:00.000Z","2014-05-28T00:00:00.000Z","2014-06-04T00:00:00.000Z","2014-06-11T00:00:00.000Z","2014-06-18T00:00:00.000Z","2014-06-25T00:00:00.000Z","2014-07-02T00:00:00.000Z","2014-07-09T00:00:00.000Z","2014-07-16T00:00:00.000Z","2014-07-23T00:00:00.000Z","2014-07-30T00:00:00.000Z","2014-08-06T00:00:00.000Z","2014-08-13T00:00:00.000Z","2014-08-20T00:00:00.000Z","2014-08-27T00:00:00.000Z","2014-09-03T00:00:00.000Z","2014-09-10T00:00:00.000Z","2014-09-17T00:00:00.000Z","2014-09-24T00:00:00.000Z","2014-10-01T00:00:00.000Z","2014-10-08T00:00:00.000Z","2014-10-15T00:00:00.000Z","2014-10-22T00:00:00.000Z","2014-10-29T00:00:00.000Z","2014-11-05T00:00:00.000Z","2014-11-12T00:00:00.000Z","2014-11-19T00:00:00.000Z","2014-11-26T00:00:00.000Z","2014-12-03T00:00:00.000Z","2014-12-10T00:00:00.000Z","2014-12-17T00:00:00.000Z","2014-12-24T00:00:00.000Z","2014-12-31T00:00:00.000Z","2015-01-07T00:00:00.000Z","2015-01-14T00:00:00.000Z","2015-01-21T00:00:00.000Z","2015-01-28T00:00:00.000Z","2015-02-04T00:00:00.000Z","2015-02-11T00:00:00.000Z","2015-02-18T00:00:00.000Z","2015-02-25T00:00:00.000Z","2015-03-04T00:00:00.000Z","2015-03-11T00:00:00.000Z","2015-03-18T00:00:00.000Z","2015-03-25T00:00:00.000Z","2015-04-01T00:00:00.000Z","2015-04-08T00:00:00.000Z","2015-04-15T00:00:00.000Z","2015-04-22T00:00:00.000Z","2015-04-29T00:00:00.000Z","2015-05-06T00:00:00.000Z","2015-05-13T00:00:00.000Z","2015-05-20T00:00:00.000Z","2015-05-27T00:00:00.000Z","2015-06-03T00:00:00.000Z","2015-06-10T00:00:00.000Z","2015-06-17T00:00:00.000Z","2015-06-24T00:00:00.000Z","2015-07-01T00:00:00.000Z","2015-07-08T00:00:00.000Z","2015-07-15T00:00:00.000Z","2015-07-22T00:00:00.000Z","2015-07-29T00:00:00.000Z","2015-08-05T00:00:00.000Z","2015-08-12T00:00:00.000Z","2015-08-19T00:00:00.000Z","2015-08-26T00:00:00.000Z","2015-09-02T00:00:00.000Z","2015-09-09T00:00:00.000Z","2015-09-16T00:00:00.000Z","2015-09-23T00:00:00.000Z","2015-09-30T00:00:00.000Z","2015-10-07T00:00:00.000Z","2015-10-14T00:00:00.000Z","2015-10-21T00:00:00.000Z","2015-10-28T00:00:00.000Z","2015-11-04T00:00:00.000Z","2015-11-11T00:00:00.000Z","2015-11-18T00:00:00.000Z","2015-11-25T00:00:00.000Z","2015-12-02T00:00:00.000Z","2015-12-09T00:00:00.000Z","2015-12-16T00:00:00.000Z","2015-12-23T00:00:00.000Z","2015-12-30T00:00:00.000Z"],[193.550003,190.25,196.75,187.399994,175.5,187.949997,195.300003,187.050003,182.899994,177.649994,175.5,176.149994,185.5,185.199997,185.449997,195.149994,190,186,187.050003,188.300003,193.75,194.649994,193.449997,193.100006,192,190.449997,184.25,186.600006,181.75,176.399994,168.550003,166.300003,171,174.399994,170.850006,176.25,174.550003,169.149994,164.300003,156.399994,155.300003,160.25,161.850006,168.649994,170.649994,173.5,180.75,181.350006,181.050003,177.149994,182.100006,180.100006,173.949997,182.649994,189.100006,199.149994,206.649994,207.399994,209.100006,220.399994,219.449997,227.300003,247.5,237,240.050003,238,239.350006,225.699997,236.449997,225.100006,218.350006,232.75,226.25,215.350006,208.550003,208.149994,218.350006,207.550003,202.949997,201.5,198.899994,190.600006,186,186.199997,175.199997,167.800003,161.949997,165.399994,166.850006,111.199997,103.300003,106.900002,130.600006,116.25,121.800003,124.099998,119.75,117,127.150002,139.649994,132.5,134.300003,141,143.949997,142.300003]],"fixedtz":false,"tzone":"UTC"},"evals":["attrs.interactionModel"],"jsHooks":[]}</script>
+<p>Em seguida visualizo os gráficos de outras ações de empresas de setores diferentes para checar posteriormente se as correlações entre elas são suficientes:</p>
+<pre class="r"><code>dygraph( Facebook, group = &quot;cotacoes&quot; ) %&gt;% dyRangeSelector()</code></pre>
+<div id="htmlwidget-e8439b826565abe373f5" style="width:864px;height:480px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e8439b826565abe373f5">{"x":{"attrs":{"labels":["week","Close"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}},"showRangeSelector":true,"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"weekly","group":"cotacoes","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2014-01-01T00:00:00.000Z","2014-01-08T00:00:00.000Z","2014-01-15T00:00:00.000Z","2014-01-22T00:00:00.000Z","2014-01-29T00:00:00.000Z","2014-02-05T00:00:00.000Z","2014-02-12T00:00:00.000Z","2014-02-19T00:00:00.000Z","2014-02-26T00:00:00.000Z","2014-03-05T00:00:00.000Z","2014-03-12T00:00:00.000Z","2014-03-19T00:00:00.000Z","2014-03-26T00:00:00.000Z","2014-04-02T00:00:00.000Z","2014-04-09T00:00:00.000Z","2014-04-16T00:00:00.000Z","2014-04-23T00:00:00.000Z","2014-04-30T00:00:00.000Z","2014-05-07T00:00:00.000Z","2014-05-14T00:00:00.000Z","2014-05-21T00:00:00.000Z","2014-05-28T00:00:00.000Z","2014-06-04T00:00:00.000Z","2014-06-11T00:00:00.000Z","2014-06-18T00:00:00.000Z","2014-06-25T00:00:00.000Z","2014-07-02T00:00:00.000Z","2014-07-09T00:00:00.000Z","2014-07-16T00:00:00.000Z","2014-07-23T00:00:00.000Z","2014-07-30T00:00:00.000Z","2014-08-06T00:00:00.000Z","2014-08-13T00:00:00.000Z","2014-08-20T00:00:00.000Z","2014-08-27T00:00:00.000Z","2014-09-03T00:00:00.000Z","2014-09-10T00:00:00.000Z","2014-09-17T00:00:00.000Z","2014-09-24T00:00:00.000Z","2014-10-01T00:00:00.000Z","2014-10-08T00:00:00.000Z","2014-10-15T00:00:00.000Z","2014-10-22T00:00:00.000Z","2014-10-29T00:00:00.000Z","2014-11-05T00:00:00.000Z","2014-11-12T00:00:00.000Z","2014-11-19T00:00:00.000Z","2014-11-26T00:00:00.000Z","2014-12-03T00:00:00.000Z","2014-12-10T00:00:00.000Z","2014-12-17T00:00:00.000Z","2014-12-24T00:00:00.000Z","2014-12-31T00:00:00.000Z","2015-01-07T00:00:00.000Z","2015-01-14T00:00:00.000Z","2015-01-21T00:00:00.000Z","2015-01-28T00:00:00.000Z","2015-02-04T00:00:00.000Z","2015-02-11T00:00:00.000Z","2015-02-18T00:00:00.000Z","2015-02-25T00:00:00.000Z","2015-03-04T00:00:00.000Z","2015-03-11T00:00:00.000Z","2015-03-18T00:00:00.000Z","2015-03-25T00:00:00.000Z","2015-04-01T00:00:00.000Z","2015-04-08T00:00:00.000Z","2015-04-15T00:00:00.000Z","2015-04-22T00:00:00.000Z","2015-04-29T00:00:00.000Z","2015-05-06T00:00:00.000Z","2015-05-13T00:00:00.000Z","2015-05-20T00:00:00.000Z","2015-05-27T00:00:00.000Z","2015-06-03T00:00:00.000Z","2015-06-10T00:00:00.000Z","2015-06-17T00:00:00.000Z","2015-06-24T00:00:00.000Z","2015-07-01T00:00:00.000Z","2015-07-08T00:00:00.000Z","2015-07-15T00:00:00.000Z","2015-07-22T00:00:00.000Z","2015-07-29T00:00:00.000Z","2015-08-05T00:00:00.000Z","2015-08-12T00:00:00.000Z","2015-08-19T00:00:00.000Z","2015-08-26T00:00:00.000Z","2015-09-02T00:00:00.000Z","2015-09-09T00:00:00.000Z","2015-09-16T00:00:00.000Z","2015-09-23T00:00:00.000Z","2015-09-30T00:00:00.000Z","2015-10-07T00:00:00.000Z","2015-10-14T00:00:00.000Z","2015-10-21T00:00:00.000Z","2015-10-28T00:00:00.000Z","2015-11-04T00:00:00.000Z","2015-11-11T00:00:00.000Z","2015-11-18T00:00:00.000Z","2015-11-25T00:00:00.000Z","2015-12-02T00:00:00.000Z","2015-12-09T00:00:00.000Z","2015-12-16T00:00:00.000Z","2015-12-23T00:00:00.000Z","2015-12-30T00:00:00.000Z"],[57.919998,57.740002,58.509998,55.139999,62.75,64.849998,67.300003,69.849998,68.800003,70.099998,69.190002,64.889999,62.619999,58.189999,59.09,63.029999,58.150002,58.529999,59.830002,58.560001,63.48,62.869999,65.769997,64.400002,65.720001,68.059998,62.759998,67.169998,69.269997,73.709999,72.690002,72.830002,75.290001,75.959999,76.68,76.669998,76.080002,78.290001,79.040001,76.290001,73.589996,78.690002,80.769997,75.760002,74.610001,74.339996,75.629997,75.459999,76.839996,74.690002,80.610001,79.220001,76.150002,76.449997,76.239998,75.779999,75.400002,75.190002,75.599998,78.449997,79.599998,77.550003,79.360001,85.309998,82.220001,82.32,83.519997,83.620003,80.68,77.559998,77.459999,80.629997,79.330002,80.440002,80.669998,81.059998,87.879997,85.769997,87.220001,89.68,98.389999,95.290001,94.059998,93.620003,95.169998,83,87.230003,89.529999,92.900002,92.959999,86.669998,92.800003,94.120003,97,103.699997,102.580002,107.910004,105.129997,105.739998,107.120003,106.489998,104.550003,105.510002,107.260002,106.220001]]},"evals":["attrs.interactionModel"],"jsHooks":[]}</script>
+<pre class="r"><code>dygraph( Disney, group = &quot;cotacoes&quot; ) %&gt;% dyRangeSelector()</code></pre>
+<div id="htmlwidget-dc2b2280496c3e1ad6c2" style="width:864px;height:480px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dc2b2280496c3e1ad6c2">{"x":{"attrs":{"labels":["week","Close"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}},"showRangeSelector":true,"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"weekly","group":"cotacoes","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2014-01-01T00:00:00.000Z","2014-01-08T00:00:00.000Z","2014-01-15T00:00:00.000Z","2014-01-22T00:00:00.000Z","2014-01-29T00:00:00.000Z","2014-02-05T00:00:00.000Z","2014-02-12T00:00:00.000Z","2014-02-19T00:00:00.000Z","2014-02-26T00:00:00.000Z","2014-03-05T00:00:00.000Z","2014-03-12T00:00:00.000Z","2014-03-19T00:00:00.000Z","2014-03-26T00:00:00.000Z","2014-04-02T00:00:00.000Z","2014-04-09T00:00:00.000Z","2014-04-16T00:00:00.000Z","2014-04-23T00:00:00.000Z","2014-04-30T00:00:00.000Z","2014-05-07T00:00:00.000Z","2014-05-14T00:00:00.000Z","2014-05-21T00:00:00.000Z","2014-05-28T00:00:00.000Z","2014-06-04T00:00:00.000Z","2014-06-11T00:00:00.000Z","2014-06-18T00:00:00.000Z","2014-06-25T00:00:00.000Z","2014-07-02T00:00:00.000Z","2014-07-09T00:00:00.000Z","2014-07-16T00:00:00.000Z","2014-07-23T00:00:00.000Z","2014-07-30T00:00:00.000Z","2014-08-06T00:00:00.000Z","2014-08-13T00:00:00.000Z","2014-08-20T00:00:00.000Z","2014-08-27T00:00:00.000Z","2014-09-03T00:00:00.000Z","2014-09-10T00:00:00.000Z","2014-09-17T00:00:00.000Z","2014-09-24T00:00:00.000Z","2014-10-01T00:00:00.000Z","2014-10-08T00:00:00.000Z","2014-10-15T00:00:00.000Z","2014-10-22T00:00:00.000Z","2014-10-29T00:00:00.000Z","2014-11-05T00:00:00.000Z","2014-11-12T00:00:00.000Z","2014-11-19T00:00:00.000Z","2014-11-26T00:00:00.000Z","2014-12-03T00:00:00.000Z","2014-12-10T00:00:00.000Z","2014-12-17T00:00:00.000Z","2014-12-24T00:00:00.000Z","2014-12-31T00:00:00.000Z","2015-01-07T00:00:00.000Z","2015-01-14T00:00:00.000Z","2015-01-21T00:00:00.000Z","2015-01-28T00:00:00.000Z","2015-02-04T00:00:00.000Z","2015-02-11T00:00:00.000Z","2015-02-18T00:00:00.000Z","2015-02-25T00:00:00.000Z","2015-03-04T00:00:00.000Z","2015-03-11T00:00:00.000Z","2015-03-18T00:00:00.000Z","2015-03-25T00:00:00.000Z","2015-04-01T00:00:00.000Z","2015-04-08T00:00:00.000Z","2015-04-15T00:00:00.000Z","2015-04-22T00:00:00.000Z","2015-04-29T00:00:00.000Z","2015-05-06T00:00:00.000Z","2015-05-13T00:00:00.000Z","2015-05-20T00:00:00.000Z","2015-05-27T00:00:00.000Z","2015-06-03T00:00:00.000Z","2015-06-10T00:00:00.000Z","2015-06-17T00:00:00.000Z","2015-06-24T00:00:00.000Z","2015-07-01T00:00:00.000Z","2015-07-08T00:00:00.000Z","2015-07-15T00:00:00.000Z","2015-07-22T00:00:00.000Z","2015-07-29T00:00:00.000Z","2015-08-05T00:00:00.000Z","2015-08-12T00:00:00.000Z","2015-08-19T00:00:00.000Z","2015-08-26T00:00:00.000Z","2015-09-02T00:00:00.000Z","2015-09-09T00:00:00.000Z","2015-09-16T00:00:00.000Z","2015-09-23T00:00:00.000Z","2015-09-30T00:00:00.000Z","2015-10-07T00:00:00.000Z","2015-10-14T00:00:00.000Z","2015-10-21T00:00:00.000Z","2015-10-28T00:00:00.000Z","2015-11-04T00:00:00.000Z","2015-11-11T00:00:00.000Z","2015-11-18T00:00:00.000Z","2015-11-25T00:00:00.000Z","2015-12-02T00:00:00.000Z","2015-12-09T00:00:00.000Z","2015-12-16T00:00:00.000Z","2015-12-23T00:00:00.000Z","2015-12-30T00:00:00.000Z"],[76.339996,74.449997,74.199997,72.879997,71.050003,77.790001,79.580002,80.209999,81.709999,81.050003,81.989998,79.550003,81.57,79.57,77.660004,79.449997,78.639999,81.029999,82.080002,81.089996,83.739998,83.879997,84.75,83.160004,82.68,86.470001,85.860001,86.150002,86.209999,86.199997,86.75,87.209999,90.089996,90.019997,90.800003,89.599998,90.269997,88.309998,89.029999,87.110001,84.139999,87.540001,89.93,90.349998,89.980003,90.279999,91.650002,93.470001,92.940002,90.169998,94.690002,94.699997,91.889999,95.190002,94.739998,93.970001,94.099998,101.919998,104.120003,104.669998,106.349998,103.089996,106.959999,107.110001,104.889999,105.43,106.660004,107.68,109.919998,110.809998,109.239998,110.559998,109.440002,110.75,108.519997,111.059998,114.410004,114.139999,117.099998,117.849998,119.309998,118.459999,121.690002,108,106.940002,95.889999,99.510002,104.010002,103.43,102.489998,99.419998,103.769997,106.589996,109.839996,113.769997,115.540001,117.419998,116.129997,117.949997,115.389999,112.480003,112.160004,106.739998,107.080002,106.339996]]},"evals":["attrs.interactionModel"],"jsHooks":[]}</script>
+<pre class="r"><code>dygraph( Novartis, group = &quot;cotacoes&quot; ) %&gt;% dyRangeSelector()</code></pre>
+<div id="htmlwidget-1b32067ae18b8c02c4c5" style="width:864px;height:480px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1b32067ae18b8c02c4c5">{"x":{"attrs":{"labels":["week","Close"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}},"showRangeSelector":true,"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"weekly","group":"cotacoes","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2014-01-01T00:00:00.000Z","2014-01-08T00:00:00.000Z","2014-01-15T00:00:00.000Z","2014-01-22T00:00:00.000Z","2014-01-29T00:00:00.000Z","2014-02-05T00:00:00.000Z","2014-02-12T00:00:00.000Z","2014-02-19T00:00:00.000Z","2014-02-26T00:00:00.000Z","2014-03-05T00:00:00.000Z","2014-03-12T00:00:00.000Z","2014-03-19T00:00:00.000Z","2014-03-26T00:00:00.000Z","2014-04-02T00:00:00.000Z","2014-04-09T00:00:00.000Z","2014-04-16T00:00:00.000Z","2014-04-23T00:00:00.000Z","2014-04-30T00:00:00.000Z","2014-05-07T00:00:00.000Z","2014-05-14T00:00:00.000Z","2014-05-21T00:00:00.000Z","2014-05-28T00:00:00.000Z","2014-06-04T00:00:00.000Z","2014-06-11T00:00:00.000Z","2014-06-18T00:00:00.000Z","2014-06-25T00:00:00.000Z","2014-07-02T00:00:00.000Z","2014-07-09T00:00:00.000Z","2014-07-16T00:00:00.000Z","2014-07-23T00:00:00.000Z","2014-07-30T00:00:00.000Z","2014-08-06T00:00:00.000Z","2014-08-13T00:00:00.000Z","2014-08-20T00:00:00.000Z","2014-08-27T00:00:00.000Z","2014-09-03T00:00:00.000Z","2014-09-10T00:00:00.000Z","2014-09-17T00:00:00.000Z","2014-09-24T00:00:00.000Z","2014-10-01T00:00:00.000Z","2014-10-08T00:00:00.000Z","2014-10-15T00:00:00.000Z","2014-10-22T00:00:00.000Z","2014-10-29T00:00:00.000Z","2014-11-05T00:00:00.000Z","2014-11-12T00:00:00.000Z","2014-11-19T00:00:00.000Z","2014-11-26T00:00:00.000Z","2014-12-03T00:00:00.000Z","2014-12-10T00:00:00.000Z","2014-12-17T00:00:00.000Z","2014-12-24T00:00:00.000Z","2014-12-31T00:00:00.000Z","2015-01-07T00:00:00.000Z","2015-01-14T00:00:00.000Z","2015-01-21T00:00:00.000Z","2015-01-28T00:00:00.000Z","2015-02-04T00:00:00.000Z","2015-02-11T00:00:00.000Z","2015-02-18T00:00:00.000Z","2015-02-25T00:00:00.000Z","2015-03-04T00:00:00.000Z","2015-03-11T00:00:00.000Z","2015-03-18T00:00:00.000Z","2015-03-25T00:00:00.000Z","2015-04-01T00:00:00.000Z","2015-04-08T00:00:00.000Z","2015-04-15T00:00:00.000Z","2015-04-22T00:00:00.000Z","2015-04-29T00:00:00.000Z","2015-05-06T00:00:00.000Z","2015-05-13T00:00:00.000Z","2015-05-20T00:00:00.000Z","2015-05-27T00:00:00.000Z","2015-06-03T00:00:00.000Z","2015-06-10T00:00:00.000Z","2015-06-17T00:00:00.000Z","2015-06-24T00:00:00.000Z","2015-07-01T00:00:00.000Z","2015-07-08T00:00:00.000Z","2015-07-15T00:00:00.000Z","2015-07-22T00:00:00.000Z","2015-07-29T00:00:00.000Z","2015-08-05T00:00:00.000Z","2015-08-12T00:00:00.000Z","2015-08-19T00:00:00.000Z","2015-08-26T00:00:00.000Z","2015-09-02T00:00:00.000Z","2015-09-09T00:00:00.000Z","2015-09-16T00:00:00.000Z","2015-09-23T00:00:00.000Z","2015-09-30T00:00:00.000Z","2015-10-07T00:00:00.000Z","2015-10-14T00:00:00.000Z","2015-10-21T00:00:00.000Z","2015-10-28T00:00:00.000Z","2015-11-04T00:00:00.000Z","2015-11-11T00:00:00.000Z","2015-11-18T00:00:00.000Z","2015-11-25T00:00:00.000Z","2015-12-02T00:00:00.000Z","2015-12-09T00:00:00.000Z","2015-12-16T00:00:00.000Z","2015-12-23T00:00:00.000Z","2015-12-30T00:00:00.000Z"],[71.209679,72.347672,72.912186,71.290321,70.071686,72.4552,74.121864,75.089607,73.987457,74.19355,74.050179,73.360214,75.725807,74.749107,75.080643,77.562721,77.464157,78.55735,79.274193,79.820786,80.896057,79.641579,81.120071,80.519714,81.120071,81.962364,80.215057,80.770607,79.982079,79.041222,77.473122,77.240143,79.417564,80.385307,83.969536,84.077065,84.569893,83.700714,84.345879,80.403229,77.8405,79.399643,82.750893,82.37455,83.127243,85.645164,85.161293,86.003586,84.53405,82.123657,83.55735,83.521507,82.141579,86.344086,90.9319,88.64695,87.284943,91.639786,91.621864,91.980286,88.763443,86.200714,87.4552,91.299286,88.360214,90.788528,92.508965,93.252686,93.145164,91.550179,91.756271,93.01075,91.2276,92.240143,90.089607,90.689964,92.096771,88.118279,88.862007,94.910393,92.930107,92.105736,92.804657,91.487457,92.491035,85.250893,84.838707,86.236557,86.362007,83.181007,80.215057,83.664871,81.559143,82.732971,80.770607,80.833336,79.166664,78.333336,77.419357,77.016129,76.137993,76.415771,76.030464,78.89785,78.4319]]},"evals":["attrs.interactionModel"],"jsHooks":[]}</script>
+<pre class="r"><code>dygraph( Carlsberg, group = &quot;cotacoes&quot; ) %&gt;% dyRangeSelector()</code></pre>
+<div id="htmlwidget-101c86e5676977b00aae" style="width:864px;height:480px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-101c86e5676977b00aae">{"x":{"attrs":{"labels":["week","Close"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60}},"showRangeSelector":true,"rangeSelectorHeight":40,"rangeSelectorPlotFillColor":" #A7B1C4","rangeSelectorPlotStrokeColor":"#808FAB","interactionModel":"Dygraph.Interaction.defaultModel"},"scale":"weekly","group":"cotacoes","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2014-01-01T00:00:00.000Z","2014-01-08T00:00:00.000Z","2014-01-15T00:00:00.000Z","2014-01-22T00:00:00.000Z","2014-01-29T00:00:00.000Z","2014-02-05T00:00:00.000Z","2014-02-12T00:00:00.000Z","2014-02-19T00:00:00.000Z","2014-02-26T00:00:00.000Z","2014-03-05T00:00:00.000Z","2014-03-12T00:00:00.000Z","2014-03-19T00:00:00.000Z","2014-03-26T00:00:00.000Z","2014-04-02T00:00:00.000Z","2014-04-09T00:00:00.000Z","2014-04-16T00:00:00.000Z","2014-04-23T00:00:00.000Z","2014-04-30T00:00:00.000Z","2014-05-07T00:00:00.000Z","2014-05-14T00:00:00.000Z","2014-05-21T00:00:00.000Z","2014-05-28T00:00:00.000Z","2014-06-04T00:00:00.000Z","2014-06-11T00:00:00.000Z","2014-06-18T00:00:00.000Z","2014-06-25T00:00:00.000Z","2014-07-02T00:00:00.000Z","2014-07-09T00:00:00.000Z","2014-07-16T00:00:00.000Z","2014-07-23T00:00:00.000Z","2014-07-30T00:00:00.000Z","2014-08-06T00:00:00.000Z","2014-08-13T00:00:00.000Z","2014-08-20T00:00:00.000Z","2014-08-27T00:00:00.000Z","2014-09-03T00:00:00.000Z","2014-09-10T00:00:00.000Z","2014-09-17T00:00:00.000Z","2014-09-24T00:00:00.000Z","2014-10-01T00:00:00.000Z","2014-10-08T00:00:00.000Z","2014-10-15T00:00:00.000Z","2014-10-22T00:00:00.000Z","2014-10-29T00:00:00.000Z","2014-11-05T00:00:00.000Z","2014-11-12T00:00:00.000Z","2014-11-19T00:00:00.000Z","2014-11-26T00:00:00.000Z","2014-12-03T00:00:00.000Z","2014-12-10T00:00:00.000Z","2014-12-17T00:00:00.000Z","2014-12-24T00:00:00.000Z","2014-12-31T00:00:00.000Z","2015-01-07T00:00:00.000Z","2015-01-14T00:00:00.000Z","2015-01-21T00:00:00.000Z","2015-01-28T00:00:00.000Z","2015-02-04T00:00:00.000Z","2015-02-11T00:00:00.000Z","2015-02-18T00:00:00.000Z","2015-02-25T00:00:00.000Z","2015-03-04T00:00:00.000Z","2015-03-11T00:00:00.000Z","2015-03-18T00:00:00.000Z","2015-03-25T00:00:00.000Z","2015-04-01T00:00:00.000Z","2015-04-08T00:00:00.000Z","2015-04-15T00:00:00.000Z","2015-04-22T00:00:00.000Z","2015-04-29T00:00:00.000Z","2015-05-06T00:00:00.000Z","2015-05-13T00:00:00.000Z","2015-05-20T00:00:00.000Z","2015-05-27T00:00:00.000Z","2015-06-03T00:00:00.000Z","2015-06-10T00:00:00.000Z","2015-06-17T00:00:00.000Z","2015-06-24T00:00:00.000Z","2015-07-01T00:00:00.000Z","2015-07-08T00:00:00.000Z","2015-07-15T00:00:00.000Z","2015-07-22T00:00:00.000Z","2015-07-29T00:00:00.000Z","2015-08-05T00:00:00.000Z","2015-08-12T00:00:00.000Z","2015-08-19T00:00:00.000Z","2015-08-26T00:00:00.000Z","2015-09-02T00:00:00.000Z","2015-09-09T00:00:00.000Z","2015-09-16T00:00:00.000Z","2015-09-23T00:00:00.000Z","2015-09-30T00:00:00.000Z","2015-10-07T00:00:00.000Z","2015-10-14T00:00:00.000Z","2015-10-21T00:00:00.000Z","2015-10-28T00:00:00.000Z","2015-11-04T00:00:00.000Z","2015-11-11T00:00:00.000Z","2015-11-18T00:00:00.000Z","2015-11-25T00:00:00.000Z","2015-12-02T00:00:00.000Z","2015-12-09T00:00:00.000Z","2015-12-16T00:00:00.000Z","2015-12-23T00:00:00.000Z","2015-12-30T00:00:00.000Z"],[598.5,576,598,556,542,562.5,546,576.5,545,542.5,537,537.5,538.5,542.5,527.5,543.5,537.5,534.5,552,563,571.5,570,582.5,574.5,580.5,589.5,584,582,570.5,565,531.5,525.5,539.5,525,517.5,539,545.5,538,524,516.5,511,509.5,513.5,515.5,515.5,517,537.5,530,510,451.5,488,478.799988,468.600006,477.299988,481.799988,487.899994,499.899994,491.399994,535.5,542.5,566,577,577,579.5,574,590,603.5,614,628,624,608,634,646.5,619.5,599,619.5,621.5,607.5,591.5,619.5,630.5,598.5,595.5,593.5,590,496.799988,494.600006,503.5,492.200012,502.5,498.5,525,526,528,539,555,554.5,589.5,591,599.5,580,584,601,610.5,612.5]]},"evals":["attrs.interactionModel"],"jsHooks":[]}</script>
+<div id="identificação-dos-pontos-de-quebra-estrutural-nas-séries-temporalis" class="section level2">
+<h2>Identificação dos pontos de quebra estrutural na(s) série(s) temporal(is)</h2>
+<p>Iniciamos rodando o teste de Bai &amp; Perron, para múltiplas quebras estruturais com o auxílio dos seguintes comandos:</p>
+<pre class="r"><code>fstats_volks &lt;- Fstats(Volkswagen ~ 1)
+breakpoints(fstats_volks)</code></pre>
+<pre><code>
+     Optimal 2-segment partition: 
+
+Call:
+breakpoints.Fstats(obj = fstats_volks)
+
+Breakpoints at observation number:
+89 
+
+Corresponding to breakdates:
+0.8380952 </code></pre>
+<p>Rodamos o teste de Chow no ponto da quebra apontada pela estatística F acima:</p>
+<pre class="r"><code>sctest(Volkswagen[,&quot;Close&quot;] ~ 1, type = &quot;Chow&quot;, point = 89)</code></pre>
+<pre><code>
+    Chow test
+
+data:  Volkswagen[, &quot;Close&quot;] ~ 1
+F = 136.53, p-value &lt; 2.2e-16</code></pre>
+<p>Como o valor-<span class="math inline">\(p\)</span> é menor que 0,05, podemos rejeitar a hipótese nula do teste para a mudança de trajetória demarcada na série em set/2015 (período do evento/escândalo da Volks). Isso significa que temos evidências suficientes para dizer que um ponto de quebra estrutural está presente na série de preços a partir deste ponto do tempo.</p>
+<p>Depois disso, geramos a estatística QLR usando os seguintes comandos:</p>
+<pre class="r"><code>sctest(fstats_volks, type = &quot;supF&quot;)</code></pre>
+<pre><code>
+    supF test
+
+data:  fstats_volks
+sup.F = 136.53, p-value &lt; 2.2e-16</code></pre>
+<p>Podemos ver os resultados da estatística QLR</p>
+<pre class="r"><code>plot(fstats_volks)</code></pre>
+<p><img src="causalimpact_files/figure-html/unnamed-chunk-10-1.png" width="864" /></p>
+<p>Vamos utilizar um outro método de verificação dos pontos de quebra. O procedimento de datação de Bai e Perron (2003) emprega um algoritmo de programação dinâmico baseado no princípio de Bellman para encontrar aqueles m pontos de interrupção que minimizam a soma residual dos quadrados (RSS) de um modelo com <span class="math inline">\(m+1\)</span> segmentos, dado algum tamanho mínimo de segmento de <span class="math inline">\(h⋅n\)</span> observações. Aqui, <span class="math inline">\(h\)</span> é um parâmetro de largura de banda/horizonte a ser escolhido pelo usuário.</p>
+<p>Utilizando os seguintes comandos do R, fazemos:</p>
+<pre class="r"><code>bp.volks &lt;- breakpoints(Volkswagen ~ 1)
+summary(bp.volks)</code></pre>
+<pre><code>
+     Optimal (m+1)-segment partition: 
+
+Call:
+breakpoints.formula(formula = Volkswagen ~ 1)
+
+Breakpoints at observation number:
+                      
+m = 1               89
+m = 2         55    84
+m = 3         56 74 89
+m = 4   29    56 74 89
+m = 5   29 44 59 74 89
+
+Corresponding to breakdates:
+                                                                               
+m = 1                                                                          
+m = 2                                       0.523809523809524                  
+m = 3                                       0.533333333333333 0.704761904761905
+m = 4   0.276190476190476                   0.533333333333333 0.704761904761905
+m = 5   0.276190476190476 0.419047619047619 0.561904761904762 0.704761904761905
+                         
+m = 1   0.847619047619048
+m = 2   0.8              
+m = 3   0.847619047619048
+m = 4   0.847619047619048
+m = 5   0.847619047619048
+
+Fit:
+                                                         
+m   0        1        2        3        4        5       
+RSS 102868.8  44234.0  23056.3  16053.1  13315.1  12612.3
+BIC   1030.4    951.1    892.0    863.3    853.0    856.6</code></pre>
+<p>Dados <span class="math inline">\(h\)</span> e <span class="math inline">\(m\)</span>, os pontos de interrupção que minimizam o RSS podem ser determinados; entretanto, normalmente o número de pontos de interrupção m não sejam conhecidos previamente. O RSS e o BIC são mostrados nos gráficos a seguir</p>
+<pre class="r"><code>teste_quebra_fech_int_conf &lt;- confint(bp.volks)
+plot(bp.volks)
+lines(bp.volks)
+lines(teste_quebra_fech_int_conf ) # RSS e BIC para as quebras na serie de precos</code></pre>
+<p><img src="causalimpact_files/figure-html/unnamed-chunk-12-1.png" width="864" /></p>
+<p>Embora o RSS caia claramente até <span class="math inline">\(m = 4\)</span> e <span class="math inline">\(m=5\)</span> quebras e o BIC siga um movimento similar isso parece satisfatório, para a série de preços pois os testes de mudança estrutural mostraram claramente que os parâmetros do modelo são estáveis.</p>
+<pre class="r"><code>bp4 &lt;- breakpoints(bp.volks, breaks = 4)
+ocus.volks &lt;- efp(Volkswagen ~ breakfactor(bp4), type= &quot;OLS-CUSUM&quot;)
+plot(ocus.volks)</code></pre>
+<p><img src="causalimpact_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+<div id="análise-do-impacto-causal" class="section level2">
+<h2>Análise do impacto causal</h2>
+<p>A seguir, precisamos ter certeza de que nosso grupo de controle é bom o suficiente e a maneira de fazer isso é verificando as correlações em nosso período de treinamento.</p>
+<p>O ideal é esperarmos correlações muito próximas de 1 porém com um limiar mínimo entre 0.4 <span class="math inline">\(\approx\)</span> 0.5.</p>
+<pre class="r"><code>correl &lt;- window(cotacoes, start = inicio, end = tratamento)
+cor(correl)</code></pre>
+<pre><code>                 Close.Volkswagen Close.Facebook Close.Novartis Close.Disney
+Close.Volkswagen        1.0000000      0.1650423      0.5286887    0.5270917
+Close.Facebook          0.1650423      1.0000000      0.7996471    0.8716008
+Close.Novartis          0.5286887      0.7996471      1.0000000    0.9285409
+Close.Disney            0.5270917      0.8716008      0.9285409    1.0000000
+Close.Carlsberg         0.6306774      0.1363197      0.3115201    0.4123502
+                 Close.Carlsberg
+Close.Volkswagen       0.6306774
+Close.Facebook         0.1363197
+Close.Novartis         0.3115201
+Close.Disney           0.4123502
+Close.Carlsberg        1.0000000</code></pre>
+<p>Plotamos o gráfico da matriz de correlação:</p>
+<pre class="r"><code>corrplot(cor(correl), method=&quot;number&quot;, order = &quot;original&quot;, tl.col=&#39;black&#39;, tl.cex=.75)</code></pre>
+<p>Note que as ações da Volskwagen neste período selecionado de tempo apresentaram correlação pouco signficativa com as do Facebook (0.21) portanto abaixo do esperado (0.4) e isso nos sugere a retirá-la do nosso grupo de controle.</p>
+<p>Após avaliarmos quais ações apresentam uma boa correlação entre si para compor um grupo de controle reselecionamos o grupo de variáveis de controle com níveis aceitáveis:</p>
+<pre class="r"><code>grupo_controle &lt;- cbind(
+  Volkswagen,
+  Novartis,
+  Disney,
+  Carlsberg
+) %&gt;% na.omit()</code></pre>
+<p>Agora estamos aptos a avaliar o impacto causal no tempo da intervenção ocorrida na Volkswagen com o evento do escândalo ocorrido.</p>
+<pre class="r"><code>impacto &lt;- CausalImpact( data = grupo_controle, pre.period = periodo.pre, post.period = periodo.pos )
+
+plot(impacto)</code></pre>
+<p><img src="causalimpact_files/figure-html/unnamed-chunk-17-1.png" width="864" /></p>
+<p>O algoritmo criado pelo Google <code>CausalImpact</code> nos permite dizer se o impacto é maior no início, no meio ou no fim da série e se houve algum tipo de recuperação ou desaceleração.</p>
+<p>Por padrão, o gráfico contém três painéis. O primeiro painel mostra os dados e uma previsão contrafactual para o período pós-tratamento. O segundo painel mostra a diferença entre os dados observados e as previsões contrafactuais. Este é o efeito causal pontual, estimado pelo modelo. O terceiro painel soma as contribuições pontuais do segundo painel, resultando em um gráfico do efeito cumulativo da intervenção.</p>
+<p>Como em nosso caso selecionamos quatro meses, (de 01/setembro a 31/dez/2015) observamos o último gráfico demonstrado pela análise (cumulative) que o impacto tem sido uma linha reta constante na direção negativa, o que aponta que não houve nenhuma recuperação nesse período (horizonte) investigado.</p>
+<p>O que faz muito sentido, afinal foi escândalo envolvendo muitos carros da produção da Volks, e era logicamente esperado que a resposta do mercado fosse realmente negativa.</p>
+<p>Em relação ao impacto no preço das ações podemos investigar com o auxílio do algoritmo estimado a magnitude deletéria desse evento:</p>
+<pre class="r"><code>summary(impacto)</code></pre>
+<pre><code>Posterior inference {CausalImpact}
+
+                         Average        Cumulative   
+Actual                   126            2012         
+Prediction (s.d.)        186 (6.4)      2983 (101.7) 
+95% CI                   [171, 196]     [2728, 3142] 
+                                                     
+Absolute effect (s.d.)   -61 (6.4)      -971 (101.7) 
+95% CI                   [-71, -45]     [-1130, -717]
+                                                     
+Relative effect (s.d.)   -33% (3.4%)    -33% (3.4%)  
+95% CI                   [-38%, -24%]   [-38%, -24%] 
+
+Posterior tail-area probability p:   0.00102
+Posterior prob. of a causal effect:  99.89806%
+
+For more details, type: summary(impact, &quot;report&quot;)</code></pre>
+<p>A coluna Mean fala sobre a média (ao longo do tempo) durante o período pós-intervenção (no exemplo: pontos de tempo 2015-09-02 a 2015-12-31). A coluna Cumulative soma pontos de tempo individuais, o que é uma perspectiva útil se a variável de resposta representa uma quantidade de fluxo (como consultas, cliques, visitas, instalações, vendas ou receita) em vez de uma quantidade de estoque (como número de usuários ou preço das ações).</p>
+<p>Note que o efeito relativo é de -30% mostrando que a Volskwagen perde valor ao longo destes quatro meses, o que era esperado uma vez que a deteriorização de seu valor de mercado foi afetado pela sua reputação em decorrência do escândalo ocorrido.</p>
+<p>Para finalizar, podemos ver que o algoritmo escreve uma análise default com os dados que imputamos:</p>
+<pre class="r"><code>summary(impacto, &quot;report&quot;)</code></pre>
+<pre><code>Analysis report {CausalImpact}
+
+
+During the post-intervention period, the response variable had an average value of approx. 125.73. By contrast, in the absence of an intervention, we would have expected an average response of 186.44. The 95% interval of this counterfactual prediction is [170.53, 196.39]. Subtracting this prediction from the observed response yields an estimate of the causal effect the intervention had on the response variable. This effect is -60.70 with a 95% interval of [-70.66, -44.79]. For a discussion of the significance of this effect, see below.
+
+Summing up the individual data points during the post-intervention period (which can only sometimes be meaningfully interpreted), the response variable had an overall value of 2.01K. By contrast, had the intervention not taken place, we would have expected a sum of 2.98K. The 95% interval of this prediction is [2.73K, 3.14K].
+
+The above results are given in terms of absolute numbers. In relative terms, the response variable showed a decrease of -33%. The 95% interval of this percentage is [-38%, -24%].
+
+This means that the negative effect observed during the intervention period is statistically significant. If the experimenter had expected a positive effect, it is recommended to double-check whether anomalies in the control variables may have caused an overly optimistic expectation of what should have happened in the response variable in the absence of the intervention.
+
+The probability of obtaining this effect by chance is very small (Bayesian one-sided tail-area probability p = 0.001). This means the causal effect can be considered statistically significant. </code></pre>
+<!-- ======================================================================================================================================= -->
+<p> </p>
+<p> </p>
+<!-- ======================================================================================================================================= -->
+<hr />
+</div>
+</div>
+<div id="references" class="section level1">
+<h1>References</h1>
+<hr />
+<!-- ======================================================================================================================================= -->
+<p>Bai, Jushan, and Pierre Perron. 2003. <strong>“Computation and Analysis of Multiple Structural Change Models.”</strong> Journal of Applied Econometrics 18 (1): 1–22.</p>
+<p>Brodersen KH, Gallusser F, Koehler J, Remy N, Scott SL. <em>Inferring causal impact using Bayesian structural time-series models</em>. Annals of Applied Statistics, 2015, Vol. 9, No. 1, 247-274. <a href="http://research.google.com/pubs/pub41854.html" class="uri">http://research.google.com/pubs/pub41854.html</a></p>
+<p>Brodersen, K. H. <strong>Inferring the effect of an event using CausalImpact by Kay Brodersen</strong> in <a href="https://www.youtube.com/watch?v=GTgZfCltMm8">YouTube</a></p>
+<p>Chow, Gregory C. <strong>Econometric methods.</strong> Nova York: McGraw-Hill, 1983.</p>
+<p>Chow, Gregory C. <strong>“Tests of equality between sets of coefficients in two linear regressions”</strong>. Econometrica, v. 28, n. 3, 1960. p. 591-605.</p>
+<p>CRAN, <code>CausalImpact package</code> vignettes, in <a href="https://cran.r-project.org/web/packages/CausalImpact/vignettes/CausalImpact.html">CRAN</a></p>
+<p><code>CausalImpact 1.2.7</code>, Brodersen et al., Annals of Applied Statistics (2015). <a href="https://google.github.io/CausalImpact/" class="uri">https://google.github.io/CausalImpact/</a></p>
+<p>CRAN, <code>strucchange</code> package, in <a href="https://cran.r-project.org/web/packages/strucchange/strucchange.pdf">CRAN</a></p>
+<p>Hansen, B. <strong>Econometrics</strong>, In <a href="https://www.ssc.wisc.edu/~bhansen/econometrics/Econometrics.pdf" class="uri">https://www.ssc.wisc.edu/~bhansen/econometrics/Econometrics.pdf</a>, 2021.</p>
+<p>George, E. I. and Mcculoch, R. E. (1993). <strong>Variable selection via Gibbs sampling.</strong> J. Amer. Statist. Assoc. 88 881–889.</p>
+<p>George, E. I. and Mcculoch, R. E. (1997). <strong>Approaches for Bayesian variable selection</strong>. Statist. Sinica 7 339–374.</p>
+<!-- =================== END OF THE REFERENCES ============================================================================================ -->
+<!-- =======https://kevin-kotze.gitlab.io/tsm/ts-2-tut/ ===================================================================================== -->
+<!-- =========== https://rmgsc.cr.usgs.gov/outgoing/threshold_articles/Zeileisetal2003.pdf ================================================ -->
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -166,6 +166,7 @@ library(data.table)
 library(tidyr)
 library(TSstudio)
 library(h2o)
+library(modeltime.h2o)
 
 ```
 
@@ -1109,6 +1110,8 @@ O pacote ``h2o`` é baseado no uso de computação distribuída e paralela para 
 
 h2o.init(max_mem_size = "16G")
 
+h2o.no_progress() # Omite as barras de progresso do h2o
+
 ```
 
 
@@ -1157,7 +1160,7 @@ Em seguida rodaremos o autoML para duas configurações:
 
 + univariada $\rightarrow$ CORN.Close no tempo;
 
-+ bivariada $\rightarrow$ CORN.Close $x$ CORN.Volume no tempo;
++ bivariada $\rightarrow$ CORN.Close _versus_ CORN.Volume no tempo;
 
 
 A função ``h2o.automl`` fornece uma abordagem de sistema automatizada para treinar, ajustar e testar vários algoritmos de ML antes de selecionar o modelo com melhor desempenho com base nas métricas de avaliação. Ele utiliza algoritmos como RF, GBM, DL e outros usando diferentes abordagens de ajuste.
@@ -1168,6 +1171,7 @@ autoML_univariada <- h2o.automl(training_frame = treino,
                       y = "CORN.Close",
                       nfolds = 5,
                       max_runtime_secs = 60*20,
+ #                     stopping_metric    = "RMSE",
                       seed = 1234)
 
 autoML_univariada@leaderboard
@@ -1177,6 +1181,7 @@ autoML_bivariada <- h2o.automl(training_frame = treino,
                       x = "CORN.Volume",
                       nfolds = 5,
                       max_runtime_secs = 60*20,
+#                      stopping_metric    = "RMSE",
                       seed = 1234)
 
 autoML_bivariada@leaderboard
@@ -1186,9 +1191,26 @@ autoML_bivariada@leaderboard
 
 Você pode ver que, neste caso, os modelos de topo são modelos os modelos sugeridos com diferentes configurações de tunelamento. Selecionaremos o modelo líder e testaremos seu desempenho no conjunto de teste:
 
+```{r}
+
+# Metricas gerais de perfomance
+
+perf_autoML_univariada <- 
+  h2o.performance(autoML_univariada, newdata = teste)
+
+perf_autoML_bivariada <- 
+  h2o.performance(autoML_bivariada, newdata = teste)
+
+perf_autoML_univariada
+perf_autoML_bivariada
+
+```
+
 
 
 ```{r}
+
+# ------- Dados da estimativa do tipo CORN.Close x tempo -----------------------------
 
 teste$pred_autoML_univariada <- h2o.predict(autoML_univariada@leader, teste)
 
@@ -1197,12 +1219,60 @@ teste_univariada <- as.data.frame(teste)
 mape_autoML_univariada <- mean(abs(teste_univariada$CORN.Close - teste_univariada$pred_autoML_univariada) / teste_univariada$CORN.Close)
 mape_autoML_univariada
 
+# ------- Dados da estimativa do tipo CORN.Close x CORN.Volume + tempo ---------------
+
 teste$pred_autoML_bivariada <- h2o.predict(autoML_bivariada@leader, teste)
 
 teste_bivariada <- as.data.frame(teste)
 
 mape_autoML_bivariada <- mean(abs(teste_bivariada$CORN.Close - teste_bivariada$pred_autoML_bivariada) / teste_bivariada$CORN.Close)
 mape_autoML_bivariada
+
+```
+
+
+
+Utilizaremos o modelo líder da sugestão para construírmos as previsões. Primeiro especificamos o método:
+
+```{r}
+
+model_spec <- automl_reg(mode = 'regression') %>%
+  set_engine(
+    engine                     = 'h2o',
+    max_runtime_secs           = 5, 
+    max_runtime_secs_per_model = 3,
+    max_models                 = 3,
+    nfolds                     = 5,
+    exclude_algos              = c("DeepLearning"),
+    verbosity                  = NULL,
+    seed                       = 786
+  ) 
+
+model_spec
+
+```
+
+Em seguida "treinamos" o modelo especificado:
+
+```{r}
+
+model_fitted_univariado <- model_spec %>%
+  fit(CORN.Close ~ index, data = treino)
+model_fitted_univariado
+
+predict(model_fitted_univariado, teste)
+
+```
+
+Em seguida faremos sua calibração:
+
+```{r}
+
+modeltime_tbl <- modeltime_table(
+  model_fitted_univariado
+) 
+
+modeltime_tbl
 
 ```
 
@@ -1246,6 +1316,8 @@ Business Science in R bloggers **Introducing Modeltime Recursive: Tidy Autoregre
 Business Science in R bloggers **Introducing Modeltime: Tidy Time Series Forecasting using Tidymodels**, Disponível em: https://www.r-bloggers.com/2020/06/introducing-modeltime-tidy-time-series-forecasting-using-tidymodels/
 
 Business Science, Github, **Ensemble Algorithms for Time Series Forecasting with Modeltime**, Disponível em: https://business-science.github.io/modeltime.ensemble/ acesso em junho de 2021.
+
+CRAN, **h2o package**, in https://cran.r-project.org/web/packages/h2o/index.html 
 
 CRAN, **Getting Started with Modeltime**, Disponível em: https://cran.r-project.org/web/packages/modeltime/vignettes/getting-started-with-modeltime.html
 

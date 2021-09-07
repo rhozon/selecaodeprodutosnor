@@ -107,13 +107,17 @@ Iniciamos observando o caso da maior estatal brasileira, a petrolífera Petrobra
 ### ``r params$symbol1`` Preço de Fechamento do pregão
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
+
 dygraph(Cl(ativo1))
+
 ```
 
 ### ``r params$symbol1`` Volume negociado
 
 ```{r echo = FALSE, fig.width=9,fig.height=3}
+
 dygraph(Vo(ativo1))
+
 ```
 
 A Operação Lava Jato é um conjunto de investigações, algumas controversas, em andamento pela Polícia Federal do Brasil, que cumpriu mais de mil mandados de busca e apreensão, de prisão temporária, de prisão preventiva e de condução coercitiva, visando apurar um esquema de lavagem de dinheiro que movimentou bilhões de reais em propina. 
