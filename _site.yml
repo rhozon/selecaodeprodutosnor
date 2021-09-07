@@ -71,7 +71,9 @@ navbar:
         - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"
           href: prophet.html 
         - text: "Forecasting de séries temporais com algoritmos de machine learning"
-          href: prophet_boost.html           
+          href: prophet_boost.html   
+        - text: "Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``"
+          href: causalimpact.html           
           
   right:
     - icon: fa-question fa-lg

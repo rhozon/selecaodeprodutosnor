@@ -1,0 +1,391 @@
+---
+title: "Forecasting de séries temporais com Vetores Auto Regressivos"
+author: "Rodrigo Hermont Ozon"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+```
+
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong>Economic Time Series Forecasting</strong> 
+ 
+</div>
+
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Exploro neste post a qualidade dos forecasts utilizando modelos VAR
+
+</p>
+
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/T24j8XTcpe0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+</p>
+
+</center>
+
+***
+
+# Intro
+
+
+
+# Pacotes
+
+```{r}
+
+library(vars)
+library(car)
+library(plotly)
+library(dynlm)
+library(mFilter)
+library(tseries)
+library(tsm)
+library(TSstudio)
+library(forecast)
+library(tidyverse)
+library(tidymodels)
+library(modeltime)
+library(modeltime.ensemble)
+library(lubridate)
+library(timetk)
+library(quantmod)
+library(tsibble)
+library(tsibbledata)
+library(dplyr)
+library(data.table)
+library(tidyr)
+library(TSstudio)
+library(PerformanceAnalytics)
+library(fpp3)
+library(dygraphs)
+
+```
+
+# Baixa a série temporal
+
+Utilizando o pacote ``quantmod`` baixo a série temporal dos preços do milho (ticker ``CORN``) na bolsa de Chicago via Yahoo!Finances:
+
+```{r}
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                   from = "1994-01-01", end = Sys.Date())
+
+```
+
+Observamos o comportamento das séries temporais de fechamento de preço e volume de negociação:
+
+```{r fig.width=9, fig.height=3}
+
+# Função log retornos
+ret <- function(x,k=1){
+  return(diff(log(x),k))
+}
+
+grupo <- cbind(Cl(CORN), ret(Cl(CORN),1), Vo(CORN), ret(Vo(CORN),1))
+
+dygraph(Cl(CORN), group = "grupo") %>% dyRangeSelector() # Grafico das cotacoes de Fechamento
+
+dygraph(ret(Cl(CORN),1), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
+
+dygraph(Vo(CORN), group = "grupo") %>% dyRangeSelector()  # Grafico do Volume negociado
+
+dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
+
+```
+
+
+# Tratando a série
+
+```{r }
+
+names(grupo)[names(grupo) == "CORN.Close.1"] <- "ret_close" # Renomeio os retornos de fechamento
+names(grupo)[names(grupo) == "CORN.Volume.1"] <- "ret_volume" # Renomeio os retornos de volume
+
+# Convete para tsibble
+grupo <- grupo %>%
+  as.data.table() %>%
+  as_tsibble()
+
+str(grupo) # Inspeciona o dataset
+
+# Retiro os gaps implícitos
+#grupo <- grupo %>%
+#  fill_gaps() %>%
+#  fill(c(CORN.Close, ret_close, CORN.Volume, ret_volume), .direction = "down") %>% # Repete nos feriados e finais de semana a ultima cotacao
+#grupo[-1,] # Retiro a primeira linha
+
+print(grupo)
+
+```
+
+# Funções de autocorrelação
+
+```{r fig.width=9}
+
+ac(Cl(CORN)) # Fechamento
+
+ac(Vo(CORN)) # Volume
+
+```
+
+
+# Teste de estacionariedade
+
+Testes de estacionariedade para as séries em nível e em log retornos.
+
+
+```{r}
+
+# Phillips-Perron
+
+PP.test(Cl(CORN)) # Fechamento
+
+PP.test(Vo(CORN)) # Volume
+
+#PP.test(grupo[,"ret_close"]) # Retornos dos precos
+
+#PP.test(grupo[,"ret_volume"]) # Retornos do volume
+        
+```
+
+
+```{r}
+
+# Augmented Dickey-Fuller
+
+summary(ur.df(Cl(CORN), type = "trend", selectlags = "AIC")) # Teste ADF para o fechamento
+
+summary(ur.df(Vo(CORN), type = "trend", selectlags = "AIC")) # Teste ADF para o volume
+
+```
+
+
+```{r}
+
+# KPSS 
+
+CORN[,"CORN.Close"] %>% ur.kpss() %>% summary() # Teste para preco de fechamento em nivel
+CORN[,"CORN.Volume"] %>% ur.kpss() %>% summary() # Teste para volume em nivel
+ret(CORN[,"CORN.Close"],1) %>% ur.kpss() %>% summary() # Teste para retorno dos precos
+ret(CORN[,"CORN.Volume"],1) %>% ur.kpss() %>% summary() # Teste para retorno do volume
+
+```
+
+
+# Seleção das defasagens do modelo
+
+```{r}
+
+v1 <- cbind(ret(Cl(CORN),1), 
+            ret(Vo(CORN),1)) # Series em log retornos somente
+
+colnames(v1) <- cbind("ret_cl", 
+                      "ret_vol")
+
+v1 <- v1[-1,] # Retiro a primeira linha com NA
+
+```
+
+
+Transformo para um objeto do tipo ``ts()``
+
+
+```{r}
+
+periodicity(v1) # Disponibilidade/range da serie 
+
+ret_cl <- ts(ret(Cl(CORN),1), start = c(2010, 6), end = c(2021, 6), frequency = 7)
+
+ret_vo <- ts(ret(Vo(CORN),1), start = c(2010, 6), end = c(2021, 6), frequency = 7)
+
+head(ret_cl)
+
+tail(ret_cl)
+
+glimpse(ret_cl)
+
+```
+
+
+
+
+
+Chamo a função pra encontrar a ordem dos lags
+
+
+```{r }
+
+lagselect <- VARselect(v1, lag.max = 15, type = "const") # Funcao da ordem das defasagens no modelo VAR
+lagselect$selection
+
+```
+
+
+# Estimativa do modelo
+
+Primeiramente estimo ambas as equações separadamente por OLS e usamos ``coeftest()`` para obter erros padrão robustos.
+
+```{r}
+
+VAR_mod <- dynlm(ret_cl ~ ret_vo, 
+                 start = c(2010, 6), 
+                 end = c(2021, 6))
+
+coeftest(VAR_mod, vcov. = sandwich) 
+
+```
+
+
+
+Rodo com a função ``VAR`` :
+
+
+```{r}
+
+VAR_dados <- window(ts.union(ret_cl, ret_vo), start = c(2010, 6), end = c(2021, 4))
+
+VAR_dados <- VAR_dados[-1,]
+
+glimpse(VAR_dados)
+
+VAR_est <- VAR(y = VAR_dados, p = 7) # Lag de 7 dias (memoria de uma semana dos traders)
+
+
+```
+
+
+```{r}
+
+predict(VAR_est)
+
+```
+
+
+
+# Análise de resíduos 
+
+```{r eval=FALSE}
+
+Serial1 <- serial.test(Model1, lags.pt = 5, type = "PT.asymptotic")
+Serial1
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[continuar escrevendo...]
+
+
+
+
+
+&nbsp;
+
+
+
+&nbsp;
+
+*** 
+
+# Referências
+
+
+
+
+
+
+&nbsp;
+
+***
+
+
+
