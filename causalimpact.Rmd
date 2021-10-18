@@ -1,3 +1,4 @@
+
 ---
 title: "Time Series Intervention: Causal Impact estimatives"
 author: "Rodrigo Hermont Ozon, Econometrics Monitor"
@@ -396,6 +397,14 @@ dygraph( Volkswagen, group = "cotacoes" ) %>%
   dyOptions(drawPoints = FALSE, pointSize = 2) %>% dyRangeSelector()
 
 ```
+
+
+```{r eval=FALSE}
+
+head(cotacoes)
+
+```
+
 
 Em seguida visualizo os gráficos de outras ações de empresas de setores diferentes para checar posteriormente se as correlações entre elas são suficientes:
 
