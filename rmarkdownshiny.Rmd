@@ -1,0 +1,400 @@
+---
+title: "RMarkdown + Shiny"
+author: "Rodrigo Hermont Ozon"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA) # Remove todos os coments # dos outputs do R
+knitr::opts_chunk$set(warning = FALSE) # Remove todos os warnings # dos outputs do R
+knitr::opts_chunk$set(message = FALSE) # Remove todas as mensagens # dos outputs do R
+
+```
+
+***
+
+<div class="alert alert-info">
+
+  <strong>Running Shiny inside RMarkdown testing </strong> 
+  
+  <a href="https://www.youtube.com/watch?v=qGyHZG6ZqwA&t=310s"> Matt Dancho </a> 
+  
+</div>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/qGyHZG6ZqwA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
+***
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+This is an small part of the class of monitor tutorial for how to make interactive documents combining RMarkdown + Shiny 
+
+</p>
+
+# Loading packages
+
+
+```{r}
+
+
+# Load all R necessary libraries
+library(shiny)
+library(plotly)
+library(ggplot2)
+library(DT)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(crosstalk)
+library(dygraphs)
+library(forecast)
+library(fpp3)
+library(fable)
+library(fable.prophet)
+library(tsibble)
+#library(tsibbledata)
+library(ggfortify)
+library(magrittr)
+library(lubridate)
+library(data.table)
+library(readxl)
+#library(sarbcurrent)
+library(strucchange)
+library(changepoint)
+library(tseries)
+library(dygraphs)
+library(quantmod)
+library(corrplot)
+#library(sarbcurrent)
+library(strucchange)
+library(changepoint)
+library(PerformanceAnalytics)
+library(xts)
+library(rugarch)
+library(patchwork)
+
+```
+
+
+
+# Downloading the time series data from Yahoo!Finance
+
+
+```{r}
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+#CN21.CBT <- getSymbols("CN21.CBT", auto.assign = FALSE,
+#                    from = "1994-01-01", end = Sys.Date())
+
+#CU21.CBT <- getSymbols("CU21.CBT", auto.assign = FALSE,
+#                    from = "1994-01-01", end = Sys.Date())
+
+BZ_F <- getSymbols("BZ=F", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+CL_F <- getSymbols("CL=F", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+XC_F <- getSymbols("XC=F", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+ZW_F <- getSymbols("ZW=F", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+ZS_F <- getSymbols("ZS=F", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date())
+
+USDBRL_X <- getSymbols("USDBRL=X", auto.assign = FALSE,
+                    from = "2010-06-09", end = Sys.Date()) # Real effective exchange rate Brazil/ Dollar
+
+
+dataset <- cbind(
+  
+  CORN,
+  BZ_F,
+  CL_F,
+  XC_F,
+  ZW_F,
+  ZS_F,
+  USDBRL_X
+  
+) %>% as.data.table() %>% as_tsibble()
+
+
+```
+
+
+# Interacting with the data
+
+
+Then we can make an interactive dropdown selector for the user:
+
+```{r}
+
+varSelectInput(
+    
+  inputId = "selectedvar",
+  label = "Choose a column from the data:",
+  data = dataset[, 
+                 colnames(dataset)!= "index" ], # User didn´t select the index 
+  selected = "CORN.Close"
+  
+  )
+
+```
+
+And preview the selected
+
+```{r fig.width=9}
+
+renderPlotly({
+  
+  ggplot(dataset, aes(x = index,
+                      y = !!input$selectedvar))+
+    geom_line()
+})
+
+```
+
+
+As we can have expected we can see a lot of implicit gaps in the data, because de trade days of each else... 
+
+Let´s try to show the log-returns of this price time series:
+
+```{r fig.width=9}
+
+renderPlotly({
+  
+dataset %>%
+    ggplot(aes(x = index,
+               y = log(difference(!!input$selectedvar))))+
+    geom_line()+
+    ylab("Log Returns of the selected var")
+  
+})
+
+```
+
+
+Inspecting the last five quotes we can see 
+
+
+```{r}
+
+ renderPrint({
+    paste0(
+      "The last five values are: ", 
+      paste0(
+        dataset %>% tail(5) %>% pull(!! rlang::sym(input$selectedvar)),
+        collapse=", "
+      )
+    )
+  })
+
+```
+
+
+And then we can forecast the selected time series by using the ``fpp3`` package from prof. Rob Hyndman:
+
+```{r fig.width=9}
+
+renderPlotly({
+
+dataset <- dataset %>%
+    fill_gaps() %>%
+    fill(!!input$selectedvar, .direction = "down")
+
+model_oos <- dataset %>%
+  model(
+    NAIVE(!!input$selectedvar)
+  )
+
+sim <- model_oos %>%
+  generate(h = 30, 
+           times = 5,
+           bootstrap = TRUE)
+# Here we have generated five possible sample paths for the next 30 trading days. The .rep variable provides a new key for the tsibble. The plot below shows the five sample paths along with the historical data.
+
+dataset %>%
+  filter_index("2021-01-01"~ .) %>%
+  ggplot(aes(x = index)) +
+  geom_line(aes(y = !!input$selectedvar)) +
+  geom_line(aes(y = .sim, colour = as.factor(.rep)),
+    data = sim) +
+  ggtitle("Simulated model scenarios for selected variable") +
+  guides(colour = "none")
+  
+})
+
+
+```
+
+
+For an much objetive forecasts we can do:
+
+```{r fig.width=9, eval=FALSE}
+
+renderPlot({
+
+dataset <- dataset %>%
+    fill_gaps() %>%
+    fill(!!input$selectedvar, .direction = "down")
+
+train <- dataset %>%
+  filter_index(~"2019-01-01")
+
+models_war <- train %>%
+  
+  model(
+  
+#    STL = STL(!!input$selectedvar), # Auto STL
+    
+    AjusteExp = ETS(!!input$selectedvar ~ error("A") + trend("N") + season("N")), # Ajuste Exponencial com auto
+    
+    AjExp_aditivo = ETS(!!input$selectedvar ~ error("A") + trend("A") + season("A")), # Ajuste Exponencial Aditivo
+    
+    AjExp_multiplicativo = ETS(!!input$selectedvar ~ error("M") + trend("A") + season("M")), # Ajuste Exponencial Multiplicativo
+    
+    Croston = CROSTON(!!input$selectedvar), # Modelo Croston
+    
+    HoltWinters = ETS(!!input$selectedvar ~ error("M") + trend("Ad") + season("M")), # Holt Winters
+    
+    Holt = ETS(!!input$selectedvar ~ error("A") + trend("A") + season("N")), # Holt
+    
+    HoltAmort = ETS(!!input$selectedvar ~ error("A") + trend("Ad", phi = 0.9) + season("N")), # Holt Amortecida
+    
+    Regr_Comp = TSLM(!!input$selectedvar ~ trend() + season()), # Regressao com tendencia e sazonalidade auto
+    
+    Regr_Harmonica = TSLM(!!input$selectedvar ~ trend() + fourier(K = 2)), # Regressao harmonica
+    
+#    Regr_Quebras = TSLM(!!input$selectedvar ~ trend(knots = c(2018, 2019, 2020))), # Regressao com quebras estruturais
+    
+    Snaive = SNAIVE(!!input$selectedvar), # SNAIVE
+    
+    Naive = NAIVE(!!input$selectedvar), #NAIVE
+    
+    Media_Movel = ARIMA(!!input$selectedvar ~ pdq(0,0,1)), # Media Movel Simples
+    
+    autoARIMA = ARIMA(!!input$selectedvar, stepwise = FALSE, approx = FALSE), # Auto ARIMA
+    
+    autoARIMA_saz = ARIMA(!!input$selectedvar, stepwise = FALSE, approx = FALSE, seasonal = TRUE), # AutoARIMA Sazonal
+    
+#    Regr_erros_ARIMA = auto.arima(!!input$selectedvar, xreg = fourier(K = 3), seasonal = FALSE), # Regressao com erros ARIMA
+    
+    ARIMA_saz_012011 = ARIMA(!!input$selectedvar ~ pdq(0,1,2) + PDQ(0,1,1)), # ARIMA Sazonal ordem 012011
+    
+    ARIMA_saz_210011 = ARIMA(!!input$selectedvar ~ pdq(2,1,0) + PDQ(0,1,1)), # ARIMA Sazonal ordem 210011
+    
+    ARIMA_saz_0301012 = ARIMA(!!input$selectedvar ~ 0 + pdq(3,0,1) + PDQ(0,1,2)), # ARIMA sazonal
+    
+    ARIMA_quad = ARIMA(!!input$selectedvar ~ I(trend()^2)), # ARIMA com tendencia temporal quadratica
+    
+    ARIMA_determ = ARIMA(!!input$selectedvar ~ 1 + trend() + pdq(d = 0)), # ARIMA com tendencia deterministica
+    
+    ARIMA_estocastico = ARIMA(!!input$selectedvar ~ pdq(d = 1)), # ARIMA com tendência estocastica
+    
+    Regr_Harm_dinamica = ARIMA(!!input$selectedvar ~ fourier(K=2) + PDQ(0,0,0)), # Regressao Harmonica Dinamica
+    
+    Regr_Harm_Din_MultSaz = ARIMA(!!input$selectedvar ~ PDQ(0, 0, 0) + pdq(d = 0) + fourier(period = 7*30, K = 10) + fourier(period = 7*30, K = 5)), 
+    
+    Regr_Harm_Din_Saz = ARIMA(!!input$selectedvar ~ PDQ(0, 0, 0) + pdq(d = 0) + fourier(period = "day", K = 10) +
+                              fourier(period = "week", K = 5) + fourier(period = "year", K = 3)), # Rgr Harm Mult Saz Complexa
+    
+    Auto_Prophet = prophet(!!input$selectedvar), # Auto prophet
+    
+    Prophet_mult = prophet(!!input$selectedvar ~ season(period = "day", order = 2, type = "multiplicative")),
+    
+    Prophet_aditivo = prophet(!!input$selectedvar ~ season(period = "day", order = 2, type = "additive")),
+    
+    Prophet_geom = prophet(!!input$selectedvar ~ growth("geometric") + season(period = "day", order = 2, type = "multiplicative")),
+    
+    Prophet_memo = prophet(!!input$selectedvar ~ growth("geometric") + season(period = "week", order = 5) +
+                             season(period = "day", order = 30, type = "multiplicative")),
+    
+    Modelo_VAR = VAR(!!input$selectedvar, ic = "bic"), # Vetor Autoregressivo 
+    
+    Random_Walk = RW(!!input$selectedvar ~ drift()), # Random Walk com drift
+    
+    Rede_Neural_AR = NNETAR(!!input$selectedvar, bootstrap =  TRUE), # Rede Neural com auto AR e bootstraping nos erros
+    
+    x11 = X_13ARIMA_SEATS(!!input$selectedvar ~ x11()) # X11 ARIMA Seats
+)
+
+fcst <- models_war %>%
+  forecast(h = "24 months" )
+
+fcst %>%
+    autoplot(filter(dataset, year(index) > 2018), level = c(95))
+
+})
+
+
+```
+
+
+
+
+...to be continued...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+# References
+
+Dancho, M. **How to Add Shiny to Rmarkdown (for INTERACTIVE Reports)** In [YouTube](https://www.youtube.com/watch?v=qGyHZG6ZqwA&t=310s)
+
+Hyndman, R.J., & Athanasopoulos, G. (2021) Forecasting: principles and practice, 3rd edition, OTexts: Melbourne, Australia. OTexts.com/fpp3. Accessed on <``r Sys.Date()``>.
+

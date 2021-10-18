@@ -1,0 +1,13 @@
+name: test_dash
+title: test_dash
+username:
+account: rhozon
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4795822
+bundleId: 5104149
+url: https://rhozon.shinyapps.io/test_dash/
+when: 1633386744.62334
+lastSyncTime: 1633386744.62334
+asMultiple: FALSE
+asStatic: FALSE

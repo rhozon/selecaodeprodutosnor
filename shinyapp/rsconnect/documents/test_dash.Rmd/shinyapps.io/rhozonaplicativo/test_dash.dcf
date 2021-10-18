@@ -1,0 +1,13 @@
+name: test_dash
+title: test_dash
+username:
+account: rhozonaplicativo
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4795710
+bundleId: 5104124
+url: https://rhozonaplicativo.shinyapps.io/test_dash/
+when: 1633386465.2399
+lastSyncTime: 1633386465.2399
+asMultiple: FALSE
+asStatic: FALSE

@@ -64,8 +64,8 @@ navbar:
           href: anpreliminar.html          
         - text: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
           href: fcast.html           
-        - text: "Avaliação Quaest"
-          href: aval_quaest.html 
+        - text: "Projeto Int. Transdiciplinar de Ciência de Dados"
+          href: AtividadeIeII.html 
         - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"
           href: exerbolsadeestudos.html 
         - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"

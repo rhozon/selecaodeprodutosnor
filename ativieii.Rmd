@@ -1,0 +1,578 @@
+---
+title: "Projeto Integrador Transdisciplinar em Ciência de Dados"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: hide
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{css toc-content, echo = FALSE}
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Atividade I </strong> 
+  
+</div>
+
+***
+
+<center>
+![](https://www.escoteirossp.org.br/wp/wp-content/uploads/2020/05/c-cruzeiro-educacional.jpg){width=20%}
+</center>
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Documento dinâmico feito em RMarkdown para a atividade I
+
+</p>
+
+</center>
+
+***
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+***
+
+```{r echo=FALSE}
+
+# Loading R packages
+
+library(plotly)
+library(ggplot2)
+library(DT)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(patchwork)
+library(modeest)
+library(treemapify)
+library(textreadr)
+library(e1071)
+
+```
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+# Atividade I
+
+
+## Descrição da atividade {.tabset .tabset-fade .tabset-pills}
+
+![](https://github.com/rhozon/datasets/raw/master/atividadeI.png)
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+***
+
+***
+
+## Análise dos dados {.tabset .tabset-fade }
+
+
+### Carregando os dados
+
+```{r }
+
+pacientes <- read.csv(file="https://github.com/rhozon/datasets/raw/master/pacientes.csv", head=TRUE, sep= ",", fileEncoding = "UTF-8", encoding="latin1") %>%
+  mutate(
+    Código.do.Procedimento.Principal = as.character(Código.do.Procedimento.Principal),
+    ID = as.character(ID),
+    Valor.Total.Liberado  = as.factor(Valor.Total.Liberado ),
+    Valor.Total.Liberado = as.numeric(Valor.Total.Liberado )
+         ) 
+
+glimpse(pacientes)
+
+```
+
+Onde: 
+
++ ``ID`` = Número de identificação do paciente;
+
++ ``Idade.do.Segurado`` = Idade do segurado em anos de vida;
+
++ ``Código.do.Procedimento.Principal`` = Código do procedimento feito pelo paciente;
+
++ ``Valor.Total.Liberado`` = Valor liberado para realização daquele procedimento
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+
+### Preview dos dados
+
+Para uma visualização das estatísticas básicas dos dados dos pacientes, utilize os filtros de cada coluna.
+
+```{r}
+
+datatable(pacientes, caption = 'Dados de pacientes segurados', filter = 'top', options = list(pageLength = 5, autoWidth = TRUE))
+
+```
+
+
++ Quantidade de pacientes na amostra selecionada $\Rightarrow$ ``r nrow(pacientes)`` 
+
++ Quantidade de ID´s repetidos $\Rightarrow$ ``r sum(duplicated(pacientes$ID))-sum(duplicated(pacientes$ID))``
+
++ Idade mínima dos segurados $\Rightarrow$ ``r min(pacientes$Idade.do.Segurado)`` anos;
+
++ Idade média dos segurados $\Rightarrow$ ``r round(mean(pacientes$Idade.do.Segurado),0)`` anos;
+
++ Desvio-padrão em relação à média das idades dos segurados $\Rightarrow$ ``r round(sd(pacientes$Idade.do.Segurado),0)`` anos;
+
++ Coeficiente de Variação das idades $\Rightarrow$ ``r round(sd(pacientes$Idade.do.Segurado)/mean(pacientes$Idade.do.Segurado)*100, 2)``%
+
++ Idade máxima dos segurados $\Rightarrow$ ``r max(pacientes$Idade.do.Segurado)`` anos;
+
++ Quartis das idades $\Downarrow$ 
+
+```{r}
+
+quantile(pacientes$Idade.do.Segurado, type = 4)
+
+```
+
+
++ Quartis dos valores dos procedimentos $\Downarrow$ 
+
+```{r}
+
+quantile(pacientes$Valor.Total.Liberado, type = 4)
+
+```
+
++ Quantidade de categorias de procedimentos distintos $\Rightarrow$ ``r length(unique(pacientes$Código.do.Procedimento.Principal))``
+
++ Quantidade de missings nas categorias de procedimentos $\Rightarrow$ ``r sum(is.na(pacientes$Código.do.Procedimento.Principal))``
+
++ Valor mínimo liberado por procedimento $\Rightarrow$ ``r round(min(pacientes$Valor.Total.Liberado),2)``Unidades Monetárias,
+
++ Valor médio liberado dos procedimentos $\Rightarrow$ ``r format(mean(pacientes$Valor.Total.Liberado), scientific = F)`` U.M.;
+
++ Procedimento com valor liberado mais alto $\Rightarrow$ ``r format(round(max(pacientes$Valor.Total.Liberado), 2), scientific = F)``, U.M.
+
++ Contagem de procedimentos mais utilizados $\Downarrow$ _(Clique na coluna Quantidade de solicitações para ordenar da maior para menor e vice-versa)_
+
+```{r}
+
+cont <- pacientes %>%
+  group_by(Código.do.Procedimento.Principal) %>%
+  summarize("Quantidade de solicitações" = n())
+
+datatable(
+cont,
+  filter = 'top', options = list(pageLength = 5, autoWidth = TRUE)
+)
+
+```
+
++ Procedimento mais comum $\Rightarrow$ ``r mfv(pacientes$Código.do.Procedimento.Principal)``
+
++ Soma do Valor total liberado por procedimento $\Downarrow$ _(digite no filtro da coluna do procedimento o código ``r mfv(pacientes$Código.do.Procedimento.Principal)``, p .ex. para ver o valor total liberado para o mais comum. Clique na coluna da soma do valor liberado para ordenar.)_
+
+
+
+
+
+```{r}
+
+media_val_proc <- pacientes %>%
+  group_by(Código.do.Procedimento.Principal) %>%
+  summarize("Soma do valor liberado" = round(sum(Valor.Total.Liberado, na.rm = TRUE), 2 ) )
+
+datatable(
+media_val_proc,
+  filter = 'top', options = list(pageLength = 5, autoWidth = TRUE)
+)
+
+```
+
+### Agrupamentos estatísticos
+
+```{r eval=FALSE}
+
+skimr::skim(pacientes)
+
+```
+
+
+
+As concentrações dos valores liberados por grupos de faixas etárias são expostos na tabela abaixo:
+
+```{r}
+
+# Adiciono uma coluna com as classes das idades
+pacientes <- pacientes %>%
+  mutate(
+    Faixa_Etaria = 
+      case_when( 
+                 Idade.do.Segurado < 9 ~ "0-9",
+                 Idade.do.Segurado >= 10 & Idade.do.Segurado <= 19 ~ "10-19",
+                 Idade.do.Segurado >= 20 & Idade.do.Segurado <= 29 ~ "20-29",
+                 Idade.do.Segurado >= 30 & Idade.do.Segurado <= 39 ~ "30-39",
+                 Idade.do.Segurado >= 40 & Idade.do.Segurado <= 49 ~ "40-49",
+                 Idade.do.Segurado >= 50 & Idade.do.Segurado <= 59 ~ "50-59",
+                 Idade.do.Segurado >= 60 & Idade.do.Segurado <= 69 ~ "60-69",
+                 Idade.do.Segurado >= 70 & Idade.do.Segurado <= 79 ~ "70-79",
+                 Idade.do.Segurado >= 80 & Idade.do.Segurado <= 89 ~ "80-89",
+                 Idade.do.Segurado >= 90 & Idade.do.Segurado <= 99 ~ "90-99",
+                 Idade.do.Segurado >= 100 & Idade.do.Segurado <= 110 ~ "100-110"
+      )
+  )
+
+grupo <- pacientes %>%
+  group_by(Faixa_Etaria ) %>%
+  summarize(Soma.do.Valor.Total.Liberado = sum(Valor.Total.Liberado),
+            Quantidade.de.Pacientes = n() ) 
+
+grupo <- grupo %>%
+  drop_na()
+
+datatable(grupo, filter = 'top', options = list(pageLength = 12, autoWidth = TRUE)) 
+
+```
+
+Graficamente conseguimos visualizar melhor:
+
+
+
+
+```{r fig.width=9}
+
+ggplotly(
+ggplot(grupo, aes(x = reorder(Faixa_Etaria, Soma.do.Valor.Total.Liberado),
+                  y = Soma.do.Valor.Total.Liberado,
+                  fill = Quantidade.de.Pacientes
+                    )) +
+  geom_bar(position="dodge", stat="identity") +
+  geom_text(aes(label = Soma.do.Valor.Total.Liberado), 
+                position = position_dodge(width = 0.9), 
+                vjust = -0.25,  size = 2.5) + # Insere os rotulos acima das barras de tamanho 2.5
+  xlab("Faixa Etária") + ggtitle("Quantidade de pacientes por faixas etárias e valores liberados") + coord_flip()
+)
+
+```
+
+
+Para obtermos os procedimentos mais comuns por grupo de faixa etária faremos uso da estatística moda:
+
+```{r}
+
+grupo_moda <- pacientes %>%
+  group_by(Faixa_Etaria) %>%
+  summarize(Procedimento.mais.comum = mfv(Código.do.Procedimento.Principal),
+            Soma.do.Valor.Total.Liberado = sum(Valor.Total.Liberado),
+            Quantidade.de.Pacientes = n() )
+
+grupo_moda <- grupo_moda %>%
+  drop_na()
+
+datatable(grupo_moda, filter = 'top', options = list(pageLength = 12, autoWidth = TRUE)) 
+
+```
+
+Podemos gerar um gráfico do tipo treemap para obtermos um outro tipo de visualização dos dados dos pacientes:
+
+```{r}
+
+library(highcharter)
+
+tmap <- grupo_moda %>%
+  hchart(
+    "treemap", 
+    hcaes(
+      x =     Faixa_Etaria, 
+      value = Soma.do.Valor.Total.Liberado, 
+      color = Quantidade.de.Pacientes,
+      fill =  Faixa_Etaria
+      ) 
+  ) %>%
+  hc_title(text = "Dados dos pacientes") %>%
+  hc_subtitle(text = "Ordenado por magnitude de valores liberados")
+
+tmap
+
+```
+
+
+
+
+### Resumo
+
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Utilizando os dados de pacientes num determinado ponto do tempo, podemos analisar as informações referentes aos tipos de procedimentos mais demandados, as faixas etárias e seus respectivos valores liberados para tais realizações.
+
+Os resultados encontrados com nossa investigação apontaram que dos 27846 pacientes segurados a maioria deles demandou o procedimento 10104020 sendo libearados uma soma de 106972805 unidades monetátias seguido do 20010 perfazendo um total de 71284512.
+
+Os perfis dos segurados cobrem pacientes na vasta maioria de pessoas na faixa etária dos 60 aos 69 anos, onde o somatório de valores liberados para a realização dos procedimentos (sendo o mais comum o 106972805) alcança os 60.077.666 unidades monetárias.	
+
+Um dado interessante em relação a demanda de procedimentos com maior frequência destoa da classificação feita por agrupamento de faixas etárias naqueles pacientes dos 10 aos 19 anos de idade, por demandarem mais o procedimento 20010.
+
+Outro aspecto relevante diz respeito a qualidade da amostra utilizada neste estudo, ao ressaltarmos que foram encontrados 96 vezes valores não preenchidos referentes ao procedimento realizado por alguns pacientes. (missings)
+
+Concluimos que o uso da ferramenta de visualização interativa combinada com relatório dinâmico no RMarkdown é extremamente mais eficaz do que um documento estático do tipo .pdf, uma vez que limita o usuário de interagir, navegar e de até mesmo selecionar com os filtros que desejar investigar dos grupos de faixas etárias, procedimentos, valores liberados e demais informações ou cruzamentos que julgar pertinentes. Assim, a linha de base que seja capaz de conduzir o usuário nas interações e interpretabilidade correta dos dados auxilia substancialmente no processo de geração de insights proveitosos
+
+</p>
+
+</center>
+
+
+# Atividade II
+
+## Descrição da Atividade
+
+![](https://github.com/rhozon/datasets/raw/master/atividadeII.png)
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+***
+
+***
+
+## Análise dos dados {.tabset .tabset-fade }
+
+### Carregando os dados
+
+```{r eval=FALSE}
+
+url <- "https://github.com/rhozon/datasets/blob/master/idades.docx?raw=true"
+file <- download(url)
+#(txt <- read_docx(file))
+
+```
+
+Trato o dataset para converter o texto para numérico e gero um preview:
+
+```{r}
+idades <- read_docx("idades.docx") %>%
+  str_split(",") %>% 
+  unlist() %>% 
+  str_trim() %>% 
+  as.numeric()
+
+glimpse(idades) # Preview dos dados
+
+idades <- idades %>%
+  as.data.frame() %>%
+  rename(idades = ".")
+
+datatable(idades)
+
+```
+
+### Boxplot
+
+
+O boxplot ou diagrama de caixa é uma ferramenta gráfica que permite visualizar a distribuição e valores discrepantes (outliers) dos dados, fornecendo assim um meio complementar para desenvolver uma perspectiva sobre o caráter dos dados.
+
+Passe o mouse sobre o gráfico para visualizar as medidas.
+
+```{r fig.width=9 }
+
+ggplotly(
+ggplot(idades, aes(
+                   x = 1, 
+                   y = idades)) +
+  geom_boxplot() + 
+  xlab(NULL) + 
+  theme(axis.text.y = element_blank()) +
+  coord_flip() + ggtitle("Boxplot das idades dos segurados")
+)
+
+```
+
+Um resumo das estatísticas do box plot são apresentadas abaixo
+
+```{r}
+
+datatable(summary(idades))
+
+```
+
+
+O boxplot nos fornece muitas informações significativas. Por exemplo, ele nos dá um valor central: a mediana. Também nos informa onde os 50% metade dos valores estão ao longo de toda a faixa de valores (em nosso exemplo, aproximadamente 50% dos valores estão entre 38 e 71 anos). Este intervalo é conhecido como intervalo interquartil (ou IQR para abreviar). Observe que esta é apenas uma aproximação, visto que alguns conjuntos de dados podem não ser adequados para definir exatamente 50% de seus valores centrais. Por exemplo, nosso lote tem apenas quatro pontos de dados dentro do intervalo interquartil por causa de valores empatados.
+
+As longas linhas estreitas que se estendem além da faixa interquartil são chamadas de valores adjacentes ou bigodes. Eles representam 1,5 vezes a largura entre a mediana e o valor interquartil mais próximo ou o valor mais extremo, o que ocorrer primeiro.
+
+Às vezes, você encontrará valores que estão fora dos valores adjacentes inferiores e / ou superiores; esses valores são freqüentemente chamados de outliers.
+
+Podemos checar isso com a medida de dispersão conhecida com o coeficiente de variação que em nosso exemplo atingiu ``r round(sd(pacientes$Idade.do.Segurado)/mean(pacientes$Idade.do.Segurado)*100, 2)``%, que de acordo com a grandeza dos afastamentos as séries estatísticas podem ser: homogêneas (fraca dispersão quando Cv < 30%) e heterogêneas (forte dispersão quando Cv ≥ 30%)
+
+
+Em relação às medidas de posição central, dispersão, simetria, e possíveis outliers compilamos as seguintes estatísticas:
+
+```{r fig.width=9}
+
+ggplotly(
+ggplot(idades, aes(x =idades )) + 
+ geom_histogram(aes(y=..density..), colour="black", fill="white")+
+ geom_density(alpha=.2, fill="#FF6666")+
+ggtitle("Histograma e densidade das idades dos segurados")  
+)
+
+```
+
+Uma distribuição é dita simétrica quando apresenta o mesmo valor para a moda, a média e a mediana. 
+
+Quando a cauda da curva da distribuição declina para direita, tem-se uma distribuição com curva assimétrica positiva (então $\overline{y}>\mbox{Mediana}>\mbox{Moda}$).
+
+Analogamente, quando a cauda da curva da distribuição declina para esquerda, tem-se uma distribuição com curva assimétrica negativa (então $\overline{y}<\mbox{Mediana}<\mbox{Moda}$).
+
+Resumidamente podemos checar isso com a medida estatística de assimetria e curtose, onde:
+
+$$
+A_s = \frac{3(\overline{y}-M_d)}{s}
+$$
+A interpretação do coeficiente de assimetria é:
+
+−1 < $A_s$ < 1, então a distribuição é simétrica;
+
+$A_s$ > 1 a distribuição é assimétrica positiva;
+
+$A_s$ < −1 a distribuição é assimétrica negativa
+
++ Assimetria $\Rightarrow$ ``r skewness(pacientes$Idade.do.Segurado)`` a distribuição é simétrica.
+
+A curtose ou achatamento mede a concentração ou dispersão dos valores de um conjunto de valores em relação às medidas de
+tendência central em uma distribuição de frequências conhecida (a distribuição Normal)
+
+As medidas de curtose podem ser calculadas através da expressão:
+
+$$
+C =\frac{Q_3 - Q_1}{2(D_9 - D_1)}
+$$
+
+Relativamente á curva da distribuição Normal, temos:
+
+C < 0,263, a curva ou distribuição é leptocúrtica (mais afilada);
+C = 0,263, a curva ou distribuição é mesocúrtica;
+C > 0,263, a curva ou distribuição é platicúrtica (mais achatada).
+
+
+
++ Curtose $\Rightarrow$ ``r kurtosis(pacientes$Idade.do.Segurado)`` a curva ou distribuição é leptocúrtica (mais afilada); A distribuição apresenta uma curva de frequências mais fechada que a da distribuição Normal.
+
+
+### Resumo
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Esta etapa da tarefa II buscou fazer uma análise investigativa com o intuito de identificar os padrões das idades dos segurados, as características mais comuns e fora da normalidade fazendo uso das medidas de posição e tendência central da estatística.
+
+Os resultados alcançados com a leitura do dataset disponível num formato de texto inicialmente precisou ser adequadamente lido para que possamos evoluir numa interpretação adequada de tais padrões.
+
+Verificamos que as médias das idades de nossos segurados são de aproximadamente 54 anos, com um desvio de 23 anos. Todavia uma medida de dispersão e variabilidade mais adequada foi obtida denotando com maior clareza como as nossas idades estão diferentes e assim chegamos num coeficiente de variação na ordem dos 43,67% considerada heterogêneas com uma forte dispersão.
+
+Estas medidas podem ser apresentadas também em disposições gráficas, como é o caso do boxplot, por exemplo. Ali notamos adicionalmente que nenhum dos nossos pacientes segurados de nossa amostra destoou dos demais (outlier) o que nos leva a crer que escolhemos uma amostra balanceada para o nosso estudo, assim, posteriormente encontramos uma curva de distribuição simétrica.
+
+Adicionalmente inserimos um histograma com a densidade de probabilidade com o intuito de compreendermos melhor como as idades dos nossos segurados se concentram e observamos que mesmo visualizando um pico na faixa de idade em torno dos 52 anos (leptocurtose), a maior aglomeração nas idades se aloca no grupo entre os 66 e 75 anos.
+
+Por fim, concluímos que para uma melhor compreensão das medidas de tendência central, dos desvios em relação a ela uma combinação adequada de análise possa ser procedida com o auxílio do Box-Plot em paralelo ao histograma com a densidade de probabilidades (frequências) estimada. 
+
+Desta maneira obtemos maior rigor e critério em nossas análises de modo a não incorrermos em erros de interpretação de anomalias, médias e agrupamentos de maneira inaqueda em relação ao fenônemo estudado.
+
+</p>
+
+</center>
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+***
+
+# Referências
+
+
+Amemia, T. **Introduction to Statistics and Econometrics**, Harvard University Press, 1994, Disponível em https://br1lib.org/book/824026/a3a8ce , acesso em outubro de 2021.
+
+
+
+
