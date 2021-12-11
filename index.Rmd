@@ -155,14 +155,39 @@ Tutoriais disponíveis:
 
 ***
 
+&nbsp;
 
 ### *Homework I: Econometrics (Shangai University of Finance)*
 
+***
+
+&nbsp;
+
 ### *Homework II: Econometrics (Shangai University of Finance)*
+
+***
+
+&nbsp;
 
 ### *Análise preliminar do Índice de Inclusão Financeira no Brasil vs variáveis de política monetária*
 
+***
+
+&nbsp;
+
 ### *Análise de Intervenção em Séries Temporais: o uso do algoritmo do Google ``CausalImpact``*
+
+***
+
+&nbsp;
+
+### *Modelos de Deep Learning em Séries Temporais de preços de commodities (milho)*
+
+***
+
+&nbsp;
+
+### *ETL usando R direto no Power BI*
 
 *** 
 
