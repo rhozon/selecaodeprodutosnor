@@ -74,6 +74,10 @@ navbar:
           href: prophet_boost.html   
         - text: "Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``"
           href: causalimpact.html           
+        - text: "Modelos de Deep Learning em Séries Temporais de preços de commodities"
+          href: modelo_deep_learning_series_temporais.html         
+        - text: "ETL com o R direto no Power BI"
+          href: ETL_R_no_PowerBI.html  
           
   right:
     - icon: fa-question fa-lg

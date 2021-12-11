@@ -54,7 +54,7 @@ font-style: italic;
 
 <div class="alert alert-info">
 
-  <strong> Atividade I </strong> 
+  <strong> Atividade I e II </strong> 
   
 </div>
 

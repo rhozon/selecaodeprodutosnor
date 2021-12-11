@@ -1,0 +1,2230 @@
+---
+title: "Fazendo um ETL com R no Power BI"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y %H:%M:%S')`"
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> ETL no R + DataViz no Power BI </strong> 
+  
+</div>
+
+***
+
+<left>
+logo aqui
+</left>
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Neste post demonstro com facilmente podemos fazer um ETL combinando um script feito em R para visualizarmos diretamente no Power BI
+
+</p>
+
+</center>
+
+***
+
+
+
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+# Dataset a ser extraído
+
+Os dados que iremos utilizar são referentes as _commodities_ milho, soja, óleo de soja e seus derivados. Estão disponíveis no site do órgão do governo norte-americano, [USDA e podem ser acessados aqui.](https://apps.fas.usda.gov/export-sales/wkHistData.htm). Vale destacar que o USDA possui uma API para obtenção mais facilitada destes dados, todavia, para fins didáticos faremos uma espécie de _web scrapping_ de algumas tabelas que eles disponibilizam e adapteremos algumas métricas e valores para inserirmos em nossa visualização no Power BI.
+
+Começaremos nossa extração aqui no R com os dados do milho ( https://apps.fas.usda.gov/export-sales/h401.htm ). Mas primeiramente precisaremos instalar alguns pacotes do R no seu RStudio caso você ainda não os possua localmente (assume-se que você já tenha o R e o RStudio em seu computador pra isso, óbvio!)
+
+Então abra o seu RStudio e no Console insira os seguintes comandos:
+
+```{r eval=FALSE } 
+
+install.packages(c(
+  "rvest",
+  "tidyr",
+  "dplyr",
+  "tidyverse",
+  "tsibble",
+  "fpp3",
+  "xlsx",
+  "DT"
+  "stringr"
+))
+
+```
+
+Agora irei descrever neste _post_ como faremos nosso ETL diretamente no Power BI e caso você deseje reproduzi-lo fica tudo mais fácil! Vamos começar fazendo um _scrapping_ dos dados do site referido.
+
+
+Here we go!
+
+Antes de tudo, chame os pacotes do R:
+
+```{r}
+
+library(rvest)
+library(lubridate)
+#library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(tsibble)
+library(fpp3)
+library(xlsx)
+library(DT)
+library(xts)
+library(stringr)
+
+```
+
+
+## Extração dos dados do milho
+
+Note que o lugar onde os dados são divulgados pelo USDA na web é um arquivo do tipo .html. Assim, utilizaremos aqui o pacote do R ``rvest`` para fazer o scrapping de lá.
+
+
+```{r}
+
+url_milho <-  "https://apps.fas.usda.gov/export-sales/h401.htm"
+
+df_milho <- url_milho %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Funcao que converte os valores em parentesis para numeros negativos
+
+df_milho <- df_milho[-c(1, 2, 3, 4),] %>% # remove as 4 primeiras linhas
+  rename(
+    
+    Week_Ending_Corn = "X1",
+    Weekly_Exports_Corn = "X2",
+    Accumulated_Exports_Corn = "X3",
+    Net_Sales_Corn = "X4",
+    Outstanding_Sales_Corn = "X5",
+    Net_Sales_Next_Market_Year_Corn = "X6",
+    Outstanding_Sales_Next_Market_Year_Corn = "X7"
+    
+  )
+
+```
+
+Agora temos a tabelona completa do site do USDA sem os nossos tratamentos. Agora faremos nossas manipulações nessa tabela com a finalidade de utilizarmos somente aquelas colunas que nos convém.
+
+```{r  }
+
+df_milho <- df_milho %>%
+  mutate( # dentro da funcao mutate() e manipulacao dos dados originais ou criacao de coluna na tabela
+    
+    day   = str_sub(Week_Ending_Corn, start = 4, end = 5), # Conta os caracteres que comecam no 4 e terminam no 5
+    day   = format(day, format = "%d"),
+    
+    month = str_extract(Week_Ending_Corn, "^.{2}"), # EExtrai os 2 primeiros caracteres
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Corn = Month,
+    
+    year  = str_sub(Week_Ending_Corn, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Corn  = as.numeric(year),
+    
+    Week_Ending_Corn = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Corn = gsub(" ", "", Week_Ending_Corn ),
+    Week_Ending_Corn = as_date(Week_Ending_Corn, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Corn),
+    
+    Weekly_Exports_Corn = gsub(",", "", Weekly_Exports_Corn ),
+    Weekly_Exports_Corn = as.numeric(Weekly_Exports_Corn),
+    
+    Accumulated_Exports_Corn = gsub(",", "", Accumulated_Exports_Corn ),
+    Accumulated_Exports_Corn = as.numeric(Accumulated_Exports_Corn),
+    
+    Net_Sales_Corn = sapply(Net_Sales_Corn, convert.brackets, USE.NAMES = F),
+    Net_Sales_Corn = gsub(",", "", Net_Sales_Corn ),
+    Net_Sales_Corn = as.numeric(Net_Sales_Corn),
+    
+    Outstanding_Sales_Corn = gsub(",", "", Outstanding_Sales_Corn ),
+    Outstanding_Sales_Corn = as.numeric(Outstanding_Sales_Corn),
+    
+    Net_Sales_Next_Market_Year_Corn = sapply(Net_Sales_Next_Market_Year_Corn, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Corn = gsub(",", "", Net_Sales_Next_Market_Year_Corn ),
+    Net_Sales_Next_Market_Year_Corn = as.numeric(Net_Sales_Next_Market_Year_Corn),
+    
+    Outstanding_Sales_Next_Market_Year_Corn = gsub(",", "", Outstanding_Sales_Next_Market_Year_Corn ),
+    Outstanding_Sales_Next_Market_Year_Corn = as.numeric(Outstanding_Sales_Next_Market_Year_Corn),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~	6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"	~ 10,
+      Month == "July" ~	11,
+      Month == "August" ~	12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~	3,
+      Month == "December"	~ 4
+    ),
+    
+    Accumulated_Sales_Corn = Accumulated_Exports_Corn + Outstanding_Sales_Corn,
+    
+  )
+
+df_milho <- df_milho %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Corn == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Corn == "1990" ~ "1989 / 1990",
+      
+      Month_Corn == "September" ~ paste(as.numeric(Year_Corn),"/",as.numeric(Year_Corn) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_milho <- df_milho %>%
+  select(
+    Week_Ending_Corn,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Corn,
+    Accumulated_Exports_Corn,
+    Net_Sales_Corn,
+    Outstanding_Sales_Corn,
+    Net_Sales_Next_Market_Year_Corn,
+    Year_Corn,
+    Outstanding_Sales_Next_Market_Year_Corn,
+    Accumulated_Sales_Corn
+    
+  )
+
+df_milho <- df_milho[-nrow(df_milho),] #remove a ultima linha (NA)  
+
+Corn <- df_milho
+
+```
+
+E finalmente precisaremos do dataframe nomeado ``Corn_M`` que mensaliza os dados, ou seja, pega os valores de referência do último dia de cada mês/atualização que o USDA divulga, para a nossa view no Power BI:
+
+```{r  }
+
+Corn_M <- Corn %>%
+  rename(
+    Accumulated_Exp_Corn = "Accumulated_Exports_Corn",
+    Month_Corn = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Corn,
+    Month_Corn,
+    Year_Corn,
+    Accumulated_Exp_Corn,
+    Accumulated_Sales_Corn
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Corn == "January" ~ 5,
+                      Month_Corn == "February" ~    6,
+                      Month_Corn == "March" ~ 7,
+                      Month_Corn == "April" ~ 8,
+                      Month_Corn == "May" ~ 9,
+                      Month_Corn == "June"  ~ 10,
+                      Month_Corn == "July" ~    11,
+                      Month_Corn == "August" ~  12,
+                      Month_Corn == "September" ~ 1,
+                      Month_Corn == "October" ~ 2,
+                      Month_Corn == "November" ~    3,
+                      Month_Corn == "December"  ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Corn,
+    Accumulated_Exp_Corn,
+    Accumulated_Sales_Corn,
+    Month_Corn,
+    Year_Corn,
+    #Year_Exp,
+    Month_Number
+  )
+
+```
+
+```{r}
+
+# Converting the dataset for use the last values of each month
+
+Corn_M_xts <- xts(Corn_M[,-1], order.by = Corn_M[,1]) 
+
+dataset_monthly <- aggregate(Corn_M_xts, as.Date(as.yearmon(time(Corn_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Corn_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Corn == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Corn == "1990" ~ "1989 / 1990",
+      
+      Month_Corn == "September" ~ paste(as.numeric(Year_Corn),"/",as.numeric(Year_Corn) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Corn_M <- data.frame(
+  
+  Corn_M$Accumulated_Exp_Corn,
+  Corn_M$Accumulated_Sales_Corn,
+  Corn_M$Month_Corn,
+  Corn_M$Year_Corn,
+  Corn_M$Year_Exp,
+  Corn_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Corn = "Corn_M.Accumulated_Exp_Corn",
+    Accumulated_Sales_Corn = "Corn_M.Accumulated_Sales_Corn",
+    Month_Corn = "Corn_M.Month_Corn",
+    Year_Corn = "Corn_M.Year_Corn",
+    Year_Exp = "Corn_M.Year_Exp",
+    Month_Number = "Corn_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Corn = as.numeric(Accumulated_Exp_Corn),
+    Accumulated_Sales_Corn = as.numeric(Accumulated_Sales_Corn),
+    Year_Corn = as.numeric(Year_Corn),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+```
+
+
+Pra ficar um pouco mais paupável gero um preview do nosso _dataset_ após os tratamentos que fizemos para os dados do milho:
+
+```{r  }
+
+datatable(Corn_M, caption = 'Corn USDA dataset (sheet = Corn_M)', filter = 'top', options = list(pageLength = 10, autoWidth = TRUE) ) 
+
+```
+
+
+
+
+## Extração dos dados da soja
+
+
+Seguindo exatamente a mesma lógica agora para os dados da soja, temos que: (Dados disponíveis em: https://apps.fas.usda.gov/export-sales/h801.htm )
+
+```{r }
+
+url_soja <-  "https://apps.fas.usda.gov/export-sales/h801.htm"
+
+df_soja <- url_soja %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_soja <- df_soja[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+  
+    Week_Ending_Soybeans = "X1",
+    Weekly_Exports_Soybeans = "X2",
+    Accumulated_Exports_Soybeans = "X3",
+    Net_Sales_Soybeans = "X4",
+    Outstanding_Sales_Soybeans = "X5",
+    Net_Sales_Next_Market_Year_Soybeans = "X6",
+    Outstanding_Sales_Next_Market_Year_Soybeans = "X7"
+  
+  ) %>%
+    mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Soybeans, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Soybeans, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Soybeans = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Soybeans, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Soybeans  = as.numeric(year),
+    
+    Week_Ending_Soybeans = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Soybeans = gsub(" ", "", Week_Ending_Soybeans ),
+    Week_Ending_Soybeans = as_date(Week_Ending_Soybeans, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Soybeans),
+    
+    Weekly_Exports_Soybeans = gsub(",", "", Weekly_Exports_Soybeans ),
+    Weekly_Exports_Soybeans = as.numeric(Weekly_Exports_Soybeans),
+    
+    Accumulated_Exports_Soybeans = gsub(",", "", Accumulated_Exports_Soybeans ),
+    Accumulated_Exports_Soybeans = as.numeric(Accumulated_Exports_Soybeans),
+    
+    Net_Sales_Soybeans = sapply(Net_Sales_Soybeans, convert.brackets, USE.NAMES = F),
+    Net_Sales_Soybeans = gsub(",", "", Net_Sales_Soybeans ),
+    Net_Sales_Soybeans = as.numeric(Net_Sales_Soybeans),
+    
+    Outstanding_Sales_Soybeans = gsub(",", "", Outstanding_Sales_Soybeans ),
+    Outstanding_Sales_Soybeans = as.numeric(Outstanding_Sales_Soybeans),
+    
+    Net_Sales_Next_Market_Year_Soybeans = sapply(Net_Sales_Next_Market_Year_Soybeans, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Soybeans = gsub(",", "", Net_Sales_Next_Market_Year_Soybeans ),
+    Net_Sales_Next_Market_Year_Soybeans = as.numeric(Net_Sales_Next_Market_Year_Soybeans),
+    
+    Outstanding_Sales_Next_Market_Year_Soybeans = gsub(",", "", Outstanding_Sales_Next_Market_Year_Soybeans ),
+    Outstanding_Sales_Next_Market_Year_Soybeans = as.numeric(Outstanding_Sales_Next_Market_Year_Soybeans),
+    
+    Month_Number = case_when(
+      
+      Month == "January"      ~ 5,
+      Month == "February"     ~ 6,
+      Month == "March"        ~ 7,
+      Month == "April"        ~ 8,
+      Month == "May"          ~ 9,
+      Month == "June"           ~ 10,
+      Month == "July"         ~ 11,
+      Month == "August"       ~ 12,
+      Month == "September"    ~ 1,
+      Month == "October"      ~ 2,
+      Month == "November"     ~ 3,
+      Month == "December"       ~ 4
+    ),
+    
+    Accumulated_Sales_Soybeans = Accumulated_Exports_Soybeans + Outstanding_Sales_Soybeans,
+    
+  )
+
+df_soja <- df_soja %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Soybeans == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      
+      Month_Soybeans == "September" ~ paste(as.numeric(Year_Soybeans),"/",as.numeric(Year_Soybeans) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_soja <- df_soja %>%
+  select(
+    Week_Ending_Soybeans,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Soybeans,
+    Accumulated_Exports_Soybeans,
+    Net_Sales_Soybeans,
+    Outstanding_Sales_Soybeans,
+    Net_Sales_Next_Market_Year_Soybeans,
+    Year_Soybeans,
+    Outstanding_Sales_Next_Market_Year_Soybeans,
+    Accumulated_Sales_Soybeans
+    
+  )
+
+df_soja <- df_soja[-nrow(df_soja),] #remove the last row (NA)  
+
+Soybeans <- df_soja
+
+```
+
+
+```{r}
+
+# Select the columns to be monthly
+
+Soybeans_M <- Soybeans %>%
+  rename(
+    Accumulated_Exp_Soybeans = "Accumulated_Exports_Soybeans",
+    Month_Soybeans = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Soybeans,
+    Month_Soybeans,
+    Year_Soybeans,
+    Accumulated_Exp_Soybeans,
+    Accumulated_Sales_Soybeans
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Soybeans == "January"      ~  5,
+                      Month_Soybeans == "February"     ~  6,
+                      Month_Soybeans == "March"        ~  7,
+                      Month_Soybeans == "April"        ~  8,
+                      Month_Soybeans == "May"          ~  9,
+                      Month_Soybeans == "June"         ~  10,
+                      Month_Soybeans == "July"         ~  11,
+                      Month_Soybeans == "August"       ~  12,
+                      Month_Soybeans == "September"    ~  1,
+                      Month_Soybeans == "October"      ~  2,
+                      Month_Soybeans == "November"     ~  3,
+                      Month_Soybeans == "December"     ~  4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Soybeans,
+    Accumulated_Exp_Soybeans,
+    Accumulated_Sales_Soybeans,
+    Month_Soybeans,
+    Year_Soybeans,
+    #Year_Exp,
+    Month_Number
+  )
+
+```
+
+
+```{r}
+
+# Converting the dataset for use the last values of each month
+
+Soybeans_M_xts <- xts(Soybeans_M[,-1], order.by = Soybeans_M[,1]) 
+
+dataset_monthly <- aggregate(Soybeans_M_xts, as.Date(as.yearmon(time(Soybeans_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Soybeans_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Soybeans == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      
+      Month_Soybeans == "September" ~ paste(as.numeric(Year_Soybeans),"/",as.numeric(Year_Soybeans) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Soybeans_M <- data.frame(
+  
+  Soybeans_M$Accumulated_Exp_Soybeans,
+  Soybeans_M$Accumulated_Sales_Soybeans,
+  Soybeans_M$Month_Soybeans,
+  Soybeans_M$Year_Soybeans,
+  Soybeans_M$Year_Exp,
+  Soybeans_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Soybeans = "Soybeans_M.Accumulated_Exp_Soybeans",
+    Accumulated_Sales_Soybeans = "Soybeans_M.Accumulated_Sales_Soybeans",
+    Month_Soybeans = "Soybeans_M.Month_Soybeans",
+    Year_Soybeans = "Soybeans_M.Year_Soybeans",
+    Year_Exp = "Soybeans_M.Year_Exp",
+    Month_Number = "Soybeans_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Soybeans = as.numeric(Accumulated_Exp_Soybeans),
+    Accumulated_Sales_Soybeans = as.numeric(Accumulated_Sales_Soybeans), 
+    Year_Soybeans = as.numeric(Year_Soybeans),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+#glimpse(Soyebans_M)
+
+datatable(Soybeans_M, caption = 'Soybeans USDA dataset (sheet = Soybeans_M)', filter = 'top', options = list(pageLength = 10, autoWidth = TRUE) ) 
+
+```
+
+
+
+
+## Extração de Soybean Cake and Meal 
+
+Fonte: https://apps.fas.usda.gov/export-sales/h901.htm
+
+```{r}
+
+url_scm <-  "https://apps.fas.usda.gov/export-sales/h401.htm"
+
+df_scm <- url_scm %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_scm <- df_scm[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+    
+    Week_Ending_Meal = "X1",
+    Weekly_Exports_Meal = "X2",
+    Accumulated_Exports_Meal = "X3",
+    Net_Sales_Meal = "X4",
+    Outstanding_Sales_Meal = "X5",
+    Net_Sales_Next_Market_Year_Meal = "X6",
+    Outstanding_Sales_Next_Market_Year_Meal = "X7"
+    
+  ) %>%
+   mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Meal, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Meal, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Meal = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Meal, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Meal  = as.numeric(year),
+    
+    Week_Ending_Meal = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Meal = gsub(" ", "", Week_Ending_Meal ),
+    Week_Ending_Meal = as_date(Week_Ending_Meal, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Meal),
+    
+    Weekly_Exports_Meal = gsub(",", "", Weekly_Exports_Meal ),
+    Weekly_Exports_Meal = as.numeric(Weekly_Exports_Meal),
+    
+    Accumulated_Exports_Meal = gsub(",", "", Accumulated_Exports_Meal ),
+    Accumulated_Exports_Meal = as.numeric(Accumulated_Exports_Meal),
+    
+    Net_Sales_Meal = sapply(Net_Sales_Meal, convert.brackets, USE.NAMES = F),
+    Net_Sales_Meal = gsub(",", "", Net_Sales_Meal ),
+    Net_Sales_Meal = as.numeric(Net_Sales_Meal),
+    
+    Outstanding_Sales_Meal = gsub(",", "", Outstanding_Sales_Meal ),
+    Outstanding_Sales_Meal = as.numeric(Outstanding_Sales_Meal),
+    
+    Net_Sales_Next_Market_Year_Meal = sapply(Net_Sales_Next_Market_Year_Meal, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Meal = gsub(",", "", Net_Sales_Next_Market_Year_Meal ),
+    Net_Sales_Next_Market_Year_Meal = as.numeric(Net_Sales_Next_Market_Year_Meal),
+    
+    Outstanding_Sales_Next_Market_Year_Meal = gsub(",", "", Outstanding_Sales_Next_Market_Year_Meal ),
+    Outstanding_Sales_Next_Market_Year_Meal = as.numeric(Outstanding_Sales_Next_Market_Year_Meal),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~ 6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"   ~ 10,
+      Month == "July" ~ 11,
+      Month == "August" ~   12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~ 3,
+      Month == "December"   ~ 4
+    ),
+    
+    Accumulated_Sales_Meal = Accumulated_Exports_Meal + Outstanding_Sales_Meal,
+    
+  )
+
+df_scm <- df_scm %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Meal == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Meal == "1990" ~ "1989 / 1990",
+      
+      Month_Meal == "September" ~ paste(as.numeric(Year_Meal),"/",as.numeric(Year_Meal) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_scm <- df_scm %>%
+  select(
+    Week_Ending_Meal,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Meal,
+    Accumulated_Exports_Meal,
+    Net_Sales_Meal,
+    Outstanding_Sales_Meal,
+    Net_Sales_Next_Market_Year_Meal,
+    Year_Meal,
+    Outstanding_Sales_Next_Market_Year_Meal,
+    Accumulated_Sales_Meal
+    
+  )
+
+df_scm <- df_scm[-nrow(df_scm),] #remove the last row (NA)  
+
+Meal <- df_scm
+
+```
+
+```{r}
+
+# Select the columns to be monthly
+
+Meal_M <- Meal %>%
+  rename(
+    Accumulated_Exp_Meal = "Accumulated_Exports_Meal",
+    Month_Meal = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Meal,
+    Month_Meal,
+    Year_Meal,
+    Accumulated_Exp_Meal,
+    Accumulated_Sales_Meal
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Meal == "January" ~ 5,
+                      Month_Meal == "February" ~    6,
+                      Month_Meal == "March" ~ 7,
+                      Month_Meal == "April" ~ 8,
+                      Month_Meal == "May" ~ 9,
+                      Month_Meal == "June"  ~ 10,
+                      Month_Meal == "July" ~    11,
+                      Month_Meal == "August" ~  12,
+                      Month_Meal == "September" ~ 1,
+                      Month_Meal == "October" ~ 2,
+                      Month_Meal == "November" ~    3,
+                      Month_Meal == "December"  ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Meal,
+    Accumulated_Exp_Meal,
+    Accumulated_Sales_Meal,
+    Month_Meal,
+    Year_Meal,
+    #Year_Exp,
+    Month_Number
+  )
+
+```
+
+
+```{r}
+
+# Converting the dataset for use the last values of each month
+
+Meal_M_xts <- xts(Meal_M[,-1], order.by = Meal_M[,1]) 
+
+dataset_monthly <- aggregate(Meal_M_xts, as.Date(as.yearmon(time(Meal_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Meal_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Meal == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Meal == "1990" ~ "1989 / 1990",
+      
+      Month_Meal == "September" ~ paste(as.numeric(Year_Meal),"/",as.numeric(Year_Meal) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Meal_M <- data.frame(
+  
+  Meal_M$Accumulated_Exp_Meal,
+  Meal_M$Accumulated_Sales_Meal,
+  Meal_M$Month_Meal,
+  Meal_M$Year_Meal,
+  Meal_M$Year_Exp,
+  Meal_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Meal = "Meal_M.Accumulated_Exp_Meal",
+    Accumulated_Sales_Meal = "Meal_M.Accumulated_Sales_Meal",
+    Month_Meal = "Meal_M.Month_Meal",
+    Year_Meal = "Meal_M.Year_Meal",
+    Year_Exp = "Meal_M.Year_Exp",
+    Month_Number = "Meal_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Meal = as.numeric(Accumulated_Exp_Meal),
+    Accumulated_Sales_Meal = as.numeric(Accumulated_Sales_Meal),
+    Year_Meal = as.numeric(Year_Meal),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+#glimpse(Meal_M)
+
+datatable(Meal_M, caption = 'Meal USDA dataset (sheet = Meal_M)', filter = 'top', options = list(pageLength = 10, autoWidth = TRUE) ) 
+
+```
+
+
+
+
+
+## Soybean Oil 
+
+Fonte: https://apps.fas.usda.gov/export-sales/h902.htm
+
+```{r}
+
+url_oil <-  "https://apps.fas.usda.gov/export-sales/h902.htm"
+
+df_oil <- url_oil %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_oil <- df_oil[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+    
+    Week_Ending_Oil = "X1",
+    Weekly_Exports_Oil = "X2",
+    Accumulated_Exports_Oil = "X3",
+    Net_Sales_Oil = "X4",
+    Outstanding_Sales_Oil = "X5",
+    Net_Sales_Next_Market_Year_Oil = "X6",
+    Outstanding_Sales_Next_Market_Year_Oil = "X7"
+    
+  ) %>%
+  mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Oil, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Oil, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Oil = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Oil, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Oil  = as.numeric(year),
+    
+    Week_Ending_Oil = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Oil = gsub(" ", "", Week_Ending_Oil ),
+    Week_Ending_Oil = as_date(Week_Ending_Oil, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Oil),
+    
+    Weekly_Exports_Oil = gsub(",", "", Weekly_Exports_Oil ),
+    Weekly_Exports_Oil = as.numeric(Weekly_Exports_Oil),
+    
+    Accumulated_Exports_Oil = gsub(",", "", Accumulated_Exports_Oil ),
+    Accumulated_Exports_Oil = as.numeric(Accumulated_Exports_Oil),
+    
+    Net_Sales_Oil = sapply(Net_Sales_Oil, convert.brackets, USE.NAMES = F),
+    Net_Sales_Oil = gsub(",", "", Net_Sales_Oil ),
+    Net_Sales_Oil = as.numeric(Net_Sales_Oil),
+    
+    Outstanding_Sales_Oil = gsub(",", "", Outstanding_Sales_Oil ),
+    Outstanding_Sales_Oil = as.numeric(Outstanding_Sales_Oil),
+    
+    Net_Sales_Next_Market_Year_Oil = sapply(Net_Sales_Next_Market_Year_Oil, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Oil = gsub(",", "", Net_Sales_Next_Market_Year_Oil ),
+    Net_Sales_Next_Market_Year_Oil = as.numeric(Net_Sales_Next_Market_Year_Oil),
+    
+    Outstanding_Sales_Next_Market_Year_Oil = gsub(",", "", Outstanding_Sales_Next_Market_Year_Oil ),
+    Outstanding_Sales_Next_Market_Year_Oil = as.numeric(Outstanding_Sales_Next_Market_Year_Oil),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~ 6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"   ~ 10,
+      Month == "July" ~ 11,
+      Month == "August" ~   12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~ 3,
+      Month == "December"   ~ 4
+    ),
+    
+    Accumulated_Sales_Oil = Accumulated_Exports_Oil + Outstanding_Sales_Oil,
+    
+  )
+
+df_oil <- df_oil %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Oil == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Oil == "1990" ~ "1989 / 1990",
+      
+      Month_Oil == "September" ~ paste(as.numeric(Year_Oil),"/",as.numeric(Year_Oil) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_oil <- df_oil %>%
+  select(
+    Week_Ending_Oil,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Oil,
+    Accumulated_Exports_Oil,
+    Net_Sales_Oil,
+    Outstanding_Sales_Oil,
+    Net_Sales_Next_Market_Year_Oil,
+    Year_Oil,
+    Outstanding_Sales_Next_Market_Year_Oil,
+    Accumulated_Sales_Oil
+    
+  )
+
+df_oil <- df_oil[-nrow(df_oil),] #remove the last row (NA)  
+
+Soybean_Oil <- df_oil
+
+```
+
+```{r}
+
+# Select the columns to be monthly
+
+Oil_M <- Soybean_Oil %>%
+  rename(
+    Accumulated_Exp_Oil = "Accumulated_Exports_Oil",
+    Month_Oil = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Oil,
+    Month_Oil,
+    Year_Oil,
+    Accumulated_Exp_Oil,
+    Accumulated_Sales_Oil
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Oil == "January"      ~ 5,
+                      Month_Oil == "February"     ~ 6,
+                      Month_Oil == "March"        ~ 7,
+                      Month_Oil == "April"        ~ 8,
+                      Month_Oil == "May"          ~ 9,
+                      Month_Oil == "June"         ~ 10,
+                      Month_Oil == "July"         ~ 11,
+                      Month_Oil == "August"       ~ 12,
+                      Month_Oil == "September"    ~ 1,
+                      Month_Oil == "October"      ~ 2,
+                      Month_Oil == "November"     ~ 3,
+                      Month_Oil == "December"     ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Oil,
+    Accumulated_Exp_Oil,
+    Accumulated_Sales_Oil,
+    Month_Oil,
+    Year_Oil,
+    #Year_Exp,
+    Month_Number
+  )
+
+```
+
+
+```{r}
+
+# Converting the dataset for use the last values of each month
+
+Oil_M_xts <- xts(Oil_M[,-1], order.by = Oil_M[,1]) 
+
+dataset_monthly <- aggregate(Oil_M_xts, as.Date(as.yearmon(time(Oil_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Oil_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Oil == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Oil == "1990" ~ "1989 / 1990",
+      
+      Month_Oil == "September" ~ paste(as.numeric(Year_Oil),"/",as.numeric(Year_Oil) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Oil_M <- data.frame(
+  
+  Oil_M$Accumulated_Exp_Oil,
+  Oil_M$Accumulated_Sales_Oil,
+  Oil_M$Month_Oil,
+  Oil_M$Year_Oil,
+  Oil_M$Year_Exp,
+  Oil_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Oil = "Oil_M.Accumulated_Exp_Oil",
+    Accumulated_Sales_Oil = "Oil_M.Accumulated_Sales_Oil",
+    Month_Oil = "Oil_M.Month_Oil",
+    Year_Oil = "Oil_M.Year_Oil",
+    Year_Exp = "Oil_M.Year_Exp",
+    Month_Number = "Oil_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Oil = as.numeric(Accumulated_Exp_Oil),
+    Accumulated_Sales_Oil = as.numeric(Accumulated_Sales_Oil),
+    Year_Oil = as.numeric(Year_Oil),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+#glimpse(Oil_M)
+
+datatable(Oil_M, caption = 'Soybean Oil USDA dataset (sheet = Oil_M)', filter = 'top', options = list(pageLength = 10, autoWidth = TRUE) ) 
+
+```
+
+
+# Relembrando...
+
+Após abrir o seu RStudio e ter instalado os pacotes com o comando:
+
+```{r eval=FALSE}
+
+install.packages(c(
+  "rvest",
+  "tidyr",
+  "dplyr",
+  "tidyverse",
+  "tsibble",
+  "fpp3",
+  "xlsx",
+  "DT"
+  "stringr"
+))
+
+```
+
+conforme explicado no início, agora partiremos pro Power BI Desktop...
+
+# Chamando o script do R dentro do Power BI
+
+Antes de afobadamente você abrir seu Power BI, primeiro copie (CTRL+C) todo o conteúdo a seguir, que nada mais são do que as etapas do ETL que percorremos até aqui para cada uma das fontes de dados que utilizamos:
+
+```{r eval=FALSE }
+
+# Pacotes do R
+
+library(rvest)
+library(lubridate)
+#library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(tsibble)
+library(fpp3)
+library(xlsx)
+#library(DT)
+library(xts)
+library(stringr)
+
+# ETL dos dados do USDA 
+
+url_milho <-  "https://apps.fas.usda.gov/export-sales/h401.htm"
+
+df_milho <- url_milho %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Funcao que converte os valores em parentesis para numeros negativos
+
+df_milho <- df_milho[-c(1, 2, 3, 4),] %>% # remove as 4 primeiras linhas
+  rename(
+    
+    Week_Ending_Corn = "X1",
+    Weekly_Exports_Corn = "X2",
+    Accumulated_Exports_Corn = "X3",
+    Net_Sales_Corn = "X4",
+    Outstanding_Sales_Corn = "X5",
+    Net_Sales_Next_Market_Year_Corn = "X6",
+    Outstanding_Sales_Next_Market_Year_Corn = "X7"
+    
+  ) %>%
+  mutate( # dentro da funcao mutate() e manipulacao dos dados originais ou criacao de coluna na tabela
+    
+    day   = str_sub(Week_Ending_Corn, start = 4, end = 5), # Conta os caracteres que comecam no 4 e terminam no 5
+    day   = format(day, format = "%d"),
+    
+    month = str_extract(Week_Ending_Corn, "^.{2}"), # EExtrai os 2 primeiros caracteres
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Corn = Month,
+    
+    year  = str_sub(Week_Ending_Corn, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Corn  = as.numeric(year),
+    
+    Week_Ending_Corn = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Corn = gsub(" ", "", Week_Ending_Corn ),
+    Week_Ending_Corn = as_date(Week_Ending_Corn, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Corn),
+    
+    Weekly_Exports_Corn = gsub(",", "", Weekly_Exports_Corn ),
+    Weekly_Exports_Corn = as.numeric(Weekly_Exports_Corn),
+    
+    Accumulated_Exports_Corn = gsub(",", "", Accumulated_Exports_Corn ),
+    Accumulated_Exports_Corn = as.numeric(Accumulated_Exports_Corn),
+    
+    Net_Sales_Corn = sapply(Net_Sales_Corn, convert.brackets, USE.NAMES = F),
+    Net_Sales_Corn = gsub(",", "", Net_Sales_Corn ),
+    Net_Sales_Corn = as.numeric(Net_Sales_Corn),
+    
+    Outstanding_Sales_Corn = gsub(",", "", Outstanding_Sales_Corn ),
+    Outstanding_Sales_Corn = as.numeric(Outstanding_Sales_Corn),
+    
+    Net_Sales_Next_Market_Year_Corn = sapply(Net_Sales_Next_Market_Year_Corn, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Corn = gsub(",", "", Net_Sales_Next_Market_Year_Corn ),
+    Net_Sales_Next_Market_Year_Corn = as.numeric(Net_Sales_Next_Market_Year_Corn),
+    
+    Outstanding_Sales_Next_Market_Year_Corn = gsub(",", "", Outstanding_Sales_Next_Market_Year_Corn ),
+    Outstanding_Sales_Next_Market_Year_Corn = as.numeric(Outstanding_Sales_Next_Market_Year_Corn),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~ 6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"   ~ 10,
+      Month == "July" ~ 11,
+      Month == "August" ~   12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~ 3,
+      Month == "December"   ~ 4
+    ),
+    
+    Accumulated_Sales_Corn = Accumulated_Exports_Corn + Outstanding_Sales_Corn,
+    
+  )
+
+df_milho <- df_milho %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Corn == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Corn == "1990" ~ "1989 / 1990",
+      
+      Month_Corn == "September" ~ paste(as.numeric(Year_Corn),"/",as.numeric(Year_Corn) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_milho <- df_milho %>%
+  select(
+    Week_Ending_Corn,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Corn,
+    Accumulated_Exports_Corn,
+    Net_Sales_Corn,
+    Outstanding_Sales_Corn,
+    Net_Sales_Next_Market_Year_Corn,
+    Year_Corn,
+    Outstanding_Sales_Next_Market_Year_Corn,
+    Accumulated_Sales_Corn
+    
+  )
+
+df_milho <- df_milho[-nrow(df_milho),] #remove a ultima linha (NA)  
+
+Corn <- df_milho
+
+
+Corn_M <- Corn %>%
+  rename(
+    Accumulated_Exp_Corn = "Accumulated_Exports_Corn",
+    Month_Corn = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Corn,
+    Month_Corn,
+    Year_Corn,
+    Accumulated_Exp_Corn,
+    Accumulated_Sales_Corn
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Corn == "January" ~ 5,
+                      Month_Corn == "February" ~    6,
+                      Month_Corn == "March" ~ 7,
+                      Month_Corn == "April" ~ 8,
+                      Month_Corn == "May" ~ 9,
+                      Month_Corn == "June"  ~ 10,
+                      Month_Corn == "July" ~    11,
+                      Month_Corn == "August" ~  12,
+                      Month_Corn == "September" ~ 1,
+                      Month_Corn == "October" ~ 2,
+                      Month_Corn == "November" ~    3,
+                      Month_Corn == "December"  ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Corn,
+    Accumulated_Exp_Corn,
+    Accumulated_Sales_Corn,
+    Month_Corn,
+    Year_Corn,
+    #Year_Exp,
+    Month_Number
+  )
+
+# Converting the dataset for use the last values of each month
+
+Corn_M_xts <- xts(Corn_M[,-1], order.by = Corn_M[,1]) 
+
+dataset_monthly <- aggregate(Corn_M_xts, as.Date(as.yearmon(time(Corn_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Corn_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Corn == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Corn == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Corn == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Corn == "1990" ~ "1989 / 1990",
+      
+      Month_Corn == "September" ~ paste(as.numeric(Year_Corn),"/",as.numeric(Year_Corn) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Corn_M <- data.frame(
+  
+  Corn_M$Accumulated_Exp_Corn,
+  Corn_M$Accumulated_Sales_Corn,
+  Corn_M$Month_Corn,
+  Corn_M$Year_Corn,
+  Corn_M$Year_Exp,
+  Corn_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Corn = "Corn_M.Accumulated_Exp_Corn",
+    Accumulated_Sales_Corn = "Corn_M.Accumulated_Sales_Corn",
+    Month_Corn = "Corn_M.Month_Corn",
+    Year_Corn = "Corn_M.Year_Corn",
+    Year_Exp = "Corn_M.Year_Exp",
+    Month_Number = "Corn_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Corn = as.numeric(Accumulated_Exp_Corn),
+    Accumulated_Sales_Corn = as.numeric(Accumulated_Sales_Corn),
+    Year_Corn = as.numeric(Year_Corn),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+url_soja <-  "https://apps.fas.usda.gov/export-sales/h801.htm"
+
+df_soja <- url_soja %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_soja <- df_soja[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+  
+    Week_Ending_Soybeans = "X1",
+    Weekly_Exports_Soybeans = "X2",
+    Accumulated_Exports_Soybeans = "X3",
+    Net_Sales_Soybeans = "X4",
+    Outstanding_Sales_Soybeans = "X5",
+    Net_Sales_Next_Market_Year_Soybeans = "X6",
+    Outstanding_Sales_Next_Market_Year_Soybeans = "X7"
+  
+  ) %>%
+    mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Soybeans, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Soybeans, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Soybeans = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Soybeans, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Soybeans  = as.numeric(year),
+    
+    Week_Ending_Soybeans = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Soybeans = gsub(" ", "", Week_Ending_Soybeans ),
+    Week_Ending_Soybeans = as_date(Week_Ending_Soybeans, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Soybeans),
+    
+    Weekly_Exports_Soybeans = gsub(",", "", Weekly_Exports_Soybeans ),
+    Weekly_Exports_Soybeans = as.numeric(Weekly_Exports_Soybeans),
+    
+    Accumulated_Exports_Soybeans = gsub(",", "", Accumulated_Exports_Soybeans ),
+    Accumulated_Exports_Soybeans = as.numeric(Accumulated_Exports_Soybeans),
+    
+    Net_Sales_Soybeans = sapply(Net_Sales_Soybeans, convert.brackets, USE.NAMES = F),
+    Net_Sales_Soybeans = gsub(",", "", Net_Sales_Soybeans ),
+    Net_Sales_Soybeans = as.numeric(Net_Sales_Soybeans),
+    
+    Outstanding_Sales_Soybeans = gsub(",", "", Outstanding_Sales_Soybeans ),
+    Outstanding_Sales_Soybeans = as.numeric(Outstanding_Sales_Soybeans),
+    
+    Net_Sales_Next_Market_Year_Soybeans = sapply(Net_Sales_Next_Market_Year_Soybeans, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Soybeans = gsub(",", "", Net_Sales_Next_Market_Year_Soybeans ),
+    Net_Sales_Next_Market_Year_Soybeans = as.numeric(Net_Sales_Next_Market_Year_Soybeans),
+    
+    Outstanding_Sales_Next_Market_Year_Soybeans = gsub(",", "", Outstanding_Sales_Next_Market_Year_Soybeans ),
+    Outstanding_Sales_Next_Market_Year_Soybeans = as.numeric(Outstanding_Sales_Next_Market_Year_Soybeans),
+    
+    Month_Number = case_when(
+      
+      Month == "January"      ~ 5,
+      Month == "February"     ~ 6,
+      Month == "March"        ~ 7,
+      Month == "April"        ~ 8,
+      Month == "May"          ~ 9,
+      Month == "June"           ~ 10,
+      Month == "July"         ~ 11,
+      Month == "August"       ~ 12,
+      Month == "September"    ~ 1,
+      Month == "October"      ~ 2,
+      Month == "November"     ~ 3,
+      Month == "December"       ~ 4
+    ),
+    
+    Accumulated_Sales_Soybeans = Accumulated_Exports_Soybeans + Outstanding_Sales_Soybeans,
+    
+  )
+
+df_soja <- df_soja %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Soybeans == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Soybeans == "1990" ~ "1989 / 1990",
+      
+      Month_Soybeans == "September" ~ paste(as.numeric(Year_Soybeans),"/",as.numeric(Year_Soybeans) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_soja <- df_soja %>%
+  select(
+    Week_Ending_Soybeans,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Soybeans,
+    Accumulated_Exports_Soybeans,
+    Net_Sales_Soybeans,
+    Outstanding_Sales_Soybeans,
+    Net_Sales_Next_Market_Year_Soybeans,
+    Year_Soybeans,
+    Outstanding_Sales_Next_Market_Year_Soybeans,
+    Accumulated_Sales_Soybeans
+    
+  )
+
+df_soja <- df_soja[-nrow(df_soja),] #remove the last row (NA)  
+
+Soybeans <- df_soja
+
+# Select the columns to be monthly
+
+Soybeans_M <- Soybeans %>%
+  rename(
+    Accumulated_Exp_Soybeans = "Accumulated_Exports_Soybeans",
+    Month_Soybeans = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Soybeans,
+    Month_Soybeans,
+    Year_Soybeans,
+    Accumulated_Exp_Soybeans,
+    Accumulated_Sales_Soybeans
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Soybeans == "January"      ~  5,
+                      Month_Soybeans == "February"     ~  6,
+                      Month_Soybeans == "March"        ~  7,
+                      Month_Soybeans == "April"        ~  8,
+                      Month_Soybeans == "May"          ~  9,
+                      Month_Soybeans == "June"         ~  10,
+                      Month_Soybeans == "July"         ~  11,
+                      Month_Soybeans == "August"       ~  12,
+                      Month_Soybeans == "September"    ~  1,
+                      Month_Soybeans == "October"      ~  2,
+                      Month_Soybeans == "November"     ~  3,
+                      Month_Soybeans == "December"     ~  4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Soybeans,
+    Accumulated_Exp_Soybeans,
+    Accumulated_Sales_Soybeans,
+    Month_Soybeans,
+    Year_Soybeans,
+    #Year_Exp,
+    Month_Number
+  )
+
+# Converting the dataset for use the last values of each month
+
+Soybeans_M_xts <- xts(Soybeans_M[,-1], order.by = Soybeans_M[,1]) 
+
+dataset_monthly <- aggregate(Soybeans_M_xts, as.Date(as.yearmon(time(Soybeans_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Soybeans_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Soybeans == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Soybeans == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Soybeans == "1990" ~ "1989 / 1990",
+      
+      Month_Soybeans == "September" ~ paste(as.numeric(Year_Soybeans),"/",as.numeric(Year_Soybeans) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Soybeans_M <- data.frame(
+  
+  Soybeans_M$Accumulated_Exp_Soybeans,
+  Soybeans_M$Accumulated_Sales_Soybeans,
+  Soybeans_M$Month_Soybeans,
+  Soybeans_M$Year_Soybeans,
+  Soybeans_M$Year_Exp,
+  Soybeans_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Soybeans = "Soybeans_M.Accumulated_Exp_Soybeans",
+    Accumulated_Sales_Soybeans = "Soybeans_M.Accumulated_Sales_Soybeans",
+    Month_Soybeans = "Soybeans_M.Month_Soybeans",
+    Year_Soybeans = "Soybeans_M.Year_Soybeans",
+    Year_Exp = "Soybeans_M.Year_Exp",
+    Month_Number = "Soybeans_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Soybeans = as.numeric(Accumulated_Exp_Soybeans),
+    Accumulated_Sales_Soybeans = as.numeric(Accumulated_Sales_Soybeans), 
+    Year_Soybeans = as.numeric(Year_Soybeans),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+url_scm <-  "https://apps.fas.usda.gov/export-sales/h401.htm"
+
+df_scm <- url_scm %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_scm <- df_scm[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+    
+    Week_Ending_Meal = "X1",
+    Weekly_Exports_Meal = "X2",
+    Accumulated_Exports_Meal = "X3",
+    Net_Sales_Meal = "X4",
+    Outstanding_Sales_Meal = "X5",
+    Net_Sales_Next_Market_Year_Meal = "X6",
+    Outstanding_Sales_Next_Market_Year_Meal = "X7"
+    
+  ) %>%
+   mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Meal, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Meal, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Meal = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Meal, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Meal  = as.numeric(year),
+    
+    Week_Ending_Meal = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Meal = gsub(" ", "", Week_Ending_Meal ),
+    Week_Ending_Meal = as_date(Week_Ending_Meal, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Meal),
+    
+    Weekly_Exports_Meal = gsub(",", "", Weekly_Exports_Meal ),
+    Weekly_Exports_Meal = as.numeric(Weekly_Exports_Meal),
+    
+    Accumulated_Exports_Meal = gsub(",", "", Accumulated_Exports_Meal ),
+    Accumulated_Exports_Meal = as.numeric(Accumulated_Exports_Meal),
+    
+    Net_Sales_Meal = sapply(Net_Sales_Meal, convert.brackets, USE.NAMES = F),
+    Net_Sales_Meal = gsub(",", "", Net_Sales_Meal ),
+    Net_Sales_Meal = as.numeric(Net_Sales_Meal),
+    
+    Outstanding_Sales_Meal = gsub(",", "", Outstanding_Sales_Meal ),
+    Outstanding_Sales_Meal = as.numeric(Outstanding_Sales_Meal),
+    
+    Net_Sales_Next_Market_Year_Meal = sapply(Net_Sales_Next_Market_Year_Meal, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Meal = gsub(",", "", Net_Sales_Next_Market_Year_Meal ),
+    Net_Sales_Next_Market_Year_Meal = as.numeric(Net_Sales_Next_Market_Year_Meal),
+    
+    Outstanding_Sales_Next_Market_Year_Meal = gsub(",", "", Outstanding_Sales_Next_Market_Year_Meal ),
+    Outstanding_Sales_Next_Market_Year_Meal = as.numeric(Outstanding_Sales_Next_Market_Year_Meal),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~ 6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"   ~ 10,
+      Month == "July" ~ 11,
+      Month == "August" ~   12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~ 3,
+      Month == "December"   ~ 4
+    ),
+    
+    Accumulated_Sales_Meal = Accumulated_Exports_Meal + Outstanding_Sales_Meal,
+    
+  )
+
+df_scm <- df_scm %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Meal == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Meal == "1990" ~ "1989 / 1990",
+      
+      Month_Meal == "September" ~ paste(as.numeric(Year_Meal),"/",as.numeric(Year_Meal) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_scm <- df_scm %>%
+  select(
+    Week_Ending_Meal,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Meal,
+    Accumulated_Exports_Meal,
+    Net_Sales_Meal,
+    Outstanding_Sales_Meal,
+    Net_Sales_Next_Market_Year_Meal,
+    Year_Meal,
+    Outstanding_Sales_Next_Market_Year_Meal,
+    Accumulated_Sales_Meal
+    
+  )
+
+df_scm <- df_scm[-nrow(df_scm),] #remove the last row (NA)  
+
+Meal <- df_scm
+
+# Select the columns to be monthly
+
+Meal_M <- Meal %>%
+  rename(
+    Accumulated_Exp_Meal = "Accumulated_Exports_Meal",
+    Month_Meal = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Meal,
+    Month_Meal,
+    Year_Meal,
+    Accumulated_Exp_Meal,
+    Accumulated_Sales_Meal
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Meal == "January" ~ 5,
+                      Month_Meal == "February" ~    6,
+                      Month_Meal == "March" ~ 7,
+                      Month_Meal == "April" ~ 8,
+                      Month_Meal == "May" ~ 9,
+                      Month_Meal == "June"  ~ 10,
+                      Month_Meal == "July" ~    11,
+                      Month_Meal == "August" ~  12,
+                      Month_Meal == "September" ~ 1,
+                      Month_Meal == "October" ~ 2,
+                      Month_Meal == "November" ~    3,
+                      Month_Meal == "December"  ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Meal,
+    Accumulated_Exp_Meal,
+    Accumulated_Sales_Meal,
+    Month_Meal,
+    Year_Meal,
+    #Year_Exp,
+    Month_Number
+  )
+
+# Converting the dataset for use the last values of each month
+
+Meal_M_xts <- xts(Meal_M[,-1], order.by = Meal_M[,1]) 
+
+dataset_monthly <- aggregate(Meal_M_xts, as.Date(as.yearmon(time(Meal_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Meal_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Meal == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Meal == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Meal == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Meal == "1990" ~ "1989 / 1990",
+      
+      Month_Meal == "September" ~ paste(as.numeric(Year_Meal),"/",as.numeric(Year_Meal) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Meal_M <- data.frame(
+  
+  Meal_M$Accumulated_Exp_Meal,
+  Meal_M$Accumulated_Sales_Meal,
+  Meal_M$Month_Meal,
+  Meal_M$Year_Meal,
+  Meal_M$Year_Exp,
+  Meal_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Meal = "Meal_M.Accumulated_Exp_Meal",
+    Accumulated_Sales_Meal = "Meal_M.Accumulated_Sales_Meal",
+    Month_Meal = "Meal_M.Month_Meal",
+    Year_Meal = "Meal_M.Year_Meal",
+    Year_Exp = "Meal_M.Year_Exp",
+    Month_Number = "Meal_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Meal = as.numeric(Accumulated_Exp_Meal),
+    Accumulated_Sales_Meal = as.numeric(Accumulated_Sales_Meal),
+    Year_Meal = as.numeric(Year_Meal),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+url_oil <-  "https://apps.fas.usda.gov/export-sales/h902.htm"
+
+df_oil <- url_oil %>% 
+  read_html() %>% 
+  html_nodes("table") %>% 
+  html_table(fill = TRUE) %>%
+  as.data.frame()
+
+convert.brackets <- function(x){
+  if(grepl("\\(.*\\)", x)){
+    paste0("-", gsub("\\(|\\)", "", x))
+  } else {
+    x
+  }
+} # Function for convert parentheses to negative values
+
+df_oil <- df_oil[-c(1, 2, 3, 4),] %>% # remove the fourth first lines
+  rename(
+    
+    Week_Ending_Oil = "X1",
+    Weekly_Exports_Oil = "X2",
+    Accumulated_Exports_Oil = "X3",
+    Net_Sales_Oil = "X4",
+    Outstanding_Sales_Oil = "X5",
+    Net_Sales_Next_Market_Year_Oil = "X6",
+    Outstanding_Sales_Next_Market_Year_Oil = "X7"
+    
+  ) %>%
+  mutate( # all thongs inside mutate function is = data wrangling/manipulation
+    
+    day   = stringr::str_sub(Week_Ending_Oil, start = 4, end = 5), # Counting characters where begins and ends of
+    day   = format(day, format = "%d"),
+    
+    month = stringr::str_extract(Week_Ending_Oil, "^.{2}"), # Extract the first 2 characters
+    month = format(month, format = "%m"),
+    Month_number = as.numeric(month),
+    Month = month.name[Month_number],
+    Month_Oil = Month,
+    
+    year  = stringr::str_sub(Week_Ending_Oil, start = 7, end = 10),
+    year  = format(year, format = "%y"),
+    Year_Oil  = as.numeric(year),
+    
+    Week_Ending_Oil = paste( year, "-" , month, "-" , day ),
+    Week_Ending_Oil = gsub(" ", "", Week_Ending_Oil ),
+    Week_Ending_Oil = as_date(Week_Ending_Oil, "%Y-%m-%d"),
+    
+    YearMonth = yearmonth( Week_Ending_Oil),
+    
+    Weekly_Exports_Oil = gsub(",", "", Weekly_Exports_Oil ),
+    Weekly_Exports_Oil = as.numeric(Weekly_Exports_Oil),
+    
+    Accumulated_Exports_Oil = gsub(",", "", Accumulated_Exports_Oil ),
+    Accumulated_Exports_Oil = as.numeric(Accumulated_Exports_Oil),
+    
+    Net_Sales_Oil = sapply(Net_Sales_Oil, convert.brackets, USE.NAMES = F),
+    Net_Sales_Oil = gsub(",", "", Net_Sales_Oil ),
+    Net_Sales_Oil = as.numeric(Net_Sales_Oil),
+    
+    Outstanding_Sales_Oil = gsub(",", "", Outstanding_Sales_Oil ),
+    Outstanding_Sales_Oil = as.numeric(Outstanding_Sales_Oil),
+    
+    Net_Sales_Next_Market_Year_Oil = sapply(Net_Sales_Next_Market_Year_Oil, convert.brackets, USE.NAMES = F),
+    Net_Sales_Next_Market_Year_Oil = gsub(",", "", Net_Sales_Next_Market_Year_Oil ),
+    Net_Sales_Next_Market_Year_Oil = as.numeric(Net_Sales_Next_Market_Year_Oil),
+    
+    Outstanding_Sales_Next_Market_Year_Oil = gsub(",", "", Outstanding_Sales_Next_Market_Year_Oil ),
+    Outstanding_Sales_Next_Market_Year_Oil = as.numeric(Outstanding_Sales_Next_Market_Year_Oil),
+    
+    Month_Number = case_when(
+      
+      Month == "January" ~ 5,
+      Month == "February" ~ 6,
+      Month == "March" ~ 7,
+      Month == "April" ~ 8,
+      Month == "May" ~ 9,
+      Month == "June"   ~ 10,
+      Month == "July" ~ 11,
+      Month == "August" ~   12,
+      Month == "September" ~ 1,
+      Month == "October" ~ 2,
+      Month == "November" ~ 3,
+      Month == "December"   ~ 4
+    ),
+    
+    Accumulated_Sales_Oil = Accumulated_Exports_Oil + Outstanding_Sales_Oil,
+    
+  )
+
+df_oil <- df_oil %>%
+  mutate(
+    Year_Exp = case_when(
+      
+      Month_Number ==  5 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  6 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  7 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  8 & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number ==  9 & Year_Oil == "1990" ~ "1989 / 1990",  
+      Month_Number == 10 & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == 11 & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == 12 & Year_Oil == "1990" ~ "1989 / 1990",
+      
+      Month_Oil == "September" ~ paste(as.numeric(Year_Oil),"/",as.numeric(Year_Oil) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>%
+  mutate(
+    Year_Exp = gsub(" ", "", Year_Exp)
+  )
+
+df_oil <- df_oil %>%
+  select(
+    Week_Ending_Oil,
+    Month_number,
+    Month,
+    Year_Exp,
+    Weekly_Exports_Oil,
+    Accumulated_Exports_Oil,
+    Net_Sales_Oil,
+    Outstanding_Sales_Oil,
+    Net_Sales_Next_Market_Year_Oil,
+    Year_Oil,
+    Outstanding_Sales_Next_Market_Year_Oil,
+    Accumulated_Sales_Oil
+    
+  )
+
+df_oil <- df_oil[-nrow(df_oil),] #remove the last row (NA)  
+
+Soybean_Oil <- df_oil
+
+# Select the columns to be monthly
+
+Oil_M <- Soybean_Oil %>%
+  rename(
+    Accumulated_Exp_Oil = "Accumulated_Exports_Oil",
+    Month_Oil = "Month"
+  ) %>%
+  
+  select(
+    Week_Ending_Oil,
+    Month_Oil,
+    Year_Oil,
+    Accumulated_Exp_Oil,
+    Accumulated_Sales_Oil
+  ) %>%
+  mutate(
+    Month_Number = case_when(
+      
+                      Month_Oil == "January"      ~ 5,
+                      Month_Oil == "February"     ~ 6,
+                      Month_Oil == "March"        ~ 7,
+                      Month_Oil == "April"        ~ 8,
+                      Month_Oil == "May"          ~ 9,
+                      Month_Oil == "June"         ~ 10,
+                      Month_Oil == "July"         ~ 11,
+                      Month_Oil == "August"       ~ 12,
+                      Month_Oil == "September"    ~ 1,
+                      Month_Oil == "October"      ~ 2,
+                      Month_Oil == "November"     ~ 3,
+                      Month_Oil == "December"     ~ 4  )
+  ) %>% 
+  
+  select(
+    Week_Ending_Oil,
+    Accumulated_Exp_Oil,
+    Accumulated_Sales_Oil,
+    Month_Oil,
+    Year_Oil,
+    #Year_Exp,
+    Month_Number
+  )
+
+# Converting the dataset for use the last values of each month
+
+Oil_M_xts <- xts(Oil_M[,-1], order.by = Oil_M[,1]) 
+
+dataset_monthly <- aggregate(Oil_M_xts, as.Date(as.yearmon(time(Oil_M_xts))), last) %>% # Using the last value in each month
+  as.data.frame()
+# datatable(dataset_monthly)
+
+Oil_M <- dataset_monthly %>%
+  mutate( # including again the Year_Exp
+    
+    Year_Exp = case_when(
+      
+      Month_Number == " 5" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 6" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 7" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 8" & Year_Oil == "1990" ~ "1989 / 1990",
+      Month_Number == " 9" & Year_Oil == "1990" ~ "1989 / 1990",  
+      Month_Number == "10" & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == "11" & Year_Oil == "1990" ~ "1989 / 1990", 
+      Month_Number == "12" & Year_Oil == "1990" ~ "1989 / 1990",
+      
+      Month_Oil == "September" ~ paste(as.numeric(Year_Oil),"/",as.numeric(Year_Oil) + 1) )
+  ) %>% fill(Year_Exp, .direction ="down") %>% 
+  mutate(
+    Year_Exp = gsub(" ","", Year_Exp)
+  )
+
+
+Oil_M <- data.frame(
+  
+  Oil_M$Accumulated_Exp_Oil,
+  Oil_M$Accumulated_Sales_Oil,
+  Oil_M$Month_Oil,
+  Oil_M$Year_Oil,
+  Oil_M$Year_Exp,
+  Oil_M$Month_Number
+) %>%
+  rename(
+    Accumulated_Exp_Oil = "Oil_M.Accumulated_Exp_Oil",
+    Accumulated_Sales_Oil = "Oil_M.Accumulated_Sales_Oil",
+    Month_Oil = "Oil_M.Month_Oil",
+    Year_Oil = "Oil_M.Year_Oil",
+    Year_Exp = "Oil_M.Year_Exp",
+    Month_Number = "Oil_M.Month_Number"
+  ) %>%
+  mutate(
+    
+    Accumulated_Exp_Oil = as.numeric(Accumulated_Exp_Oil),
+    Accumulated_Sales_Oil = as.numeric(Accumulated_Sales_Oil),
+    Year_Oil = as.numeric(Year_Oil),
+    Month_Number = as.numeric(Month_Number)
+    
+  )
+
+```
+
+
+## Abra o seu Power BI Desktop
+
+Agora sim, no seu Power BI Desktop vá em Obter Dados em seguida escolha Script do R e cole todo o conteúdo dos códigos acima feitos e dê um Enter!
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etlpowrbia.png)
+
+&nbsp;
+
+Cole o conteúdo do chunk acima...
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etlpowerbib.png)
+
+&nbsp;
+
+Clique em Ok e aguarde um pouquinho pq isso é um pouco lento...
+
+
+![](https://github.com/rhozon/datasets/raw/master/etlpowerbic.png)
+
+Um pouquinho de sua paciência...Em seguida aparecerá essa opção:
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_power_bi1.png)
+&nbsp;
+
+
+Selecione ``Corn_M``, ``Soybeans_M`` e todos os outros em que os nomes terminam com ``_M``. Em seguida, clique em Carregar.
+
+Agora navegue no Power Query e veja as tabelas que foram geradas no Power BI:
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi2.png)
+
+&nbsp;
+
+E finalmente você é livre pra montar a visualização que você desejar...eu fiz dois gráficos simples aqui:
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi3.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+# Referências
+
+
+USDA, [U.S. Export Sales](https://apps.fas.usda.gov/export-sales/)
+
+
+
+
+***
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+Contador do tempo total de execução.
+
+```{r}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+```
+
+
+
+
+
+
+
+
+

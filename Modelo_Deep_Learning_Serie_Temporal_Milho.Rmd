@@ -1,0 +1,806 @@
+---
+title: "Projeto e Aplicação de Mineração de Dados"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: hide
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+```{css toc-content, echo = FALSE}
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Algoritmos de Deep Learning para forecasting de Séries Temporais Financeiras  </strong> 
+  
+</div>
+
+***
+
+<center>
+![](https://www.escoteirossp.org.br/wp/wp-content/uploads/2020/05/c-cruzeiro-educacional.jpg){width=20%}
+</center>
+
+
+***
+
+# Resumo
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Neste projeto demonstraremos brevemente como podemos utilizar algoritmos de Deep Learning para série temporal financeira da commoditie milho negociada na bolsa de valores de Chicago. Com o objetivo de fornecer uma boa coerência no que diz respeito ao movimento esperado pelo mercado no futuro, este método é útil para direcionar as estratégias de investimento e de compra e venda para os negociadores deste importante ativo. 
+
+Os dados foram extraídos com um delay de um dia do Yahoo!Finance para os preços de fechamento e de volume de negociação (oferta e demanda) na bolsa de Chicago (CBOT) considerando que os dias de trade no mercado americano não contemplam os feriados nacionais e sábados e domingos. 
+
+Destacamos aqui que nenhum método econométrico adequado inferencial foi estimado com outras variáveis fora o volume de negociação, como por exemplo, condições climáticas, ciclos de safra, preços de bens substitutos e complementares, variáveis relacionadas as expectativas do mercado (crítica de Lucas) e movimentos especulativos (modelos da família GARCH e volatilidades condicionais) demanda chinesa e dos principais players.
+
+Os resultados apresentados nas projeções carecem de uma avaliação relativamente subjetiva ao se observar as projeções para fora da amostra total ao se considerar que o exercício de validação cruzada das séries temporais analisadas não foram implementadas por uma questão de economia de recursos computacionais.
+
+
+</p>
+
+</center>
+
+***
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+
+## Descrição da atividade {.tabset .tabset-fade }
+
+![](https://github.com/rhozon/datasets/raw/master/tarefa_PIT.png)
+
+
+
+
+
+***
+
+### Pacotes necessários 
+
+Carrega os pacotes do R:
+
+```{r }
+
+# Loading R packages
+
+library(tidymodels)
+library(modeltime)
+library(modeltime.ensemble)
+library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(magrittr)
+library(timetk)
+library(quantmod)
+library(tsibble)
+library(tsibbledata)
+library(data.table)
+library(dygraphs)
+library(sarbcurrent)
+library(strucchange)
+library(changepoint)
+library(xts)
+library(zoo)
+library(fpp3)
+library(tsibble)
+
+```
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+### Extração dos dados da _commoditie_ milho na bolsa de Chicago
+
+```{r}
+
+CORN <- getSymbols("CORN", auto.assign = FALSE,
+                   from = "2010-06-09", end = Sys.Date())  # Extrai os dados desde jun-2010 até ontem
+       
+tail(CORN) # Ultimas 5 observacoes do dataset
+
+```
+
+O primeiro passo para uma análise de uma série temporal consiste na sua inspeção visual
+
+```{r fig.width=9, fig.height=4}
+
+# Função log retornos
+ret<-function(x,k=1){
+  return(diff(log(x),k))
+}
+
+grupo <- cbind( Cl(CORN), ret(Cl(CORN),1), Vo(CORN), ret(Vo(CORN), 1 ) )
+
+dygraph(Cl(CORN), group = "grupo" ) %>% dyRangeSelector() # Grafico das cotacoes de Fechamento
+
+dygraph(ret(Cl(CORN), 1 ), group = "grupo") %>% dyRangeSelector() # Grafico dos retornos do Fechamento
+
+```
+
+E para o volume de negociação
+
+```{r fig.width=9, fig.height=4}
+
+dygraph(Vo(CORN), group = "grupo") %>% dyRangeSelector()  # Grafico do Volume negociado
+
+dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos retornos do Volume de negociacao
+
+```
+
+
+### Identificação das quebras estruturais na série temporal
+
+Este teste busca encontrar em quais pontos houveram quebras estruturais na série temporal dos preços (alvo) com o objetivo futuro de criação de features para cada reversão de tendência/trajetória identificada.
+
+Quando utilizamos um modelo de regressão que envolve o uso de séries temporais, pode acontecer que se verifique uma mudança estrutural na relação entre o regressando e os regressores.
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Por mudança estrutural entendemos que os valores dos parâmetros do modelo não se mantêm iguais durante todo o período de tempo. Às vezes, a mudança estrutural decorre de forças externas (por exemplo, os embargos do petróleo impostos pela Opep em 1973 e 1979 ou a Guerra do Golfo de 1990-1991) ou por mudanças na política econômica (como a passagem de um sistema de câmbio fixo para outro de taxa flutuante por volta de 1973) ou por ações tomadas pelo Congresso (como as mudanças tributárias promovidas pelo presidente Reagan ou alterações do salário mínimo) ou várias outras causas.
+
+(Gujarati, 2000, p. 268)
+
+</p>
+
+
+
+```{r fig.width=9}
+
+dygraph( CORN$CORN.Close ) %>%
+
+  dyShading(from = "2011-06-30", to = "2011-09-01") %>%
+  dyAnnotation("2011-08-01", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2011-06-30", "JUl 2011", labelLoc = "bottom") %>% 
+  dyEvent("2011-09-01", "Set 2011", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%
+    
+  dyShading(from = "2012-05-13", to = "2012-09-21") %>%
+  dyAnnotation("2012-07-13", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2012-05-13", "Maio de 2012", labelLoc = "bottom") %>% 
+  dyEvent("2012-09-21", "Set 2012", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%
+  
+  dyShading(from = "2014-04-15", to = "2014-10-22") %>%
+  dyAnnotation("2014-07-09", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2014-04-15", "Abril de 2014", labelLoc = "bottom") %>% 
+  dyEvent("2014-10-22", "Out 2014", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>% 
+  
+  dyShading(from = "2015-06-01", to = "2015-09-04") %>%
+  dyAnnotation("2015-07-01", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2015-06-01", "Jun 2015", labelLoc = "bottom") %>% 
+  dyEvent("2015-09-04", "Set 2015", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%   
+  
+  dyShading(from = "2016-05-05", to = "2016-07-18") %>%
+  dyAnnotation("2016-07-01", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2016-05-05", "Jul 2015", labelLoc = "bottom") %>% 
+  dyEvent("2016-07-18", "Jul 2016", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%  
+  
+  dyShading(from = "2020-06-25", to = "2021-05-28") %>%
+  dyAnnotation("2021-01-12", text = "X", tooltip = "Exemplo de provável quebra estrutural") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2020-06-25", "Jun 2020", labelLoc = "bottom") %>% 
+  dyEvent("2021-05-28", "Mai 2021", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%    
+  
+  dyRangeSelector()
+
+```
+
+Iniciamos rodando o teste de Bai & Perron, para múltiplas quebras estruturais com o auxílio dos seguintes comandos:
+
+```{r }
+
+CORN_tsibble <- CORN %>% as.data.table() %>% as_tsibble() %>%
+  fill_gaps() %>%
+  fill(c(CORN.Open, CORN.High, CORN.Low, CORN.Close, CORN.Volume, CORN.Adjusted), .direction = "down")
+
+fstats_CORN <- Fstats(CORN_tsibble$CORN.Close ~ 1)
+breakpoints(fstats_CORN)
+
+```
+
+
+O teste de Chow pode ser confirmado ao rodarmos:
+
+```{r  eval=FALSE }
+
+sctest(CORN_tibble[,"CORN.Close"] ~ 1, type = "Chow", point = 1489)
+
+```
+
+
+O ponto de quebra apontado pelo resultado do teste acima refere-se a data:
+
+```{r  }
+
+CORN_tibble <- CORN %>%
+  as.data.table() %>%
+  as_tibble()  %>%
+  mutate(
+    obs = seq_along(CORN.Close)
+  )
+
+```
+
+
+```{r }
+
+CORN_tibble %>%
+  filter(
+    obs == "1489"
+  )
+
+```
+
+
+Mas conforme anotamos no gráfico da série de preço do milho acima, esperamos que tenhamos mais pontos de quebra. O procedimento de datação de Bai e Perron (2003) emprega um algoritmo de programação dinâmico baseado no princípio de Bellman para encontrar aqueles $m$ pontos de interrupção que minimizam a soma residual dos quadrados (RSS) de um modelo com $m+1$ segmentos, dado algum tamanho mínimo de segmento de $h⋅n$ observações. Aqui, $h$ é um parâmetro de largura de banda/horizonte a ser escolhido pelo usuário.
+
+
+```{r }
+
+bp.CORN <- breakpoints(CORN$CORN.Close ~ 1)
+summary(bp.CORN)
+
+```
+
+Mais claramente nas datas:
+
+```{r  }
+
+CORN_tibble %>%
+  filter(
+    obs == "1141" |
+    obs == "1149" |  
+    obs == "1209" |
+    obs == "1256" |
+    obs == "1489" 
+  )
+
+```
+
+```{r eval=FALSE }
+
+CORN <- CORN %>%
+  mutate(
+    obs = seq_along()
+  )
+
+CORN %>%
+  filter(
+    obs == "1141" |
+    obs == "1149" |  
+    obs == "1209" |
+    obs == "1256" |
+    obs == "1489" 
+  )
+
+```
+
+
+Marcando no gráfico visualizamos:
+
+
+```{r fig.width=9 }
+
+
+dygraph( CORN$CORN.Close ) %>%
+
+  dyShading(from = "2014-12-17", to = "2014-12-17") %>%
+  dyAnnotation("2014-12-17", text = "X", tooltip = "Quebra") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+  dyEvent("2014-12-17", "Quebra Estrutural", labelLoc = "bottom") %>% 
+#  dyEvent("2015-01-23", ".", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%
+
+  dyShading(from = "2015-02-27", to = "2015-04-27") %>%
+  dyAnnotation("2015-03-27", text = "X", tooltip = "Quebra") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+#  dyEvent("2015-02-27", "Quebra Estrutural", labelLoc = "bottom") %>% 
+#  dyEvent("2015-04-27", ".", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%  
+  
+  dyShading(from = "2015-05-04", to = "2015-07-04") %>%
+  dyAnnotation("2015-06-04", text = "X", tooltip = "Quebra") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+#  dyEvent("2015-05-04", "Quebra Estrutural", labelLoc = "bottom") %>% 
+#  dyEvent("2015-07-04", ".", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%    
+  
+  dyShading(from = "2015-04-04", to = "2015-07-04") %>%
+  dyAnnotation("2015-06-04", text = "X", tooltip = "Quebra") %>%
+  dyAxis("x", drawGrid = TRUE) %>% 
+#  dyEvent("2015-04-04", "Quebra Estrutural", labelLoc = "bottom") %>% 
+  dyEvent("2015-07-04", ".", labelLoc = "bottom") %>% 
+  dyOptions(drawPoints = FALSE, pointSize = 2) %>%  
+  
+
+  dyRangeSelector()
+
+```
+
+
+Note que estes resultados marcados neste gráfico diferem do que marcamos anteriormente. Conforme elucidado conceitualmente entende-se por mudança estrutural, uma mudança significativa do patamar de preços para outro nível/estado.
+
+
+### Construção de features e do volume de negociação como variáveis explicativas
+
+Consideraremos aqui o volume de negociação do ativo ``CORN`` como _proxy_ do resultado do fluxo diário de oferta e demanda na CBOT. Para os modelos de _deep learning_ que iremos implementar construiremos _features_ não de modo automático mas sim com base em critério econômicos onde eventos (variáveis de confusão como diria Josh Angrist) se mostraram causadores de deslocamentos (picos, vales e quebras/inversões de tendências) na série de preço.
+
+
+Inicialmente precisamos construir um dataframe contendo as variáveis necessárias
+
+```{r }
+
+CORN_df <- CORN_tibble %>%
+  select(
+    index,
+    CORN.Close,
+    CORN.Volume,
+    #obs
+  ) 
+
+CORN_df <- data.frame(
+  CORN_df,
+  ret(CORN$CORN.Close),
+  ret(CORN$CORN.Volume)
+  ) %>%
+  rename(
+   "Datas" = index,
+   "ret_precos" = CORN.Close.1,
+   "ret_volume" = CORN.Volume.1
+  )
+
+```
+
+
+Pivoteamos o dataframe diário para criarmos a _feature_ dos ranges de tendências e inversões de trajetórias
+
+```{r }
+
+CORN_df <- CORN_df %>%
+    pivot_longer(
+     cols = -c(Datas), 
+     names_to = "Target", 
+     values_to = "value", 
+     names_prefix = "index_"
+     ) %>%
+
+ mutate(
+  
+ # trajetoria = as.character(Datas),
+  
+    trajetoria = 
+    
+    case_when(
+      
+      Datas == ymd("2010-06-09") & Datas <= ymd("2011-06-30") ~ "Tend. Alta",
+      Datas == ymd("2011-09-31") & Datas <= ymd("2011-10-04") ~ "Tend. Queda",
+      Datas == ymd("2011-10-05") & Datas <= ymd("2011-11-07") ~ "Tend. Alta",
+      Datas == ymd("2011-11-08") & Datas <= ymd("2011-11-25") ~ "Tend. Queda",
+  #   Datas == ymd("2011-08-31") & Datas <= ymd("2012-05-10") ~ "Tend. Queda",
+      Datas == ymd("2012-05-10") & Datas <= ymd("2012-09-06") ~ "Tend. Alta",
+      Datas == ymd("2012-09-07") & Datas <= ymd("2014-02-27") ~ "Tend. Queda",
+      Datas == ymd("2014-02-28") & Datas <= ymd("2014-05-09") ~ "Tend. Alta",
+      Datas == ymd("2014-05-10") & Datas <= ymd("2014-10-02") ~ "Tend. Queda",
+      Datas == ymd("2014-10-03") & Datas <= ymd("2014-12-26") ~ "Tend. Alta",
+      Datas == ymd("2014-12-27") & Datas <= ymd("2015-06-12") ~ "Tend. Alta",
+      Datas == ymd("2015-06-13") & Datas <= ymd("2015-07-13") ~ "Tend. Alta",
+      Datas == ymd("2015-07-14") & Datas <= ymd("2016-04-11") ~ "Tend. Queda",
+      Datas == ymd("2016-04-12") & Datas <= ymd("2016-06-07") ~ "Tend. Alta",
+      Datas == ymd("2016-06-08") & Datas <= ymd("2016-07-07") ~ "Tend. Queda",
+      Datas == ymd("2016-07-08") & Datas <= ymd("2020-08-03") ~ "Tend. Queda",
+      Datas == ymd("2020-08-04") & Datas <= ymd("2021-05-07") ~ "Tend. Alta",
+      Datas == ymd("2021-05-08") & Datas <= ymd("2021-12-01") ~ "Tend. Alta",
+      
+    ),
+    
+    trajetoria = factor(trajetoria),
+    
+    id = factor(Target)
+    
+  ) %>% as_tibble()
+
+glimpse(CORN_df)
+
+head(CORN_df)
+
+```
+
+Construindo um _dataframe_ para o forecast 24 meses à frente:
+
+```{r }
+
+HORIZON <- 30*24 # 24 meses à frente
+
+new_data <- CORN_df %>%
+  group_by(id) %>%
+  future_frame(.length_out = HORIZON) %>%
+  ungroup()
+
+#new_data
+
+```
+
+
+### Separação da série de treino e teste
+
+Separo 80% para treino e outros 20% para teste:
+
+```{r }
+
+CORN_splits <- initial_time_split(CORN_df, prop = 0.8)
+
+```
+
+### Estimativa do modelo GluonTS Deep AR 
+
+Este é conhecido como o modelo de Deep Learning Autoregressivo de Inteligência Artificial para Séries Temporais
+
+```{r }
+
+# Deep Learning packages
+
+library(modeltime.gluonts)
+library(modeltime.h2o)
+
+install_gluonts()
+
+```
+
+
+```{r eval=FALSE }
+
+model_fit_deepar <- deep_ar(
+  id                    = "id",
+  freq                  = "D",  # M, Y, W, D 
+  prediction_length     = HORIZON, # 24 meses
+  lookback_length       = 2*HORIZON, # 2*24 meses
+  epochs                = 5
+) %>%
+  set_engine("gluonts_deepar") %>%
+  fit(value ~ Datas + id , training(CORN_splits))
+
+model_fit_deepar
+
+```
+
+
+
+
+### Deep Learning N-Beats Ensemble Time Series Model
+
+
+Este modelo é um ensemble de Deep Learning conhecido como N-BEATS: _Neural basis expansion analysis for interpretable time series forecasting._
+
+
+```{r  eval=FALSE }
+
+model_fit_nbeats_ensemble <- nbeats(
+  id                    = "id",
+  freq                  = "D", # D
+  prediction_length     = 30*24,
+  lookback_length       = 30*48,
+  epochs                = 5,
+  num_batches_per_epoch = 15,
+  batch_size            = 1 
+) %>%
+  set_engine("gluonts_nbeats_ensemble") %>%
+  fit(value ~ Datas + id, training(CORN_splits))
+
+model_fit_nbeats_ensemble
+
+```
+
+
+### Perfomance preditiva (treino x teste)
+
+```{r fig.width=9, eval=FALSE }
+
+# Forecast with 95% Confidence Interval using GluonTS DeepAR Model and N-Beats Ensemble Deep Learning Model
+
+modeltime_table(
+    model_fit_deepar,
+    model_fit_nbeats_ensemble
+) %>%
+    modeltime_calibrate(new_data = testing(CORN_splits)) %>%
+    modeltime_forecast(
+        new_data      = testing(CORN_splits),
+        actual_data   = CORN_df,
+        conf_interval = 0.95
+    ) %>%
+    plot_modeltime_forecast(
+    .conf_interval_show = TRUE, 
+    .facet_ncol         = 1, 
+    .facet_scales       = "free",
+    .interactive = TRUE)
+
+```
+
+
+E comparando com o auxílio das métricas de perfomance podemos avaliar:
+
+```{r eval=FALSE }
+
+models_tbl <- modeltime_table(
+
+   model_fit_deepar,                 
+   model_fit_nbeats_ensemble
+  ) 
+
+models_tbl %>%
+  modeltime_calibrate(new_data = testing(CORN_splits)) %>%
+  modeltime_accuracy(
+  metric_set = metric_set(
+    smape,
+    mae, 
+    rmse,
+    rsq # R^2
+    )
+)
+
+```
+
+
+
+### Projeção para fora da amostra (GluonTS Deep AR Model)
+
+
+```{r eval=FALSE }
+
+model_fit_deepar <- deep_ar(
+    id                    = "id",
+    freq                  = "D", # D
+    prediction_length     = 30*24, # 30 dias x 24 meses 
+    lookback_length       = 30*48,
+    epochs                = 5#,
+#    learn_rate            = 0.01 
+) %>%
+    set_engine("gluonts_deepar") %>%
+    fit(value ~ Datas + id, CORN_df )
+
+model_fit_deepar
+
+```
+
+Podemos verificar graficamente
+
+
+```{r eval=FALSE }
+
+modeltime_forecast_tbl <- modeltime_table(
+  model_fit_deepar
+) %>%
+  modeltime_forecast(
+    new_data    = new_data,
+    actual_data = CORN_df,
+    keep_data   = TRUE
+  ) %>%
+  group_by(id) 
+
+```
+
+```{r fig.width=9, fig.height=18, eval=FALSE }
+
+modeltime_forecast_tbl %>%
+  plot_modeltime_forecast(
+    .conf_interval_show = FALSE, 
+    .facet_ncol         = 1, 
+    .facet_scales       = "free",
+    .interactive        = TRUE
+  )
+
+```
+
+### Projeção para fora da amostra (N-Beats Ensemble TS Model)
+
+Reestima o modelo para o dataset full:
+
+```{r eval=FALSE }
+
+model_fit_nbeats_ensemble <- nbeats(
+  id                    = "id",
+  freq                  = "D",
+  prediction_length     = 30*24, # 30 dias x 24 meses
+  lookback_length       = 30*48,
+  epochs                = 5
+#  num_batches_per_epoch = 15,
+#  batch_size            = 1# ,
+#  learn_rate            = 0.01
+) %>%
+  set_engine("gluonts_nbeats_ensemble") %>%
+  fit(value ~ Datas + id, CORN_df)
+
+model_fit_nbeats_ensemble
+
+```
+
+
+Graficamente temos:
+
+```{r eval=FALSE }
+
+modeltime_forecast_tbl <- modeltime_table(
+  model_fit_nbeats_ensemble
+) %>%
+  modeltime_forecast(
+    new_data    = new_data,
+    actual_data = CORN_df,
+    keep_data   = TRUE
+  ) %>%
+  group_by(id) 
+
+```
+
+
+```{r fig.width=9, fig.height=18, eval=FALSE }
+
+modeltime_forecast_tbl %>%
+  plot_modeltime_forecast(
+    .conf_interval_show = FALSE, 
+    .facet_ncol         = 1, 
+    .facet_scales       = "free",
+    .interactive        = TRUE
+  )
+
+```
+
+
+### Considerações finais
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Os modelos de redes neurais profundas (deep learning) apresentados se mostraram altamente capazes de gerar projeções futuras como direcionadores de cenários para auxiliar substancialmente os participantes (players) da principal bolsa de commodities do mundo (Chicago) com clareza no processo de tomada de decisão e formualações de estratégia de investimento. 
+
+Ao considerar o volume de negociação como proxy dos movimentos de oferta e demanda (dia a dia de pregão) contra os retornos dos preços e volume somado aos movimentos de tendência identificáveis a olho nú fora dos períodos de "quebra" temos um modelo com um raciocínio econômico pré-estabelecido para evoluir numa combinmação interessante com modelos econométricos no futuro.
+
+Todavia, os resultados apresentados pelos modelos apresentam algumas limitações a saber: 
+
++ Incapacidade de identificar os fatos geradores (inferência causal) dos movimentos que justificariam as quebras nas séries temporais e consequentemente os movimentos que deslocariam as curvas de volume e preço; (para uma possível alternativa, consulte o pacote desenvolvido pelo Google ``causalImpact``)
+
++ Limitação para medir o efeito de recuperação pós-crises eminentes ou aglomerações de volatilidade ou nervosismo de mercado, muito comuns nos dados investigados (para uma possível alternativa, vide modelos da família GARCH)
+
+</p>
+
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+***
+
+# Referências
+
+Bai, Jushan, and Pierre Perron. 2003. **“Computation and Analysis of Multiple Structural Change Models.”** _Journal of Applied Econometrics_ 18 (1): 1–22.
+
+Brodersen KH, Gallusser F, Koehler J, Remy N, Scott SL. **Inferring causal impact using Bayesian structural time-series models.** _Annals of Applied Statistics_, 2015, Vol. 9, No. 1, 247-274. http://research.google.com/pubs/pub41854.html
+
+Brodersen, K. H. **Inferring the effect of an event using CausalImpact** by Kay Brodersen in YouTube
+
+Chow, Gregory C. **Econometric methods**. Nova York: McGraw-Hill, 1983.
+
+Chow, Gregory C. **“Tests of equality between sets of coefficients in two linear regressions”.** Econometrica, v. 28, n. 3, 1960. p. 591-605.
+
+Gujarati, D., N. **Econometria Básica**, 3a. ed. São Paulo, 2020.
+
+## Referências dos pacotes do R
+
+
+```{r}
+
+citation(package = "modeltime.gluonts")
+
+citation(package = "modeltime")
+
+citation(package = "tidymodels")
+
+citation(package = "timetk")
+
+```
+
+
+***
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+Contador do tempo total de execução.
+
+```{r}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+```
+
