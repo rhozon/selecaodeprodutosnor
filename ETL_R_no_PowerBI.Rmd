@@ -1188,7 +1188,6 @@ conforme explicado no início, agora partiremos pro Power BI Desktop...
 Antes de afobadamente você abrir seu Power BI, primeiro copie (CTRL+C) todo o conteúdo a seguir, que nada mais são do que as etapas do ETL que percorremos até aqui para cada uma das fontes de dados que utilizamos:
 
 ```{r eval=FALSE }
-
 # Pacotes do R
 
 library(rvest)
@@ -1656,6 +1655,27 @@ Soybeans_M <- data.frame(
     
   )
 
+```
+
+Recomendo que faça a extração em duas etapas. Então copie e cole primeiro no Script do R dentro do Power BI os comandos acima e em seguida refaça esse procedimento novamente para os códigos a seguir:
+
+
+```{r eval=FALSE }
+
+# Pacotes do R
+
+library(rvest)
+library(lubridate)
+#library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(tsibble)
+library(fpp3)
+library(xlsx)
+#library(DT)
+library(xts)
+library(stringr)
+
 url_scm <-  "https://apps.fas.usda.gov/export-sales/h401.htm"
 
 df_scm <- url_scm %>% 
@@ -1881,6 +1901,14 @@ Meal_M <- data.frame(
     Month_Number = as.numeric(Month_Number)
     
   )
+
+
+
+
+
+
+
+
 
 url_oil <-  "https://apps.fas.usda.gov/export-sales/h902.htm"
 
@@ -2256,7 +2284,8 @@ Prontinho! Agora temos um BI com dados que são atualizados automaticamente uma 
 # Referências
 
 
-USDA, [U.S. Export Sales](https://apps.fas.usda.gov/export-sales/)
+USDA, [U.S. Export Sales](https://apps.fas.usda.gov/export-sales/), Acesso em Dez. 2021.
+
 
 
 
