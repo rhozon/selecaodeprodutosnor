@@ -2129,7 +2129,7 @@ Cole o conteúdo do chunk acima...
 
 &nbsp;
 
-Clique em Ok e aguarde um pouquinho pq isso é um pouco lento...
+Clique em Ok e aguarde um pouquinho pq isso é um pouco lento...Uma dica útil, caso prefira, você pode copiar e colar até o final a partir da segunda url no código acima e fazer essa extração em duas etapas.
 
 
 ![](https://github.com/rhozon/datasets/raw/master/etlpowerbic.png)
@@ -2158,6 +2158,70 @@ E finalmente você é livre pra montar a visualização que você desejar...eu f
 
 ![](https://github.com/rhozon/datasets/raw/master/etl_powerbi3.png)
 
+
+
+# Publicando e setando atualizações automáticas
+
+Mais do que simplesmente fazermos a rotina do ETL no R e vincularmos ao Power BI, é fundamental que sejamos capazes de automatizar isso com o próprio auxílio das ferramentas da Microsoft.
+
+Então clique em Publicar Relatório, escolha um Workspace e agora siga esses passos para setar as atualizações agendadas.
+
+1. Vá em seu Power Query clique no nome de alguma tabela e selecione a opção Editar Consultas
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_power_bi4.png)
+&nbsp;
+
+2. Clique em Configurações da fonte de dados > Editar Permissões e Credenciais Windows, Nível de Privacidade em Organizacional e em seguida Consultas ao Banco de Dados Nativo clique em revogar. Faça esse procedimento para as quatro tabelas que subimos e temos no Power Query. 
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/power_bi5.png)
+&nbsp;
+
+
+Se alguma delas aparecer ao lado com a exclamação ! clique nela e selecione a opção Editar Permissão:
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi6.png)
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_power_bi7.png)
+
+&nbsp;
+
+Clique em executar e em seguida vá em Fechar e Aplicar.
+
+
+
+3. No seu Workspace vá em Configurações do Conjunto de Dados e em seguida verifique se a opção de atualização agendada está disponível para você habilitar. Se não estiver será necessário que você baixe e instale o On Promisses Data Gateway que aparece ali como recomendado.
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi7.png)
+
+
+4. Ele já configura automaticamente a conexão com o extrator de banco de dados. Caso você já tenha ele instalado em sua máquina local clique em Entrar e logue com seu endereço de e-mail corporativo.
+
+5. Confirme se as opções da conexão do gateway e das credenciais das fontes de dados como na imagem abaixo:
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi8.png)
+
+&nbsp;
+
+
+6. Não se esqueça de setar as programações de atualizações automáticas necessárias para o seu caso. No nosso exemplo, utilizaremos uma atualização semanal toda sexta-feira.
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/etl_powerbi9.png)
+
+&nbsp;
+
+Prontinho! Agora temos um BI com dados que são atualizados automaticamente uma vez por semana, sem necessidade de se criar qualquer planilha adicional a ser alimentada, sem a necessidade de entrar no site periodicamente copiar as linhas de dados novos e colar nessa mesma planilha e atualizar o BI sempre que sai um dado novo!
 
 
 
