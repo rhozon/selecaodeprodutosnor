@@ -101,6 +101,8 @@ Os resultados apresentados nas projeções carecem de uma avaliação relativame
 
 ***
 
+## Carrega e trata os dados {.tabset .tabset-fade }
+
 ### Pacotes necessários 
 
 Carrega os pacotes do R:
@@ -128,6 +130,7 @@ library(strucchange)
 library(changepoint)
 library(xts)
 library(zoo)
+library(flipTime)
 library(fpp3)
 
 ```
@@ -175,9 +178,7 @@ dygraph(ret(Vo(CORN),1), group = "grupo") %>% dyRangeSelector() # Grefico dos re
 ```
 
 
-
-
-
+## Inversões de trajetória e quebras nas séries temporais
 
 ### Identificação das quebras estruturais na série temporal
 
@@ -477,6 +478,8 @@ new_data <- CORN_df %>%
 ```
 
 
+## Preliminares de backtesting
+
 ### Separação da série de treino e teste
 
 Separo 80% para treino e outros 20% para teste:
@@ -487,6 +490,9 @@ CORN_splits <- initial_time_split(CORN_df, prop = 0.8)
 
 ```
 
+
+
+## Rodando os modelos de Deep Learning
 
 
 ### Estimativa do modelo GluonTS Deep AR 
@@ -702,6 +708,164 @@ modeltime_forecast_tbl %>%
 
 ```
 
+
+## Escolhendo o melhor modelo como forecaster
+
+Como visto as métricas de acurácia x as projeções pra fora da amostra se mostraram bem limitadas, o que nos conduz a atribuir maior relevância no critério de escolha puramente visual pelo sentido subjetivo de nossa expectativa em relação à coerência com o comportamento futuro.
+
+Assim, escolhemos o modelo N-Beats como guia e geramos o dataframe com os valores projetados para o final de cada mês à frente:
+
+```{r}
+
+modeltime_forecast_tbl
+
+```
+
+
+Em seguida, precisamos transformar esse dataframe com os nossos valores de interesse num modelo de forecast diário. Filtrando temos,
+
+```{r}
+
+precos_projetados <- modeltime_forecast_tbl %>%
+  select(
+    .key,
+    .index,
+    Target,
+    .value,
+    
+  ) %>% as.data.frame() %>%
+  
+  filter(
+    .key == "prediction" |
+    Target == "CORN.Close"
+  )
+
+precos_projetados <- data.frame(
+  precos_projetados$.index,
+  precos_projetados$id,
+  precos_projetados$.key,
+  precos_projetados$.value
+) %>% rename(
+  index = "precos_projetados..index",
+  id = "precos_projetados.id",
+  key = "precos_projetados..key",
+  value = "precos_projetados..value"
+) %>%
+  filter(
+    key == "prediction",
+    id == "CORN.Close"
+  ) %>%
+mutate(
+  index = AsDate(index),
+  index = zoo::as.yearmon(index, "%b%y"),
+  value = round(value, 2)
+  ) %>% select(
+    index,
+    id,
+    value
+  )
+
+precos_projetados 
+
+
+
+```
+
+
+Agora que obtivemos os valores projetados, partiremos para um processo conhecido como _bootstraping_ para interpolar os dados projetados mês a mês para uma granularidade diária. 
+
+
+O primeiro passo consiste em criar um vetor das datas no formato ``mês-ano`` do tipo ``01-2022`` p. ex. e assim sucessivamente até o 24º mês á frente
+
+```{r}
+
+precos_projetados <- precos_projetados %>%
+  mutate(index = c(
+    "01-2022",
+    "02-2022",
+    "03-2022",    
+    "04-2022",
+    "05-2022",
+    "06-2022",
+    "07-2022",    
+    "08-2022",
+    "09-2022",
+    "10-2022",
+    "11-2022",
+    "12-2022",
+    "01-2023",
+    "02-2023",
+    "03-2023",    
+    "04-2023",
+    "05-2023",
+    "06-2023",
+    "07-2023",    
+    "08-2023",
+    "09-2023",
+    "10-2023",
+    "11-2023",
+    "12-2023")
+)%>%
+  mutate(index = AsDate(index),
+         index = zoo::as.yearmon(index, "%b%y"))
+
+glimpse(precos_projetados)
+
+write.csv(precos_projetados, "precos_projetados.csv", row.names = FALSE)
+
+```
+
+
+
+Agora criamos uma função interativa que transforma os dados mensais em diários:
+
+```{r }
+
+mes_pra_dia <- function( variavel, mes_ref ){
+  
+  set.seed(123)
+  
+  for (i in 1:length(variavel)){
+   valores_no_mes <- abs(variavel[i] + arima.sim(model = list(order = c(1, 1, 1), ar = 0.5, ma = 0.5), 
+                                             n = days_in_month(mes_ref[i])-1, mean = 0, sd = 5)) %>%
+   as.data.frame() %>%
+     
+   mutate(
+     mes_ano = paste(month(mes_ref[i]), "-" , year(mes_ref[i]) )
+     ) %>%
+     
+  rename(variavel = "x")   
+
+print(valores_no_mes)
+
+  }
+  
+}
+
+```
+
+
+
+Em nosso dataframe de valores projetados teremos:
+
+
+```{r eval=FALSE}
+
+fcst_diario <- mes_pra_dia(precos_projetados$value,
+                           precos_projetados$index)
+
+```
+
+
+
+
+
+
+
+
+
+
+## Considerações finais
 
 ### Considerações finais
 

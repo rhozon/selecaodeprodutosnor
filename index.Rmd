@@ -191,4 +191,12 @@ Tutoriais disponíveis:
 
 *** 
 
+&nbsp;
+
+### *Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo*
+
+*** 
+
+
+
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
