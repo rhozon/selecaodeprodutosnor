@@ -78,6 +78,8 @@ navbar:
           href: modelo_deep_learning_series_temporais.html         
         - text: "ETL com o R direto no Power BI"
           href: ETL_R_no_PowerBI.html  
+        - text: "Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo"
+          href: Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html           
           
   right:
     - icon: fa-question fa-lg

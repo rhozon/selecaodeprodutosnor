@@ -1,0 +1,1403 @@
+---
+title: "Estimativa de Elasticidade com modelo bayesiano normal-normal via Monte Carlo Markov Chain"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r}
+
+start_time <- Sys.time()
+start_time
+
+```
+
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Estimativa de Elasticidade de Despesas de Bens duáveis x despesas de consumo: Abordagem Bayesiana com Monte Carlo Markov Chain  </strong> 
+  
+</div>
+
+***
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+
+Este artigo/post demonstra como podemos utilizar inferência Bayesiana para melhorarmos a precisão na qualidade de nossas análises de modelos preditivos e avaliar a qualidade nos níveis de variabilidade dos coeficientes/parâmetros estimados em modelos de regressão. 
+
+Procederemos com um modelo que fornece os valores das elasticidades estimadas utilizando Cadeias de Markov via Monte Carlo para os dados do exemplo apresentado em Gujarati e Porter (2011, p. 179) e compararemos com as conclusões dos autores supracitados.
+
+
+</p>
+
+</center>
+
+***
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+# Pacotes do R
+
+Para reproduzir o exemplo utilize os seguintes pacotes do R:
+
+```{r}
+
+library(rjags)
+library(rstanarm)
+library(dplyr)
+library(tidyverse)
+library(broom)
+library(lubridate)
+library(zoo)
+library(ggfortify)
+library(plotly)
+library(ggplot2)
+library(mosaic)
+library(logNormReg)
+library(stargazer)
+
+
+```
+
+
+
+# Reprodução do exemplo
+
+O exercício que utilizaremos bem como os dados que estão disponíveis em Gujarati e Porter (2011, p. 179) [download free aqui](https://br1lib.org/book/3409735/6b46db) servirão de _start_ para a construção de um modelo log-linear de estimativa de elasticidade de demanda com abordagem bayesiana utilizando Monte Carlo Markov Chains para fazermos inferências mais precisas a respeito dos parâmetros estimados deste modelo.
+
+A Tabela 6.3 apresenta dados relativos às despesas totais de consumo pessoal (DESPTCP), despesas com bens duráveis (DESPDUR), com bens não duráveis (DESPNAODUR) e despesas com serviços (DESPSERV), todas medidas em bilhões de dólares de 2000. (Os bens duráveis incluem veículos motorizados e suas peças, móveis e eletrodomésticos; os bens não duráveis incluem alimentação, vestuário, combustível automotivo, óleo combustível e carvão; e os serviços incluem gastos com moradia, luz e gás, transporte e saúde.)
+
+Suponha que queiramos encontrar a elasticidade das despesas com bens duráveis em relação às despesas totais de consumo pessoal. Representando graficamente o ln das despesas com bens duráveis contra o ln das despesas totais de consumo, você verá que a relação entre as duas variáveis é linear. Portanto, o modelo log-log pode ser apropriado. Os resultados da regressão são os seguintes:
+
+\begin{equation} \label{eq1}
+\begin{split}
+
+ln(\widehat{DESPDUR}_t) & = -7,5417 + 1,6266 ln(DESPTCP_t) \\
+ ep & = (0,7161)\quad \qquad (0,0800)\\
+  t & = (-10,5309)^* \quad(20,3152)^* \qquad r^2 = 0,9695
+  
+\end{split}
+\end{equation}
+
+em que * indica que o valor $p$ é extremamente pequeno
+
+```{r}
+
+dados_dpt_bensduraveis <- read.csv("https://raw.githubusercontent.com/rhozon/datasets/master/elasticidade_GUJARATI.csv", head = TRUE, sep = ";")
+
+dados_dpt_bensduraveis
+
+```
+
+Estes valores de Despesa pessoal total e categorias (em bilhões de dólares encadeados de 2000), e foram resumidos para uma escala numérica ideal. Vale ressaltar que os autores extraíram esses dados de _Economic Report of the President_, 1999, Quadro B-17, p. 34
+
+
+# Análise preliminar dos dados do exemplo
+
+Nossa análise começa com a simples observação das séries temporais utilizadas pelos modelo log-log aqui exposto:
+
+
+```{r fig.width=8}
+
+series_temporais <- ts(dados_dpt_bensduraveis[,-1], 
+                       start = c(2003, 1), # start = c(2003, 1) = 1 trim 2003
+                       end   = c(2006, 3),
+                       frequency = 4 ) 
+ggplotly(
+  autoplot(series_temporais[,c("DESPDUR","DESPTCP")])
+)
+
+```
+
+
+Como se tratam de séries temporais, não faremos neste post análise de estacionariedade, raiz unitária, cointegração das séries, padrão de autocorrelação e heterocedasticidade. Recomendo ao leitor que busque as referências no final do artigo na literatura apresentada para obter um melhor esclarecimento de todas essas etapas mencionadas.
+
+A justificativa para o uso do modelo log-lin para estimar as elasticidades pode ser consultada no próprio livro (págs. 177, 178) ou então no [apêndice no final deste post publicado aqui no site.](https://rhozon.github.io/selecaodeprodutosnor/exerbolsadeestudos.html)
+
+
+Segundo Kruschke, (2015, p. 25) os passos que seguiremos aqui para nossa análise bayesiana seguira as seguintes etapas:
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+1. Identify the data relevant to the research questions. What are the measurement scales
+of the data? Which data variables are to be predicted, and which data variables are
+supposed to act as predictors?
+
+2. Define a descriptive model for the relevant data. The mathematical form and its
+parameters should be meaningful and appropriate to the theoretical purposes of the
+analysis.
+
+3. Specify a prior distribution on the parameters. The prior must pass muster with the
+audience of the analysis, such as skeptical scientists.
+
+4. Use Bayesian inference to re-allocate credibility across parameter values. Interpret
+the posterior distribution with respect to theoretically meaningful issues (assuming
+that the model is a reasonable description of the data; see next step).
+
+5. Check that the posterior predictions mimic the data with reasonable accuracy (i.e.,
+conduct a “posterior predictive check”). If not, then consider a different descriptive
+model.
+
+</p>
+
+
+Sabemos que ``DESPTCP`` (despesas totais de consumo pessoal) pode não ser um preditor perfeito do ``DESPDUR`` (despesas com bens duráveis) pois alguns indivíduos se desviam da tendência e assim seria razoável supormos com segurança que as despesas totais de consumo pessoal são normalmente distribuídos em torno de algum valor de gasto médio $m$ com desvio padrão $s$, pois presumimos que essa relação seja positivamente linear.
+
+Como já temos o nosso modelo lin-log estimado para as elasticidades, temos um conhecimento prévio (_à priori_) de que o melhor ajuste desse modelo é conhecido quando o intercepto for = -7,5417 com uma inclinação na ordem dos 1,6266 DESPDUR/DEPTCP. 
+
+Reestimando o modelo no R, temos:
+
+```{r}
+
+modelo_elasticidades <- lm( log(DESPDUR) ~ log(DESPTCP) , data = dados_dpt_bensduraveis )
+
+tidy(modelo_elasticidades)
+
+summary(modelo_elasticidades)$sigma # Desvio-Padrão residual em doláres por despesas com bens duráveis
+
+```
+
+Parafraseando a interpretação dada pelos autores, temos:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Como esses resultados sugerem, a elasticidade de DESPDUR em relação à DESPTCP é de 
+cerca de 1,63, sugerindo que quando as despesas totais aumentam em 1% as despesas com 
+bens duráveis aumentam em cerca de 1,63%, em média. As despesas com bens duráveis são 
+muito sensíveis a variações nas despesas totais de consumo pessoal. Essa é uma das razões 
+pelas quais os produtores de bens duráveis acompanham atentamente as variações na renda 
+e nas despesas de consumo pessoal. No Exercício 6.18 pede-se que o leitor faça um estudo 
+semelhante para as despesas com bens não duráveis e com serviços.
+
+</p> Gujarati e Porter (2011, p. 179)
+
+Visualmente podemos plotar o gráfico de dispersão:
+
+```{r fig.width=9, fig.height=3}
+
+ggplotly(
+  ggplot(dados_dpt_bensduraveis, aes(x = log(DESPTCP), 
+                                     y = log(DESPDUR))) +
+    geom_point() + 
+    geom_smooth(method = "lm", se = TRUE) # ideal seria se = FALSE pois nao utilizaremos aqui abordagem de inferencia frequentista
+)
+
+```  
+
+Por fins informativos o resultado desse modelo linear ficaria:
+
+
+```{r results='asis'}
+
+modelo_linear <- lm(DESPDUR ~ DESPTCP, dados_dpt_bensduraveis)
+
+modelo_lognormal <- lognlm(log(DESPDUR) ~  log(DESPTCP), lik=TRUE, dados_dpt_bensduraveis )
+
+stargazer(modelo_linear, modelo_elasticidades,
+          title= "Tabela 1. Resultados do modelo linear estimado x modelo das elasticidades", 
+          align = TRUE,
+          type = "html")
+
+```
+
+Note que inserimos dois modelos comparativos em relação ao exposto pelo Gujarati e Porter. Um modelo linear, sem transformar os dados para log-natural e agora outro modelo com correção de erros para distribuição log-normal. Veremos os resultados do modelo lognormal:
+
+```{r}
+
+summary(modelo_lognormal)
+
+summary(modelo_lognormal)$sigma
+
+```
+
+Note que a diferença nos valores estimados dos coeficientes é muito pequena, mas se compararmos os valores do desvio-padrão residual notamos que:
+
+- ``modelo_elasticidades`` $\Rightarrow \sigma^2 = 0.01164936$
+
+- ``modelo_lognormal`` $\Rightarrow \sigma^2 = 0.001669172$
+
+O que demonstra sua superioridade em relação ao modelo original apresentado pelos autores.
+
+# Inferência Estatística Clássica _versus_ Inferência Bayesiana
+
+Por qual motivo analisaremos esses resultados desse exemplo de Gujarati e Porter por uma perspectiva de inferência bayesiana ? Aqui descrevo as diferenças explicadas entre uma abordagem e outra segundo o prof. Kay Maddala (2001, p. 12-13):
+
+Inferência estatística é a área que descreve os procedimentos por meio dos quais usamos os dados observados para _tirar conclusões_ sobre a população de onde os dados vieram ou sobre os processos pelos quais os dados foram gerados. Nosso pressuposto é que existe um processo desconhecido que gera os dados que possuímos e que esse processo pode ser descrito por uma distribuição de probabilidade, a qual, por sua vez, pode ser caracterizada por alguns parâmetros desconhecidos. Para uma distribuição normal, por exemplo, os parâmetros desconhecidos são $\mu$ e $\sigma^2$.
+
+Em termos gerais, inferência estatística pode ser classificada por dois tópicos:<mark> inferência clássica e inferência Bayesiana.</mark>Inferência clássica tem por base duas premissas:
+
+1. Os dados amostrais constituem a única informação relevante.
+
+2. A construção e a avaliação dos diferentes procedimentos para a inferência se baseiam em comportamentos de longo prazo sob circunstâncias essencialmente similares.
+
+Em inferência Bayesiana combinamos informação amostral com informação prévia. Suponha que tiramos uma amostra aleatória $y_1 , y_2, \ldots, y_n$ de tamanho $n$ de uma população normalmente distribuída com média $\mu$ e $\sigma^2$ (desconhecidas), e queremos fazer inferência sobre $\mu$.
+
+Em inferência clássica tomamos a média amostral $\overline{y}$ como nosso estimador de $\mu$. Sua variância é $\sigma^2 / n$. O inverso desta variância é conhecido como _precisão amostral_. Assim, a precisão amostral é $n/\sigma^2$.
+
+Em inferência Bayesiana temos informação prévia sobre $\mu$. Isso é expresso em termos de uma distribuição de probabilidade conhecida como _distribuição a priori_. Suponha que _a distribuição a priori_ é normalmente distribuída com média $\mu_0$ e variância $\sigma^2_0$, isto é, a precisão é $1/\sigma^2_0$. Combinamos isso com a informação amostral para obter o que pe conhecido como _distribuição a posteriori_ de $\mu$. Pode-se mostrar que essa distribuição é normal. Sua média é uma média ponderada da distribuição amostral $\overline{y}$ e da média _a priori_ $\mu_0$, ponderada pela precisão amostral e pela precisão _a priori_, respectivamente. Logo
+
+$$
+\mu(\mbox{Bayesiano}) = \frac{w_1\overline{y}+w_2 \mu_0}{w_1 + w_2}
+$$
+onde
+
+$w_1 = n/sigma^2 = $ precisão amostral
+
+$ww_2 = 1/\sigma^2_0 =$ precisão _a priori_
+
+Além disso, a precisão (ou o inverso da variância) da distribuição _a posteriori_ de $\mu$ é $w_1 + w_2$, isto é, a soma da precisão amostral e da precisão _a priori_.
+
+Se, por exemplo, a média amostral é 20 com variância igual a 4 e a média _a priori_ é 10 com variância igual a 2, temos:
+
+$$
+\mbox{média a posteriori} = \frac{(1/4) (20) + (1/2) (10)}{1/4 + 1/2} =
+$$
+
+$$
+10/(3/4) = 13,33
+$$
+
+$$
+\mbox{variância a posteriori} = (1/4 + 1/2)^{-1} = 4/3 = 1,33
+$$
+
+A média _a posteriori_ ficará entre a média amostral e a média _a priori_. A variância _a posteriori_ será menor do que as variâncias da amostra _a priori_.
+
+Não discutiremos a inferência Bayesiana neste livro, (...) Todavia, é útil lembrar que a noção básica de combinar média amostral e a média _a priori_ em proporção inversa às suas variâncias.
+
+Retomando à inferência estatística clássica, é costume discutir a partir de três tópicos:
+
+1. Estimativa pontual
+
+2. Estimativa intervalar
+
+3. Teste de hipótese
+
+
+Para finalizar essa seção, descrevo aqui o que se compreende como a essência da inferência bayesiana, segundo Kruschke (2015, p. 16):
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Suppose we step outside one morning and notice that the sidewalk is wet, and wonder
+why. We consider all possible causes of the wetness, including possibilities such as recent
+rain, recent garden irrigation, a newly erupted underground spring, a broken sewage
+pipe, a passerby who spilled a drink, and so on. If all we know until this point is
+that some part of the sidewalk is wet, then all those possibilities will have some prior
+credibility based on previous knowledge. For example, recent rain may have greater prior
+probability than a spilled drink from a passerby. Continuing on our outside journey, we
+look around and collect new observations. If we observe that the sidewalk is wet for as
+far as we can see, as are the trees and parked cars, then we re-allocate credibility to the
+hypothetical cause of recent rain. The other possible causes, such as a passerby spilling
+a drink, would not account for the new observations. On the other hand, if instead we
+observed that the wetness was localized to a small area, and there was an empty drink cup
+a few feet away, then we would re-allocate credibility to the spilled-drink hypothesis,
+even though it had relatively low prior probability. This sort of reallocation of credibility
+across possibilities is the essence of Bayesian inference."
+
+</p>
+
+## Construção do modelo _à priori_
+
+
+Agora que projetamos a estrutura de verossimilhança, podemos concluir a especificação do modelo Bayesiano conforme distribuições _à priori_ para os parâmetros. Neste modelo existem 3: 
+
+- intercepto-$y$;
+- $a$ especifica o valor de $m_t$ quando $X_t$ for igual a zero;
+- $b$ a inclinação que mede o quanto um mudança em digamos uma unidade (aqui elasticidade 1%) aumenta (suposição positiva) as depesas com bens duráveis
+- $s$ o desvio-padrão dos resíduos da regressão estimada
+
+Podemos inferir melhor a respeito das distribuições à priori, observando um resumo estatístico:
+
+```{r}
+
+dados_dpt_bensduraveis %>%
+  select(
+    DESPTCP,
+    DESPDUR
+  ) %>% summary()
+
+
+```
+
+Assim, podemos assumir que as despesas pessoais oscilam entre 7.000 a 8.200 bilhões de dólares e as despesas com bens duráveis entre 960 ~ 1.210 USD bi no período analisado. (Em $ln$ temos que: $ln(7000) = 8.853665428$ ~ $ln(8200) = 9.011889433$ para DESPDUR e $ln(960)=6.866933284$ ~ $ln(1210)=7.098375639$ para DESPTCP).
+
+Como sabemos _à priori_ que a elasticidade é linearmente positiva (1,63% em média) podemos assumir que essa inclinação se distribui log-normalmente em torno de 1% com um erro-padrão 0.08007%. Lembre-se que a elasticidade da demanda pode se situar nos seguintes _ranges_ de conceito:
+
+
+- **Demanda Perfeitamente Inelástica**: Elasticidade igual a 0 (zero)
+- **Demanda Inelástica**: Elasticidade maior que 0 e menor que 1.
+- **Demanda de Elasticidade Unitária**: Elasticidade igual a 1.
+- <mark>**Demanda Elástica**: Elasticidade maior do que 1 e menor do que ∞ (infinito)</mark>
+- **Demanda Infinitamente Elástica**: Elasticidade igual a ∞
+
+
+Então essa é a nossa inclinação _à priori_ para o nosso modelo. 
+
+Como temos menos certeza _à priori_ a respeito do intercepto de $y$, $a$ sabemos pela estimativa frequentista de que seus valores se distribuem (log-normalmente) em torno de 0% a -7,6 ~ -8%. Esse nível de incerteza produz alguns modelos plausíveis _à priori_ que nem passam pela respectiva área escolhida em nossa nuvem de pontos. No entanto, também preserva a flexibilidade necessária para preservar a mudança em $a$ de acordo com a inclinação dada por $b$. 
+E por fim, considere o parâmetro de desvio-padrão $s$. Como existem pequenos desvios individuais da tendência $s$, estamos relativamente incertos sobre a força da relação entre despesas de consumo pessoal e despesas com bens de consumo duráveis. 
+
+Como no futuro podem haver desvios bem grandes, como p. ex. no caso do Brasil, motivado pela política de excesso de crédito a juros reais elevados, assumimos que o FED e o governo americano podem alterar a política monetária e para acomodar essa incerteza, selecionamos uma distribuição uniforme _a priori_: $s$ é uniformemente provável de estar em qualquer lugar de 0 a 71 USD ($ln(71) = 4.262679877$).
+
+```{r}
+
+dados_dpt_bensduraveis %>%
+  summarise(
+     sd(DESPTCP),
+     sd(DESPDUR)
+  )
+
+```
+
+Vamos amostrar 10.000 para cada parâmetro $a,b$ e $s$ de nossas _prioris_ para compreendermos melhor qual o padrão de suas distribuições:
+
+```{r fig.width=9, fig.height=3}
+
+# Take 10000 samples from the a, b, & s priors
+a <- rlnorm(n = 10000, mean = 0, sd = 1)
+b <- rlnorm(n = 10000, mean = 9, sd =.5)
+s <- runif(n = 10000, min = 0, max = 4)
+
+# Store samples in a data frame
+samples <- data.frame(set = 1:10000, a, b, s)
+
+# Construct density plots of the prior samples   
+
+ggplotly(
+ggplot(samples, aes(x = a)) + 
+    geom_density(color="blue")
+)
+
+ggplotly(
+ggplot(samples, aes(x = b)) + 
+    geom_density(color="blue")
+)
+
+ggplotly(
+ggplot(samples, aes(x = s)) + 
+    geom_density(color="blue")
+)
+
+```
+
+Em nosso modelo bayesiano das elasticidades das despesas de bens de consumo ($Y_t$) x despesas pessoais ($X_t:Y_t\sim lognormal(m,s^2)$ com a média: $m_t = a + bX_t$), após simularmos 10 mil amostras para cada parâmetro ($a, b$ e $s$) cada configuração/combinação nas linhas do objeto ``samples`` representa um cenário plausível _à priori_. Para explorarmos melhor o escopo deste cenário, vamos simular 50 pares de combinações de valores das despesas de bens duráveis e de consumo pessoal para cada uma das primeiros 12 configurações dos parâmetros _à priori_, $a,b$ e $s$
+
+```{r fig.width=9, fig.height=9}
+
+# Replica os primeiros 12 configuracoes de parametros 50 vezes cada um
+prior_scenarios_rep <- bind_rows(replicate(n = 50, expr = samples[1:12, ], simplify = FALSE)) 
+
+# Simula 50 DESPTCP e DEPDUR pontos de dados para cada configuracao de parametros
+prior_simulation <- prior_scenarios_rep %>% 
+    mutate(DESPTCP  = rnorm(n = 600, mean = 7668.3, sd = 297.3285)) %>% 
+    mutate(DESPDUR  = rnorm(n = 600, mean = a + b * DESPTCP, sd = s))
+
+#head(prior_simulation)
+
+prior_simulation <- prior_simulation %>%
+  mutate(
+    DESPTCP = log(DESPTCP),
+    DESPDUR  = log(DESPDUR / 100000)
+  )
+
+# Plota os dados simuldos e o modelo de regressao para cada configuracao de parametros
+ggplotly(
+ggplot(prior_simulation, aes(x = DESPTCP, y = DESPDUR)) + 
+    geom_point() + 
+    geom_smooth(method = "lm", se = FALSE, size = 0.75) + 
+    facet_wrap(~ set)
+)
+
+```
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+## Formalizando a construção do modelo Bayesiano para _à posteriori_
+
+Dada a construção da distribuição _à priori_, formalizamos aqui o modelo para nossa _posteriori_: 
+
+- Verossimilhança: $Y_t \sim lognormal(m_t,s^2)$ onde $m_t = a + bX_t$
+- Prioris: $a\sim lognormal(0, 1^2), b \sim lognormal(9, 0.5^2), s \sim Unif(0, 4)$ 
+
+```{r}
+
+modelo_bayesiano <- "model{ 
+# Verossimilhanca de Y[i]
+           for(i in 1:length(Y)) {      
+               Y[i] ~ dnorm(m[i], s^(-2)) 
+               m[i] <- a + b * X[i]   
+                }    
+# Prioris de a, b, s   
+a ~ dnorm(0, 7^(-2)) 
+b ~ dnorm(1.62, 0.08^(-2))
+s ~ dunif(0, 4)
+}"  
+
+
+```
+
+```{r}
+
+modelo_jags <- jags.model(textConnection(modelo_bayesiano),
+                          data = list(X = log(dados_dpt_bensduraveis$DESPTCP),
+                                      Y = log(dados_dpt_bensduraveis$DESPDUR)),
+                          inits = list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = 2018))
+
+```
+
+
+Em seguida simularemos via MCMC 1000 vezes a _posteriori_ do modelo para $a,b$ e $s$
+
+
+```{r fig.width=9, fig.height=9}
+
+# SIMULA a posteriori    
+modelo_sim <- coda.samples(model = modelo_jags,
+                  variable.names = c("a", "b", "s"),
+                          n.iter = 1000)
+
+# PLOTA a posteriori    
+plot(modelo_sim)
+
+```
+
+Vamos aumentar as iterações para checar os níveis de estabilização com o objetivo de fornecer assim uma aproximação mais confiável da _posteriori_.
+
+```{r fig.width=9, fig.height=9}
+
+# SIMULA a posteriori     
+modelo_sim_big <- coda.samples(model = modelo_jags,
+                  variable.names = c("a", "b", "s"),
+                          n.iter = 3000000) # 3 milhoes de simulacoes
+
+# PLOTA a posteriori   
+plot(modelo_sim_big)
+
+```
+
+Note que com 1000 iterações as cadeias de Markov não convergiram, pois uma vez que o traço de $a$ aumentava quando o de $b$ diminuia, o que demonstra claramente que não houve estabilização nessa configuração.
+
+Para simplificar, vamos nos concentrar nos resultados da simulação com maior quantidade de iterações para os parâmetros da interceptação $a$ e inclinação $b$, (objeto ``modelo_sim_big``). Os gráficos de densidade _à posteriori_ aproximados construídos a partir das simulações são mostrados aqui.
+
+O tamanho efetivo das iterações do modelo simulado seria na ordem de:
+
+```{r}
+
+effectiveSize(modelo_sim_big)
+
+```
+
+Aqui os tamanhos efetivos são somados entre as cadeias. O tamanho efetivo da amostra (ESS) é uma estimativa do tamanho da amostra necessária para atingir o mesmo nível de precisão se essa amostra for uma amostra aleatória simples. Quando existe autocorrelação em uma série temporal, isso também reduz o tamanho efetivo da amostra. Por exemplo, se a autocorrelação de primeira ordem for 0,5, o tamanho efetivo da amostra de 100 observações será de apenas 33 observações.
+
+Na estatística Bayesiana, é comum usar as amostragens posteriores da cadeia de Markov via Monte Carlo (MCMC) para inferência estatística. O processo MCMC faz com que as amostragens sejam correlacionados. Isso significa que o tamanho efetivo da amostra é geralmente menor que o número de amostragens/sorteios. Por esse motivo, o tamanho efetivo da amostra – em vez do tamanho real da amostra – é normalmente usado para determinar se um modelo MCMC convergiu.
+
+E como estamos analisando séries temporais, nada mais adequado do que checarmos os padrões de autocorrelação em nosso modelo bayesiano:
+
+
+```{r fig.width=9, fig.height=9}
+
+autocorr.diag(modelo_sim_big)
+
+autocorr.plot(modelo_sim_big)
+
+```
+
+
+
+
+
+
+
+
+Em uma análise Bayesiana, podemos pensar em todas as densidades posteriores como estimativas de $a$ e $b$. Afinal, essas coleções de valores plausíveis posteriores fornecem uma imagem completa das tendências posteriores e incerteza em nossos parâmetros. No entanto, para entender e comunicar nosso modelo _à posteriori_, também pode ser útil fornecer resumos/outputs simples dos modelos posteriores.
+
+```{r}
+
+head(modelo_sim_big) # Preview das primeiras 5 linhas das iterações da Cadeia de Markov
+
+summary(modelo_sim_big) # Resultado do modelo a posteriori simulado
+
+```
+
+Observe que as estimativas de parâmetro do modelo bayesiano não têm mais estatísticas de teste e valores de $p$ como na regressão frequentista.
+
+Isso ocorre porque a estimativa bayesiana mostra a distribuição _a posteriori_. Isso significa que, em vez de uma estimativa pontual e uma estatística de teste, obtemos uma distribuição de valores plausíveis para os parâmetros, e a seção de estimativas (demonstrada no output completo apresentado acima) resume essas distribuições. Especificamente, obtemos a média, o desvio padrão e os percentis comumente usados. Enfim, a saída do modelo bayesiano não contém estatísticas de teste ou valores $p$.
+
+Isso representa a diferença fundamental entre frequentistas e bayesianos. Em suma, os frequentistas assumem que os parâmetros do modelo são fixos e os dados são aleatórios, enquanto os bayesianos assumem que os dados são fixos e os parâmetros do modelo são aleatórios. Isso pode ser visto na interpretação de um valor $p$.
+
+Lembre-se que, o valor $p$ é a probabilidade de observar dados que dão origem a uma estatística de teste tão grande, se a hipótese nula for verdadeira. Em outras palavras, dado um conjunto de valores de parâmetros verdadeiros (a hipótese nula), qual é a probabilidade de observar um conjunto de dados aleatórios que resulta em uma estatística de teste tão grande. Essa é a resposta dada pelo interpretação do valor -$p$.
+
+Em contraste, o modelo bayesiano assume que os dados coletados são fixos e, em vez disso, há uma distribuição de possíveis valores de parâmetros que dão origem aos dados. Dito de outra forma, os bayesianos estão interessados em determinar a faixa de valores dos parâmetros que dariam origem ao seu conjunto de dados observado.
+
+
+```{r}
+
+cadeias_despesas <- data.frame(modelo_sim_big[[1]], iter = 1:3000000)
+
+head(cadeias_despesas)
+
+mean(cadeias_despesas$b) # Calcula a media da posteriori estimada
+
+```
+
+Estes são simplesmente as médias dos valores da cadeia de Markov e podem ser encontrados na coluna Mean da primeira tabela. Aqui a média _a posteriori_ do intercepto é de -7.42323 e a média _a posteriori_ da inclinação (elasticidade) $b$ é de aproximadamente 1.61337% do consumo de duráveis / consumo pessoal.
+
+Combinadas, as médias posteriores do intercepto e da inclinação fornecem uma estimativa da tendência média _a posteriori_ na relação entre despesas com bens duráveis e despesas com consumo pessoal. No entanto, tenha em mente que esta é simplesmente a tendência média. Observamos 3000000 de conjuntos plausíveis de interceptação $a$ e valores para a inclinação $b$ em nosso ``modelo_sim_big``.
+
+Vamos verificar os resultados de nossa estimativa com o pacote ``rjags`` contra os resultados apontados pelo resultado com o pacote ``rstanarm``, muito populares na comunidade científica de estatística bayesiana e logicamente no CRAN.
+
+```{r}
+
+modelo_bayesiano_stan <- stan_glm(log(DESPDUR) ~ log(DESPTCP), data = dados_dpt_bensduraveis)
+summary(modelo_bayesiano_stan)
+
+```
+
+
+Traçar as linhas que correspondem apenas as primeiros 15 configurações nos dá uma noção da _incerteza geral_ posterior na tendência. É importante refletir essa incerteza em nossos resumos numéricos da _posteriori_.
+
+Uma abordagem comum é calcular intervalos confiáveis das _posterioris_. As estimativas dos intervalos confiáveis de 95% para cada parâmetro do modelo são relatadas na Tabela 2 do ``modelo_sim_big``. Os limites inferior e superior dos intervalos são calculados simplesmente pelos 2,5º e 97,5 quantis dos valores correspondentes da cadeia de Markov. Aqui, o intervalo confiável da _posteriori_ de 95% para as despesas pessoais vão de -8.495391 até -6.40719 bilhões de dólares (considere esse range em valores absolutos para uma mais clara interpretação). Já para o coeficiente das elasticidades, o intervalo confiável _da posteriori_ varia de 1.499772 a 1.73324 o que nos leva a concluir que há 95% de chances _à posteriori_ do real valor do coeficiente da elasticidade estar entre entre essa faixa.
+
+```{r}
+
+# Calcula o intervalo confiavel da posteriori de 95% para b 
+ci_95 <- quantile(cadeias_despesas$b, probs = c(0.025, 0.975))
+ci_95
+
+# Calcula o intervalo confiavel da posteriori de 90% para b
+ci_90 <- quantile(cadeias_despesas$b, probs = c(0.05, 0.95))
+ci_90
+
+```
+
+Com o pacote ``rstanarm`` temos os valores do intervalo confiável de 95% para $a$ e $b$:
+
+```{r}
+
+posterior_interval(modelo_bayesiano_stan, prob = 0.95) # Intervalo confiavel de 95%
+
+posterior_interval(modelo_bayesiano_stan, prob = 0.90) # Intervalo confiavel de 90%
+
+```
+
+Podemos comparar com os valores de intervalo de confiança na abordagem frequentista do modelo do exemplo do Guja:
+
+```{r}
+
+confint(modelo_elasticidades, parm = "log(DESPTCP)", level = 0.95) # intervalo de confiança de 95%
+
+```
+
+
+Esses intervalos são muito semelhantes ao intervalo de confiança correspondente. Aqui está o intervalo de confiança de 95% para o parâmetro ``log(DESPTCP)`` em nosso modelo frequentista. Isso nos diz que há 95% de chance de que o intervalo de 1.453629 a 1.799583 contenha o valor verdadeiro.
+
+Mas estamos interessados na probabilidade de o valor cair entre dois pontos, não na probabilidade de os dois pontos capturarem o valor verdadeiro. É isso que o intervalo confiável nos dá. Como você pode ver, esses intervalos fornecem intervalos muito semelhantes. Muitas vezes, pode ser o caso, mas as inferências são muito diferentes. 
+
+No cenário bayesiano, podemos perguntar qual é a probabilidade de que o parâmetro esteja entre 1.7% e 1.81%, e vemos uma chance de 8.49% de o valor verdadeiro estar nessa faixa. Como faríamos algo semelhante com intervalos de confiança de um modelo frequentista? Não podemos. Apenas os métodos bayesianos nos permitem fazer inferências sobre os valores reais do parâmetro.
+
+
+```{r fig.width=9, fig.height=3}
+
+# Marca os 90% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_despesas, aes(x = b)) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_90, color = "red")
+)
+
+```
+
+
+As médias das posterioris dos parâmetros de interceptação e inclinação, $a$ & $b$, refletem a tendência média posterior na relação entre despesas com bens duráveis e despesas com itens pessoais. Em contraste, as _posterioris_ completas de $a$ e $b$ refletem a gama de parâmetros plausíveis, portanto, incerteza posterior na tendência.
+
+Vamos plotar os gráficos contra a linha de tendência média e outro com as primeiras linhas de tendências média de nossa cadeia de Markov:
+
+```{r fig.width=9}
+
+# Plota a media da posteriori do modelo de regressao
+
+a <- ggplotly(
+  ggplot(dados_dpt_bensduraveis, aes(x = log(DESPTCP), y = log(DESPDUR))) + 
+     geom_point() + 
+     geom_abline(intercept = mean(cadeias_despesas$a), slope = mean(cadeias_despesas$b), color = "red")
+)
+
+# Visualiza o range dos 20 modelos de regressao da posteriori
+
+b <- ggplotly( 
+  ggplot(dados_dpt_bensduraveis, aes(x = log(DESPTCP), y = log(DESPDUR))) + 
+     geom_point() +
+     geom_abline(intercept = cadeias_despesas$a[1:20], slope = cadeias_despesas$b[1:20], color = "gray", size = 0.25) 
+)
+
+subplot(a, b, nrows = 2)
+
+```
+
+
+## Forecasting a partir do modelo Bayesiano estimado
+
+Podemos utilizar os resultados das estimativas geradas a partir de nosso modelo Bayesiano para responder perguntas específicas como algo do tipo:
+
+_"Qual seria a probabilidade à posteriori se, na média, os gastos com bens duráveis aumentassem para mais de 1,7% por bi doláres para cada 1% de variação nos gastos com despesas pessoais ?"_ Ou seja, qual seria a probabilidade _à posteriori_ se elasticidade dada por $b > 1.7$ ?
+
+Responderemos essa pergunta ao _aproximarmos_ essa probabilidade à proporção dos valores de $b$ na Cadeia de Markov excederem 1.7% usando o nosso dataframe criado ``cadeias_despesas`` com as suas enormes quantidades de iterações para tal finalidade.
+
+```{r fig.width=9, fig.height=3}
+
+# Marca 1.7% na densidade de prob a posteriori para b
+
+ggplotly(
+ggplot(cadeias_despesas, aes(x = b)) + 
+    geom_density() + 
+    geom_vline(xintercept = 1.7, color = "red")
+)
+
+```
+
+Agora, vamos contar quantos valores para o parâmetro $b$ excedem 1,7% na Cadeia de Markov:
+
+```{r}
+
+table(cadeias_despesas$b > 1.7)
+
+paste(round(mean(cadeias_despesas$b > 1.7),4)*100,"%")
+
+```
+
+Concluímos que a área que cobre a curva maior que 1,7% das elasticidades corresponde ao percentual/probabilidade estimada acima.
+
+
+Formulemos outra pergunta, novamente:
+
+- "_Suponha que estejamos interessados em tendências mais gerais presentes na relação entre despesas de bens consumo contra as despesas com gastos pessoais. Gostaríamos de prever a elasticidade dos gastos com bens duráveis frente a um dado nível/valor de gastos pessoais. Se os gastos com despesas pessoais totalizassem 7,668.3 bi de dólares (valor da média), qual seria o nível esperado de gastos em bens de consumo duráveis ? "_
+
+Podemos confirmar que de acordo com as estimativas iniciais que fizemos aqui com os quais os valores estimados dos coeficientes dos modelos para esse nível das despesas pessoais estaria mais relacionado:
+
+
+| Parâmetros    | Modelo Linear | Modelo elast. ($b=$%) | Modelo lognormal ($b=$%)    | Modelo Bayesiano  ($b=$%)   |
+| :------------:|:-------------:| :-------------------:| :-------------------:| :-------------------:|
+| $a$           | `r summary(modelo_linear)$coef[1]` | `r summary(modelo_elasticidades)$coef[1]`| `r summary(modelo_lognormal)$coef[1]`|`r mean(cadeias_despesas$a)`|
+| $b$           |`r summary(modelo_linear)$coef[2]`| `r summary(modelo_elasticidades)$coef[2]`|`r summary(modelo_lognormal)$coef[2]`|`r mean(cadeias_despesas$b)`|
+
+Se fizermos o cálculo para o nível de gastos pessoais de 7,668.3 bi de dólares para cada um dos modelos teríamos:
+
+<center>
+
+$\widehat{Y}_{7668.3} = \widehat{a} + \widehat{b} \times 7668.3$ no modelo linear
+
+</center>
+
+e
+
+<center>
+
+$\widehat{Y}_{7668.3} = e^{\widehat{a} + \widehat{b} \times \overline{ln(DESPTCP)}}$ nos modelos das elasticidades
+
+</center>
+
+&nbsp;
+
+
+| Modelo Linear | Modelo elasticidades | Modelo lognormal     | Modelo Bayesiano     |
+|:-------------:| :-------------------:| :-------------------:| :-------------------:|
+|`r summary(modelo_linear)$coef[1] + summary(modelo_linear)$coef[2]*mean(dados_dpt_bensduraveis$DESPTCP)`| `r exp(summary(modelo_elasticidades)$coef[1]+summary(modelo_elasticidades)$coef[2]*mean(log(dados_dpt_bensduraveis$DESPTCP)))`|`r exp(summary(modelo_lognormal)$coef[1]+summary(modelo_lognormal)$coef[2]*mean(log(dados_dpt_bensduraveis$DESPTCP)))`|`r exp(mean(cadeias_despesas$a) + mean(cadeias_despesas$b)*mean(log(dados_dpt_bensduraveis$DESPTCP)))`|
+
+Note que no modelo linear para um valor de 7,668.3 bi de dólares em gastos com despesas pessoais teríamos cerca de 1.106,4 bi de dólares enquanto nos modelos de elasticidades as diferenças se devem a casas decimais!
+
+Parece que as mudanças se tornam muito pequenas ao observarmos os valores estimados desses parâmetros contra o nosso modelo Bayesiano, mas vamos expor a magnitude desses coeficientes:
+
+Os valores que dispomos em nosso dataset do exemplo apresentado por Gujarati e Porter (2011, p. 179) estão na casa dos bilhões! Obviamente para que possamos fazer uma leitura desses valores, os mesmos foram dividos por 1.000.000 (um milhão). Logo, se pegarmos o valor que perguntamos acima, leríamos US$ 7.668.300.000,00 ou seja, sete bilhões e seiscentos e sessenta e oito milhões e trezentos mil dóletas!
+
+Agora em termos práticos, vamos aplicar esse número monstro em nossos modelos e avaliarmos a magnitude presente nas diferentes previsões com os nossos modelos estimados:
+
+- No Modelo Linear fica $\Downarrow$ 
+
+\begin{equation} 
+\begin{split}
+
+\widehat{Y}_{7,668.3 bi} & = 1106.3866667 \times 1.000.000 = \\
+\widehat{Y}_{7,668.3 bi} & = \mbox{USD} \, 1.106.386.666,70
+
+
+
+\end{split}
+\end{equation}
+
+ou seja, um bilhão e cento e seis milhões e trezentos e oitenta e seis mil e seiscentos e sessenta e seis dólares e setenta cents!
+
+- No Modelo das elasticidades: $\Downarrow$
+
+\begin{equation} 
+\begin{split}
+
+\widehat{Y}_{7,668.3 bi} & = 1104.2734256 \times 1.000.000 = \\
+\widehat{Y}_{7,668.3 bi} & = \mbox{USD} \, 1.104.273.757,00 \Downarrow
+
+\end{split}
+\end{equation}
+
+Um bilhão e cento e quatro milhões e duzentos e setenta e três mil e setecentos e cinquenta e sete dólares
+
+- No Modelo lognormal das elasticidades: $\Downarrow$
+
+\begin{equation} 
+\begin{split}
+
+\widehat{Y}_{7,668.3 bi} & = \mbox{USD} \, 1.104.273.757,00
+
+\end{split}
+\end{equation}
+
+Um bilhão e cento e quatro milhões e duzentos e setenta e três mil e setecentos e cinquenta e sete dólares
+
+- E finalmente em nosso modelo Bayesiano temos:
+
+\begin{equation} 
+\begin{split}
+
+\widehat{Y}_{7,668.3 bi} & = \mbox{USD} \, 1.104.274.573,90
+
+\end{split}
+\end{equation}
+
+
+Um bilhão e cento e quatro milhões e duzentos e setenta e quatro mil e quinhentos e setenta e três dólares e noventa cents!
+
+Resumindo as bufunfas, temos:
+
+- USD 1.104.273.425,60	Elasticidade (Gujarati)
+- USD 1.104.273.757,00	Elast. (lognormal)
+- USD 1.104.274.573,90	Elast. (Bayesiano)
+- USD 1.106.386.666,70	Modelo linear
+
+
+Mas então, abrimos espaço para outra pergunta:
+
+- _Qual dos modelos então é o mais preciso nesse caso ?_
+
+Como visto na Tabela 1 os valores do $R^2$ deram > 90% e da mesma maneira no modelo log-normal das elasticidade o pseudo-$R^2$ também, mas como seria possível construirmos o $R^2$ pro nosso modelo Bayesiano ? 
+
+Para economizarmos um pouco de tempo, considere que se comerçamos nossa comparação pelos modelos de elasticidade (Gujarati e Porter) contra o modelo com correção de erros lognormais, temos uma diferença na ordem dos USD 331,40 entre eles.
+
+No modelo Bayesiano pro modelo de elasticidade de Gujarati e Porter, temos uma diferença de USD 1.148,30 e do nosso modelo Bayesiano pro modelo de elasticidade log-normal temos USD 816,90.
+
+Mas isso ainda não responde a pergunta a respeito da qualidade do ajuste de nosso modelo aos dados do exemplo apresentado por Gujarati e Porter!
+
+Como vimos em relação as diferenças presentes na inferência bayesiana, os valores estimados para a nossa _posteriori_ refletem uma tendência média considerando algumas milhões de amostras geradas (cenários) com as cadeias de Markov para cada possível configuração dos parâmetros estimados para nosso modelo de elasticidade, conhecidos _à priori_ com base em nossa distribuição normal e log-normal previamente esperadas.
+
+No entanto, a incerteza nos valores dos parâmetros se reduz em relação à incerteza neste cálculo de tendência.
+
+Vamos calcular os valores de $R^2$ para o nosso modelo bayesiano de toda forma. Considere que no $R^2$ na abordagem frequentista temos:
+
+\begin{equation} 
+\begin{split}
+
+R^2 & = 1- SQRes/SQTot =\\
+
+R^2 & = 1 - \frac{ \displaystyle{\sum_{i=1}^{n}(y_i - \widehat{y})}^2 }{ \displaystyle{\sum_{i=1}^{n}(y_i - \overline{y})}^2 } 
+
+\end{split}
+\end{equation} 
+
+
+Contra o $R^2$ da abordagem bayesiana temos:
+
+\begin{equation} 
+\begin{split}
+
+\mbox{SQRes} & = var(y-\widehat{y})\\
+
+\mbox{SQTot} & = var(\widehat{y}) + var(y-\widehat{y})\\
+
+R^2_{\mbox{bayesiano}} & = 1 - (\mbox{SQRes} / \mbox{SQTot})
+
+\end{split}
+\end{equation} 
+
+Para maiores esclarecimentos pertinentes as diferenças presentes no cálculo do $R^2$ frequentista contra o $R^2$ bayesiano consulte, [Gelman (2022)](https://statmodeling.stat.columbia.edu/2017/12/21/r-squared-bayesian-regression-models/):
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+The usual definition of R-squared (variance of the predicted values divided by the variance of the data) has a problem for Bayesian fits, as the numerator can be larger than the denominator. We propose an alternative definition similar to one that has appeared in the survival analysis literature: the variance of the predicted values divided by the variance of predicted values plus the variance of the errors. This summary is computed automatically for linear and generalized linear regression models fit using rstanarm, our R package for fitting Bayesian applied regression models with Stan. . . .
+
+</p>
+
+No R chamamos os comandos:
+
+```{r}
+
+ss_res <- var(residuals(modelo_bayesiano_stan ))
+ss_total <- var(fitted(modelo_bayesiano_stan )) + var(residuals(modelo_bayesiano_stan ))
+R_quad <- 1 - (ss_res / ss_total)
+
+paste(round(R_quad*100,2),"%") # R^2 modelo bayesiano
+
+```
+
+Comparando com os valores de $R^2$ dos modelos estimados, temos:
+
+| Modelo Linear | Modelo elasticidades | Modelo lognormal     | Modelo Bayesiano     |
+|:-------------:| :-------------------:| :-------------------:| :-------------------:|
+|`r round(summary(modelo_linear)$r.squared,4)`  | `r round(summary(modelo_elasticidades)$r.squared,4)` | 0.9693 | `r round(R_quad,4)`|
+
+Mas como podemos obter uma estimativa da distribuição de $R^2$ _a posteriori_ para verificar com maior precisão seu real valor ?
+
+```{r}
+
+r2_posteriori <- bayes_R2(modelo_bayesiano_stan)
+summary(r2_posteriori)
+
+```
+
+
+Podemos então olhar para um ``summary()`` para ter uma ideia da distribuição ou criar um intervalo de 95% de confiança (intervalo confiável) usando a função ``quantile``.
+
+```{r}
+
+quantile(r2_posteriori, probs = c(0.025, 0.975)) # Intervalo confiável de 95%
+
+```
+
+Note que aqui existe uma real probabilidade/chance de que os valores verdadeiros de $R^2$ estejam entre os ranges apresentados acima pelo _output_ com 95% de certeza! Já se compararmos os valores de $R^2$ para os modelos frequentistas dificilmente conseguiremos afirmar com esse mesmo nível de precisão de que o valor de $R^2$ é realmente passível dessa inferência. Ou seja, com quantos % de confiança podemos afirmar que o $R^2$ do modelo linear é realmente aquele 0.9713 ?
+
+
+
+### Cenário de múltiplas possibilidades para um _forecasting_ mais realista
+
+Podemos considerar nossas estimativas _à posteriori_ como uma espécie de múltiplos cenários, no qual as diferentes configurações de combinações de parâmetros nos fornecem os possíveis valores reais para as nossas elasticidades.
+
+Tomando nossa pergunta de possibilidade de um valor futuro (provável) para os níveis de despesas com gastos pessoais na ordem dos 7,668.3 bi de dólares, usaremos a saída da simulação do ``RJAGS`` para aproximar a tendência posterior de gastos entre esse valor de sua média histórica a fim de prevermos múltiplos valores a partir das elasticidades para as despesas com bens duráveis, bem como a incerteza posterior nessa tendência.
+
+```{r fig.width=9,fig.height=3 }
+# Calcula a tendencia para cada configuracao de parametros da Cadeia de Markov
+cadeias_despesas <- cadeias_despesas  %>% 
+    mutate(media_DESPTCP = a + b * mean(log(dados_dpt_bensduraveis$DESPTCP ))) # esse valor de 8.944145995 = media(ln(DESPTCP))
+
+head(cadeias_despesas)
+
+# Constroi a densidade da tendencia
+ggplotly(
+ggplot(cadeias_despesas, aes(x = exp( media_DESPTCP ))) + 
+    geom_density(color="blue")
+)
+
+```
+
+Note que o valor no cume da distribuição atinge os mesmos 1104.2745739 que obtivemos antes para essa estimativa.
+
+
+```{r fig.width=9,fig.height=3 }
+
+# Constroi o intervalo confiavel para a tendencia
+quantile( exp(cadeias_despesas$media_DESPTCP), probs = c(0.025, 0.975)) 
+
+```
+
+Essa é a probabilidade com 95% de chance de que o valor das despesas com bens duráveis esteja nesse intervalo quando os gastos com despesas pessoais forem iguais ou próximos ao valor da média histórica de 7,668.3 bi de dólares.
+
+
+Agora para prevermos o valor específico de 7,668.3 bi de dólares nos gastos pessoais levaremos em consideração a variabilidade individual em relação à tendência, modelada por:
+
+$$
+Y_{\mbox{7,668.3 bi}} \sim lognormal(m_{e^{7668.3}}, s^2 )
+$$
+
+Usando este modelo, simularemos previsões de gastos com bens duráveis sob cada conjunto de parâmetros plausíveis posteriores em ``cadeias_despesas``.
+
+```{r }
+
+# Simula e armazena 1 predicao para cada configuracao de parametros
+cadeias_despesas <- cadeias_despesas  %>% 
+    mutate(
+      media_DESPTCP = rnorm(n = 3000000, mean = exp(media_DESPTCP), sd = s)
+           )
+
+# Mostra os 6 primeiros configuracoes de parametros e as previsoes
+head(cadeias_despesas)
+
+```
+
+agora, se construirmos um intervalo confiável para nossa projeção de cenários teremos, que é contempla praticamente o mesmo demonstrado anteriormente, temos:
+
+```{r fig.width=9, fig.height=3  }
+
+# Constroi um intervalo confiavel para a previsao a posteriori
+ci_media_DESPTCP <- quantile( cadeias_despesas$media_DESPTCP, probs = c(0.025, 0.975))
+ci_media_DESPTCP
+
+# Constroi o grafico da densidade de prob das projecoes da posteriori 
+ggplotly(
+ggplot(cadeias_despesas, aes(x = media_DESPTCP ) ) + 
+    geom_density(color="blue") + 
+    geom_vline(xintercept = ci_media_DESPTCP, color = "red")
+)
+
+```
+
+
+
+```{r fig.width=9, fig.height=3  }
+
+# Visualiza o intervalo confiavel num scatterplot dos dados
+
+ggplotly(
+ggplot(dados_dpt_bensduraveis, aes(x = DESPTCP, y = DESPDUR)) + 
+    geom_point() + 
+#   geom_abline(data = cadeias_despesas, mapping = aes(slope = media_DESPTCP, intercept = media_DESPTCP, color="red")) +
+    geom_abline(intercept = -677.8844, # Com base no modelo Bayesiano definido a priori (veja apendice)
+                slope = 0.2327,
+                color = "red") + 
+    geom_segment(x = 7668.3, xend = 7668.3, y = ci_media_DESPTCP[1], yend = ci_media_DESPTCP[2], color = "blue")
+)
+
+```
+
+O gráfico da densidade de probabilidade dos 3 milhões de previsões plausíveis para o cenário _à posteriori_ nos apresenta os ranges de possibilidades de que com 95% de chances os valores de gastos com bens duráveis se encontrem. 
+
+A linha vertical no gráfico de dispersão de pontos representa os limites inferior e superior para o nosso intervalo confiável de plausíveis valores estimados para os gastos com bens duráveis quando os gastos com despesas pessoais estiver em sua média histórica de 7.668,3 bi de dólares.
+
+
+
+
+
+
+# Apêndice
+
+## Modelo Bayesiano linear
+
+```{r}
+
+modelo_bayesiano_linear <- "model{ 
+# Verossimilhanca de Y[i]
+           for(i in 1:length(Y)) {      
+               Y[i] ~ dnorm(m[i], s^(-2)) 
+               m[i] <- a + b * X[i]   
+                }    
+# Prioris de a, b, s   
+a ~ dnorm(0, 1100^(-2)) 
+b ~ dnorm(0.233, 0.011^(-2))
+s ~ dunif(0, 70)
+}"
+
+```
+
+
+```{r fig.width=9, fig.height=9}
+
+modelo_jags <- jags.model(textConnection(modelo_bayesiano_linear),
+                          data = list(X = dados_dpt_bensduraveis$DESPTCP,
+                                      Y = dados_dpt_bensduraveis$DESPDUR),
+                          inits = list(.RNG.name = "base::Wichmann-Hill", .RNG.seed = 2018))
+
+# SIMULA a posteriori     
+modelo_sim_linear_big <- coda.samples(model = modelo_jags,
+                               variable.names = c("a", "b", "s"),
+                               n.iter = 3000000) # 3 milhoes de simulacoes
+
+summary(modelo_sim_linear_big) # Resultado do modelo a posteriori simulado
+
+plot(modelo_sim_linear_big)
+
+cadeias_modelo_linear_bayes <- data.frame(modelo_sim_linear_big[[1]], iter = 1:3000000)
+
+head(cadeias_modelo_linear_bayes)
+
+# Calcula o intervalo confiavel da posteriori de 95% para b 
+ci_95 <- quantile(cadeias_modelo_linear_bayes$b, probs = c(0.025, 0.975))
+ci_95
+
+```
+
+
+```{r fig.width=9, fig.height=3}
+
+# Marca os 90% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = b)) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95, color = "red")
+)
+
+```
+
+
+
+```{r fig.width=9, fig.height=3}
+
+# Visualiza o range dos 20 modelos de regressao da posteriori
+
+ggplotly( 
+  ggplot(dados_dpt_bensduraveis, aes(x = DESPTCP, y = DESPDUR)) + 
+     geom_point() +
+     geom_abline(intercept = cadeias_modelo_linear_bayes$a[1:20], slope = cadeias_modelo_linear_bayes$b[1:20], color = "gray", size = 0.25) 
+)
+
+```
+
+
+
+
+
+
+
+### Cenário OOS  
+
+Considere agora a seguinte configuração pros próximos trimestres para fora do que dispomos na amostra dada no exemplo de Gujarati e Porter:
+
+```{r}
+
+cenario_OOS <- data.frame(
+  Ano_Trimestre = c(
+    "2006-IV", 
+    "2007-I",
+    "2007-II",
+    "2007-III",
+    "2007-IV"
+  ),
+  DESPTCP = c(
+    8200.1,
+    8311.4,
+    8500.2,
+    8620.5,
+    8710.7
+ )
+  
+)
+
+# Calcula a tendencia para cada configuracao de parametros da Cadeia de Markov
+cadeias_modelo_linear_bayes <- cadeias_modelo_linear_bayes  %>% 
+    mutate(
+      DESPDUR_2006_IV  = a + b *cenario_OOS$DESPTCP[1],
+      DESPDUR_2007_I   = a + b *cenario_OOS$DESPTCP[2],    
+      DESPDUR_2007_II  = a + b *cenario_OOS$DESPTCP[3],
+      DESPDUR_2007_III = a + b *cenario_OOS$DESPTCP[4],
+      DESPDUR_2007_IV  = a + b *cenario_OOS$DESPTCP[5]    
+           ) 
+
+
+head(cadeias_modelo_linear_bayes)
+
+```
+
+Quais seriam então os valores projetados para fora da amostra, dado que consideramos aqui em nosso cenário aumentos lineares sucessivos no consumo pessoal ?
+
+```{r fig.width=9, fig.height=3}
+
+# Constroi o intervalo confiavel de 95% para a tendencia projetada de cada trimestre
+
+ci_95_DESPDUR_2006_IV <- quantile( cadeias_modelo_linear_bayes$DESPDUR_2006_IV, probs = c(0.025, 0.5, 0.975)) # Se DESPTCP = 8200.1
+ci_95_DESPDUR_2006_IV
+
+# Marca os 95% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = DESPDUR_2006_IV )) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95_DESPDUR_2006_IV, color = "red")+
+  ggtitle("Range de 95% da previsão de DESPDUR prevista pra 2006-IV")
+)
+
+mean(cadeias_modelo_linear_bayes$DESPDUR_2006_IV) # Valor da tendência projetada para DESPDUR em 2006-IV
+
+
+ci_95_DESPDUR_2007_I <- quantile( cadeias_modelo_linear_bayes$DESPDUR_2007_I, probs = c(0.025, 0.5, 0.975))  # Se DESPTCP = 8311.4
+ci_95_DESPDUR_2007_I
+
+# Marca os 95% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = DESPDUR_2007_I )) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95_DESPDUR_2007_I, color = "red")+
+  ggtitle("Range de 95% da previsão de DESPDUR prevista pra 2007-I")
+)
+
+mean(cadeias_modelo_linear_bayes$DESPDUR_2007_I) # Valor da tendência projetada para DESPDUR em 2007-I
+
+ci_95_DESPDUR_2007_II <- quantile( cadeias_modelo_linear_bayes$DESPDUR_2007_II, probs = c(0.025, 0.5, 0.975)) # Se DESPTCP = 8500.2
+ci_95_DESPDUR_2007_II
+
+# Marca os 95% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = DESPDUR_2007_II )) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95_DESPDUR_2007_II, color = "red")+
+  ggtitle("Range de 95% da previsão de DESPDUR prevista pra 2007-II")
+)
+
+mean(cadeias_modelo_linear_bayes$DESPDUR_2007_II) # Valor da tendência projetada para DESPDUR em 2007-II
+
+
+ci_95_DESPDUR_2007_III <- quantile( cadeias_modelo_linear_bayes$DESPDUR_2007_III, probs = c(0.025, 0.5, 0.975))# Se DESPTCP = 8620.5
+ci_95_DESPDUR_2007_III
+
+# Marca os 95% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = DESPDUR_2007_III )) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95_DESPDUR_2007_III, color = "red")+
+  ggtitle("Range de 95% da previsão de DESPDUR prevista pra 2007-III")
+)
+
+mean(cadeias_modelo_linear_bayes$DESPDUR_2007_III) # Valor da tendência projetada para DESPDUR em 2007-III
+
+ci_95_DESPDUR_2007_IV <- quantile( cadeias_modelo_linear_bayes$DESPDUR_2007_IV, probs = c(0.025, 0.5, 0.975)) # Se DESPTCP = 8710.7
+
+ci_95_DESPDUR_2007_IV
+
+# Marca os 95% do intervalo confiável 
+ggplotly(
+ggplot(cadeias_modelo_linear_bayes, aes(x = DESPDUR_2007_IV )) + 
+    geom_density() + 
+    geom_vline(xintercept = ci_95_DESPDUR_2007_IV, color = "red")+
+  ggtitle("Range de 95% da previsão de DESPDUR para 2007-IV")
+)
+
+```
+
+
+
+
+
+
+
+<!-- Next Section---------------------------------------------------------------------------------------------------------- --> 
+
+<!-- comment -----------------------------------------------------------------------------------------------------------------> 
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+# Referências
+
+***
+
+Clyde, _et. alli_, **An Introduction to Bayesian Thinking: A Companion to the Statistics with R Course**, BookDown, 2021 Disponível em https://statswithr.github.io/book/ 
+
+Datacamp, **Bayesian Modeling with RJAGS**, in [datacamp]([Course link](https://app.datacamp.com/learn/courses/bayesian-modeling-with-rjags))
+
+Lucambio, F. _apud_ A. Ian McLeod, Hao Yu, Esam Mahdi **Time Series Analysis with R**, Disponível em:  http://leg.ufpr.br/~lucambio/CE017/20192S/tsar.pdf , Department of Statistical and Actuarial Sciences, The University of Western Ontario, London, Ont., Canada N6A 5B7.
+
+Gelman, A. **R-squared for Bayesian regression models** post in [Statistical Modeling, Causal Inference, and Social Science](https://statmodeling.stat.columbia.edu/2017/12/21/r-squared-bayesian-regression-models/)
+
+Gujarati, D., N., Porter, D. **Econometria Básica**, 5ª edição, São Paulo, McGrawlHill Bookman, 2011. Disponível para free download em: https://br1lib.org/book/3409735/6b46db
+
+Kruschke, J. **Doing Bayesian Data Analysis: A Tutorial with R, JAGS, and Stan**, 2 edition, 2015, Disponível para free download em: https://br1lib.org/book/2516328/c2f67b
+
+&nbsp;
+
+&nbsp;
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+***
+
+## R packages
+
+***
+
+&nbsp;
+
+&nbsp;
+
+
+```{r}
+
+citation(package = "rjags")
+
+citation(package = "logNormReg")
+
+citation(package = "mosaic")
+
+citation(package = "openintro")
+
+citation(package = "dplyr")
+
+citation(package = "plotly")
+
+citation(package = "ggplot2")
+
+citation(package = "ggridges")
+
+```
+
+
+
+
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+```{r}
+
+Sys.time()
+
+# Execution timing
+
+Sys.time() - start_time
+
+
+
+```
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
