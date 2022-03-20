@@ -470,7 +470,89 @@ A ``tear-production`` está basicamente dizendo que se encontrarmos que se ela f
 Então há uma associação notável para observarmos; e 12 sendo quase metade desse conjunto de dados é realmente impactante no todo. Assim podemos ver a associação a ser classificada e com grau de confiança temos .1 uma vez que estão classificadas por nível de confiança, podemos ver que concordamos totalmente e achamos que está correto.
 
 
+***
 
+## Utilizando o algoritmo apriori em Market Basket Analisys
+
+O algoritmo apriori é usado para encontrar conjuntos de itens frequentes em um conjunto de dados para mineração de regras de associação. Chama-se Apriori porque usa o conhecimento prévio das propriedades frequentes do conjunto de itens. Aplicamos uma abordagem iterativa ou busca em nível em que conjuntos de itens k-frequentes são usados ​​para encontrar conjuntos de itens k+1.
+
+Para melhorar a eficiência da geração de conjuntos de itens frequentes, uma propriedade importante é usada, chamada de propriedade Apriori, que ajuda a reduzir o espaço de busca.
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+Propriedade Apriori: Todos os subconjuntos não vazios de um conjunto de itens frequente devem ser frequentes. Apriori assume que todos os subconjuntos de um itemset frequente devem ser frequentes (propriedade Apriori). Se um conjunto de itens for infrequente, todos os seus superconjuntos serão infrequentes.
+
+</p>
+
+Essencialmente, o algoritmo Apriori pega cada parte de um conjunto de dados maior e o contrasta com outros conjuntos de alguma forma ordenada. As pontuações resultantes são usadas para gerar conjuntos que são classificados como aparências frequentes em um banco de dados maior para coleta de dados agregados. Em um sentido prático, pode-se ter uma ideia melhor do algoritmo olhando para aplicativos como uma Ferramenta de Cesta de Mercado que ajuda a descobrir quais itens são comprados juntos em uma cesta de mercado, ou uma ferramenta de análise financeira que ajuda a mostrar como vários ações tendem juntos. O algoritmo Apriori pode ser usado em conjunto com outros algoritmos para classificar e contrastar dados de forma eficaz para mostrar uma imagem muito melhor de como sistemas complexos refletem padrões e tendências.
+
+```{r}
+
+library(arules)
+library(arulesViz)
+library(RColorBrewer)
+
+```
+
+
+O dataset ``Groceries`` possui dados referentes a cestas de consumo de alimentos e compras em supermercados:
+
+```{r}
+
+data("Groceries")
+
+head(Groceries)
+
+glimpse(Groceries)
+
+str(Groceries)
+
+```
+
+
+A função ``apriori()`` está embutida no R para minerar conjuntos de itens frequentes e regras de associação usando o algoritmo Apriori. Aqui, ``Groceries`` são os dados da transação. ``parameter`` é uma lista nomeada que especifica o suporte e os mínimos graus de confiança para localizar as regras de associação. O comportamento padrão é minerar as regras com suporte mínimo de 0,1 e 0,8 como a confiança mínima. Aqui, especificamos o suporte mínimo como 0,01 e a confiança mínima como 0,2.
+
+```{r}
+
+regras <- apriori(Groceries, parameter = list(supp = 0.01, conf = 0.2))
+
+```
+
+
+A função ``inspect()`` fornece a representação interna de um objeto R ou o resultado de uma expressão. Aqui, ele exibe as primeiras 10 regras de associação mais fortes.
+
+```{r}
+
+inspect(regras[1:10])
+
+```
+
+
+
+``itemFrequencyPlot()`` cria um gráfico de barras para frequências de itens/suporte. Ele cria um gráfico de barras de frequência de itens para inspecionar a distribuição de objetos com base nas transações. Os itens são plotados ordenados por suporte decrescente. Aqui, ``topN=20`` significa que 20 itens com a maior frequência/elevação de itens serão plotados.
+
+```{r fig.width=9}
+
+arules::itemFrequencyPlot(Groceries, topN = 20,
+                          col = brewer.pal(8, 'Pastel2'),
+                          main = 'Gráfico de Frequência Relativa do Item',
+                          tipo = "relativo",
+                          ylab = "Frequência do item (relativa)")
+
+```
+
+
+Usamos o conjunto de dados ``Groceries`` que possui cerca de 9835 transações que incluem ``n`` número de itens que foram comprados juntos na loja. Ao executar o algoritmo Apriori sobre o conjunto de dados com um valor de suporte mínimo de 0,01 e confiança mínima de 0,2, filtramos as regras de associação forte nas transações. Listamos as 10 primeiras transações acima, juntamente com o gráfico de caixa dos 20 principais itens com a maior frequência relativa de itens. Algumas regras de associação que podemos concluir deste programa são: 
+
+ - Se o queijo (``hard cheese``) for comprado, o leite integral também será comprado.
+ - Se o ``buttermilk`` é comprado, o leite integral também é comprado com ele.
+ - Se o ``buttermilk`` for comprado, outros vegetais também serão comprados juntos.
+ 
+Além disso, o leite integral tem alto suporte, bem como um valor de confiança. Portanto, será lucrativo colocar o 'leite integral' em uma prateleira visível e acessível, pois é um dos itens mais comprados.
+
+Além disso, perto da prateleira onde o 'leite' é colocado, deve haver prateleiras para 'leite integral' e 'outros vegetais', pois seu valor de confiança é bastante alto. Portanto, há uma probabilidade maior de comprá-los junto com o ``buttermilk``. Assim, com ações semelhantes, podemos almejar aumentar as vendas e os lucros da mercearia/supermercado analisando os padrões de compra dos usuários.
 
 
 # Exercício 2
