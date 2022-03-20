@@ -197,6 +197,10 @@ Tutoriais disponíveis:
 
 *** 
 
+&nbsp;
+
+### *AAS Algoritmos para Ciência de Dados*
+
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }

@@ -1,0 +1,711 @@
+---
+title: "Disciplina Algoritmos para Ciência de Dados com Weka + R"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: hide
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+```{r}
+
+start_time <- Sys.time()
+#start_time
+
+```
+
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Resolução da atividade da disciplina Algoritmos para Ciência de Dados  </strong> 
+  
+</div>
+
+***
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+
+Solução da AAS conforme print a seguir
+
+
+</p>
+
+</center>
+
+***
+
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+<!-- comment ----------------------------------------------------------------------------------------------------------------- --> 
+<!-- Next Section-------------------------------------------------------------------------------------------------------------- --> 
+
+
+# Preview da AAS
+
+![](https://github.com/rhozon/datasets/raw/master/aas_preview_algo_cd_cruzeiro.png)
+
+```{r echo = FALSE}
+
+library(dplyr)
+library(tidyverse)
+library(broom)
+library(lubridate)
+library(plotly)
+library(ggplot2)
+
+```
+
+
+# Reprodução da vídeoaula com o dataset ``A4``
+
+O preview do primeiro dataset pode ser visto conforme segue:
+
+```{r, echo=FALSE}
+
+A4 <- read.csv(file = "https://raw.githubusercontent.com/rhozon/datasets/master/A4.csv", header = TRUE, sep = ",")
+
+glimpse(A4)
+
+```
+
+
+Faremos aqui então uma experimentação variando os números de clusters de 1 a 10 e printaremos aqui seus resultados:
+
+ - Iniciando com somente 1 cluster no algoritmo kmeans clustering:
+ 
+&nbsp;
+
+&nbsp;
+ 
+ ![](https://github.com/rhozon/datasets/raw/master/cluster1_weka.png)
+&nbsp;
+
+&nbsp;
+
+ - Agora com 2 clusters:
+ 
+&nbsp;
+
+&nbsp;
+ 
+ ![](https://github.com/rhozon/datasets/raw/master/cluster2_weka.png)
+&nbsp;
+
+&nbsp;
+
+ - Com 3 clusters:
+ 
+&nbsp;
+
+&nbsp;
+ 
+ ![](https://github.com/rhozon/datasets/raw/master/cluster3_weka.png)
+
+&nbsp;
+
+&nbsp;
+
+Importante prestarmos atenção no valor da Soma dos Quadrados dos Erros...
+ 
+- Com 4 clusters:
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/cluster4_weka.png)
+
+&nbsp;
+
+&nbsp;
+
+
+Podemos visualizar os clusters nas instâncias que fecham o acordo (azul) x as que não fecham (vermelho):
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/instancias_fecham_x_nfecham_cluster4.png)
+
+
+&nbsp;
+
+&nbsp;
+
+E finalmente, conforme mencionado pelo prof. na vídeo-aula, com k=7 esperamos o número ótimo de clusters:
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/clusters_otimos_k7_weka.png)
+
+&nbsp;
+
+&nbsp;
+
+
+O padrão dos clusters com as alterações no jitter para k = 7 ficam:
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/clusters_k7_jitter.png)
+
+&nbsp;
+
+&nbsp;
+
+
+Note que como as escalas de cores não ficaram muito misturadas ainda, com k=7 para os que fecharam ou não acordo (acima e abaixo) notamos que com esse número ótimo de clusters (7), é possível distinguirmos com clareza os grupos.
+
+Como recomendação do professor utilizaremos o k=15 e visualizaremos os resultados:
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/clusters_k15_weka_jitter.png)
+
+&nbsp;
+
+&nbsp;
+
+Notamos, que com k=15, a distinção entre os grupos fica mais difícil uma vez que o esquema de cores abaixo começa a se misturar em pelo menos em 3 gradações diferentes.
+
+
+# Estimativa do número ótimo de clusters no R
+
+Para economizarmos tempo, executamos no R o gráfico do teste que nos demonstra qual seria o número ótimo de clusters no algoritmo K-Means: (na vídeo aula o professor comenta de k=7, para o RMS acumulado do modelo)
+
+
+```{r }
+
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+
+```
+
+
+Rodando o algoritmo com k=7, temos a estimativa:
+
+```{r}
+
+k7 <- kmeans(scale(A4), centers = 7, nstart = 25) # nstart = 25 fornece 25 configurações iniciais e fornece a ótima
+str(k7)
+
+```
+
+Se printarmos os resultados veremos os agrupamentos dos 7 clusters de tamanhos 534 a 679:
+
+```{r}
+
+k7
+
+```
+
+Vemos os centros de cluster (médias) para os sete grupos nas seis variáveis (Idade, Atraso, Valor, CONTATO, EFETIVO, Acordo). Também obtemos a atribuição de cluster para cada observação (ou seja, a obs 1 foi atribuído ao cluster a, a obs 2 foi atribuído ao cluster 6, a terceira no cluster 6, a quarta no 2 e assim sucessivamente).
+
+Também podemos visualizar nossos resultados usando ``fviz_cluster.`` Isso fornece uma boa ilustração dos clusters. Se houver mais de duas dimensões (variáveis), o ``fviz_cluster`` realizará a análise de componentes principais (PCA) e plotará os pontos de dados de acordo com os dois primeiros componentes principais que explicam a maior parte da variância.
+
+```{r fig.width=9}
+
+ggplotly(
+fviz_cluster(k7, data = scale(A4))
+)
+
+```
+
+
+Como o número de clusters (k) deve ser definido antes de iniciarmos o algoritmo, geralmente é vantajoso usar vários valores diferentes de k e examinar as diferenças nos resultados. Podemos executar o mesmo processo para 6, 7 e 8 clusters, e os resultados são mostrados na figura:
+
+```{r fig.width=9}
+
+k5 <- kmeans(scale(A4), centers = 5, nstart = 25)
+k6 <- kmeans(scale(A4), centers = 6, nstart = 25)
+k7 <- kmeans(scale(A4), centers = 7, nstart = 25)
+k8 <- kmeans(scale(A4), centers = 8, nstart = 25)
+
+# plots to compare
+p1 <- fviz_cluster(k5, geom = "point",  data = scale(A4)) + ggtitle("k = 5")
+p2 <- fviz_cluster(k6, geom = "point",  data = scale(A4)) + ggtitle("k = 6")
+p3 <- fviz_cluster(k7, geom = "point",  data = scale(A4)) + ggtitle("k = 7")
+p4 <- fviz_cluster(k8, geom = "point",  data = scale(A4)) + ggtitle("k = 8")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+```
+
+Embora essa avaliação visual nos diga onde ocorrem as verdadeiras dilineações (ou não ocorrem, como os clusters 2 e 4 no gráfico k = 8) entre os clusters, ela não nos diz qual é o número ideal de clusters.
+
+O conhecido gráfico de cotovelo estimado pela expressão:
+
+$$
+minimizar\Bigg(\sum^k_{k=1}W(C_k)\Bigg) \tag{equação cotovelo}
+$$
+
+onde $C_k = k-$ésimo cluster e o $W(C_k)$ a variação intra-cluster. A soma do quadrado total dentro do cluster (wss) mede a compacidade do cluster e o que esperamos que seja o menor possível.
+
+
+```{r}
+
+set.seed(123)
+
+# função para obter o total de soma quadrática intra-clusters
+wss <- function(k) {
+  kmeans(scale(A4), k, nstart = 10 )$tot.withinss
+}
+
+k.values <- 1:15
+
+# extrai wss para os clusters 2 a 15 
+
+wss_values <- map_dbl(k.values, wss)
+
+as_tibble(wss_values)
+
+```
+
+
+
+
+```{r fig.width=9}
+
+set.seed(123)
+
+fviz_nbclust(scale(A4), kmeans, method = "wss")
+
+```
+
+
+Como visto no gráfico acima ainda não nos parece tão nítido qual seria o ponto visualmente identificável da quebra do cotovelo. Utilizaremos a conhecida abordagem de silhueta média para tal procedimento.
+
+Resumidamente, a abordagem de silhueta média mede a qualidade de um agrupamento. Ou seja, determina quão bem cada objeto está dentro de seu cluster. Uma largura de silhueta média alta indica um bom agrupamento. O método da silhueta média calcula a silhueta média das observações para diferentes valores de $k$. O número ótimo de clusters $k$ é aquele que maximiza a silhueta média em um intervalo de valores possíveis para $k$.
+
+```{r fig.width=9}
+
+fviz_nbclust(scale(A4), kmeans, method = "silhouette")
+
+```
+
+
+Visualizando os resultados nos clusters com o k sugerido temos:
+
+```{r fig.width=9}
+
+final <- kmeans(scale(A4), 9, nstart = 25)
+
+fviz_cluster(final, data = scale(A4))
+
+```
+
+E podemos extrair os clusters e adicionar aos nossos dados iniciais para fazer algumas estatísticas descritivas no nível do cluster:
+
+
+```{r}
+
+A4 %>%
+  mutate(Cluster = final$cluster) %>%
+  group_by(Cluster) %>%
+  summarise_all("mean")
+
+```
+
+
+# Exercício 1 
+
+
+Para rodarmos o algoritmo apriori no Weka fazemos a seleção do arquivo de exemplo do Weka ``contact-lenses.ARFF`` localmente e então optamos pelos algoritmos de associção na aba conforme demonstram as figuras a seguir:
+
+![](https://github.com/rhozon/datasets/raw/master/carrega_dados_ex_weka.png)
+
+Como optamos por utilizar outro dataset e não o ``A4.csv`` para rodarmos o algoritmo apriori apontaremos as principais formas de interpretações dos resultados gerados por esse algoritmo de associação:
+
+![](https://github.com/rhozon/datasets/raw/master/carrega_dados_exemplo_weka.png)
+
+Como todas as variáveis/atributos aqui não são numéricas, selecionamos na aba Associate o algoritmo apriori:
+
+![](https://github.com/rhozon/datasets/raw/master/associate_apriori_weka.png)
+
+O output gerado após darmos Ok na tela anterior e clicarmos em Start pelo Weka é:
+
+```{r eval=FALSE }
+
+=== Run information ===
+
+Scheme:       weka.associations.Apriori -N 10 -T 0 -C 0.9 -D 0.05 -U 1.0 -M 0.1 -S -1.0 -c -1
+Relation:     contact-lenses
+Instances:    24
+Attributes:   5
+              age
+              spectacle-prescrip
+              astigmatism
+              tear-prod-rate
+              contact-lenses
+=== Associator model (full training set) ===
+
+
+Apriori
+=======
+
+Minimum support: 0.2 (5 instances)
+Minimum metric <confidence>: 0.9
+Number of cycles performed: 16
+
+Generated sets of large itemsets:
+
+Size of set of large itemsets L(1): 11
+
+Size of set of large itemsets L(2): 21
+
+Size of set of large itemsets L(3): 6
+
+Best rules found:
+
+ 1. tear-prod-rate=reduced 12 ==> contact-lenses=none 12    <conf:(1)> lift:(1.6) lev:(0.19) [4] conv:(4.5)
+ 2. spectacle-prescrip=myope tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 3. spectacle-prescrip=hypermetrope tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 4. astigmatism=no tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 5. astigmatism=yes tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 6. contact-lenses=soft 5 ==> astigmatism=no 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 7. contact-lenses=soft 5 ==> tear-prod-rate=normal 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 8. tear-prod-rate=normal contact-lenses=soft 5 ==> astigmatism=no 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 9. astigmatism=no contact-lenses=soft 5 ==> tear-prod-rate=normal 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+10. contact-lenses=soft 5 ==> astigmatism=no tear-prod-rate=normal 5    <conf:(1)> lift:(4) lev:(0.16) [3] conv:(3.75)
+
+
+```
+
+O print do Weka segue:
+
+![](https://github.com/rhozon/datasets/raw/master/results_apriori_weka.png)
+
+Vamos nos atentar ao final do output gerado pelo apriori nas regras de associação.
+
+```{r eval=FALSE}
+
+Best rules found:
+
+ 1. tear-prod-rate=reduced 12 ==> contact-lenses=none 12    <conf:(1)> lift:(1.6) lev:(0.19) [4] conv:(4.5)
+ 2. spectacle-prescrip=myope tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 3. spectacle-prescrip=hypermetrope tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 4. astigmatism=no tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 5. astigmatism=yes tear-prod-rate=reduced 6 ==> contact-lenses=none 6    <conf:(1)> lift:(1.6) lev:(0.09) [2] conv:(2.25)
+ 6. contact-lenses=soft 5 ==> astigmatism=no 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 7. contact-lenses=soft 5 ==> tear-prod-rate=normal 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 8. tear-prod-rate=normal contact-lenses=soft 5 ==> astigmatism=no 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+ 9. astigmatism=no contact-lenses=soft 5 ==> tear-prod-rate=normal 5    <conf:(1)> lift:(2) lev:(0.1) [2] conv:(2.5)
+10. contact-lenses=soft 5 ==> astigmatism=no tear-prod-rate=normal 5    <conf:(1)> lift:(4) lev:(0.16) [3] conv:(3.75)
+
+```
+
+Se tormarmos a primeira regra de associação que nos mostra que 
+
+```{r eval=FALSE}
+
+ 1. tear-prod-rate=reduced 12 ==> contact-lenses=none 12    <conf:(1)> lift:(1.6) lev:(0.19) [4] conv:(4.5)
+
+```
+
+A ``tear-production`` está basicamente dizendo que se encontrarmos que se ela for reduzida então 12 dessas instâncias não terão consequências em ``contact-lenses``.
+
+Então há uma associação notável para observarmos; e 12 sendo quase metade desse conjunto de dados é realmente impactante no todo. Assim podemos ver a associação a ser classificada e com grau de confiança temos .1 uma vez que estão classificadas por nível de confiança, podemos ver que concordamos totalmente e achamos que está correto.
+
+
+
+
+
+# Exercício 2
+
+Utilizando o dataset ``iris``, muito populamente conhecida chamamos:
+
+
+```{r}
+
+data(iris)
+
+iris <- iris %>%
+  rename(
+    variety = "Species" # Renomeio de Species para variety
+
+  )
+
+glimpse(iris)
+
+```
+
+
+Começando nosso exercício com o Weka:
+
+
+&nbsp;
+
+&nbsp;
+
+![](https://github.com/rhozon/datasets/raw/master/carrega_iris_weka.png)
+
+&nbsp;
+
+&nbsp;
+
+
+Em seguida clicamos aba Cluster > Choose > KMeans > Start. Vamos inserir a sequência de prints com os previews de combinações de k para plotarmos o gráfico do número ótimo de clusters pela Soma dos Erros ao quadrado.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=1$ com RMS = 141.1661
+
+![](https://github.com/rhozon/datasets/raw/master/k1_iris_weka.png)
+
+&nbsp;
+
+&nbsp;
+
+ - $k=2$ com RMS = 62.1277
+
+![](https://github.com/rhozon/datasets/raw/master/k2_iris_weka.png)
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=3$ com RMS = 7.8015
+
+![](https://github.com/rhozon/datasets/raw/master/k3_iris_weka.png)
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=4$ com RMS = 6.5979
+
+
+![](https://github.com/rhozon/datasets/raw/master/k4_iris_weka.png)
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=5$ com RMS = 6.2776
+
+
+![](https://github.com/rhozon/datasets/raw/master/k5_iris_weka.png)
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=6$ com RMS = 6.5159
+
+
+![](https://github.com/rhozon/datasets/raw/master/k6_iris_weka.png)
+
+
+
+&nbsp;
+
+&nbsp;
+
+ - $k=7$ com RMS = 5.2176
+
+
+![](https://github.com/rhozon/datasets/raw/master/k7_iris_weka.png)
+
+
+
+&nbsp;
+
+&nbsp;
+
+
+
+Logo se utilizarmos a inspeção visual pelos resultados das Somas Totais dos Erros Quadráticos gerados pelo Weka teríamos:
+
+```{r fig.width=9}
+
+RMS_grafico <- data.frame(
+  k = c(1, 2, 3, 4, 5, 6, 7),
+  RMS = c(141.1661, 62.1277,  7.8015,  6.5979, 6.2776, 6.5159, 5.2176)
+)
+
+ggplotly(
+  ggplot(RMS_grafico, aes(x = k,
+                          y = RMS)) + 
+    geom_line() + geom_point() + 
+    geom_vline(xintercept = 3, color = "blue", linetype = "dashed") + 
+    ggtitle("Gráfico de parada do algoritmo kmeans para a quantidade ótima (k) de clusters geradas com o Weka")  +
+  theme(plot.title = element_text(size = 8, face = "bold"))
+)
+
+
+```
+
+Veja que o decaimento do Erro RMS se inicia bruscamente a partir do segundo pro terceiro cluster.
+
+
+Podemos resumir os valores estimados da Soma Quadrática dos Erros com o R:
+
+```{r  }
+
+set.seed(123)
+
+iris <- iris %>%
+  select(
+    -variety
+  )
+
+# função para obter o total de soma quadrática intra-clusters
+wss <- function(k) {
+  kmeans(scale(iris), k, nstart = 10 )$tot.withinss
+}
+
+k.values <- 1:10
+
+# extrai wss para os clusters 2 a 15 
+
+wss_values <- map_dbl(k.values, wss)
+
+as_tibble(wss_values)
+
+```
+
+
+
+
+```{r fig.width=9}
+
+set.seed(123)
+
+fviz_nbclust(scale(iris), kmeans, method = "wss")
+
+fviz_nbclust(scale(iris), kmeans, method = "silhouette")
+
+```
+
+
+
+Note, que tanto no Weka quanto no R, notamos que o critério ótimo de parada do algoritmo KMeans parece estar entre 2 a 3 clusters para o dataset ``iris``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+# Referências
+
+***
+
+
+
+**How to use R in Weka** in
+https://riptutorial.com/weka/topic/7916/how-to-use-r-in-weka acesso em Março de 2022.
+
+
+**Apriori Algorithm in R Programming** in https://www.geeksforgeeks.org/apriori-algorithm-in-r-programming/
+
+***
+
+
+
+
