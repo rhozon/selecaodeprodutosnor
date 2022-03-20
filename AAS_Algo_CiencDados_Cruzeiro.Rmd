@@ -5,7 +5,6 @@ date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
 output: 
   html_document:
     df_print: paged
-    code_folding: hide
     toc: true
     toc_float:
       collapsed: true
@@ -503,33 +502,53 @@ O dataset ``Groceries`` possui dados referentes a cestas de consumo de alimentos
 
 data("Groceries")
 
-head(Groceries)
+summary(Groceries)
 
-glimpse(Groceries)
-
-str(Groceries)
+Groceries@itemInfo[1:20,]
 
 ```
 
 
-A função ``apriori()`` está embutida no R para minerar conjuntos de itens frequentes e regras de associação usando o algoritmo Apriori. Aqui, ``Groceries`` são os dados da transação. ``parameter`` é uma lista nomeada que especifica o suporte e os mínimos graus de confiança para localizar as regras de associação. O comportamento padrão é minerar as regras com suporte mínimo de 0,1 e 0,8 como a confiança mínima. Aqui, especificamos o suporte mínimo como 0,01 e a confiança mínima como 0,2.
+Como esse dataset nos fornece as transações de um produto a outro, veremos com o código a seguir da 10ª a 20ª tranção do conjunto de dados Groceries.
 
 ```{r}
 
-regras <- apriori(Groceries, parameter = list(supp = 0.01, conf = 0.2))
+apply(Groceries@data[,10:20],2,function(r)    paste(Groceries@itemInfo[r,"labels"],collapse=", "))
+
+```
+
+
+A função ``apriori()`` está embutida no R para minerar conjuntos de itens frequentes e regras de associação usando o algoritmo Apriori. Aqui, ``Groceries`` são os dados da transação. ``parameter`` é uma lista nomeada que especifica o suporte e os mínimos graus de confiança para localizar as regras de associação. O comportamento padrão é minerar as regras com suporte mínimo de 0,1 e 0,8 como a confiança mínima. 
+
+```{r}
+
+regras <- apriori(Groceries, parameter = list(support=0.001, confidence=0.6, target="rules"))
+
+summary(regras)
+
+```
+
+
+Vejamos quais as configurações transacionais por item:
+
+```{r}
+
+conf_itens <- apriori(Groceries, parameter = list(minlen = 1, maxlen = 1, support = 0.02, target = "frequent itemsets"))
+
+summary(conf_itens) # Encontrou 59 configurações
+
+inspect(head(sort(conf_itens, by = "support"), 10)) # Lista os top 10 
 
 ```
 
 
 A função ``inspect()`` fornece a representação interna de um objeto R ou o resultado de uma expressão. Aqui, ele exibe as primeiras 10 regras de associação mais fortes.
 
-```{r}
+```{r }
 
-inspect(regras[1:10])
+inspect(head(sort(regras, by="support"), 10)) 
 
 ```
-
-
 
 ``itemFrequencyPlot()`` cria um gráfico de barras para frequências de itens/suporte. Ele cria um gráfico de barras de frequência de itens para inspecionar a distribuição de objetos com base nas transações. Os itens são plotados ordenados por suporte decrescente. Aqui, ``topN=20`` significa que 20 itens com a maior frequência/elevação de itens serão plotados.
 
@@ -540,6 +559,49 @@ arules::itemFrequencyPlot(Groceries, topN = 20,
                           main = 'Gráfico de Frequência Relativa do Item',
                           tipo = "relativo",
                           ylab = "Frequência do item (relativa)")
+
+```
+
+Também podemos gerar um scatterplot dos dados:
+
+```{r fig.width=9}
+
+plot(regras) 
+
+```
+
+A função ``inspect`` é usada para exibir as 10 principais regras classificadas por aumento (``lift``)
+
+```{r }
+
+inspect(head(sort(regras, by="lift"), 10))
+
+regras <- apriori(Groceries, parameter = list(support=0.001, confidence=0.6, target = "rules")) # Redimensiona as regras para target
+
+```
+
+Abaixo do código busca regras com confiança acima de 0,9
+
+```{r }
+
+regras_conf <- regras[quality(regras)$confidence > 0.9] 
+
+```
+
+Plota uma visualização baseada em matriz do LHS vs RHS de regras. Isso produz uma visualização baseada em matriz de LHS e RHS, colorida por elevação (lift) e confiança,
+
+```{r fig.width=9 }
+
+plot(regras_conf, method = "matrix", measure = c("lift", "confidence"), control = list(reorder="none"))
+
+```
+
+Visualize as 5 principais regras com a maior elevação e plote:
+
+```{r fig.width=9 }
+
+regras_mais_elevadas <- head(sort(regras, by="lift"), 5) 
+plot(regras_mais_elevadas, method = "graph", control = list(type = "items"))
 
 ```
 
