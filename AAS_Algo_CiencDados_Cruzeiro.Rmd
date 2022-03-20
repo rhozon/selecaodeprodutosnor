@@ -108,7 +108,7 @@ library(ggplot2)
 
 ```
 
-[Este documento no formato interativo HTML pode ser acessado em ]
+<mark>[ Este documento no formato interativo HTML pode ser acessado em [rhozon.github.io](https://rhozon.github.io/selecaodeprodutosnor/AAS_Algo_CiencDados_Cruzeiro.html) ]</mark>
 
 # Reprodução da vídeoaula com o dataset ``A4``
 
