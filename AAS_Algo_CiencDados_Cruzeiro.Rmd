@@ -108,6 +108,7 @@ library(ggplot2)
 
 ```
 
+[Este documento no formato interativo HTML pode ser acessado em ]
 
 # Reprodução da vídeoaula com o dataset ``A4``
 
