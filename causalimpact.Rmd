@@ -223,8 +223,7 @@ De um modo geral, existem três fontes de informação disponíveis para a const
 
 Em uma estrutura bayesiana, uma terceira fonte de informação para inferir o contrafactual é o conhecimento prévio disponível sobre os parâmetros do modelo, conforme elucidado, por exemplo, por estudos anteriores.
 
-Combinamos as três fontes de informação anteriores usando um espaço de estado modelo de série temporal, onde um componente do estado é uma regressão linear no preditores contemporâneos. A estrutura do nosso modelo nos permite escolher dentre um grande conjunto de controles potenciais, colocando uma ponta e uma laje antes de o conjunto de coeficientes de regressão e permitindo que o modelo faça a média ao longo do
-conjunto de controles (George e McCulloch (1997)).
+Combinamos as três fontes de informação anteriores usando um espaço de estado modelo de série temporal, onde um componente do estado é uma regressão linear no preditores contemporâneos. A estrutura do nosso modelo nos permite escolher dentre um grande conjunto de controles potenciais, colocando uma ponta e uma laje antes de o conjunto de coeficientes de regressão e permitindo que o modelo faça a média ao longo do conjunto de controles (George e McCulloch (1997)).
 
 Em seguida, calculamos a distribuição contrafactual _a posteriori_ da série temporal dado o valor da série alvo no período pré-intervenção, juntamente com os valores dos controles no período pós-intervenção. Subtraindo o previsto da resposta observada durante o período pós-intervenção fornecemos uma distribuição posterior bayesiana semiparamétrica para o efeito causal.
 
@@ -340,6 +339,8 @@ Volkswagen <- get.hist.quote(
   quote = "Close",
   compression = "w" # d = daily frequency, w = weekly
 )
+
+class(Volkswagen)
 
 Facebook <- get.hist.quote(
   instrument = "FB",
@@ -603,7 +604,6 @@ n. 3, 1960. p. 591-605.
 CRAN, ``CausalImpact package`` vignettes, in [CRAN](https://cran.r-project.org/web/packages/CausalImpact/vignettes/CausalImpact.html)
 
 ``CausalImpact 1.2.7``, Brodersen et al., Annals of Applied Statistics (2015). https://google.github.io/CausalImpact/
-
 
 CRAN, ``strucchange`` package, in [CRAN](https://cran.r-project.org/web/packages/strucchange/strucchange.pdf) 
 

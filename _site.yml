@@ -50,6 +50,8 @@ navbar:
           href: sparklyr.html           
         - text: "Automação da visualização da base de dados da balança comercial brasileira"
           href: automsecex.html 
+        - text: "ETL com o R direto no Power BI"
+          href: ETL_R_no_PowerBI.html            
         - text: "Webscrapping CoinMarketCap x Icoinomia"
           href: coinmarketcapxicoinomia.html 
         - text: "Projeto Integrador de Ciência de Dados"
@@ -62,26 +64,26 @@ navbar:
           href: problemset2.html 
         - text: "Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)"
           href: anpreliminar.html          
-        - text: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
-          href: fcast.html           
+        - text: "AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R"
+          href: AAS_Algo_CiencDados_Cruzeiro.html       
         - text: "Projeto Int. Transdiciplinar de Ciência de Dados"
           href: AtividadeIeII.html 
-        - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"
-          href: exerbolsadeestudos.html 
+        - text: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
+          href: fcast.html             
         - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"
           href: prophet.html 
         - text: "Forecasting de séries temporais com algoritmos de machine learning"
           href: prophet_boost.html   
         - text: "Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``"
-          href: causalimpact.html           
+          href: causalimpact.html 
+        - text: "Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana"
+          href: exerbolsadeestudos.html           
         - text: "Modelos de Deep Learning em Séries Temporais de preços de commodities"
           href: modelo_deep_learning_series_temporais.html         
-        - text: "ETL com o R direto no Power BI"
-          href: ETL_R_no_PowerBI.html  
         - text: "Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo"
           href: Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html      
-        - text: "AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R"
-          href: AAS_Algo_CiencDados_Cruzeiro.html 
+        - text: "Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities"
+          href: GARCH_Bayesiano.html   
           
   right:
     - icon: fa-question fa-lg
