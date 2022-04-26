@@ -201,6 +201,12 @@ Tutoriais disponíveis:
 
 ### *AAS Algoritmos para Ciência de Dados*
 
+ - [Atividade de Sistematização da Disciplina Algoritmos para Ciência de Dados](https://rhozon.github.io/selecaodeprodutosnor/AAS_Algo_CiencDados_Cruzeiro.html) 
+ 
+ &nbsp;
+ 
+### *Aplicação de GARCH Bayesiano em séries de retornos de preços de commodities*
+ 
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
