@@ -84,6 +84,8 @@ navbar:
           href: Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html      
         - text: "Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities"
           href: GARCH_Bayesiano.html   
+        - text: "Introdução a otimização multiobjetivo de um portfólio de commodities"
+          href: optim_multiobjective.html  
           
   right:
     - icon: fa-question fa-lg

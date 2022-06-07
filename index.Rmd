@@ -207,6 +207,8 @@ Tutoriais disponíveis:
  
 ### *Aplicação de GARCH Bayesiano em séries de retornos de preços de commodities*
  
+ 
+### *Otimização MultiObjetivo de portfolio de commodities* 
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){ width=40% }
