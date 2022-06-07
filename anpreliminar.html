@@ -14,6 +14,7 @@
 
 <title>Análise preliminar Índice de Inclusão Financeira no Brasil (Shangai University of Finance)</title>
 
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -491,7 +492,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Análise preliminar Índice de Inclusão Financeira no Brasil (Shangai University of Finance)</h1>
+<h1 class="title toc-ignore">Análise preliminar Índice de Inclusão
+Financeira no Brasil (Shangai University of Finance)</h1>
 <h4 class="author">Rodrigo H. Ozon, Felipe Stringari</h4>
 <h4 class="date">28/01/2021</h4>
 
@@ -502,149 +504,371 @@ div.tocify {
 <div id="resumo" class="section level3">
 <h3>Resumo</h3>
 <ul>
-<li><p>Espaço dedicado a descrição dos resultados preliminares do(s) modelo(s) econométrico(s) proposto(s) para a pesquisa.</p></li>
-<li><p>Os dados podem ser baixados em <a href="https://github.com/felipestringari/data-set/blob/main/new%20dataset.xlsx?raw=true">repositório do Github</a> e os resultados aqui apresentados em <a href="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/new%20dataset%20(2).xlsx?raw=true">New_Dataset(2)</a></p></li>
+<li><p>Espaço dedicado a descrição dos resultados preliminares do(s)
+modelo(s) econométrico(s) proposto(s) para a pesquisa.</p></li>
+<li><p>Os dados podem ser baixados em <a
+href="https://github.com/felipestringari/data-set/blob/main/new%20dataset.xlsx?raw=true">repositório
+do Github</a> e os resultados aqui apresentados em <a
+href="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/new%20dataset%20(2).xlsx?raw=true">New_Dataset(2)</a></p></li>
 </ul>
 <hr />
 </div>
 <div id="característica-dos-dados" class="section level3">
 <h3>Característica dos dados</h3>
 <p>Descrever o que é cada variável e o que mede cada uma delas.</p>
-<p>Para avaliarmos os impactos das principais variáveis macroeconômicas (política monetária) no Índice de Inclusão Financeira no Brasil, selecionamos as seguintes variáveis:</p>
+<p>Para avaliarmos os impactos das principais variáveis macroeconômicas
+(política monetária) no Índice de Inclusão Financeira no Brasil,
+selecionamos as seguintes variáveis:</p>
 <ul>
-<li><p><span class="math inline">\(\mbox{exchange_rate}_{t}\)</span> é a taxa de câmbio R$/US$ PTAX fim de período apurada pelo Banco Central do Brasil;</p></li>
-<li><p><span class="math inline">\(\mbox{interest_rate}_{t}\)</span> é a taxa de juros básica da economia brasileira, definida pelo Comitê de Política Monetária (COPOM/BACEN);</p></li>
-<li><p><span class="math inline">\(\mbox{inflation}_{t}\)</span> taxa de inflação acumulada no mês captada pelo IPC-BR, levantada pelo FGV/SP.</p></li>
-<li><p><span class="math inline">\(IFI_{t}\)</span> Índice de Inclusão Financeira, apurado para o Brasil conforme metodologia de Sarma (data) e outros.</p></li>
+<li><p><span class="math inline">\(\mbox{exchange_rate}_{t}\)</span> é a
+taxa de câmbio R$/US$ PTAX fim de período apurada pelo Banco Central do
+Brasil;</p></li>
+<li><p><span class="math inline">\(\mbox{interest_rate}_{t}\)</span> é a
+taxa de juros básica da economia brasileira, definida pelo Comitê de
+Política Monetária (COPOM/BACEN);</p></li>
+<li><p><span class="math inline">\(\mbox{inflation}_{t}\)</span> taxa de
+inflação acumulada no mês captada pelo IPC-BR, levantada pelo
+FGV/SP.</p></li>
+<li><p><span class="math inline">\(IFI_{t}\)</span> Índice de Inclusão
+Financeira, apurado para o Brasil conforme metodologia de Sarma (data) e
+outros.</p></li>
 </ul>
-<p>Como o subscrito <span class="math inline">\(t\)</span> indica que todas essas variáveis se comportam em função do tempo, avaliamos graficamente cada uma delas e e primeiramente testamos a estacionariedade de cada uma destas séries temporais:</p>
+<p>Como o subscrito <span class="math inline">\(t\)</span> indica que
+todas essas variáveis se comportam em função do tempo, avaliamos
+graficamente cada uma delas e e primeiramente testamos a
+estacionariedade de cada uma destas séries temporais:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/seriestemporais.png?raw=true" style="width:80.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/seriestemporais.png?raw=true"
+style="width:80.0%" />
 </center>
-<p>Os padrões de comportamento cíclico e sazonais notáveís das séries parecem mais proeminente em <code>interest_rate</code> e em <code>inflation</code>, já os componentes de tendência são perceptíveis em <code>exchange_rate</code> e em <code>IFI</code>. Pela inspeção puramente visual, pode-se suspeitar de que <code>inflation</code> possa ser estacionária em nível.</p>
-<p>Os gráficos de densidade kernel nos eixos verticais demonstram uma notável divergência em relação à normalidade em suas distribuições de probabilidade.</p>
+<p>Os padrões de comportamento cíclico e sazonais notáveís das séries
+parecem mais proeminente em <code>interest_rate</code> e em
+<code>inflation</code>, já os componentes de tendência são perceptíveis
+em <code>exchange_rate</code> e em <code>IFI</code>. Pela inspeção
+puramente visual, pode-se suspeitar de que <code>inflation</code> possa
+ser estacionária em nível.</p>
+<p>Os gráficos de densidade kernel nos eixos verticais demonstram uma
+notável divergência em relação à normalidade em suas distribuições de
+probabilidade.</p>
 </div>
 <div id="testes-de-raiz-unitária" class="section level3">
 <h3>Testes de Raiz Unitária</h3>
-<p>A tabela a seguir demonstra os resultados dos testes de raiz unitária para detectar a hipótese do passeio aleatório.</p>
+<p>A tabela a seguir demonstra os resultados dos testes de raiz unitária
+para detectar a hipótese do passeio aleatório.</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/groupunitroottest.png?raw=true" style="width:50.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/groupunitroottest.png?raw=true"
+style="width:50.0%" />
 </center>
-<p>O resultado do teste acima verifica se o resíduo da equação de longo prazo se mostra estacionário em nível, quando o valor absoluto da estatística <span class="math inline">\(\tau\)</span> (<span class="math inline">\(tau\)</span>) for maior do que os valores críticos tabulados.</p>
-<p>Os métodos de teste mais populares como Augmented Dickey-Fuller (ADF) e Phillips-Perron (PP) nos levam a concluir que a combinação de todas essas variáveis não se mostraram estacionárias em nível, apresentando assim raiz unitária, sugerindo que a influência dos comportamentos no passado são suficientes para explicar com relativa previsibilidade estatística as oscilações no futuro.</p>
-<p>Neste trabalho serão considerados os resultados obtidos pelo teste EG para fins práticos de análise, pois conforme destaca GUJARATI (2000, p.732): <em>”A valiosa contribuição dos conceitos de raiz unitária, cointegração, etc, é nos obrigar a verificar se os resíduos da regressão são estacionários.”</em></p>
-<p>Seguindo a recomendação mencionada pelo autor acima, procedemos com a estimação da regressão cointegrante de longo prazo com a seguinte especificação:</p>
+<p>O resultado do teste acima verifica se o resíduo da equação de longo
+prazo se mostra estacionário em nível, quando o valor absoluto da
+estatística <span class="math inline">\(\tau\)</span> (<span
+class="math inline">\(tau\)</span>) for maior do que os valores críticos
+tabulados.</p>
+<p>Os métodos de teste mais populares como Augmented Dickey-Fuller (ADF)
+e Phillips-Perron (PP) nos levam a concluir que a combinação de todas
+essas variáveis não se mostraram estacionárias em nível, apresentando
+assim raiz unitária, sugerindo que a influência dos comportamentos no
+passado são suficientes para explicar com relativa previsibilidade
+estatística as oscilações no futuro.</p>
+<p>Neste trabalho serão considerados os resultados obtidos pelo teste EG
+para fins práticos de análise, pois conforme destaca GUJARATI (2000,
+p.732): <em>”A valiosa contribuição dos conceitos de raiz unitária,
+cointegração, etc, é nos obrigar a verificar se os resíduos da regressão
+são estacionários.”</em></p>
+<p>Seguindo a recomendação mencionada pelo autor acima, procedemos com a
+estimação da regressão cointegrante de longo prazo com a seguinte
+especificação:</p>
 <p><span class="math display">\[\begin{equation}\label{eqlp}
-log(\widehat{inflation}_{t})=\alpha + \beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\Delta log(\mbox{IFI}_{t})+ t+\mu_{t}
+log(\widehat{inflation}_{t})=\alpha +
+\beta_{1}\mbox{exchange_rate}_{t}+\beta_{2}\mbox{interest_rate}_{t}+\beta_{3}\Delta
+log(\mbox{IFI}_{t})+ t+\mu_{t}
 \end{equation}\]</span></p>
 <p>Onde:</p>
 <ul>
-<li><span class="math inline">\(t\)</span> representa a tendência linear da série temporal ou discretização do tempo;</li>
-<li>O método utilizado de mínimos quadrados ordinários dinâmicos com critério de Schwarz para definição dos lags ótimos</li>
+<li><span class="math inline">\(t\)</span> representa a tendência linear
+da série temporal ou discretização do tempo;</li>
+<li>O método utilizado de mínimos quadrados ordinários dinâmicos com
+critério de Schwarz para definição dos lags ótimos</li>
 </ul>
-<p>Os resultados da saída dessa regressão são apresentados conforme a saída do software Eviews 10, a seguir:</p>
+<p>Os resultados da saída dessa regressão são apresentados conforme a
+saída do software Eviews 10, a seguir:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/regrcointegrante.png?raw=true" style="width:50.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/regrcointegrante.png?raw=true"
+style="width:50.0%" />
 </center>
-<p>O grau de explicação e ajuste do modelo especificado medido pelo parâmetro <span class="math inline">\(R^{2}\)</span> denota que cerca de 47% das variações nas explicativas (variáveis de controle de política monetária) contribuem para as mudanças no nível de preços.</p>
-<p>Os valores da estatística <span class="math inline">\(t\)</span> se mostraram signficativos a 5% para a taxa de juros e a 10% para a variação logarítmica do IFI [explicar melhor pq dessa tranformação] e para a taxa de câmbio.</p>
-<p>O sentido econômico das direções causais parecem manter sua lógica apontando uma relação inversa entre os níveis inflacionários e inclusão financeira, pois uma vez que a inflação direciona para uma dificuldade dos bancos comerciais de remunerarem melhor seus investidores, temos a percepção de risco dos agentes econômicos consumidores, uma vez que inflação corrói o valor da moeda no tempo. Deste modo, a retenção de recursos em poupança (investimento mais popular no Brasil) fica facilmente fragilizado, movendo uma parcela mais desfavorecida da população a não utilizar com veemência os servições bancários.</p>
+<p>O grau de explicação e ajuste do modelo especificado medido pelo
+parâmetro <span class="math inline">\(R^{2}\)</span> denota que cerca de
+47% das variações nas explicativas (variáveis de controle de política
+monetária) contribuem para as mudanças no nível de preços.</p>
+<p>Os valores da estatística <span class="math inline">\(t\)</span> se
+mostraram signficativos a 5% para a taxa de juros e a 10% para a
+variação logarítmica do IFI [explicar melhor pq dessa tranformação] e
+para a taxa de câmbio.</p>
+<p>O sentido econômico das direções causais parecem manter sua lógica
+apontando uma relação inversa entre os níveis inflacionários e inclusão
+financeira, pois uma vez que a inflação direciona para uma dificuldade
+dos bancos comerciais de remunerarem melhor seus investidores, temos a
+percepção de risco dos agentes econômicos consumidores, uma vez que
+inflação corrói o valor da moeda no tempo. Deste modo, a retenção de
+recursos em poupança (investimento mais popular no Brasil) fica
+facilmente fragilizado, movendo uma parcela mais desfavorecida da
+população a não utilizar com veemência os servições bancários.</p>
 <p>[explicar a relação inversa do cambio e inflação]</p>
-<p>Através da combinação linear destas variáveis, pode-se mostrar que as séries são estacionárias e evitar o problema correlato de regressão espúria, não estacionariedade e tendência estocástica. Desta forma, roda-se o teste de Engle Granger de raiz unitária para os resíduos estimados da equação de regressão de longo prazo:</p>
+<p>Através da combinação linear destas variáveis, pode-se mostrar que as
+séries são estacionárias e evitar o problema correlato de regressão
+espúria, não estacionariedade e tendência estocástica. Desta forma,
+roda-se o teste de Engle Granger de raiz unitária para os resíduos
+estimados da equação de regressão de longo prazo:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testeEGcointegracao.png?raw=true" style="width:50.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testeEGcointegracao.png?raw=true"
+style="width:50.0%" />
 </center>
-<p>As to the tests themselves, the Engle-Granger <span class="math inline">\(\tau\)</span>-statistic (<span class="math inline">\(t-\)</span>statistic) and normalized autocorrelation coefficient (which we term the <span class="math inline">\(z\)</span>-statistic) both reject the null hypothesis of no cointegration (unit root in the residuals) at the 5% level. In addition, the <span class="math inline">\(\tau\)</span>-statistic rejects at a 1% significance level. On balance, the evidence clearly suggests that inflation and monetary policy control variables are cointegrated.</p>
-<p>Pelo resultado do teste de EG verifica-se que o resíduo da equação de longo prazo se mostra estacionária em nível, uma vez que o valor absoluto da estatística <span class="math inline">\(\tau\)</span> (<em>tau</em>) foi superior do que os valores críticos tabulados.</p>
-<p>Os testes DF e ADF para o teste EG se mostram altamente significativos, evidenciando desta forma que apesar das variáveis de controle monetário e IFI serem não-estacionárias, as mesmas são co-integradas.</p>
+<p>As to the tests themselves, the Engle-Granger <span
+class="math inline">\(\tau\)</span>-statistic (<span
+class="math inline">\(t-\)</span>statistic) and normalized
+autocorrelation coefficient (which we term the <span
+class="math inline">\(z\)</span>-statistic) both reject the null
+hypothesis of no cointegration (unit root in the residuals) at the 5%
+level. In addition, the <span
+class="math inline">\(\tau\)</span>-statistic rejects at a 1%
+significance level. On balance, the evidence clearly suggests that
+inflation and monetary policy control variables are cointegrated.</p>
+<p>Pelo resultado do teste de EG verifica-se que o resíduo da equação de
+longo prazo se mostra estacionária em nível, uma vez que o valor
+absoluto da estatística <span class="math inline">\(\tau\)</span>
+(<em>tau</em>) foi superior do que os valores críticos tabulados.</p>
+<p>Os testes DF e ADF para o teste EG se mostram altamente
+significativos, evidenciando desta forma que apesar das variáveis de
+controle monetário e IFI serem não-estacionárias, as mesmas são
+co-integradas.</p>
 </div>
-<div id="estimação-do-mecanismo-de-correção-de-erro-vec-de-curto-prazo" class="section level3">
+<div id="estimação-do-mecanismo-de-correção-de-erro-vec-de-curto-prazo"
+class="section level3">
 <h3>Estimação do Mecanismo de Correção de Erro (VEC de curto prazo)</h3>
-<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem ocorrer desequilíbrios e o erro da equação de longo prazo pode ser usado para ligar o comportamento da inflação de curto prazo com seu valor a longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando desta maneira as respectivas elasticidades de ajuste e a velocidade da captura ao ajustamento de longo prazo.</p>
+<p>Logo, ainda que haja equilíbrio de longo prazo, no curto prazo, podem
+ocorrer desequilíbrios e o erro da equação de longo prazo pode ser usado
+para ligar o comportamento da inflação de curto prazo com seu valor a
+longo prazo, como um “erro equilibrador” (Gujarati,2000 p.734). O
+Mecanismo de Correção de Erros corrige quanto ao desequilíbrio, gerando
+desta maneira as respectivas elasticidades de ajuste e a velocidade da
+captura ao ajustamento de longo prazo.</p>
 <p>Por meio da estimativa da equação de curto prazo,</p>
 <p><span class="math display">\[\begin{equation}    
-\Delta inflation_{t} = a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta a_{3}\mbox{IFI}_{t}+a_{4}\widehat{\mu}_{t-1}+a_{5}t+\epsilon_{t} 
+\Delta inflation_{t} =
+a_{0}+a_{1}\Delta\mbox{exchange_rate}_{t}+a_{2}\Delta\mbox{interest_rate}_{t}+\Delta
+a_{3}\mbox{IFI}_{t}+a_{4}\widehat{\mu}_{t-1}+a_{5}t+\epsilon_{t}
 
 \end{equation}\]</span></p>
 <p>Onde:</p>
 <ul>
-<li><span class="math inline">\(\Delta\)</span> é o operador de diferença</li>
-<li><span class="math inline">\(\widehat{\mu}_{t-1}\)</span> é o valor defasado de um período da equação de longo prazo, termo de erro de equilíbrio;</li>
-<li><span class="math inline">\(\epsilon_{t}\)</span> é o termo de erro com as propriedades usuais</li>
+<li><span class="math inline">\(\Delta\)</span> é o operador de
+diferença</li>
+<li><span class="math inline">\(\widehat{\mu}_{t-1}\)</span> é o valor
+defasado de um período da equação de longo prazo, termo de erro de
+equilíbrio;</li>
+<li><span class="math inline">\(\epsilon_{t}\)</span> é o termo de erro
+com as propriedades usuais</li>
 </ul>
 <p>foram obtidos os seguintes resultados:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/meccorrecaoerrosvec.png?raw=true" style="width:50.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/meccorrecaoerrosvec.png?raw=true"
+style="width:50.0%" />
 </center>
-<p>Mostrando que alterações a curto prazo nas variáveis de política monetária e de inclusão financeira têm efeitos positivos significativos na dinâmica de preços e que cerca de menos de 1% da discrepância entre o valor efetivo e o valor de longo prazo, ou de equilíbrio da inflação, é eliminada ou corrigida a cada mês. As elasticidades de longo prazo obtidas na equação de longo prazo somam valores não-nulos para os efeitos na dinâmica de preços confirmando a relação de longo prazo entre as séries temporais de controle monetário e de inclusão financeira, considerando que as mudanças significativas nos níveis gerais de preços se ajustariam a sua trajetória de crescimento a longo prazo com razoável rapidez após uma perturbação.</p>
-<p>O gráfico a seguir ilustra os valores estimados e efetivos e os resíduos das regressões de curto e longo prazo:</p>
+<p>Mostrando que alterações a curto prazo nas variáveis de política
+monetária e de inclusão financeira têm efeitos positivos significativos
+na dinâmica de preços e que cerca de menos de 1% da discrepância entre o
+valor efetivo e o valor de longo prazo, ou de equilíbrio da inflação, é
+eliminada ou corrigida a cada mês. As elasticidades de longo prazo
+obtidas na equação de longo prazo somam valores não-nulos para os
+efeitos na dinâmica de preços confirmando a relação de longo prazo entre
+as séries temporais de controle monetário e de inclusão financeira,
+considerando que as mudanças significativas nos níveis gerais de preços
+se ajustariam a sua trajetória de crescimento a longo prazo com razoável
+rapidez após uma perturbação.</p>
+<p>O gráfico a seguir ilustra os valores estimados e efetivos e os
+resíduos das regressões de curto e longo prazo:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/vecvslp.png?raw=true" style="width:80.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/vecvslp.png?raw=true"
+style="width:80.0%" />
 </center>
 </div>
 <div id="modelagem-var-metodologia" class="section level3">
 <h3>Modelagem VAR, metodologia</h3>
-<p>Com o objetivo de analisar o comportamento dinâmico dos níveis de preços na economia brasileira, as etapas metodológicas para o desenvolvimento do VAR são as seguintes: (GUJARATI, 2000 e PINDYCK &amp; RUBINFELD, 2004)</p>
+<p>Com o objetivo de analisar o comportamento dinâmico dos níveis de
+preços na economia brasileira, as etapas metodológicas para o
+desenvolvimento do VAR são as seguintes: (GUJARATI, 2000 e PINDYCK &amp;
+RUBINFELD, 2004)</p>
 <ol style="list-style-type: decimal">
-<li><p>Escolher a defasagem ótima do sistema pelos critérios Akaike (AIC) e Schwartz (SBC);</p></li>
+<li><p>Escolher a defasagem ótima do sistema pelos critérios Akaike
+(AIC) e Schwartz (SBC);</p></li>
 <li><p>Realizar o teste de causalidade de Granger</p></li>
-<li><p>Realizar o teste de Johansen-Juselius para verificação de mais de um vetor de cointegração diferentemente do teste EG disposto anteriormente que supõe a presença de uma única relação de cointegração;</p></li>
-<li><p>Estimar o modelo VAR para as séries cointegradas e interpretar sua relação de longo prazo;</p></li>
-<li><p>Estimar o modelo VEC (Vetor de correção de erros) para analisar o comportamento de curto prazo;</p></li>
-<li><p>Sumariar os resultados por meio da função de impulso-resposta e da decomposição da variância;</p></li>
-<li><p>Computar as projeções para os preços com base no modelo simulado em relação aos valores efetivos;</p></li>
+<li><p>Realizar o teste de Johansen-Juselius para verificação de mais de
+um vetor de cointegração diferentemente do teste EG disposto
+anteriormente que supõe a presença de uma única relação de
+cointegração;</p></li>
+<li><p>Estimar o modelo VAR para as séries cointegradas e interpretar
+sua relação de longo prazo;</p></li>
+<li><p>Estimar o modelo VEC (Vetor de correção de erros) para analisar o
+comportamento de curto prazo;</p></li>
+<li><p>Sumariar os resultados por meio da função de impulso-resposta e
+da decomposição da variância;</p></li>
+<li><p>Computar as projeções para os preços com base no modelo simulado
+em relação aos valores efetivos;</p></li>
 </ol>
-<p>De maneira sintética, os critérios de Akaike e de Schwartz, podem ser formalizados pelas seguintes equações: (PINDYCK &amp; RUBINFELD, 2004 p.274,275)</p>
+<p>De maneira sintética, os critérios de Akaike e de Schwartz, podem ser
+formalizados pelas seguintes equações: (PINDYCK &amp; RUBINFELD, 2004
+p.274,275)</p>
 <p><span class="math display">\[
-AIC = log\left(\frac{\sum \widehat{\epsilon}^{2}_{i}}{N}\right)+\frac{2k}{N}
+AIC = log\left(\frac{\sum
+\widehat{\epsilon}^{2}_{i}}{N}\right)+\frac{2k}{N}
 \]</span> <span class="math display">\[
-SC = log\left(\frac{\sum \widehat{\epsilon}^{2}_{i}}{N}\right)+\frac{klog N}{N}
-\]</span> Onde: <span class="math inline">\(\sum\widehat{\epsilon}_{i}^{2}\)</span> é a soma dos quadrados dos resíduos</p>
-<p>Vale destacar ainda que, neste trabalho buscou-se respeitar o critério da parcimônia na seleção de modelos, como ressalta GUJARATI (2000, p.455) <em>“Um modelo nunca pode ser uma descrição completamente precisa da realidade; para descrever, a realidade, talvez tenhamos de desenvolver um modelo tão complexo terá pouco uso prático.”</em> Desta maneira, um modelo que contenha um número razoável de defasagens, será apropriado, uma vez que este consumirá menos graus de liberdade e diminuirá os efeitos da multicolinearidade elevada.</p>
-<p>Sob a hipótese nula de que uma variável não ajuda a prever outra, é testada a condição de que “inflation não causa IFI” , estimamos uma regressão em <code>inflation</code> em relação a seus próprios valores defasados bem como a valores defasados de <code>IFI</code> (regressão irrestrita) e em seguida estimamos uma regressão de <code>inflation</code> apenas em relação a valores defasados dele próprio (regressão restrita).</p>
-<p>Um simples teste <span class="math inline">\(F\)</span> pode ser usado então para determinar se os valores defasados de <code>IFI</code> contribuem significativamente para o poder explicativo da primeira regressão.(PYNDICK &amp; RUBINFELD, 2004, p.279-280)</p>
-<p>Sob a hipótese nula de que <span class="math inline">\(H_{0}:\sum a_{i}=0\)</span> ou seja, termos defasados de IFI não pertencem á regressão, aplica-se o teste <span class="math inline">\(F\)</span>, a saber:</p>
-<p><span class="math inline">\(F=\displaystyle\frac{(SQR_{R}-SQR_{IR})/m}{SQR_{IR}/(n-k)}\)</span>; com <span class="math inline">\(m\)</span> e <span class="math inline">\((n-k)\,\, gl\)</span>.</p>
-<p>Onde <span class="math inline">\(m =\)</span> número de termos defasados de IFI e <span class="math inline">\(k\)</span> é o número de parâmetros da regressão irrestrita. Se o valor de F exceder o valor crítico de F em nível escolhido de significância, rejeitamos a hipótese nula, ou seja, outro modo de dizer que lnBrent causa inflation.(GUJARATI, 2000,p.627-628)</p>
-<p>Em caso afirmativo, podemos rejeitar a hipótese nula e concluir que os dados são consistentes com <code>IFI</code> como causa de <code>ìnflation</code> . A hipótese nula de <em>“Y não causa X”</em> é testada da mesma maneira.</p>
-<p>Deste modo, os procedimentos descritos são formalizados pelas duas equações:</p>
+SC = log\left(\frac{\sum
+\widehat{\epsilon}^{2}_{i}}{N}\right)+\frac{klog N}{N}
+\]</span> Onde: <span
+class="math inline">\(\sum\widehat{\epsilon}_{i}^{2}\)</span> é a soma
+dos quadrados dos resíduos</p>
+<p>Vale destacar ainda que, neste trabalho buscou-se respeitar o
+critério da parcimônia na seleção de modelos, como ressalta GUJARATI
+(2000, p.455) <em>“Um modelo nunca pode ser uma descrição completamente
+precisa da realidade; para descrever, a realidade, talvez tenhamos de
+desenvolver um modelo tão complexo terá pouco uso prático.”</em> Desta
+maneira, um modelo que contenha um número razoável de defasagens, será
+apropriado, uma vez que este consumirá menos graus de liberdade e
+diminuirá os efeitos da multicolinearidade elevada.</p>
+<p>Sob a hipótese nula de que uma variável não ajuda a prever outra, é
+testada a condição de que “inflation não causa IFI” , estimamos uma
+regressão em <code>inflation</code> em relação a seus próprios valores
+defasados bem como a valores defasados de <code>IFI</code> (regressão
+irrestrita) e em seguida estimamos uma regressão de
+<code>inflation</code> apenas em relação a valores defasados dele
+próprio (regressão restrita).</p>
+<p>Um simples teste <span class="math inline">\(F\)</span> pode ser
+usado então para determinar se os valores defasados de <code>IFI</code>
+contribuem significativamente para o poder explicativo da primeira
+regressão.(PYNDICK &amp; RUBINFELD, 2004, p.279-280)</p>
+<p>Sob a hipótese nula de que <span class="math inline">\(H_{0}:\sum
+a_{i}=0\)</span> ou seja, termos defasados de IFI não pertencem á
+regressão, aplica-se o teste <span class="math inline">\(F\)</span>, a
+saber:</p>
+<p><span
+class="math inline">\(F=\displaystyle\frac{(SQR_{R}-SQR_{IR})/m}{SQR_{IR}/(n-k)}\)</span>;
+com <span class="math inline">\(m\)</span> e <span
+class="math inline">\((n-k)\,\, gl\)</span>.</p>
+<p>Onde <span class="math inline">\(m =\)</span> número de termos
+defasados de IFI e <span class="math inline">\(k\)</span> é o número de
+parâmetros da regressão irrestrita. Se o valor de F exceder o valor
+crítico de F em nível escolhido de significância, rejeitamos a hipótese
+nula, ou seja, outro modo de dizer que lnBrent causa
+inflation.(GUJARATI, 2000,p.627-628)</p>
+<p>Em caso afirmativo, podemos rejeitar a hipótese nula e concluir que
+os dados são consistentes com <code>IFI</code> como causa de
+<code>ìnflation</code> . A hipótese nula de <em>“Y não causa X”</em> é
+testada da mesma maneira.</p>
+<p>Deste modo, os procedimentos descritos são formalizados pelas duas
+equações:</p>
 <p><span class="math display">\[
-\mbox{Regressão Irrestrita:} Y = \sum^{m}_{i=1}a_{i}\mbox{inflation}_{t-1}+ \sum^{m}_{i=1}\beta_{i}\mbox{ifi}+\epsilon_{t}
+\mbox{Regressão Irrestrita:} Y =
+\sum^{m}_{i=1}a_{i}\mbox{inflation}_{t-1}+
+\sum^{m}_{i=1}\beta_{i}\mbox{ifi}+\epsilon_{t}
 \]</span> <span class="math display">\[
-\mbox{Regressão Restrita:} Y = \sum^{m}_{i=1}a_{i}\mbox{exchange_rate}_{t-1}+ \sum^{m}_{i=1}\beta_{i}\mbox{interest_rate}+\epsilon_{t}
+\mbox{Regressão Restrita:} Y =
+\sum^{m}_{i=1}a_{i}\mbox{exchange_rate}_{t-1}+
+\sum^{m}_{i=1}\beta_{i}\mbox{interest_rate}+\epsilon_{t}
 \]</span></p>
-<p>e usamos SQR de cada regressão para calcular a estatística <span class="math inline">\(F\)</span> e testar se o grupo de coeficientes <span class="math inline">\(β1. β2 ..... βm\)</span> é significativamente diferente de zero. Em caso afirmativo podemos rejeitar a hipótese de que “X não causa Y”. Posteriormente testamos a hipótese nula “Y não causa X” pela estimativa das mesmas regressões com as mesmas regressões, mas trocando de lugar X com Y e testando se os coeficientes defasados de Y são significativamente diferentes de zero. Para concluir que X causa Y, temos de rejeitar a hipótese de que “X não causa Y” e aceitar a hipótese “Y não causa X”.</p>
-<p>Conforme salienta GUJARATI (2000, p.626) <em>“O teste de causalidade de Granger supõe que as informações relevantes para previsão das respectivas variáveis (…), estejam contidas nas séries temporais destas variáveis.</em>”</p>
-<p>O resultado do teste a seguir nos aponta a direção causal da influência do IFI na inflação ou vice-versa.</p>
+<p>e usamos SQR de cada regressão para calcular a estatística <span
+class="math inline">\(F\)</span> e testar se o grupo de coeficientes
+<span class="math inline">\(β1. β2 ..... βm\)</span> é
+significativamente diferente de zero. Em caso afirmativo podemos
+rejeitar a hipótese de que “X não causa Y”. Posteriormente testamos a
+hipótese nula “Y não causa X” pela estimativa das mesmas regressões com
+as mesmas regressões, mas trocando de lugar X com Y e testando se os
+coeficientes defasados de Y são significativamente diferentes de zero.
+Para concluir que X causa Y, temos de rejeitar a hipótese de que “X não
+causa Y” e aceitar a hipótese “Y não causa X”.</p>
+<p>Conforme salienta GUJARATI (2000, p.626) <em>“O teste de causalidade
+de Granger supõe que as informações relevantes para previsão das
+respectivas variáveis (…), estejam contidas nas séries temporais destas
+variáveis.</em>”</p>
+<p>O resultado do teste a seguir nos aponta a direção causal da
+influência do IFI na inflação ou vice-versa.</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/granger.png?raw=true" style="width:60.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/granger.png?raw=true"
+style="width:60.0%" />
 </center>
-<p>Pelo teste de Causalidade de Granger, pela primeira hipótese (linha de cima) conclui-se que inflation não causam IFI é fortemente aceita, enquanto a segunda hipóstes – IFI não causam inflation pode ser rejeitada.</p>
-<p>Esta situação é conhecida como “Inversamente, causalidade unidirecional de inflation para IFI, pois o conjunto de coeficientes defasados de inaflation não foi estatisticamente diferente de zero e o conjunto de coeficientes defasados de IFI foram estatisticamente diferentes de zero.</p>
-<p>Os resultados sugerem que a direção da causalidade é de linflation para IFI, pois o valor estimado de F se mostrou altamente significativo. Por outro lado não há “causação inversa” de IFI para inflation, pois o valor calculado de F não é estatisticamente significativo.</p>
-<p>A próxima etapa da construção do modelo VAR é a de realizar o teste de Johansen-Juselius (JJ), para verificar a possibilidade da presença de mais de um vetor de cointegração entre as variáveis. A tabela a seguir sumariza os principais resultados:</p>
+<p>Pelo teste de Causalidade de Granger, pela primeira hipótese (linha
+de cima) conclui-se que inflation não causam IFI é fortemente aceita,
+enquanto a segunda hipóstes – IFI não causam inflation pode ser
+rejeitada.</p>
+<p>Esta situação é conhecida como “Inversamente, causalidade
+unidirecional de inflation para IFI, pois o conjunto de coeficientes
+defasados de inaflation não foi estatisticamente diferente de zero e o
+conjunto de coeficientes defasados de IFI foram estatisticamente
+diferentes de zero.</p>
+<p>Os resultados sugerem que a direção da causalidade é de linflation
+para IFI, pois o valor estimado de F se mostrou altamente significativo.
+Por outro lado não há “causação inversa” de IFI para inflation, pois o
+valor calculado de F não é estatisticamente significativo.</p>
+<p>A próxima etapa da construção do modelo VAR é a de realizar o teste
+de Johansen-Juselius (JJ), para verificar a possibilidade da presença de
+mais de um vetor de cointegração entre as variáveis. A tabela a seguir
+sumariza os principais resultados:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testejj.png?raw=true" style="width:60.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/testejj.png?raw=true"
+style="width:60.0%" />
 </center>
-<p>O teste indica a presença de 1 vetores de cointegração presentes na relação entre inflation, IFI, exchange_rate, interest_rate ao nível de 5% de significância, porém, se contradizem na escolha do tipo de tendência nos dados.</p>
-<p>Ao se verificar que a tendência nos dados é estocástica, opta-se pela escolha indicada pelo Critério de Informação de Akaike, com intercepto e tendência quadrática, para a estimativa do modelo VEC, futuramente.</p>
-<p>Primeiramente, após estimados os resultados obtidos com o modelo VAR não-estrutural, de longo prazo e o modelo VEC não-estrutural de curto prazo, são geradas as funções de impulso-resposta e decomposição da variância dos erros de previsão.</p>
-<p>As funções de impulso-resposta para uma alteração de um desvio-padrão a 10 períodos à frente para o modelo VAR, estão representadas na figura a seguir e apontam a reação de cada uma das variáveis do modelo quando há algum choque exógeno nas variáveis incorporadas no modelo.</p>
+<p>O teste indica a presença de 1 vetores de cointegração presentes na
+relação entre inflation, IFI, exchange_rate, interest_rate ao nível de
+5% de significância, porém, se contradizem na escolha do tipo de
+tendência nos dados.</p>
+<p>Ao se verificar que a tendência nos dados é estocástica, opta-se pela
+escolha indicada pelo Critério de Informação de Akaike, com intercepto e
+tendência quadrática, para a estimativa do modelo VEC, futuramente.</p>
+<p>Primeiramente, após estimados os resultados obtidos com o modelo VAR
+não-estrutural, de longo prazo e o modelo VEC não-estrutural de curto
+prazo, são geradas as funções de impulso-resposta e decomposição da
+variância dos erros de previsão.</p>
+<p>As funções de impulso-resposta para uma alteração de um desvio-padrão
+a 10 períodos à frente para o modelo VAR, estão representadas na figura
+a seguir e apontam a reação de cada uma das variáveis do modelo quando
+há algum choque exógeno nas variáveis incorporadas no modelo.</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/impulseresponse.png?raw=true" style="width:80.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/impulseresponse.png?raw=true"
+style="width:80.0%" />
 </center>
-<p>Com o objetivo de se verificar quanto tempo em média os preços generalizados, o câmbio, os juros e o IFI em função deles mesmo e das outras variáveis podem demorar a se ajustar a um possível choque, desviando de sua tendência de reversão á media, foi calculada a Decomposição da Variância:</p>
+<p>Com o objetivo de se verificar quanto tempo em média os preços
+generalizados, o câmbio, os juros e o IFI em função deles mesmo e das
+outras variáveis podem demorar a se ajustar a um possível choque,
+desviando de sua tendência de reversão á media, foi calculada a
+Decomposição da Variância:</p>
 <center>
-<img src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/decompvariancia.png?raw=true" style="width:60.0%" />
+<img
+src="https://github.com/rhozon/Pesquisa_Univ_Shangai/blob/main/decompvariancia.png?raw=true"
+style="width:60.0%" />
 </center>
-<p>Verifica-se que para 10 meses após o choque, cerca de 96,6% do comportamento da inflação se devem a ele mesma, sendo que as mudanças no IFI de cerca de 3,41% afetam a inflação.</p>
-<p>De maneira análoga após 10 meses dado um choque no IFI para o IPCR (inflation) vemos que cerca de 31,56% do choque não é dissipado ao seu final.</p>
+<p>Verifica-se que para 10 meses após o choque, cerca de 96,6% do
+comportamento da inflação se devem a ele mesma, sendo que as mudanças no
+IFI de cerca de 3,41% afetam a inflação.</p>
+<p>De maneira análoga após 10 meses dado um choque no IFI para o IPCR
+(inflation) vemos que cerca de 31,56% do choque não é dissipado ao seu
+final.</p>
 <hr />
 <div id="referências" class="section level4">
 <h4>Referências</h4>
-<p><strong>Eviews 10 User´s Guide</strong>, <em>Quantitative Micro Software</em>. LLC, Estados Unidos, 2017.</p>
-<p>GUJARATI, D.N. <strong>Econometria Básica.</strong> ed. Pearson Education do Brasil, São Paulo, 2000.</p>
-<p>PINDYCK, S.R.,RUBINFELD.L.D, <strong>Econometria Modelos e Previsões.</strong> ed. Elsevier, Rio de Janeiro, 2004.</p>
+<p><strong>Eviews 10 User´s Guide</strong>, <em>Quantitative Micro
+Software</em>. LLC, Estados Unidos, 2017.</p>
+<p>GUJARATI, D.N. <strong>Econometria Básica.</strong> ed. Pearson
+Education do Brasil, São Paulo, 2000.</p>
+<p>PINDYCK, S.R.,RUBINFELD.L.D, <strong>Econometria Modelos e
+Previsões.</strong> ed. Elsevier, Rio de Janeiro, 2004.</p>
 </div>
 </div>
 
