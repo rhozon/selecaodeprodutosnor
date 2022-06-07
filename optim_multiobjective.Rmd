@@ -1,0 +1,1089 @@
+---
+title: "Otimização Multiobjetivo: Exercício teórico e aplicação em portfolio de commodities"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: hide
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Exercício de visualização da frente de Pareto para problemas multiobjetivo  </strong> 
+  
+</div>
+
+***
+
+<left>
+![](https://432f5d.mannesoftprime.com.br/processo_seletivo/imagens/logo_puc.png){width=20%}
+</left>
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+PhD. Candidature exercise
+
+</p>
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Modelos de regressão de processos gaussianos, também conhecidos como modelos de krigagem, são
+aplicado à otimização multiobjetivo global de funções de caixa preta.
+
+Melhoria esperada multiobjetivo e redução gradual da incerteza via critérios de preenchimento sequencial estão disponíveis. Uma quantificação da incerteza nas frentes de Pareto é fornecida usando simulações condicionais.
+
+</center>
+</p>
+
+***
+
+
+# Pacotes
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(GPareto)
+library(DiceDesign)
+library(ranger)
+library(scales)
+
+```
+
+# Preliminares
+
+A modelagem numérica de sistemas complexos é hoje um processo essencial em campos tão diversos quanto ciências naturais, engenharia, qualidade ou economia. Juntamente com os esforços de modelagem, métodos foram desenvolvidos para a exploração e análise de simuladores correspondentes, em particular quando as execuções são demoradas. Uma abordagem popular neste caso é confiar em modelos substitutos para aliviar o gasto computacional. Muitos modelos substitutos são usados na prática: polinômios, splines, regressão vetorial de suporte, funções de base radial, _random forests_ ou <mark>processos gaussianos (GP).</mark>
+
+
+## Conceitos iniciais: otimização multi-objetivo
+
+A otimização é um processo para melhoria. O objetivo da otimização é encontrar uma solução que possa maximizar ou minimizar a função objetivo única de acordo com as restrições. Por exemplo, queremos maximizar o lucro e, ao mesmo tempo, minimizar o custo de produção. Se o problema tiver mais de um único objetivo, o problema pode ser modificado para ser um problema de objetivo único, como agregar seu valor e dar peso a cada função objetivo. No entanto, este método tem algumas desvantagens:
+
+ - O método requer conhecimento sobre a prioridade ou peso de cada objetivo
+ - A função agregadora fornece apenas uma única solução
+ - O _trade-off_ entre os objetivos não pode ser conhecido e avaliado.
+ - A solução pode ser inatingível se o espaço de busca for convexo.
+ 
+Enquanto isso, no problema de otimização multiobjetivo (MOOP), o _trade-off_ pode ser identificado, pois o algoritmo MOOP fornece várias soluções na frente de Pareto. Várias soluções também dão ao tomador de decisão alguma alternativa para escolher em vez de uma única solução.
+
+## Frente de Pareto
+
+Como o MOOP tem mais de uma função objetivo, não podemos dizer diretamente se a solução A é melhor que a solução B. Temos algo chamado dominância de Pareto.
+
+Dado:
+
+ + O vetor da função-objetivo: $\vec{f}\vec{_(x)} = [f_1 \vec{_(x)}, f_2 \vec{_(x)}, ..., f_k \vec{_(x)}]$
+ + E uma solução plausível de $\Omega$
+ 
+ 
+O Problema de Otimização Multiobjetivo está preocupado em encontrar vetores $\vec{x} \epsilon \Omega$ que otimizam a função vetorial $\vec{f}\vec{_(x)}$.
+
+Em um problema de minimização, um vetor $\vec{x}$ disse para dominar $\vec{y}$ (denotado por $\vec{x} \prec \vec{y}$) se:
+
++ $f_i \vec{x} \leq f_i \vec{y}\,\,\forall \,\, i$ na função $f_i$
+
++ Existe pelo menos um $i$ que satisfaz $f_i \vec{x} < f_i \vec{y}$
+
+Resumindo, se temos uma solução chamada solução $x$, diz-se que a solução domina (sendo melhor que) outra solução, chamada solução $y$, se todas as funções objetivo da solução $x$ são menores ou iguais que todas as funções objetivo da solução $y$ e há pelo menos uma função objetivo da solução $x$ que é melhor (tem menor valor na minimização) do que a função objetivo da solução $y$.
+
+Uma solução é dita dominante se tiver pelo menos um valor de função objetivo que é melhor que o outro enquanto tem valor melhor ou igual em outra função objetivo. Observe o gráfico abaixo.
+
+<center>
+
+![](https://github.com/rhozon/datasets/raw/master/frente_Pareto_ex.png)
+</center>
+
+
+Suponha que tenhamos alguma solução (vamos chamá-la de solução A, B, C e D) com o valor da primeira função objetivo como o eixo $x$ ($f1$) e a segunda função objetivo ($f2$) como o eixo $y$. Ambas as funções objetivo são um problema de minimização, portanto, quanto mais próxima a posição do canto inferior esquerdo, melhor é a solução. A partir da figura acima, podemos inferir várias coisas:
+
+ - A solução B é dita não dominada pela solução A, uma vez que $f1$ de A é menor que B, mas $f2$ é maior que B;
+ 
+ - Como as soluções A e B não são dominadas entre si, elas pertencem ao mesmo grupo/frente
+A solução C é dominada pela solução A e B, pois a $f1$ de C é menor que A e B, com $f2$ de C menor que B ou igual a A;
+
+ - Como a solução C é dominada por A e B, ela pertence à frente inferior (frente 2).
+ 
+ - A solução D é dominada pelas soluções A, B e C porque ambos os valores objetivos são piores que eles.
+ 
+ - Como a solução D é dominada por A, B e C, ela pertence à frente mais baixa (frente 3).
+ 
+ - A fronteira verdadeira de Pareto é um conjunto de soluções ótimas que buscamos alcançar na otimização multiobjetivo.
+ 
+ <center>
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/frente_de_Pareto_exemplo.png)
+</center>
+
+## Bi-objetivo, exemplo unidimensional
+
+Consideramos o seguinte problema simples de otimização bi-objetivo unidimensional a partir da literatura, ver, por exemplo, Van Veldhuizen e Lamont (1999), redimensionado para [0, 1], para ilustrar as diferentes etapas do procedimento e os principais conceitos da otimização multiobjetivo baseada em Processos Gaussianos:
+
+$$
+\mbox{MOP2}(x)=\left\{\begin{array}{rc}
+f_1&=\quad 1-exp((1-x)^2)\\
+f_2&=\quad 1-exp((1-x)^2)
+\end{array}\right.
+$$
+
+
+Primeiro definimos o projeto inicial dos experimentos (``design.init``, seis pontos uniformemente espaçados entre zero e um) e calculamos o conjunto correspondente de observações ``response.init``, que usamos para construir dois modelos de krigagem com a função ``km`` de **DiceKriging** e colocá-los em uma única lista (``model``)
+
+
+```{r}
+
+design.init <- matrix(seq(0, 1, length.out = 6), ncol = 1)
+response.init <- MOP2(design.init)
+
+mf1 <- km(~1, design = design.init, response = response.init[, 1])
+mf2 <- km(~1, design = design.init, response = response.init[, 2])
+
+model <- list(mf1, mf2)
+
+```
+
+
+Em seguida, chamamos a função principal ``GParetoptim`` para realizar sete etapas de otimização usando o critério EHI. Observe que EHI requer um ponto de referência como parâmetro, que corresponde para um limite superior para cada objetivo (aqui [2, 2], se não fornecido, é estimado em cada iteração). As outras entradas obrigatórias são o modelo de ``models`` GP, a função objetivo ``fn``, número de passos (``nsteps``) e os limites de projeto (``lower`` e ``upper``)
+
+
+```{r}
+
+res <- GParetoptim(model = model,
+                   fn = MOP2,
+                   crit = "EHI", 
+                   nsteps = 7, 
+                   lower = 0,
+                   upper = 1,
+                   critcontrol = list(refPoint = c(2, 2)) )
+
+```
+
+Por padrão, o ``GParetoptim`` imprime os pontos escolhidos e suas avaliações correspondentes, juntamente com o valor do critério de amostragem. O critério aqui diminui quase monotonicamente, uma vez que à medida que a exploração avança a melhoria restante (ganho de hipervolume obtido por uma nova observação) diminui. A Figura a seguir ilustra os resultados deste problema 1D e mostra a capacidade dos modelos de Processo Gaussianos para aprender com precisão funções em regiões de destino (o conjunto de Pareto) com base em algumas observações
+
+
+<center>
+
+![](https://github.com/rhozon/datasets/raw/master/procOneDimensional_optim.png)
+
+</center>
+
+
+Resumo do procedimento de otimização no exemplo unidimensional. 
+
++ Acima: as funções objetivo estão em preto, com pontos de design em azul. Os pontos vermelhos mostram o conjunto de Pareto.
+
++ A figura da direita mostra o problema no espaço objetivo ($f1$ vs. $f2$ para todos os $x$). A linha vermelha mostra todas as soluções ótimas de Pareto do problema e a linha azul é o Pareto atual frente com base nas seis observações.
+
++ Meio: modelos de processos gaussianos correspondentes a ambos os objetivos com base nas observações iniciais e no critério de aquisição correspondente (melhoria de hipervolume esperada) que é maximizado para selecionar a próxima observação.
+
++ Abaixo: modelos de processos gaussianos no final do processo de otimização e a frente de Pareto retornada pelo método.
+
+Consideramos agora o problema de otimização mais complexo (P1) dado em Parr (2012):
+
+$$
+\mbox{P1}(x)=\left\{\begin{array}{rc}
+f_1&=\quad (x_2 - 5.1(x_1 / (2\pi))^2 + \frac{5}{\pi} x_1 -6)^2 +10 ((1-\frac{1}{8\pi})cos(x_1)+1)\\
+f_2&=\quad -\sqrt{(10.5-x_1)(x_1 + 5.5)(x_2 + 0.5)} - \frac{(x_2 - 5.1(x_1 / (2\pi))^2 - 6)^2}{30} - \frac{(1-\frac{1}{8\pi})cos(x_1) +1}{3}
+\end{array}\right.
+$$
+
+com $x_1 \in [-5,10]$ e $x_2 \in [0,15]$ reescalonado para $[0,1]^2$ no pacote ``GPareto``. Em particular, o primeiro objetivo é a função Branin-Hoo que introduz a multimodalidade.
+
+Neste exemplo analítico, é possível exibir a verdadeira frente de Pareto e definir usando a função ``plotParetoGrid``: 
+
+
+```{r}
+
+P1 # Abro a função P1 definida no R
+
+plotParetoGrid(P1)
+
+```
+
+
+Como no exemplo anterior, primeiro construímos um conjunto inicial de (dez) observações e uma lista de dois modelos de processos gaussianos:
+
+```{r}
+
+set.seed(1)
+
+d <- 2
+ninit <- 10 
+fun <- P1
+design <- lhsDesign(ninit, d, seed = 42)$design
+response <- t(apply(design, 1, fun))
+mf1 <- km(~., design = design, response = response[, 1])
+mf2 <- km(~., design = design, response = response[, 2])
+model <- list(mf1, mf2)
+
+```
+
+
+Agora, chamamos diretamente a função ``crit_optimizer`` para escolher o próximo ponto a ser avaliado usando o critério SUR. Aqui, a entrada ``optimcontrol`` é usada para escolher o algoritmo ``genoud`` para a otimização do critério. A entrada ``critcontrol`` nos permite escolher os pontos de integração para o critério, aqui uma grade regular de 21 × 21.
+
+```{r}
+
+x.grid <- seq(0, 1, length.out = 21)
+test.grid <- expand.grid(x.grid, x.grid)
+SURcontrol <- list(integration.points = test.grid)
+omEGO1 <- crit_optimizer(crit = "SUR", model = model, lower = c(0, 0),
+                         upper = c(1, 1), critcontrol = list(SURcontrol = SURcontrol),
+                         optimcontrol = list(method = "genoud", pop.size = 20,
+                                              int.seed = 2, unif.seed = 3)
+)
+
+```
+
+Agora, vamos supor que $f2$ é consideravelmente mais rápido de avaliar do que $f1$. Dividimos o objetivo em duas funções separadas, ``fun1`` e ``fun2``, e substituímos o segundo modelo GP por um objeto ``'fastfun'``:
+
+```{r}
+
+fun1 <- function(x) P1(x)[, 1]
+fun2 <- function(x) P1(x)[, 2]
+fastmf2 <- fastfun(fn = fun2, design = design, response = response[, 2])
+model2 <- list(mf1, fastmf2)
+
+```
+
+
+O script para procurar a próxima observação é idêntico.
+
+Na Figura a seguir, mostramos o conjunto inicial de observações e o próximo ponto a ser avaliado de acordo com cada configuração. Para fins de ilustração, as curvas de nível dos critérios também são calculadas.
+
+[figura aqui]
+
+Vemos que usando o objeto ``‘fastfun’`` (daí, informações adicionais), o critério SMS
+apontam claramente para uma região mais estreita, que além disso é bastante diferente das indicadas pela outra configuração. Em ambos os casos, os loops internos de otimização encontram com sucesso o valor global máximo das superfícies dos critérios.
+
+
+Agora, aplicamos quatro etapas do SUR, primeiro com dois objetivos regulares, depois com o contexto ``fastfun``:
+
+
+```{r}
+
+sol <- GParetoptim(model = model, fn = fun, crit = "SUR", nsteps = 4,
+ lower = c(0, 0), upper = c(1, 1), optimcontrol = list(method = "pso"),
+ critcontrol = list(SURcontrol = list(distrib = "SUR", n.points = 50)))
+
+```
+
+
+```{r}
+
+solFast <- GParetoptim(model = list(mf1), fn = fun1, cheapfn = fun2,
+ crit = "SUR", nsteps = 4, lower = c(0, 0), upper = c(1, 1),
+ optimcontrol = list(method = "pso"),
+ critcontrol = list(SURcontrol = list(distrib = "SUR", n.points = 50)))
+
+```
+
+Em seguida, geramos os processos de pós-tratamento usando ``plotGPareto.`` As saídas gráficas
+são dados na Figura a seguir. Parâmetros opcionais ``f1lim`` e ``f2lim`` são usados para fixar limites para o gráficos superiores para permitir uma melhor comparação.
+
+```{r}
+
+lim1 <- seq(-50, 240, length.out = 51) # 51 for speed and lighter vignette
+lim2 <- seq(-35, 0, length.out = 51)
+
+plotGPareto(sol, UQ_PF = TRUE, UQ_PS = TRUE, UQ_dens = TRUE,
+ control = list(f1lim = lim1, f2lim = lim2))
+
+plotGPareto(solFast, UQ_PF = TRUE, UQ_PS = TRUE, UQ_dens = TRUE,
+ control = list(f1lim = lim1, f2lim = lim2))
+
+```
+
+
+Primeiro, vemos o interesse de usar a classe ``‘fastfun’`` quando alguns objetivos são baratos para computar: A frente de Pareto obtida desta forma é muito mais precisa (Figura, parte superior), em particular para valores baixos do segundo objetivo.
+
+Curiosamente, as duas expectativas de Vorob'ev são semelhantes e fornecem uma previsão muito boa da frente de Pareto real (Figura 4), exceto para os valores mais baixos do primeiro objetivo. No entanto, os desvios de Vorob'ev (áreas cinzentas) mostram uma maior incerteza local para esta parte da frente.
+
+No geral, os valores de desvio de Vorob'ev (394 e 296, respectivamente) indicam uma melhor confiança na frente de Pareto prevista usando ``fastfun.``
+
+[figura aqui]
+
+Os gráficos de probabilidade e densidade (Figura 6, segunda e terceira linhas, respectivamente) fornecem informações complementares sobre o conjunto de Pareto (espaço de entrada). Os gráficos de probabilidade indicam regiões interessantes (brancas) e desinteressantes (pretas), bem como incertas (cinza), mas não não fornecem uma visão clara sobre o conjunto de Pareto. Aqui, em ambos os casos, as grandes áreas cinzentas mostram que observações adicionais podem ser benéficas, o que é consistente com a grande diferença entre a atual frente de Pareto e a expectativa de Vorob'ev (Figura 6, superior). No outro por outro lado, as densidades fornecem estimativas bastante precisas do conjunto de Pareto, em particular para a configuração ``fastfun.``
+
+Finalmente, pode-se querer extrair pontos da expectativa de Vorob’ev da frente de Pareto
+(ou seja, a entrada realizando um trade-off específico) que ainda não foram observadas. Para isso, no final, a função ``getDesign`` retorna o design mais provável dado um alvo no espaço objetivo, e pode ser chamado da seguinte forma:
+
+
+```{r}
+
+newPoint <- getDesign(model = sol$lastmodel, target = c(55, -30),
+ lower = c(0, 0), upper = c(1, 1), optimcontrol = list(method = "pso"))
+
+```
+
+Aqui, escolhemos um alvo $[55, −30]$ que está na expectativa de Vorob'ev, onde a incerteza é pequena, mas onde nenhuma observação está próxima (Figura 6, canto superior esquerdo). A saída ``getDesign`` é uma lista com o valor do projeto (par), o valor do critério, ou seja, a probabilidade que o objetivo newPoint não é dominado pelo alvo) (valor, aqui 90%) e o Processo Gaussiano de previsão de cada objetivo com a incerteza associada ((``mean``), (``sd``) e intervalos de confiança).
+
+Aqui, o valor do segundo objetivo atinge a meta com grande confiança, mas o primeiro valor objetivo é bastante incerto.
+
+
+
+## Aplicação: Otimização MultiObjetivo (com 3) de portfólio
+
+O problema de aplicação é replicado para os estudos encontrados em [Zhao _et alli_ (2019)](https://www.hindawi.com/journals/mpe/2019/4246903/) e em [Anagnostopolous e Mamanis (2010)](https://www.sciencedirect.com/science/article/abs/pii/S0305054809002275) 
+
+O problema de otimização de portfólio preocupa-se em gerenciar o portfólio de ativos que minimize os objetivos de risco sujeitos à restrição para garantir um determinado nível de retorno. Um dos princípios fundamentais do investimento financeiro é a diversificação (MarkoWitz), onde os investidores diversificam seus investimentos em diferentes tipos de ativos. A diversificação da carteira minimiza a exposição dos investidores aos riscos e maximiza os retornos das carteiras. Em alguns casos, é muito difícil para o tomador de decisão saber de antemão o número ótimo de títulos que devem ser incluídos em sua carteira sem examinar todos os _trade-offs_ entre risco, retorno e cardinalidade da carteira. De qualquer forma, um investidor pode perder soluções importantes com grande _trade-off_ entre os objetivos quando for obrigado a fixar antecipadamente o número de ativos da carteira.
+
+### Teoria de alocação de PortFolio
+
+Uma vez que o modelo de seleção de portfólio proposto envolve variáveis de decisão inteiras mistas e objetivos múltiplos, encontrar a fronteira eficiente exata pode ser muito difícil. No entanto, encontrar uma boa aproximação da fronteira eficiente que forneça ao investidor um conjunto diversificado de carteiras capturando todos os _trade-offs_ possíveis entre os objetivos dentro de um tempo computacional limitado é geralmente aceitável
+
+Segundo a contribuição de Markowitz numa carteira com $N$ ativos, temos $R_t$ como excesso de retornos do ativo $N$ no tempo $t$, $R_t = (R_{1t},\cdots, R_{Nt})^{'}$ seguem uma distribuição normal $p(R_t | \mu, \sum ) = N(\mu, \sum)$ é uma matriz $N \times 1$ e $\sum$ é uma matriz $N \times N$. Os pesos podem ser denotados como sendo $w = (w_1 , \cdots, w_N)$. O retorno do portfolio é:
+
+$$
+R_p = \displaystyle \sum_{i=1}^{N}w_i R_{it} = w^{'}R_t
+$$
+
+e o retorno esperado e a variância serão:
+
+$$
+\mu_p\displaystyle \sum^{N}_{i=1}w_i \mu_i = w^{'}\mu,
+$$
+
+$$
+\sigma^{2}_{p} = \displaystyle \sum_{i=1}^{N} \sum_{i=j}^{N} w_i w_j cov(R_i , R_j ) = w^{'}\sum w
+$$
+
+onde $\mu_i$ é o retorno do ativo $i$ e $cov(R_i, R_j)$ é a covariância dos ativos $i$ e $j$.
+
+Suponha que os investidores mantenham a carteira por $\tau$ e seu objetivo é maximizar o valor no momento $T+\tau$ onde $T$ é o tempo (momento) em que o portfolio é montado (construído). O modelo média-variância pode ser expresso pelo seguinte problema de otimização:
+
+$$
+\min_{w} \sigma^{2}_{p} = \min_{w}w^{'}\sum_{T+\tau} w
+$$
+
+sujeito à:
+
+$$
+w^{'}\mu_{T+\tau} \geq \mu^{*}\\
+
+w^{'}1=1,
+$$
+
+onde $\mu^{*}$ é o retorno mínimo permitido.
+
+
+Em nossa aplicação definiremos 3 funções objetivo: 
+
+
+A função objetivo de **maximização de retornos** então será dada por:
+
+$$
+max \  \mu(x) = \sum_{i=1}^{N} x_i \ \mu_i
+$$
+
+Onde:
+
+ - $\mu(x)$: média total dos retornos;
+ - $x_i$: peso do $i-$ésimo ativo;
+ - $\mu_i$: média dos retornos dos $i-$ésimos ativos
+ 
+A segunda função-objetivo que **minimiza os riscos** será dada pela variância dos retornos:
+
+$$
+min \ \rho(x) = \sum_{i=1}^{N}\sum_{j=1}^{N} x_i \  x_j \ \sigma_{ij}
+$$
+ 
+
+ - $\rho(x):$ risco total do portfolio;
+ - $\sigma_{ij}$: covariância entre ativo $i$ e $j$;
+ 
+E finalmente, a nossa terceira função-objetivo será dada pelo **número mínimo de ativos**, sujeito à restrição de que o número de ativos é a soma de todos os ativos que possuem peso > 0. 
+$$
+\min \mbox{num ativos}(x) = \sum_{i=1}^{N} 1_{x>0}
+$$
+sujeito à:
+
+$$
+\sum_{i=1}^{N} x_i = 1
+$$
+
+$$
+0 \leq x_i \leq 1
+$$
+
+
+## Carregando os dados do _portfolio_
+
+```{r}
+
+
+library(BatchGetSymbols)
+
+portfolio <- BatchGetSymbols(
+                          tickers = c("ZC=F", # Futuros Milho
+                                      "ZO=F", # Futuros Aveia
+                                      "KE=F", # Futuros KC HRW Wheat Futures
+                                      "ZR=F", # Rough Rice Futures
+                                      "GF=F", # Feeder Cattle Futures
+                                      "ZS=F", # Futuros oleo de soja
+                                      "ZL=F", # Futuros Soja
+                                      "ZM=F"  # Futuros farelo soja
+                                      
+                                          ),
+                          first.date = "2019-01-01",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+portfolio <- as.data.frame(portfolio$df.tickers)
+
+head(portfolio)
+
+```
+
+Vamos obter os valores dos retornos médios:
+
+```{r}
+
+retornos_medios <- portfolio %>%
+  group_by(ticker) %>%
+  summarize(
+    ret_medio = mean(ret.closing.prices, na.rm = TRUE)*100
+  )
+
+retornos_medios %>%
+  arrange(desc(ret_medio))
+  
+```
+
+O valor de $R_f$ é obtido a partir da última taxa de juros básica da economia brasileira, a saber, a taxa SELIC que hoje está projetada em 12,75% a.a. ( https://www.bcb.gov.br/controleinflacao/historicotaxasjuros )
+
+```{r}
+
+rf <- 12.75/100 
+  
+```
+
+### Matriz de Covariâncias dos ativos do portfolio
+
+Ativos de covariância inversa representam a combinação ideal para o propósito de diversificação, por mais que seja raro encontrá-los na prática:
+
+```{r}
+
+retornos_milho <- BatchGetSymbols(
+                          tickers = "ZC=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_milho <- as.data.frame(retornos_milho$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+milho_matriz <- retornos_milho %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_milho = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_milho = ret_milho*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+```{r}
+
+retornos_aveia <- BatchGetSymbols(
+                          tickers = "ZO=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_aveia <- as.data.frame(retornos_aveia$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+aveia_matriz <- retornos_aveia %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_aveia = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_aveia = ret_aveia*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+
+```{r}
+
+retornos_farelo_aveia <- BatchGetSymbols(
+                          tickers = "KE=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_farelo_aveia <- as.data.frame(retornos_farelo_aveia$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+farelo_aveia_matriz <- retornos_farelo_aveia %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_farelo_aveia = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_farelo_aveia = ret_farelo_aveia*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+```{r}
+
+retornos_arroz <- BatchGetSymbols(
+                          tickers = "ZR=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_arroz <- as.data.frame(retornos_arroz$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+farelo_arroz_matriz <- retornos_arroz %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_arroz = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_arroz = ret_arroz*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+
+
+```{r}
+
+retornos_feeder_cattle <- BatchGetSymbols(
+                          tickers = "GF=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_feeder_cattle <- as.data.frame(retornos_feeder_cattle$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+feeder_cattle_matriz <- retornos_feeder_cattle %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_feeder_cattle = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_feeder_cattle = ret_feeder_cattle*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+
+```{r}
+
+retornos_farelo_soja <- BatchGetSymbols(
+                          tickers = "ZM=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_farelo_soja <- as.data.frame(retornos_farelo_soja$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+farelo_soja_matriz <- retornos_farelo_soja %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_farelo_soja = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_farelo_soja = ret_farelo_soja*100
+  ) %>%
+  as.matrix()
+
+```
+
+
+```{r}
+
+retornos_oleo_soja <- BatchGetSymbols(
+                          tickers = "ZS=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_oleo_soja <- as.data.frame(retornos_oleo_soja$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+oleo_soja_matriz <- retornos_oleo_soja %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_oleo_soja = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_oleo_soja = ret_oleo_soja*100
+  ) %>%
+  as.matrix()
+
+```
+
+```{r}
+
+retornos_grao_soja <- BatchGetSymbols(
+                          tickers = "ZL=F",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+retornos_grao_soja <- as.data.frame(retornos_grao_soja$df.tickers) %>%
+  select(
+    ref.date,
+    ret.closing.prices
+  ) %>%
+  filter(
+    !is.na(ret.closing.prices)
+  )
+
+grao_soja_matriz <- retornos_grao_soja %>%
+  select(
+    ret.closing.prices
+  ) %>% 
+  rename(
+    ret_grao_soja = "ret.closing.prices"
+  ) %>%
+  mutate(
+    ret_grao_soja = ret_grao_soja*100
+  ) %>%
+  as.matrix()
+
+```
+
+Constrói a matriz de retornos e em seguida as covariâncias:
+
+```{r}
+
+matriz_retornos <- cbind(
+  milho_matriz,
+  aveia_matriz,
+  farelo_aveia_matriz,
+  farelo_soja_matriz,
+  oleo_soja_matriz,
+  grao_soja_matriz,
+  farelo_arroz_matriz,
+  feeder_cattle_matriz
+) 
+
+head(matriz_retornos)
+
+```
+
+Matriz de covariâncias dos retornos:
+
+```{r}
+
+matriz_covariancias <- cov(matriz_retornos)
+
+matriz_covariancias
+
+```
+
+
+### Determinação da função a ser ajustada
+
+
+```{r}
+
+fit <- function(x){
+  # Pesos w de cada commoditie
+  w_commodity <- x
+  
+ # Calcula os retornos totais (do portfolio)
+ f1 <- numeric()
+ for (i in 1:n_distinct(portfolio$ticker)) {
+   f1[i] <- w_commodity[i]*retornos_medios$mean[i]
+ }
+ retornos_medios_totais <- sum(f1) - 1e9 * (round(sum(w_commodity),10)-1)^2 
+ 
+ # Calcula o risco do portfolio
+ f2 <- numeric()
+ for (i in 1:n_distinct(portfolio$ticker)) {
+   f3 <- numeric()
+   
+   for (j in 1:n_distinct(portfolio$ticker)) {
+    f3[j] <- w_commodity[i]*w_commodity[j]*matriz_covariancias[i,j]
+   }
+ f2[i] <- sum(f3)
+ }
+ risco <- sum(f2) + 1e9 * (round(sum(w_commodity),10)-1)^2
+ 
+ # Calcula o numero de ativos
+ n_ativos <- length(w_commodity[w_commodity > 0]) 
+ 
+ return(c(-retornos_medios_totais, risco, n_ativos))
+}
+
+```
+
+
+# Roda o algoritmo de otimização 
+
+
+O Algoritmo Evolucionário Multiobjetivo (MOEA) é a aplicação de um algoritmo evolucionário, como o algoritmo genético para lidar com MOOP. Já existe uma grande quantidade de pesquisas nesta área, resultando em uma grande variedade de algoritmos. Algoritmo Genético de Classificação Não Dominada II (NSGA-II) é uma das escolhas populares e tornou-se uma inspiração para pesquisas posteriores.
+
+O algoritmo utilizado ``NSGA-II`` pode ser executado no R com o pacote ``nsga2R``, em especial com o uso da função ``nsga2()`` passando pelos argumentos da função através de:
+
++ ``fn``: a função de ajuste a ser minimizada
++ ``varNo``: Número de variáveis de decisão
++ ``objDim``: Número de funções objetivo
++ ``lowerBounds``: limites inferiores de cada variável de decisão
++ ``upperBounds``: limites superiores de cada variável de decisão
++ ``popSize``: Tamanho da população
++ ``generations``: número de gerações
+
+O processo das etapas do algoritmo podem ser visualizadas a seguir:
+
+<center>
+
+![](https://github.com/rhozon/datasets/raw/master/NSGA-II_Algorithm.png){width=80%}
+</center>
+
+Haverá uma população de soluções selecionados aleatoriamente.
+
+Os valores de aptidão ou os valores da função objetivo de cada solução são calculados.
+
+Da população, duas das soluções serão escolhidas como soluções-mãe, seja por seleção por torneio ou qualquer outro método de seleção.
+
+As soluções escolhidas serão cruzadas para criar novas soluções, chamadas de soluções filhas.
+
+As soluções filhas podem mudar devido às mutações aleatórias (que tem uma probabilidade muito baixa de acontecer).
+
+Ao final da iteração, uma nova população será escolhida entre as soluções pai ou a população inicial e as soluções filhas com base nos valores de aptidão.
+
+Enquanto o critério de parada não for atendido, geralmente em termos de número de iterações, o algoritmo continuará a iterar.
+
+As soluções melhores ou ótimas são aquelas com o valor de _fit_ ótimo.
+
+Para problemas multiobjetivos, o NSGA-II trabalha com o mesmo fluxo de trabalho do processo acima. A diferença é que, ao final de cada iteração, uma nova população para a próxima iteração é escolhida usando o método de ordenação não-dominado. As soluções são divididas em várias frentes com base em seu status de dominação umas contra as outras. Se tivermos um tamanho de população inicial de 10, os 10 principais indivíduos da população de pais e filhos da melhor frente serão escolhidos para a próxima iteração. Além disso, para controlar a diversidade de soluções, calcula-se a distância de _crowding_, que corresponde à distância de Manhattan de duas soluções vizinhas para dois objetivos, de cada solução (vide [Kramer, 2017](https://link.springer.com/book/10.1007/978-3-319-52156-5) ). Aqueles com a maior distância de canto são finalmente selecionados.
+
+<center>
+
+![](https://github.com/rhozon/datasets/raw/master/dist_crowding.png)
+
+</center>
+
+Executaremos o algoritmo para 1.000 iterações, com tamanho populacional de 200. A probabilidade de mutação é 0,2 enquanto a probabilidade de cruzamento é 0,8.
+
+
+```{r}
+
+library(nsga2R)
+
+set.seed(123)
+finance_optim <- nsga2R(fn = fit,
+                        varNo = 8,
+                        objDim = 3,
+                        generations = 1000,
+                        mprob = 0.2,
+                        popSize = 200,
+                        cprob = 0.8,
+                        lowerBounds = rep(0, 8),
+                        upperBounds = rep(1, 8))
+
+```
+
+Para verificar as <mark>soluções da frente de pareto,</mark> podemos olhar para os <mark>objetivos</mark> e subconjunto apenas naqueles com classificação da frente de pareto de 1. Vamos ver quantas soluções ótimas diferentes são geradas.
+
+```{r}
+
+finance_optim$objectives[finance_optim$paretoFrontRank == 1, ] %>% 
+   matrix(ncol = 3) %>% 
+   as.data.frame() %>% 
+   distinct() %>% 
+   mutate(
+     V1 = round(-V1, 5),
+     V2 = round(V2, 5)) %>% 
+   rename(
+     `Retorno Total` = V1,
+      Risco = V2,
+     `Numero de Ativos` = V3
+     )
+
+```
+
+
+Checaremos agora o peso total:
+
+
+```{r}
+
+sum(finance_optim$parameters[1, ])
+
+```
+
+
+A soma dos pesos deverá ser 1 (ou 100%), então podemos ter certeza de que nossa solução não viola a restrição.
+
+Se desejarmos obter o peso de cada ativo, podemos usar o objeto de parâmetros do arquivo ``finance_optim``. Vamos verificar o parâmetro para a primeira solução.
+
+```{r}
+
+#finance_optim$parameters
+
+pesos <- round(finance_optim$parameters[1, ], 5)
+#pesos
+
+retornos <- round(pesos * retornos_medios$ret_medio, 5)
+#retornos
+
+#                          tickers = c("ZC=F", # Futuros Milho
+#                                      "ZO=F", # Futuros Aveia
+#                                      "KE=F", # Futuros KC HRW Wheat Futures
+#                                      "ZR=F", # Rough Rice Futures
+#                                      "GF=F", # Feeder Cattle Futures
+#                                      "ZS=F", # Futuros oleo de soja
+#                                      "ZL=F", # Futuros Soja
+#                                      "ZM=F"  # Futuros farelo soja
+
+retornos_e_pesos <- data.frame(
+  tickers = c("Milho (ZC=F)", 
+              "Aveia (ZO=F)",
+              "KC Aveia (KE=F)",
+              "Arroz (ZR=F)",
+              "Feeder Cattle (GF=F)",
+              "Oleo de Soja (ZS=F)",
+              "Grãos Soja (ZL=F)",
+              "Farelo Soja (ZM=F)"
+              ),
+  pesos,
+  retornos
+)
+
+retornos_e_pesos
+
+```
+
+
+Segundo Zhao _et alli_, 2019:
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"The traditional portfolio selection model seriously overestimates its theoretic optimal return."
+
+
+</p>
+
+os autores então utilizam uma combinação de modelos bayesianos paramétricos para as volatilidades com modelos da família GARCH via cadeias de Markov via Monte Carlo com Mudanças de Regime.
+
+Muitas pesquisas constatam que os retornos são heterocedásticos, mas ainda existem alguns outros experimentos empíricos que mostram que os parâmetros não são fixos e imutáveis. Quanto aos motivos das mudanças, pode ser devido à potencial transferência em diferentes mecanismos durante os processos de geração de dados. Por exemplo, as flutuações do ciclo de negócios podem ser vistas como um fator endógeno. E, na situação de mudança de regime, o modelo de mudança de regime de Markov é bom para descrever a dinâmica dos retornos e da variância.
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+# Referências
+
+***
+
+
+Van Veldhuizen DA, Lamont GB (1999). _“Multiobjective Evolutionary Algorithm Test Suites.”_
+In Proceedings of the 1999 [ACM symposium on Applied computing, pp. 351–357.](https://dl.acm.org/doi/pdf/10.1145/298151.298382) ACM.
+
+
+Parr JM (2012). _Improvement Criteria for Constraint Handling and Multiobjective Optimization._ Ph.D. thesis, University of Southampton.
+
+Kramer, O (2017). _Genetic Algorithms Essentials_, 1ª ed. Springer.
+
+Anagnostopoulos, K., P. e Mamanis, G. (2010) **A portfolio optimization model with three objectives and discrete variables**, In Computers & Operations Research
+Volume 37, Issue 7, July 2010, Pages 1285-1297, https://doi.org/10.1016/j.cor.2009.09.009 Disponível em: https://www.sciencedirect.com/science/article/abs/pii/S0305054809002275
+
+Zhao, D. _et. alli_ (2019) **Portfolio Selection Based on Bayesian Theory**. _In_ Hindawi Mathematical Problems in Engineering Volume, 2019, Article ID 4246903, https://doi.org/10.1155/2019/4246903. Disponível em: https://www.hindawi.com/journals/mpe/2019/4246903/ 
+
+Zhou, A., _et alli_ (2011) **Multiobjective evolutionary algorithms: A survey of the state of the art**, March 2011, Elsevier, In http://i2pc.es/coss/Docencia/SignalProcessingReviews/Zhou2011.pdf 
+
+
+***
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## R packages
+
+***
+
+
+```{r}
+
+citation(package = "GPareto")
+citation(package = "nsga2R")
+
+```
+
+
+&nbsp;
+
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## Tempo total de compilação deste documento
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time
+
+
+```
