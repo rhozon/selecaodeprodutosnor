@@ -391,6 +391,13 @@ O problema de otimização de portfólio preocupa-se em gerenciar o portfólio d
 
 ### Teoria de alocação de PortFolio
 
+<center>
+
+![](https://github.com/rhozon/datasets/raw/master/eggs_basket.png)
+
+</center>
+
+
 Uma vez que o modelo de seleção de portfólio proposto envolve variáveis de decisão inteiras mistas e objetivos múltiplos, encontrar a fronteira eficiente exata pode ser muito difícil. No entanto, encontrar uma boa aproximação da fronteira eficiente que forneça ao investidor um conjunto diversificado de carteiras capturando todos os _trade-offs_ possíveis entre os objetivos dentro de um tempo computacional limitado é geralmente aceitável
 
 Segundo a contribuição de Markowitz numa carteira com $N$ ativos, temos $R_t$ como excesso de retornos do ativo $N$ no tempo $t$, $R_t = (R_{1t},\cdots, R_{Nt})^{'}$ seguem uma distribuição normal $p(R_t | \mu, \sum ) = N(\mu, \sum)$ é uma matriz $N \times 1$ e $\sum$ é uma matriz $N \times N$. Os pesos podem ser denotados como sendo $w = (w_1 , \cdots, w_N)$. O retorno do portfolio é:
