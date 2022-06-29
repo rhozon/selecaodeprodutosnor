@@ -86,6 +86,8 @@ navbar:
           href: GARCH_Bayesiano.html   
         - text: "Introdução a otimização multiobjetivo de um portfólio de commodities"
           href: optim_multiobjective.html  
+        - text: "Exemplo de aplicação multiobjetivo portfolio"
+          href: optim_multiobj_portfolio.html            
           
   right:
     - icon: fa-question fa-lg
