@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo Hermont Ozon" />
+
+
+<title>Otimização Multiobjetivo: Alocação de Risco em Portfólio com Evolução Diferencial</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
+    </li>
+    <li>
+      <a href="ETL_R_no_PowerBI.html">ETL com o R direto no Power BI</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="AAS_Algo_CiencDados_Cruzeiro.html">AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R</a>
+    </li>
+    <li>
+      <a href="AtividadeIeII.html">Projeto Int. Transdiciplinar de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="prophet.html">Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``</a>
+    </li>
+    <li>
+      <a href="prophet_boost.html">Forecasting de séries temporais com algoritmos de machine learning</a>
+    </li>
+    <li>
+      <a href="causalimpact.html">Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
+    </li>
+    <li>
+      <a href="modelo_deep_learning_series_temporais.html">Modelos de Deep Learning em Séries Temporais de preços de commodities</a>
+    </li>
+    <li>
+      <a href="Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html">Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo</a>
+    </li>
+    <li>
+      <a href="GARCH_Bayesiano.html">Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobjective.html">Introdução a otimização multiobjetivo de um portfólio de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobj_portfolio.html">Exemplo de aplicação multiobjetivo portfolio</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Otimização Multiobjetivo: Alocação de Risco
+em Portfólio com Evolução Diferencial</h1>
+<h4 class="author">Rodrigo Hermont Ozon</h4>
+<h4 class="date">Last Update: julho 03, 2022</h4>
+
+</div>
+
+
+<pre class="r"><code>start_time &lt;- Sys.time()</code></pre>
+<style type="text/css">
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+</style>
+<hr />
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+<div class="alert alert-info">
+<p><strong> Otimização Multiobjetivo para uma carteira de ativos e
+commodities </strong></p>
+</div>
+<hr />
+<hr />
+<center>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+PhD. Candidature exercise
+
+</p>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Modelos de risco médio foram desenvolvidos no início dos anos 50 para o problema de seleção de portfólio. Inicialmente, a variância foi usada como medida de risco. Desde então, muitas medidas alternativas de risco foram propostas. A questão de qual medida de risco é mais apropriada é ainda é objeto de muito debate. Valor em risco (VaR) e o Valor em Risco Condicional (CVaR) são os mais populares modelos de aferição de risco de queda/prejuízos. VaR é o valor negativo do retorno da carteira tal que os retornos ocorrerão apenas com no máximo um nível de probabilidade predefinido, que normalmente é entre um e cinco por cento. CVaR é o valor negativo da média de todas as realizações (períodos) de retorno que estão abaixo do VaR. Existe uma literatura volumosa sobre problemas de otimização de portfólio com medidas de risco VaR e CVaR, veja, por exemplo, Fábián e Veszprémi (2008) e as referências lá no final deste post.
+
+</center>
+</p>
+<hr />
+<div id="pacotes-do-r" class="section level1">
+<h1>Pacotes do R</h1>
+<pre class="r"><code>library(tidyverse)
+library(dplyr)
+library(PerformanceAnalytics)
+library(PortfolioAnalytics)
+library(ROI)
+library(quadprog)
+library(DEoptim)
+library(tsibble)
+library(fpp3)
+library(plotly)
+library(tidyquant)</code></pre>
+</div>
+<div id="processamento-em-paralelo" class="section level1">
+<h1>Processamento em paralelo</h1>
+<p>Este pacote dá capacidade multiprocessamento para o pacote
+<code>PortfolioAnalytics</code>.</p>
+<pre class="r"><code>library(doParallel)
+registerDoParallel()</code></pre>
+</div>
+<div id="intro" class="section level1">
+<h1>Intro</h1>
+<p>A teoria moderna de seleção de portfólio considera critérios como
+maximizar a assimetria da cauda superior e liquidez ou minimizar o
+número de títulos no portfólio. Na literatura recente de portfólio, tem
+sido defendida por vários autores a necessidade de incorporar
+contribuições de risco no problema de alocação de carteiras.</p>
+<p>A Paridade de Risco de Portfólio de Qian (2005) aloca a variância do
+portfólio igualmente entre os componentes do portfólio. Maillard <em>et
+alli</em> (2010) chamam isso de Contribuição de Risco Equivalente da
+Carteira (ERC). Eles derivam as propriedades teóricas do portfólio ERC e
+mostram que sua volatilidade está localizada entre aqueles de variância
+mínima e carteira de pesos idênticos.</p>
+<p>Zhu <em>et alli</em> (2010) estudaram a seleção ótima de
+média-variância do portfólio sob uma restrição direta sobre as
+contribuições para a variância da carteira. Como o modelo de otimização
+resultante é um problema de programação quadrática não convexa com
+restrição quadrática, eles desenvolvem um algoritmo
+<em>branch-and-bound</em> para resolver isto.</p>
+<p>Boudt <em>et alli</em> (2010a) propõem usar as contribuições para o
+portfólio CVaR como um insumo no problema de otimização de portfólio
+para criar carteiras cujas contribuições percentuais de CVaR estejam
+alinhadas com o nível desejado de diversificação de risco de CVaR.
+Debaixo de suposição de normalidade, o percentual de contribuição CVaR
+do ativo <span class="math inline">\(i\)</span> é dado pela seguinte
+expressão funcional do vetor de pesos <span class="math inline">\(w =
+(w_1,. . .,w_d )^{&#39;}\)</span>, a média do vetor <span
+class="math inline">\(\mu= (\mu_1,. . .,\mu_d)^{&#39;}\)</span> e da
+matriz de covariância <span class="math inline">\(\sum\)</span>:</p>
+<p><span class="math display">\[
+\frac{ w_i - [-\mu_i] + \frac{(\sum w)_i}{\sqrt{w^{&#39;}\sum
+w}\frac{\phi(z_\alpha)}{\alpha}} }{-w^{&#39;}\mu + \sqrt{w^{&#39;}\sum w
+\frac{\phi (z_\alpha)}{\alpha}}}
+\]</span></p>
+<p>com <span class="math inline">\(z_{\alpha}\)</span> o <span
+class="math inline">\(\alpha\)</span>-quantil da distribuição normal
+padrão e <span class="math inline">\(\phi(·)\)</span> a função de
+densidade normal padrão. Ao longo deste post definimos <span
+class="math inline">\(\alpha = 5%\)</span>. Como nós mostraremos aqui, o
+pacote <code>DEoptim</code> é adequado para resolver esses problemas.
+Observe que também é a estratégia de otimização evolutiva usada no
+pacote <code>PortfolioAnalytics</code> (Boudt <em>et alli</em>,
+2010b)</p>
+<p>Para ilustrar isso, considere como um exemplo estilizado uma carteira
+de cinco ativos investida em ações com tickers
+<code>GE, IBM, JPM, MSFT</code> e <code>WMT</code>. Mantemos a dimensão
+do problema em pequena escala para permitir que os leitores consigam
+reproduzir em seus computadores pessoais.</p>
+<p>Aplicativos de portfólio mais realistas podem ser criados de maneira
+direta a partir do código abaixo, expandindo o número de parâmetros
+otimizados. Os leitores interessados também podem consultar a vignettes
+do pacote <code>DEoptim</code> para um problema de otimização de
+portfólio de 100 parâmetros que é típico daqueles encontrados na
+prática.</p>
+<p>Primeiro baixamos dez anos de dados mensais usando a função
+<code>getSymbols</code> do pacote <code>quantmod</code>. Então
+calculamos a série de log-retorno e estimadores de matriz de média e
+covariância. Para uma visão geral de estimadores alternativos da matriz
+de covariância, como <em>outlier</em> robusto ou estimadores
+<em>shrinkage</em> , e sua implementação no portfólio alocação,
+remetemos o leitor para Würtz <em>et alli</em> (2009, Capítulo 4). Esses
+estimadores podem render melhor desempenho no caso de amostras pequenas,
+<em>outliers</em> ou desvios da normalidade.</p>
+<pre class="r"><code>library(quantmod)
+
+GE &lt;- getSymbols(&quot;GE&quot;,
+ auto.assign = FALSE,
+ from = &quot;2000-12-01&quot;,
+ to = &quot;2010-12-31&quot;)
+
+IBM &lt;- getSymbols(&quot;IBM&quot;,
+ auto.assign = FALSE,
+ from = &quot;2000-12-01&quot;,
+ to = &quot;2010-12-31&quot;)
+
+JPM &lt;- getSymbols(&quot;JPM&quot;,
+ auto.assign = FALSE,
+ from = &quot;2000-12-01&quot;,
+ to = &quot;2010-12-31&quot;)
+
+MSFT &lt;- getSymbols(&quot;MSFT&quot;,
+ auto.assign = FALSE,
+ from = &quot;2000-12-01&quot;,
+ to = &quot;2010-12-31&quot;)
+
+WMT &lt;- getSymbols(&quot;WMT&quot;,
+ auto.assign = FALSE,
+ from = &quot;2000-12-01&quot;,
+ to = &quot;2010-12-31&quot;)
+
+tickers &lt;- cbind(
+  Cl(GE),
+  Cl(IBM),
+  Cl(JPM),
+  Cl(MSFT),
+  Cl(WMT)
+)
+
+head(tickers)</code></pre>
+<pre><code>           GE.Close IBM.Close JPM.Close MSFT.Close WMT.Close
+2000-12-01 392.3077  91.41969   37.3125   28.31250   51.1875
+2000-12-04 397.1154  94.04876   37.9375   28.21875   53.8125
+2000-12-05 416.3462  98.82887   41.3125   29.93750   55.2500
+2000-12-06 414.9038  92.49522   40.0625   28.34375   54.8125
+2000-12-07 411.5385  89.02964   39.1875   26.56250   55.0000
+2000-12-08 424.5192  92.73422   40.0000   27.21875   54.4375</code></pre>
+<pre class="r"><code>tickers &lt;- fortify(tickers) </code></pre>
+<p>Veremos os comportamentos dessas séries temporais diárias:</p>
+<pre class="r"><code>ggplot(tickers, aes(x = Index,
+                    y = GE.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-5-1.png" width="864" /></p>
+<pre class="r"><code>ggplot(tickers, aes(x = Index,
+                    y = IBM.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-5-2.png" width="864" /></p>
+<pre class="r"><code>ggplot(tickers, aes(x = Index,
+                    y = JPM.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-5-3.png" width="864" /></p>
+<pre class="r"><code>ggplot(tickers, aes(x = Index,
+                    y = MSFT.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-5-4.png" width="864" /></p>
+<pre class="r"><code>ggplot(tickers, aes(x = Index,
+                    y = WMT.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-5-5.png" width="864" /></p>
+<p>Como irei trabalhar com séries mensais, é necessário transformar os
+dados para capturarmos os últimos valores de fechamentos dos preços de
+cada mês:</p>
+<pre class="r"><code>library(tibbletime)
+
+tickers_tidy &lt;- tickers %&gt;%
+  as_tbl_time(Index) %&gt;%
+  as_period(&quot;monthly&quot;, side = &quot;end&quot;) %&gt;%
+  as_tsibble() %&gt;%
+  mutate(Index = yearmonth(Index))
+  
+head(tickers_tidy)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2000 dez","2":"368.7500","3":"81.26195","4":"45.4375","5":"21.68750","6":"53.125"},{"1":"2001 jan","2":"353.6923","3":"107.07457","4":"54.9900","5":"30.53125","6":"56.800"},{"1":"2001 fev","2":"357.6923","3":"95.50669","4":"46.6600","5":"29.50000","6":"50.090"},{"1":"2001 mar","2":"322.0000","3":"91.95029","4":"44.9000","5":"27.34375","6":"50.500"},{"1":"2001 abr","2":"373.3077","3":"110.07649","4":"47.9800","5":"33.87500","6":"51.740"},{"1":"2001 mai","2":"376.9231","3":"106.88336","4":"49.1500","5":"34.59000","6":"51.750"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Construo as séries de retornos:</p>
+<pre class="r"><code>retornos &lt;- tickers_tidy %&gt;%
+  mutate(
+    GE.Close   = log((GE.Close/lag(GE.Close))),
+    IBM.Close  = log((IBM.Close/lag(IBM.Close))),
+    JPM.Close  = log((JPM.Close/lag(JPM.Close))),
+    MSFT.Close = log((MSFT.Close/lag(MSFT.Close))),
+    WMT.Close  = log((WMT.Close/lag(WMT.Close)))
+  )
+
+retornos &lt;- retornos[-1,]
+
+head(retornos)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2001 jan","2":"-0.041691519","3":"0.27584764","4":"0.19081363","5":"0.34201469","6":"0.0668886809"},{"1":"2001 fev","2":"0.011245793","3":"-0.11432920","4":"-0.16426412","5":"-0.03436049","6":"-0.1257149208"},{"1":"2001 mar","2":"-0.105121636","3":"-0.03794824","4":"-0.03844943","5":"-0.07590228","6":"0.0081519489"},{"1":"2001 abr","2":"0.147851408","3":"0.17992737","4":"0.06634642","5":"0.21418930","6":"0.0242578791"},{"1":"2001 mai","2":"0.009638141","3":"-0.02943728","4":"0.02409263","5":"0.02088734","6":"0.0001932167"},{"1":"2001 jun","2":"0.000000000","3":"0.01509132","4":"-0.10006206","5":"0.05374764","6":"-0.0586941398"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Obtenhos os valores dos retornos mensais de cada ativo:</p>
+<pre class="r"><code>mu &lt;- colMeans(retornos[,-1]) # mu = media dos retornos de cada ativo
+mu</code></pre>
+<pre><code>     GE.Close     IBM.Close     JPM.Close    MSFT.Close     WMT.Close 
+-0.0080752172  0.0045461158 -0.0006100574  0.0020841409  0.0001469323 </code></pre>
+<p>Calculo os devios-padrão mensais dos retornos de cada ativo:</p>
+<pre class="r"><code>sigma &lt;- cov(retornos[,-1]) # sigma = matriz de covariância dos ativos do portfolio
+sigma</code></pre>
+<pre><code>              GE.Close   IBM.Close   JPM.Close  MSFT.Close   WMT.Close
+GE.Close   0.007908450 0.002970725 0.004320653 0.003424919 0.001122085
+IBM.Close  0.002970725 0.006317555 0.003911824 0.003922411 0.001329021
+JPM.Close  0.004320653 0.003911824 0.009312092 0.004044448 0.002183117
+MSFT.Close 0.003424919 0.003922411 0.004044448 0.006926902 0.001493245
+WMT.Close  0.001122085 0.001329021 0.002183117 0.001493245 0.002841469</code></pre>
+<p>Vamos verificar os comportamentos desses retornos ao longo dos
+meses:</p>
+<pre class="r"><code>###########GE.Close#############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = GE.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-1.png" width="864" /></p>
+<pre class="r"><code>ggplot(retornos, aes(x = Index,
+                    y = GE.Close )) +
+  geom_col() + xlab(&quot;&quot;) + ylab(&quot;GE.Close retornos&quot;) + geom_hline(yintercept = 0, color = &quot;red&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-2.png" width="864" /></p>
+<pre class="r"><code>##########IBM.Close############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = IBM.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-3.png" width="864" /></p>
+<pre class="r"><code>ggplot(retornos, aes(x = Index,
+                     y = IBM.Close )) +
+  geom_col() + xlab(&quot;&quot;) + ylab(&quot;IBM.Close retornos&quot;) + geom_hline(yintercept = 0, color = &quot;red&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-4.png" width="864" /></p>
+<pre class="r"><code>############JPM.Close############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = JPM.Close )) +
+  geom_line() + xlab(&quot;&quot;) </code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-5.png" width="864" /></p>
+<pre class="r"><code>ggplot(retornos, aes(x = Index,
+                     y = JPM.Close )) +
+  geom_col() + xlab(&quot;&quot;) + geom_hline(yintercept = 0, color = &quot;red&quot;) + ylab(&quot;JPM.Close retornos&quot;) </code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-6.png" width="864" /></p>
+<pre class="r"><code>################MSFT.Close#########################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = MSFT.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-7.png" width="864" /></p>
+<pre class="r"><code>ggplot(retornos, aes(x = Index,
+                     y = MSFT.Close )) +
+  geom_col() + xlab(&quot;&quot;) + geom_hline(yintercept = 0, color = &quot;red&quot;) + ylab(&quot;MSFT.Close retornos&quot;) </code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-8.png" width="864" /></p>
+<pre class="r"><code>##############WMT.Close##########################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = WMT.Close )) +
+  geom_line() + xlab(&quot;&quot;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-9.png" width="864" /></p>
+<pre class="r"><code>ggplot(retornos, aes(x = Index,
+                    y = WMT.Close )) +
+  geom_col() + xlab(&quot;&quot;) + geom_hline(yintercept = 0, color = &quot;red&quot;) + ylab(&quot;WMT.Close retornos&quot;) </code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-10-10.png" width="864" /></p>
+<p>Primeiro calculamos a carteira de pesos idênticos. Esta é a carteira
+com maior diversificação de peso e frequentemente utilizada como
+referência. Mas será que o risco de exposição desta carteira é
+efetivamente bem diversificado nos diferentes ativos ?</p>
+<p>Essa questão pode ser respondida calculando a porcentagem de
+contribuições CVaR (<em>Conditional</em> <em>Value-at-Risk</em>) com a
+função <code>ES</code> no pacote <code>PerformanceAnalytics</code>.
+Essas contribuições percentuais de CVaR indicam quanto cada ativo
+contribui para o CVaR total da carteira.</p>
+<p>Contribuições percentuais de CVaR:</p>
+<pre class="r"><code>pContribCVaR &lt;- ES(weights = rep(0.2, 5),
+ method = &quot;gaussian&quot;,
+ portfolio_method = &quot;component&quot;,
+ mu = mu,
+ sigma = sigma)$pct_contrib_ES
+
+pContribCVaR &lt;- round(100 * pContribCVaR, 2)
+pContribCVaR &lt;- setNames(pContribCVaR, c(&quot;GE.Close&quot;, &quot;IBM.Close&quot;, &quot;JPM.Close&quot;, &quot;MSFT.Close&quot;, &quot;WMT.Close&quot;) )
+pContribCVaR</code></pre>
+<pre><code>  GE.Close  IBM.Close  JPM.Close MSFT.Close  WMT.Close 
+     22.99      19.54      26.21      21.43       9.83 </code></pre>
+<p>Vemos que no portfolio de pesos idênticos, 26,21% do risco CVaR da
+carteira é causado pelos 20% investimento em MSFT, enquanto o
+investimento de 20% em WMT causa apenas 9,8% do CVaR total do portfólio.
+A contribuição de alto risco do MSFT é devido ao seu alto desvio padrão
+e baixo retorno médio (relatado em por cento):</p>
+<p>CVaR nos retornos:</p>
+<pre class="r"><code>round(100 * mu , 2) # Retornos</code></pre>
+<pre><code>  GE.Close  IBM.Close  JPM.Close MSFT.Close  WMT.Close 
+     -0.81       0.45      -0.06       0.21       0.01 </code></pre>
+<p>CVaR nos desvios:</p>
+<pre class="r"><code>round(100 * diag(sigma)^(1/2), 2) # Desvios-padrão</code></pre>
+<pre><code>  GE.Close  IBM.Close  JPM.Close MSFT.Close  WMT.Close 
+      8.89       7.95       9.65       8.32       5.33 </code></pre>
+<p>Agora usamos a função <code>DEoptim</code> do pacote
+<code>DEoptim</code> para encontrar os pesos do portfolio para os quais
+a carteira tem o menor CVaR e como cada investimento pode contribuir
+com, no máximo, 22,5% para o risco CVaR total da carteira.</p>
+<p>Para isso, primeiro definimos nossa função objetivo para
+minimizar.</p>
+<p>A implementação atual do <code>DEoptim</code> permite restrições no
+espaço de domínio. Para incluir as restrições de orçamento de risco, nós
+as adicionamos a função objetivo por meio de uma função de penalidade.
+Deste modo, permitimos que o algoritmo de busca considere soluções
+inviáveis. Um portfólio que é inaceitável pois o investidor deve ser
+penalizado o suficiente para ser rejeitado pelo processo de minimização
+e quanto maior o violação da restrição, quanto maior for o aumento o
+valor da função objetivo.</p>
+<p>Uma expressão padrão dessas violações é <span
+class="math inline">\(\alpha × |violation|^p\)</span>. Crama e Schyns
+(2003) descrevem várias maneiras de calibrar os fatores de escala <span
+class="math inline">\(\alpha\)</span> e <span
+class="math inline">\(p\)</span>. Se esses valores forem muito pequenos,
+então as penalidades não cumprem o papel esperado e a solução final pode
+ser inviável. Por outro lado, se <span
+class="math inline">\(\alpha\)</span> e <span
+class="math inline">\(p\)</span> forem muito grandes, então o prazo do
+CVaR torna-se insignificante em relação à penalidade; assim, pequenas
+variações de <span class="math inline">\(w\)</span> podem levar a
+grandes variações do prazo de penalidade, que mascaram o efeito sobre o
+portfólio CVaR.</p>
+<p>Definimos <span class="math inline">\(\alpha = 103\)</span> e <span
+class="math inline">\(p = 1\)</span>, mas reconhecemos que melhores
+escolhas podem ser possíveis e dependem do problema em questão.</p>
+<p>Definição da Função Objetivo:</p>
+<pre class="r"><code>obj &lt;- function(w){
+ if (sum(w) == 0) { w &lt;- w + 1e-2 }
+ w &lt;- w / sum(w)
+ CVaR &lt;- ES(weights = w,
+   method = &quot;gaussian&quot;,
+   portfolio_method = &quot;component&quot;,
+   mu = mu,
+   sigma = sigma)
+ tmp1 &lt;- CVaR$ES
+ tmp2 &lt;- max(CVaR$pct_contrib_ES - 0.225, 0)
+ out &lt;- tmp1 + 1e3 * tmp2
+}</code></pre>
+<p>A penalidade introduzida na função objetivo é não diferenciável e,
+portanto, rotinas padrão de otimização baseadas em gradiente não podem
+ser usadas. Em contraste, o <code>DEoptim</code> foi projetado para
+encontrar uma boa aproximação para o mínimo global do problema de
+otimização:</p>
+<pre class="r"><code>set.seed(1234)
+
+out &lt;- DEoptim(fn = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))</code></pre>
+<pre><code>Iteration: 1 bestvalit: 0.116819 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.807648
+Iteration: 2 bestvalit: 0.116819 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.807648
+Iteration: 3 bestvalit: 0.116819 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.807648
+Iteration: 4 bestvalit: 0.116819 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.807648
+Iteration: 5 bestvalit: 0.116819 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.807648
+Iteration: 6 bestvalit: 0.114037 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.984624
+Iteration: 7 bestvalit: 0.114037 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.984624
+Iteration: 8 bestvalit: 0.114037 bestmemit:    0.507307    0.544270    0.423047    0.452200    0.984624
+Iteration: 9 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 10 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 11 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 12 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 13 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 14 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 15 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 16 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 17 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 18 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 19 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 20 bestvalit: 0.113715 bestmemit:    0.507307    0.544270    0.423047    0.383827    0.984624
+Iteration: 21 bestvalit: 0.113530 bestmemit:    0.502320    0.591949    0.402257    0.415443    0.990805
+Iteration: 22 bestvalit: 0.113530 bestmemit:    0.502320    0.591949    0.402257    0.415443    0.990805
+Iteration: 23 bestvalit: 0.113530 bestmemit:    0.502320    0.591949    0.402257    0.415443    0.990805
+Iteration: 24 bestvalit: 0.113530 bestmemit:    0.502320    0.591949    0.402257    0.415443    0.990805
+Iteration: 25 bestvalit: 0.113152 bestmemit:    0.510265    0.557241    0.311824    0.531627    0.972806
+Iteration: 26 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 27 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 28 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 29 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 30 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 31 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 32 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 33 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 34 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 35 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 36 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 37 bestvalit: 0.112845 bestmemit:    0.473784    0.557241    0.311824    0.531627    0.972806
+Iteration: 38 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 39 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 40 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 41 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 42 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 43 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 44 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 45 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 46 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 47 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 48 bestvalit: 0.112748 bestmemit:    0.473784    0.524077    0.311824    0.531627    0.972806
+Iteration: 49 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 50 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 51 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 52 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 53 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 54 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 55 bestvalit: 0.112692 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.967692
+Iteration: 56 bestvalit: 0.112630 bestmemit:    0.532983    0.597617    0.280691    0.513050    0.995445
+Iteration: 57 bestvalit: 0.112630 bestmemit:    0.532983    0.597617    0.280691    0.513050    0.995445
+Iteration: 58 bestvalit: 0.112627 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.972284
+Iteration: 59 bestvalit: 0.112627 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.972284
+Iteration: 60 bestvalit: 0.112627 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.972284
+Iteration: 61 bestvalit: 0.112627 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.972284
+Iteration: 62 bestvalit: 0.112627 bestmemit:    0.465191    0.559415    0.298957    0.533445    0.972284
+Iteration: 63 bestvalit: 0.112454 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.972284
+Iteration: 64 bestvalit: 0.112454 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.972284
+Iteration: 65 bestvalit: 0.112454 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.972284
+Iteration: 66 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 67 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 68 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 69 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 70 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 71 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 72 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 73 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 74 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 75 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 76 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 77 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 78 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 79 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 80 bestvalit: 0.112440 bestmemit:    0.465191    0.559415    0.286157    0.533445    0.973311
+Iteration: 81 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 82 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 83 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 84 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 85 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 86 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 87 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 88 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 89 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 90 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 91 bestvalit: 0.112401 bestmemit:    0.528886    0.587142    0.253780    0.543166    0.997550
+Iteration: 92 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 93 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 94 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 95 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 96 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 97 bestvalit: 0.112348 bestmemit:    0.522917    0.587142    0.253780    0.543166    0.997550
+Iteration: 98 bestvalit: 0.112298 bestmemit:    0.522917    0.587142    0.253780    0.527480    0.993003
+Iteration: 99 bestvalit: 0.112298 bestmemit:    0.522917    0.587142    0.253780    0.527480    0.993003
+Iteration: 100 bestvalit: 0.112298 bestmemit:    0.522917    0.587142    0.253780    0.527480    0.993003
+Iteration: 101 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 102 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 103 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 104 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 105 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 106 bestvalit: 0.112189 bestmemit:    0.516466    0.584172    0.252668    0.529010    0.995788
+Iteration: 107 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 108 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 109 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 110 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 111 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 112 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 113 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 114 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 115 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 116 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 117 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 118 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 119 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 120 bestvalit: 0.112113 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.993003
+Iteration: 121 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 122 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 123 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 124 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 125 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 126 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 127 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 128 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 129 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 130 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 131 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 132 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 133 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 134 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 135 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 136 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 137 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 138 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 139 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 140 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 141 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 142 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 143 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 144 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 145 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 146 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 147 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 148 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 149 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 150 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 151 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 152 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 153 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 154 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 155 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 156 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 157 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 158 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 159 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 160 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 161 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 162 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 163 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 164 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 165 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 166 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 167 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 168 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 169 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 170 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 171 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 172 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 173 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 174 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 175 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 176 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 177 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 178 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 179 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 180 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 181 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 182 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 183 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 184 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 185 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 186 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 187 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 188 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 189 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 190 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 191 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 192 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 193 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 194 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 195 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 196 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 197 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 198 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 199 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408
+Iteration: 200 bestvalit: 0.112080 bestmemit:    0.522917    0.587142    0.238810    0.527480    0.995408</code></pre>
+<pre class="r"><code>out$optim$bestval</code></pre>
+<pre><code>[1] 0.1120799</code></pre>
+<pre class="r"><code>wstar &lt;- out$optim$bestmem
+wstar &lt;- wstar / sum(wstar)
+
+setNames(round(100 * wstar, 2), c(&quot;GE.Close&quot;, &quot;IBM.Close&quot;, &quot;JPM.Close&quot;, &quot;MSFT.Close&quot;, &quot;WMT.Close&quot;) )</code></pre>
+<pre><code>  GE.Close  IBM.Close  JPM.Close MSFT.Close  WMT.Close 
+     18.21      20.45       8.32      18.37      34.66 </code></pre>
+<pre class="r"><code>100 * (sum(wstar * mu) - mean(mu))</code></pre>
+<pre><code>[1] 0.02236845</code></pre>
+<p>Observe que as principais diferenças com a carteira de pesos
+idênticos são os baixos pesos dados ao JPM e MSFT e o alto peso para
+WMT. Como pode ser visto das duas últimas linhas dos comandos acima,
+esta carteira de risco mínimo tem um retorno esperado maior do que o
+mesmo peso portfólio. O código a seguir ilustra que o
+<code>DEoptim</code> produz resultados superiores do que o baseado em
+rotinas de gradiente de otimização disponíveis no R.</p>
+<pre class="r"><code>out &lt;- optim(par = rep(0.2, 5),
+ fn = obj,
+ method = &quot;L-BFGS-B&quot;,
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+out$value</code></pre>
+<pre><code>[1] 0.1224446</code></pre>
+<pre class="r"><code>out &lt;- nlminb(start = rep(0.2, 5),
+ objective = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+out$objective</code></pre>
+<pre><code>[1] 0.1137513</code></pre>
+<p>Mesmo neste exemplo estilizado relativamente simples, as rotinas
+<code>optim</code> e <code>nlminb</code> convergiram para mínimo
+local.</p>
+<p>Suponha agora que o investidor esteja interessado na carteira de
+risco mais diversificado cujo retorno esperado é maior do que a carteira
+de pesos iguais. Isto equivale a minimizar a maior contribuição CVaR
+sujeita a uma meta de retorno e pode ser implementada da seguinte
+forma:</p>
+<pre class="r"><code>obj &lt;- function(w) {
+ if(sum(w) == 0) { w &lt;- w + 1e-2 }
+  w &lt;- w / sum(w)
+  contribCVaR &lt;- ES(weights = w,
+    method = &quot;gaussian&quot;,
+    portfolio_method = &quot;component&quot;,
+    mu = mu,
+    sigma = sigma)$contribution
+ tmp1 &lt;- max(contribCVaR)
+ tmp2 &lt;- max(mean(mu) - sum(w * mu), 0)
+ out &lt;- tmp1 + 1e3 * tmp2
+ }
+
+set.seed(1234)
+
+out &lt;- DEoptim(fn = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))</code></pre>
+<pre><code>Iteration: 1 bestvalit: 0.025319 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.807648
+Iteration: 2 bestvalit: 0.025319 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.807648
+Iteration: 3 bestvalit: 0.025319 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.807648
+Iteration: 4 bestvalit: 0.025319 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.807648
+Iteration: 5 bestvalit: 0.025319 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.807648
+Iteration: 6 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 7 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 8 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 9 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 10 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 11 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 12 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 13 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 14 bestvalit: 0.023721 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.984624
+Iteration: 15 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 16 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 17 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 18 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 19 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 20 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 21 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 22 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 23 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 24 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 25 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 26 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 27 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 28 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 29 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 30 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 31 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 32 bestvalit: 0.023635 bestmemit:    0.507307    0.544270    0.423047    0.534891    0.973496
+Iteration: 33 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 34 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 35 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 36 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 37 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 38 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 39 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 40 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 41 bestvalit: 0.023634 bestmemit:    0.521148    0.565140    0.445867    0.534438    0.972450
+Iteration: 42 bestvalit: 0.023438 bestmemit:    0.487269    0.569481    0.442281    0.515751    0.972794
+Iteration: 43 bestvalit: 0.023252 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969299
+Iteration: 44 bestvalit: 0.023252 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969299
+Iteration: 45 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 46 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 47 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 48 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 49 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 50 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 51 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 52 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 53 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 54 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 55 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 56 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 57 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 58 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 59 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 60 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 61 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 62 bestvalit: 0.023250 bestmemit:    0.512146    0.565140    0.445867    0.534438    0.969492
+Iteration: 63 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 64 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 65 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 66 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 67 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 68 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 69 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 70 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 71 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 72 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 73 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 74 bestvalit: 0.023167 bestmemit:    0.510929    0.589906    0.451744    0.534152    0.995879
+Iteration: 75 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 76 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 77 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 78 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 79 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 80 bestvalit: 0.023135 bestmemit:    0.507320    0.584912    0.444466    0.536575    0.986283
+Iteration: 81 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 82 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 83 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 84 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 85 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 86 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 87 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 88 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 89 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 90 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 91 bestvalit: 0.023072 bestmemit:    0.510488    0.585093    0.446786    0.538530    0.988576
+Iteration: 92 bestvalit: 0.023061 bestmemit:    0.513075    0.580185    0.444271    0.535693    0.985155
+Iteration: 93 bestvalit: 0.023061 bestmemit:    0.513075    0.580185    0.444271    0.535693    0.985155
+Iteration: 94 bestvalit: 0.023043 bestmemit:    0.489808    0.559538    0.428618    0.513922    0.944423
+Iteration: 95 bestvalit: 0.023043 bestmemit:    0.489808    0.559538    0.428618    0.513922    0.944423
+Iteration: 96 bestvalit: 0.023043 bestmemit:    0.489808    0.559538    0.428618    0.513922    0.944423
+Iteration: 97 bestvalit: 0.023043 bestmemit:    0.489808    0.559538    0.428618    0.513922    0.944423
+Iteration: 98 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 99 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 100 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 101 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 102 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 103 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 104 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 105 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 106 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 107 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 108 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 109 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 110 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 111 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 112 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 113 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 114 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 115 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 116 bestvalit: 0.023042 bestmemit:    0.489808    0.559538    0.428618    0.514126    0.944423
+Iteration: 117 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 118 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 119 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 120 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 121 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 122 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 123 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 124 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 125 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 126 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 127 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 128 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 129 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 130 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 131 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 132 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 133 bestvalit: 0.023035 bestmemit:    0.486597    0.550752    0.420622    0.507050    0.932162
+Iteration: 134 bestvalit: 0.023028 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.961918
+Iteration: 135 bestvalit: 0.023028 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.961918
+Iteration: 136 bestvalit: 0.023028 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.961918
+Iteration: 137 bestvalit: 0.023026 bestmemit:    0.486990    0.551889    0.422576    0.508388    0.932593
+Iteration: 138 bestvalit: 0.023026 bestmemit:    0.486990    0.551889    0.422576    0.508388    0.932593
+Iteration: 139 bestvalit: 0.023026 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.962086
+Iteration: 140 bestvalit: 0.023026 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.962086
+Iteration: 141 bestvalit: 0.023026 bestmemit:    0.502437    0.568513    0.436839    0.522756    0.962086
+Iteration: 142 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 143 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 144 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 145 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 146 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 147 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 148 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 149 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 150 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 151 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 152 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 153 bestvalit: 0.023019 bestmemit:    0.500224    0.567990    0.436411    0.523463    0.961118
+Iteration: 154 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 155 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 156 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 157 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 158 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 159 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 160 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 161 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 162 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 163 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 164 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 165 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 166 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 167 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 168 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 169 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 170 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 171 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 172 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 173 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 174 bestvalit: 0.023010 bestmemit:    0.501706    0.568949    0.437203    0.524344    0.963098
+Iteration: 175 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 176 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 177 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 178 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 179 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 180 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 181 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 182 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 183 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 184 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 185 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 186 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 187 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 188 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 189 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 190 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 191 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 192 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 193 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 194 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 195 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 196 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 197 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 198 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 199 bestvalit: 0.023004 bestmemit:    0.502399    0.568949    0.437203    0.524344    0.963098
+Iteration: 200 bestvalit: 0.023003 bestmemit:    0.502286    0.569306    0.436597    0.524041    0.962138</code></pre>
+<pre class="r"><code>wstar &lt;- out$optim$bestmem
+wstar &lt;- wstar / sum(wstar)
+
+setNames(round(100 * wstar, 2), c(&quot;GE.Close&quot;, &quot;IBM.Close&quot;, &quot;JPM.Close&quot;, &quot;MSFT.Close&quot;, &quot;WMT.Close&quot;))</code></pre>
+<pre><code>  GE.Close  IBM.Close  JPM.Close MSFT.Close  WMT.Close 
+     16.77      19.01      14.58      17.50      32.13 </code></pre>
+<pre class="r"><code>100 * (sum(wstar * mu) - mean(mu))</code></pre>
+<pre><code>[1] 0.02143899</code></pre>
+<p>Esta carteira investe mais em ações JPM e menos no GE (que tem o
+menor retorno médio) em comparação com a carteira com a restrição CVaR
+percentual superior de 22,5%.</p>
+<p>Vide Boudt <em>et alli</em> (2010a) para um estudo mais elaborado
+sobre o uso de alocações de CVaR como função objetivo ou restrição num
+problema de otimização de portfólio.</p>
+<p>Uma dispersão clássica de risco/retorno (ou seja, CVaR/média) é
+demonstrada nos resultados dos portfólios testados pelo
+<code>DEoptim</code> é exibido a seguir:</p>
+<p>Elementos em cinza descrevem os resultados para todas as carteiras
+testadas (usando binning hexagonal que é uma forma de histograma
+bivariado, ver Carr <em>et alli</em> (2011); em regiões de maior
+densidade que são mais escuros). A linha amarela-vermelha mostra o
+caminho de o melhor membro da população ao longo do tempo, com a solução
+mais escura no final é o portfólio ideal. (ver resposta do Ardia aqui
+nesse parágrafo)</p>
+<p>Podemos notar como o <code>DEoptim</code> não gasta muito tempo em
+soluções de computação no espaço de dispersão que são subótimos, mas
+concentra a maior parte do tempo de cálculo próximo ao melhor portfólio
+final. Observe que não estamos procurando a tangência da carteira;
+otimização média/CVaR simples pode ser alcançado com otimizadores
+padrão.</p>
+<p>Nós estamos olhando aqui para o melhor equilíbrio entre retorno e
+concentração de risco.</p>
+<p>Utilizamos os exemplos de concentração de retorno médio/CVaR aqui
+como exemplos mais realistas, mas ainda estilizados, de objetivos não
+convexos e restrições na otimização de portfólio; outros objetivo não
+convexos, como a minimização do rebaixamento, também são comuns em
+carteiras reais, e são igualmente adequados à aplicação da Evolução
+Diferencial.</p>
+<p>Uma das questões-chave na prática com carteiras reais é que um
+gerente de portfólio raramente tem apenas um único objetivo ou apenas
+alguns objetivos simples combinados.</p>
+<p>Para muitas combinações de objetivos, não há um único ótimo, e as
+restrições e objetivos formados levam a um espaço de busca não
+convexo.</p>
+<p>Pode levar várias horas em máquinas muito rápidas para obter as
+melhores respostas, e as melhores respostas podem não ser um verdadeiro
+ótimo global, eles são tão próximos quanto possível, dados os objetivos
+potencialmente concorrentes e contraditórios.</p>
+<p>Quando as restrições e objetivos são relativamente simples, e pode
+ser reduzida a quadrática, linear ou formas cônicas, um <em>solver</em>
+de otimização mais simples produzirá respostas mais rapidamente. Quando
+os objetivos são mais estratificados, complexos e potencialmente
+contraditórios, como aqueles em portfólios reais tendem a ser,
+<code>DEoptim</code> ou outros algoritmos de otimização global, como
+como os integrados ao <code>PortfolioAnalytics</code> fornecem um
+gerente de portfólio com uma opção viável para otimizar seu portfólio
+sob condições não convexas do mundo real dadas as restrições e
+objetivos.</p>
+<p>A estrutura do <code>PortfolioAnalytics</code> permite que qualquer
+função R arbitrária faça parte do conjunto de objetivos e permite ao
+usuário definir o peso relativo que eles deseja em qualquer objetivo
+específico e use o algoritmo do solucionador de otimização
+apropriadamente ajustado para localizar portfólios que mais se aproximam
+desses objetivos.</p>
+</div>
+<div
+id="utilizando-o-agoritmo-de-evolução-diferencial-no-portfolioanalitycs"
+class="section level1">
+<h1>Utilizando o agoritmo de Evolução Diferencial no
+<code>PortfolioAnalitycs</code></h1>
+<p>Primeiro setamos o benchmark:</p>
+<pre class="r"><code>retornos &lt;- xts(retornos[, -1], order.by = as.POSIXct(retornos$Index))
+
+# Equal weight benchmark
+n &lt;- ncol(retornos)
+
+equal_weights &lt;- rep(1 / n, n)
+
+benchmark_returns &lt;- Return.portfolio(R = retornos,
+                                      weights = equal_weights,
+                                      rebalance_on = &quot;years&quot;)
+colnames(benchmark_returns) &lt;- &quot;benchmark&quot;
+
+# Benchmark performance
+table.AnnualizedReturns(benchmark_returns)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["benchmark"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","_rn_":"Annualized Return"},{"1":"0.2043","_rn_":"Annualized Std Dev"},{"1":"-0.1510","_rn_":"Annualized Sharpe (Rf=0%)"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>plot(benchmark_returns)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-18-1.png" width="864" /></p>
+<p>Ploto o gráfico da relação entre risco x retorno e da frente de
+Pareto usando o algoritmo<code>random</code>, considerando os objetivos
+básicos de minimizar risco do portfólio e de maximizar os retornos, com
+as restrições tradicionais de pesos &gt; 0 e restrição de alocações de
+investimentos somente em posições <em>long</em>:</p>
+<p>Definição das funções-objetivo e das restrições:</p>
+<pre class="r"><code># Seta a especificação do portfólio
+
+port_spec &lt;- portfolio.spec(colnames(retornos))
+port_spec &lt;- add.constraint(portfolio = port_spec, type = &quot;full_investment&quot;)
+port_spec &lt;- add.constraint(portfolio = port_spec, type = &quot;long_only&quot;)
+port_spec &lt;- add.objective(portfolio  = port_spec, type = &quot;return&quot;, name = &quot;mean&quot;)
+port_spec &lt;- add.objective(portfolio  = port_spec, type = &quot;risk&quot;, name = &quot;StdDev&quot;)</code></pre>
+<p>Roda o algoritmo para <em>backtest</em>:</p>
+<pre class="r"><code># Resolve o problema de otimização
+
+opt_random &lt;- optimize.portfolio.rebalancing(R = retornos, 
+                                           optimize_method = &quot;random&quot;, 
+                                           portfolio = port_spec, 
+                                           rebalance_on = &quot;quarters&quot;, 
+                                           training_period = 60, 
+                                           rolling_window = 60)
+# Calculate portfolio returns
+random_returns &lt;- Return.portfolio(retornos, extractWeights(opt_random))
+
+colnames(random_returns) &lt;- &quot;random_target&quot;
+
+plot(random_returns)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-20-1.png" width="864" /></p>
+<pre class="r"><code>#chart.Weights(random_returns)</code></pre>
+<p>Roda o algoritmo <code>random</code> de otimização:</p>
+<pre class="r"><code># Roda a otimização no espaço do tipo risco-retorno
+
+opt &lt;- optimize.portfolio(retornos, 
+                          portfolio = port_spec,
+                          optimize_method = &quot;random&quot;,
+                          trace = TRUE)
+
+chart.RiskReward(opt, risk.col = &quot;StdDev&quot;, return.col = &quot;mean&quot;, chart.assets = TRUE)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-21-1.png" width="864" /></p>
+<pre class="r"><code># Apresenta os pesos das 15 carteiras na fronteira eficiente
+
+front_eficiente  &lt;-  create.EfficientFrontier(R = retornos, 
+                                             portfolio = port_spec,  
+                                             type = &quot;mean-StdDev&quot;, 
+                                             n.portfolios = 15)
+
+# Apresenta o gráfico da fronteira eficiente
+renda_fixa &lt;- (1+.0025)^(1/12)-1 # Taxa Básica de Juros EUA em 2010 https://g1.globo.com/economia-e-negocios/noticia/2010/06/eua-banco-central-americano-mantem-a-taxa-de-juros-no-mesmo-patamar-1.html
+ 
+chart.EfficientFrontier(front_eficiente, 
+                        match.col = &quot;StdDev&quot;, 
+                        type = &quot;l&quot;, 
+                        col = &quot;blue&quot;,
+                        rf = renda_fixa, 
+                        chart.assets = TRUE,
+                        RAR.text = &quot;Índice de Sharpe&quot;, 
+                        pch = 4,
+                        main = &#39;Frente de Pareto ou Fronteira Eficiente&#39;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-21-2.png" width="864" /></p>
+<p>Utilizando as funções-objetivo e as mesmas restrições, ploto o
+gráfico da relação entre risco x retorno e da frente de Pareto
+usando<code>DEoptim</code>:</p>
+<p>Roda o algoritmo para <em>backtest</em>:</p>
+<pre class="r"><code># Resolve o problema de otimização
+
+opt_DEoptim &lt;- optimize.portfolio.rebalancing(R = retornos, 
+                                           optimize_method = &quot;DEoptim&quot;, 
+                                           portfolio = port_spec, 
+                                           rebalance_on = &quot;quarters&quot;, 
+                                           training_period = 60, 
+                                           rolling_window = 60)
+# Calculate portfolio returns
+DEoptim_returns &lt;- Return.portfolio(retornos, extractWeights(opt_DEoptim))
+
+colnames(DEoptim_returns) &lt;- &quot;DEoptim_target&quot;
+
+plot(DEoptim_returns)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-22-1.png" width="864" /></p>
+<pre class="r"><code>#chart.Weights(DEoptim_returns)</code></pre>
+<pre class="r"><code># Roda a otimização no espaço do tipo risco-retorno
+
+set.seed(1234)
+opt &lt;- optimize.portfolio(retornos, 
+                          portfolio = port_spec,
+                          optimize_method = &quot;DEoptim&quot;,
+                          trace = TRUE)</code></pre>
+<pre><code>Iteration: 1 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 2 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 3 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 4 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 5 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 6 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 7 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 8 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 9 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+Iteration: 10 bestvalit: 0.048377 bestmemit:    0.020000    0.148000    0.000000    0.136000    0.696000
+[1] 0.020 0.148 0.000 0.136 0.696</code></pre>
+<pre class="r"><code>chart.RiskReward(opt, risk.col = &quot;StdDev&quot;, return.col = &quot;mean&quot;, chart.assets = TRUE)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-23-1.png" width="864" /></p>
+<pre class="r"><code># Apresenta os pesos das 15 carteiras na fronteira eficiente
+
+front_eficiente  &lt;-  create.EfficientFrontier(R = retornos, 
+                                             portfolio = port_spec,  
+                                             type = &quot;mean-StdDev&quot;, 
+                                             n.portfolios = 15)
+
+# Apresenta o gráfico da fronteira eficiente
+renda_fixa &lt;- (1+.0025)^(1/12)-1 # Taxa Básica de Juros EUA em 2010 https://g1.globo.com/economia-e-negocios/noticia/2010/06/eua-banco-central-americano-mantem-a-taxa-de-juros-no-mesmo-patamar-1.html
+ 
+chart.EfficientFrontier(front_eficiente, 
+                        match.col = &quot;StdDev&quot;, 
+                        type = &quot;l&quot;, 
+                        col = &quot;blue&quot;,
+                        rf = renda_fixa, 
+                        chart.assets = TRUE,
+                        RAR.text = &quot;Índice de Sharpe&quot;, 
+                        pch = 4,
+                        main = &#39;Frente de Pareto ou Fronteira Eficiente&#39;)</code></pre>
+<p><img src="Differential_Optimization_Portfolio_files/figure-html/unnamed-chunk-23-2.png" width="864" /></p>
+<p>Comparo os dois:</p>
+<pre class="r"><code># Merge benchmark, portfolio returns and box_returns
+ret &lt;- cbind(benchmark_returns, random_returns, DEoptim_returns)
+
+# Annualized performance
+as.data.frame(t(table.AnnualizedReturns(ret)))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0198","2":"0.1637","3":"-0.1208","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Parece bem evidente que a seleção desses ativos no portfólio não
+consiste na melhor escolha.</p>
+<p>Vamos aguardar a resposta do David Ardia <a
+href="https://github.com/ArdiaD/DEoptim/issues/17">pra issue que lancei
+no repo do GitHub</a> do pacote <code>DEoptim</code>.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<hr />
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<hr />
+<p>Ardia, D. <em>et alli</em> (2011) <strong>Differential Evolution with
+DEoptim: An Application to Non-Convex Portfolio Optimization</strong>,
+<em>in</em> <span class="math inline">\(&lt;\)</span> <a
+href="https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Ardia~et~al.pdf"
+class="uri">https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Ardia~et~al.pdf</a>
+<span class="math inline">\(&gt;\)</span> Acesso em jun-2022.</p>
+<p>Ardia, D. Mullen, B. G. Peterson and J. Ulrich. <code>DEoptim:</code>
+<strong>Differential Evolution Optimization in R</strong>, 2011. URL <a
+href="http://CRAN.R-project.org/package=DEoptim"
+class="uri">http://CRAN.R-project.org/package=DEoptim</a>. R package
+version 2.1-0.</p>
+<p>Boudt, K. Carl, P. e Peterson, B. G. <strong>Portfolio optimization
+with conditional value-at-risk budgets.</strong> Working paper,
+2010a.</p>
+<p>Crama, Y. e Schyns, M. <strong>Simulated annealing for complex
+portfolio selection problems.</strong> European Journal of Operations
+Research, 150(3):546–571, 2003.</p>
+<p>Fábián C. and Veszprémi, A. <strong>Algorithms for handling CVaR
+constraints in dynamic stochastic programming models with applications
+to finance.</strong> Journal of Risk, 10(3):111–131, 2008.</p>
+<p>Würtz, D., Chalabi, Y., Chen W., Ellis, A. <strong>Portfolio
+Optimization with R/Rmetrics.</strong> Rmetrics Association and Finance
+Online, 2009.</p>
+<hr />
+<p> </p>
+<p> </p>
+<hr />
+<div id="r-packages" class="section level2">
+<h2>R packages</h2>
+<hr />
+<pre class="r"><code>citation(package = &quot;GPareto&quot;)</code></pre>
+<pre><code>
+To cite GPareto in publications use:
+
+Binois M, Picheny V (2019). &quot;GPareto: An R Package for
+Gaussian-Process-Based Multi-Objective Optimization and Analysis.&quot;
+_Journal of Statistical Software_, *89*(8), 1-30. doi:
+10.18637/jss.v089.i08 (URL: https://doi.org/10.18637/jss.v089.i08).
+
+A BibTeX entry for LaTeX users is
+
+  @Article{,
+    title = {{GPareto}: An {R} Package for Gaussian-Process-Based Multi-Objective Optimization and Analysis},
+    author = {Micka\&quot;el Binois and Victor Picheny},
+    journal = {Journal of Statistical Software},
+    year = {2019},
+    volume = {89},
+    number = {8},
+    pages = {1--30},
+    doi = {10.18637/jss.v089.i08},
+  }</code></pre>
+<pre class="r"><code>citation(package = &quot;nsga2R&quot;)</code></pre>
+<pre><code>
+To cite package &#39;nsga2R&#39; in publications use:
+
+  Ching-Shih Tsou (2022). nsga2R: Elitist Non-Dominated Sorting Genetic
+  Algorithm. R package version 1.1.
+  https://CRAN.R-project.org/package=nsga2R
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {nsga2R: Elitist Non-Dominated Sorting Genetic Algorithm},
+    author = {Ching-Shih Tsou},
+    year = {2022},
+    note = {R package version 1.1},
+    url = {https://CRAN.R-project.org/package=nsga2R},
+  }
+
+ATTENTION: This citation information has been auto-generated from the
+package DESCRIPTION file and may need manual editing, see
+&#39;help(&quot;citation&quot;)&#39;.</code></pre>
+<pre class="r"><code>citation(package = &quot;PortfolioAnalytics&quot;)</code></pre>
+<pre><code>
+To cite package &#39;PortfolioAnalytics&#39; in publications use:
+
+  Brian G. Peterson and Peter Carl (2018). PortfolioAnalytics:
+  Portfolio Analysis, Including Numerical Methods for Optimization of
+  Portfolios. R package version 1.1.0.
+  https://CRAN.R-project.org/package=PortfolioAnalytics
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {PortfolioAnalytics: Portfolio Analysis, Including Numerical Methods for Optimization
+of Portfolios},
+    author = {Brian G. Peterson and Peter Carl},
+    year = {2018},
+    note = {R package version 1.1.0},
+    url = {https://CRAN.R-project.org/package=PortfolioAnalytics},
+  }</code></pre>
+<pre class="r"><code>citation(package = &quot;DEoptim&quot;)</code></pre>
+<pre><code>
+To cite &#39;DEoptim&#39; in publications use:
+
+  Katharine Mullen, David Ardia, David Gil, Donald Windover, James
+  Cline (2011). &#39;DEoptim&#39;: An R Package for Global Optimization by
+  Differential Evolution. Journal of Statistical Software, 40(6), 1-26.
+  doi:10.18637/jss.v040.i06.
+
+  Ardia, D., Boudt, K., Carl, P., Mullen, K.M., Peterson, B.G. (2010).
+  Differential Evolution with &#39;DEoptim&#39;: An Application to Non-Convex
+  Portfolio Optimization. R Journal, 3(1), 27-34.
+  doi:10.32614/RJ-2011-005
+
+BibTeX entries for LaTeX users: use &#39;toBibtex(citation(&quot;DEoptim&quot;))&#39;
+To see these entries in BibTeX format, use &#39;print(&lt;citation&gt;,
+bibtex=TRUE)&#39;, &#39;toBibtex(.)&#39;, or set
+&#39;options(citation.bibtex.max=999)&#39;.</code></pre>
+<pre class="r"><code>citation(package = &quot;ROI&quot;)</code></pre>
+<pre><code>
+To cite ROI in publications use:
+
+Theußl S, Schwendinger F, Hornik K (2020). &quot;ROI: An Extensible R
+Optimization Infrastructure.&quot; _Journal of Statistical Software_,
+*94*(15), 1-64. doi: 10.18637/jss.v094.i15 (URL:
+https://doi.org/10.18637/jss.v094.i15).
+
+A BibTeX entry for LaTeX users is
+
+  @Article{,
+    title = {{ROI}: An Extensible {R} Optimization Infrastructure},
+    author = {Stefan Theu{\ss}l and Florian Schwendinger and Kurt Hornik},
+    journal = {Journal of Statistical Software},
+    year = {2020},
+    volume = {94},
+    number = {15},
+    pages = {1--64},
+    doi = {10.18637/jss.v094.i15},
+  }</code></pre>
+<pre class="r"><code>citation(package = &quot;PerformanceAnalytics&quot;)</code></pre>
+<pre><code>
+To cite package &#39;PerformanceAnalytics&#39; in publications use:
+
+  Brian G. Peterson and Peter Carl (2020). PerformanceAnalytics:
+  Econometric Tools for Performance and Risk Analysis. R package
+  version 2.0.4.
+  https://CRAN.R-project.org/package=PerformanceAnalytics
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {PerformanceAnalytics: Econometric Tools for Performance and Risk Analysis},
+    author = {Brian G. Peterson and Peter Carl},
+    year = {2020},
+    note = {R package version 2.0.4},
+    url = {https://CRAN.R-project.org/package=PerformanceAnalytics},
+  }</code></pre>
+<pre class="r"><code>citation(package = &quot;quadprog&quot;)</code></pre>
+<pre><code>
+To cite package &#39;quadprog&#39; in publications use:
+
+  S original by Berwin A. Turlach R port by Andreas Weingessel
+  &lt;Andreas.Weingessel@ci.tuwien.ac.at&gt; Fortran contributions from Cleve
+  Moler dpodi/LINPACK) (2019). quadprog: Functions to Solve Quadratic
+  Programming Problems. R package version 1.5-8.
+  https://CRAN.R-project.org/package=quadprog
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {quadprog: Functions to Solve Quadratic Programming Problems},
+    author = {S original by Berwin A. Turlach R port by Andreas Weingessel &lt;Andreas.Weingessel@ci.tuwien.ac.at&gt; Fortran contributions from Cleve Moler dpodi/LINPACK)},
+    year = {2019},
+    note = {R package version 1.5-8},
+    url = {https://CRAN.R-project.org/package=quadprog},
+  }
+
+ATTENTION: This citation information has been auto-generated from the
+package DESCRIPTION file and may need manual editing, see
+&#39;help(&quot;citation&quot;)&#39;.</code></pre>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<hr />
+</div>
+<div id="tempo-total-de-compilação-deste-documento"
+class="section level2">
+<h2>Tempo total de compilação deste documento</h2>
+<pre class="r"><code># Execution timing
+
+Sys.time() - start_time</code></pre>
+<pre><code>Time difference of 2.760362 mins</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

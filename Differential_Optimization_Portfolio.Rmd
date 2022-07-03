@@ -1,0 +1,845 @@
+---
+title: "Otimização Multiobjetivo: Alocação de Risco em Portfólio com Evolução Diferencial"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    code_folding: hide
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Otimização Multiobjetivo para uma carteira de ativos e commodities  </strong> 
+  
+</div>
+
+***
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+PhD. Candidature exercise
+
+</p>
+
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Modelos de risco médio foram desenvolvidos no início dos anos 50 para o problema de seleção de portfólio. Inicialmente, a variância foi usada como medida de risco. Desde então, muitas medidas alternativas de risco foram propostas. A questão de qual medida de risco é mais apropriada é ainda é objeto de muito debate. Valor em risco (VaR) e o Valor em Risco Condicional (CVaR) são os mais populares modelos de aferição de risco de queda/prejuízos. VaR é o valor negativo do retorno da carteira tal que os retornos ocorrerão apenas com no máximo um nível de probabilidade predefinido, que normalmente é entre um e cinco por cento. CVaR é o valor negativo da média de todas as realizações (períodos) de retorno que estão abaixo do VaR. Existe uma literatura volumosa sobre problemas de otimização de portfólio com medidas de risco VaR e CVaR, veja, por exemplo, Fábián e Veszprémi (2008) e as referências lá no final deste post.
+
+</center>
+</p>
+
+***
+
+
+# Pacotes do R
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(PerformanceAnalytics)
+library(PortfolioAnalytics)
+library(ROI)
+library(quadprog)
+library(DEoptim)
+library(tsibble)
+library(fpp3)
+library(plotly)
+library(tidyquant)
+
+```
+
+
+# Processamento em paralelo
+
+Este pacote dá capacidade multiprocessamento para o pacote ``PortfolioAnalytics``.
+
+
+```{r}
+
+library(doParallel)
+registerDoParallel()
+
+```
+
+
+# Intro
+
+A teoria moderna de seleção de portfólio considera critérios como maximizar a assimetria da cauda superior e liquidez ou minimizar o número de títulos no portfólio. Na literatura recente de portfólio, tem sido defendida por vários autores a necessidade de incorporar contribuições de risco no problema de alocação de carteiras. 
+
+A Paridade de Risco de Portfólio de Qian (2005) aloca a variância do portfólio igualmente entre os componentes do portfólio. Maillard _et alli_ (2010) chamam isso de Contribuição de Risco Equivalente da Carteira (ERC). Eles derivam as propriedades teóricas do portfólio ERC e mostram que sua volatilidade está localizada entre aqueles de variância mínima e carteira de pesos idênticos.
+
+Zhu _et alli_ (2010) estudaram a seleção ótima de média-variância do portfólio sob uma restrição direta sobre as contribuições para a variância da carteira. Como o modelo de otimização resultante é um problema de programação quadrática não convexa com restrição quadrática, eles desenvolvem um algoritmo _branch-and-bound_ para resolver isto.
+
+Boudt _et alli_ (2010a) propõem usar as contribuições para o portfólio CVaR como um insumo no problema de otimização de portfólio para criar carteiras cujas contribuições percentuais de CVaR estejam alinhadas com o nível desejado de diversificação de risco de CVaR. Debaixo de suposição de normalidade, o percentual de contribuição CVaR do ativo $i$ é dado pela seguinte expressão funcional do vetor de pesos $w = (w_1,. . .,w_d )^{'}$, a média do vetor $\mu= (\mu_1,. . .,\mu_d)^{'}$ e da matriz de covariância $\sum$:
+
+$$
+\frac{ w_i - [-\mu_i] + \frac{(\sum w)_i}{\sqrt{w^{'}\sum w}\frac{\phi(z_\alpha)}{\alpha}} }{-w^{'}\mu + \sqrt{w^{'}\sum w \frac{\phi (z_\alpha)}{\alpha}}}
+$$
+
+
+com $z_{\alpha}$ o $\alpha$-quantil da distribuição normal padrão e $\phi(·)$ a função de densidade normal padrão. Ao longo deste post definimos $\alpha = 5%$. Como nós mostraremos aqui, o pacote ``DEoptim`` é adequado para resolver esses problemas. Observe que também é a estratégia de otimização evolutiva usada no pacote ``PortfolioAnalytics`` (Boudt _et alli_, 2010b)
+
+Para ilustrar isso, considere como um exemplo estilizado uma carteira de cinco ativos investida em ações com tickers ``GE, IBM, JPM, MSFT`` e ``WMT``. Mantemos a dimensão do problema em pequena escala para permitir que os leitores consigam reproduzir em seus computadores pessoais.
+
+Aplicativos de portfólio mais realistas podem ser criados de maneira direta a partir do código abaixo, expandindo o número de parâmetros otimizados. Os leitores interessados também podem consultar a vignettes do pacote ``DEoptim`` para um problema de otimização de portfólio de 100 parâmetros que é típico daqueles encontrados na prática.
+
+Primeiro baixamos dez anos de dados mensais usando a função ``getSymbols`` do pacote ``quantmod``. Então calculamos a série de log-retorno e estimadores de matriz de média e covariância. Para uma visão geral de estimadores alternativos da matriz de covariância, como _outlier_ robusto ou estimadores _shrinkage_ , e sua implementação no portfólio alocação, remetemos o leitor para Würtz _et alli_ (2009, Capítulo 4). Esses estimadores podem render melhor desempenho no caso de amostras pequenas, _outliers_ ou desvios da normalidade.
+
+
+```{r}
+
+library(quantmod)
+
+GE <- getSymbols("GE",
+ auto.assign = FALSE,
+ from = "2000-12-01",
+ to = "2010-12-31")
+
+IBM <- getSymbols("IBM",
+ auto.assign = FALSE,
+ from = "2000-12-01",
+ to = "2010-12-31")
+
+JPM <- getSymbols("JPM",
+ auto.assign = FALSE,
+ from = "2000-12-01",
+ to = "2010-12-31")
+
+MSFT <- getSymbols("MSFT",
+ auto.assign = FALSE,
+ from = "2000-12-01",
+ to = "2010-12-31")
+
+WMT <- getSymbols("WMT",
+ auto.assign = FALSE,
+ from = "2000-12-01",
+ to = "2010-12-31")
+
+tickers <- cbind(
+  Cl(GE),
+  Cl(IBM),
+  Cl(JPM),
+  Cl(MSFT),
+  Cl(WMT)
+)
+
+head(tickers)
+
+tickers <- fortify(tickers) 
+
+```
+
+
+Veremos os comportamentos dessas séries temporais diárias:
+
+
+```{r fig.width=9, fig.height=3 }
+
+ggplot(tickers, aes(x = Index,
+                    y = GE.Close )) +
+  geom_line() + xlab("")
+
+ggplot(tickers, aes(x = Index,
+                    y = IBM.Close )) +
+  geom_line() + xlab("")
+
+ggplot(tickers, aes(x = Index,
+                    y = JPM.Close )) +
+  geom_line() + xlab("")
+
+ggplot(tickers, aes(x = Index,
+                    y = MSFT.Close )) +
+  geom_line() + xlab("")
+
+ggplot(tickers, aes(x = Index,
+                    y = WMT.Close )) +
+  geom_line() + xlab("")
+
+```
+
+Como irei trabalhar com séries mensais, é necessário transformar os dados para capturarmos os últimos valores de fechamentos dos preços de cada mês:
+
+
+```{r }
+
+library(tibbletime)
+
+tickers_tidy <- tickers %>%
+  as_tbl_time(Index) %>%
+  as_period("monthly", side = "end") %>%
+  as_tsibble() %>%
+  mutate(Index = yearmonth(Index))
+  
+head(tickers_tidy)
+
+```
+
+Construo as séries de retornos:
+
+```{r}
+
+retornos <- tickers_tidy %>%
+  mutate(
+    GE.Close   = log((GE.Close/lag(GE.Close))),
+    IBM.Close  = log((IBM.Close/lag(IBM.Close))),
+    JPM.Close  = log((JPM.Close/lag(JPM.Close))),
+    MSFT.Close = log((MSFT.Close/lag(MSFT.Close))),
+    WMT.Close  = log((WMT.Close/lag(WMT.Close)))
+  )
+
+retornos <- retornos[-1,]
+
+head(retornos)
+
+```
+
+Obtenhos os valores dos retornos mensais de cada ativo:
+
+```{r }
+
+mu <- colMeans(retornos[,-1]) # mu = media dos retornos de cada ativo
+mu
+
+```
+
+Calculo os devios-padrão mensais dos retornos de cada ativo:
+
+```{r }
+
+sigma <- cov(retornos[,-1]) # sigma = matriz de covariância dos ativos do portfolio
+sigma
+
+```
+
+Vamos verificar os comportamentos desses retornos ao longo dos meses:
+
+
+```{r fig.width=9, fig.height=3 }
+
+###########GE.Close#############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = GE.Close )) +
+  geom_line() + xlab("")
+
+ggplot(retornos, aes(x = Index,
+                    y = GE.Close )) +
+  geom_col() + xlab("") + ylab("GE.Close retornos") + geom_hline(yintercept = 0, color = "red")
+
+##########IBM.Close############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = IBM.Close )) +
+  geom_line() + xlab("")
+
+ggplot(retornos, aes(x = Index,
+                     y = IBM.Close )) +
+  geom_col() + xlab("") + ylab("IBM.Close retornos") + geom_hline(yintercept = 0, color = "red")
+
+############JPM.Close############################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = JPM.Close )) +
+  geom_line() + xlab("") 
+
+ggplot(retornos, aes(x = Index,
+                     y = JPM.Close )) +
+  geom_col() + xlab("") + geom_hline(yintercept = 0, color = "red") + ylab("JPM.Close retornos") 
+
+################MSFT.Close#########################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = MSFT.Close )) +
+  geom_line() + xlab("")
+
+ggplot(retornos, aes(x = Index,
+                     y = MSFT.Close )) +
+  geom_col() + xlab("") + geom_hline(yintercept = 0, color = "red") + ylab("MSFT.Close retornos") 
+
+##############WMT.Close##########################
+
+ggplot(tickers_tidy, aes(x = Index,
+                         y = WMT.Close )) +
+  geom_line() + xlab("")
+
+ggplot(retornos, aes(x = Index,
+                    y = WMT.Close )) +
+  geom_col() + xlab("") + geom_hline(yintercept = 0, color = "red") + ylab("WMT.Close retornos") 
+
+```
+
+
+Primeiro calculamos a carteira de pesos idênticos. Esta é a carteira com maior diversificação de peso e frequentemente utilizada como referência. Mas será que o risco de exposição desta carteira é efetivamente bem diversificado nos diferentes ativos ? 
+
+Essa questão pode ser respondida calculando a porcentagem de contribuições CVaR (*Conditional* _Value-at-Risk_) com a função ``ES`` no pacote ``PerformanceAnalytics``. Essas contribuições percentuais de CVaR indicam quanto cada ativo contribui para o CVaR total da carteira.
+
+Contribuições percentuais de CVaR:
+
+```{r}
+
+pContribCVaR <- ES(weights = rep(0.2, 5),
+ method = "gaussian",
+ portfolio_method = "component",
+ mu = mu,
+ sigma = sigma)$pct_contrib_ES
+
+pContribCVaR <- round(100 * pContribCVaR, 2)
+pContribCVaR <- setNames(pContribCVaR, c("GE.Close", "IBM.Close", "JPM.Close", "MSFT.Close", "WMT.Close") )
+pContribCVaR
+
+```
+
+Vemos que no portfolio de pesos idênticos, 26,21% do risco CVaR da carteira é causado pelos 20% investimento em MSFT, enquanto o investimento de 20% em WMT causa apenas 9,8% do CVaR total do portfólio. A contribuição de alto risco do MSFT é devido ao seu alto desvio padrão e baixo retorno médio (relatado em por cento):
+
+CVaR nos retornos:
+
+```{r}
+
+round(100 * mu , 2) # Retornos
+
+```
+
+CVaR nos desvios:
+
+```{r}
+
+round(100 * diag(sigma)^(1/2), 2) # Desvios-padrão
+
+```
+
+
+Agora usamos a função ``DEoptim`` do pacote ``DEoptim`` para encontrar os pesos do portfolio para os quais a carteira tem o menor CVaR e como cada investimento pode contribuir com, no máximo, 22,5% para o risco CVaR total da carteira. 
+
+
+Para isso, primeiro definimos nossa função objetivo para minimizar.
+
+
+A implementação atual do ``DEoptim`` permite restrições no espaço de domínio. Para
+incluir as restrições de orçamento de risco, nós as adicionamos a função objetivo por meio de uma função de penalidade. Deste modo, permitimos que o algoritmo de busca considere soluções inviáveis. Um portfólio que é inaceitável pois o investidor deve ser penalizado o suficiente para ser rejeitado pelo processo de minimização e quanto maior o violação da restrição, quanto maior for o aumento o valor da função objetivo. 
+
+Uma expressão padrão dessas violações é $\alpha × |violation|^p$. Crama e Schyns (2003) descrevem várias maneiras de calibrar os fatores de escala $\alpha$ e $p$. Se esses valores forem muito pequenos, então as penalidades não cumprem o papel esperado e a solução final pode ser inviável. Por outro lado, se $\alpha$ e $p$ forem muito grandes, então o prazo do CVaR torna-se insignificante em relação à penalidade;
+assim, pequenas variações de $w$ podem levar a grandes variações do prazo de penalidade, que mascaram o efeito sobre o portfólio CVaR. 
+
+Definimos $\alpha = 103$ e $p = 1$, mas reconhecemos que melhores escolhas podem ser possíveis e dependem do problema em questão.
+
+Definição da Função Objetivo:
+
+```{r}
+
+obj <- function(w){
+ if (sum(w) == 0) { w <- w + 1e-2 }
+ w <- w / sum(w)
+ CVaR <- ES(weights = w,
+   method = "gaussian",
+   portfolio_method = "component",
+   mu = mu,
+   sigma = sigma)
+ tmp1 <- CVaR$ES
+ tmp2 <- max(CVaR$pct_contrib_ES - 0.225, 0)
+ out <- tmp1 + 1e3 * tmp2
+}
+
+```
+
+A penalidade introduzida na função objetivo é não diferenciável e, portanto, rotinas padrão de otimização baseadas em gradiente não podem ser usadas. Em contraste, o ``DEoptim`` foi projetado para encontrar uma boa aproximação para o mínimo global do problema de otimização:
+
+```{r}
+
+set.seed(1234)
+
+out <- DEoptim(fn = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+out$optim$bestval
+
+wstar <- out$optim$bestmem
+wstar <- wstar / sum(wstar)
+
+setNames(round(100 * wstar, 2), c("GE.Close", "IBM.Close", "JPM.Close", "MSFT.Close", "WMT.Close") )
+
+100 * (sum(wstar * mu) - mean(mu))
+
+```
+
+Observe que as principais diferenças com a carteira de pesos idênticos são os baixos pesos dados ao JPM e MSFT e o alto peso para WMT. Como pode ser visto das duas últimas linhas dos comandos acima, esta carteira de risco mínimo tem um retorno esperado maior do que o mesmo peso portfólio. O código a seguir ilustra que o ``DEoptim`` produz resultados superiores do que o baseado em rotinas de gradiente de otimização disponíveis no R.
+
+```{r}
+
+out <- optim(par = rep(0.2, 5),
+ fn = obj,
+ method = "L-BFGS-B",
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+out$value
+
+out <- nlminb(start = rep(0.2, 5),
+ objective = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+out$objective
+
+```
+
+Mesmo neste exemplo estilizado relativamente simples, as rotinas ``optim`` e ``nlminb`` convergiram para mínimo local.
+
+Suponha agora que o investidor esteja interessado na carteira de risco mais diversificado cujo retorno esperado é maior do que a carteira de pesos iguais. Isto
+equivale a minimizar a maior contribuição CVaR sujeita a uma meta de retorno e pode ser implementada da seguinte forma:
+
+```{r}
+
+obj <- function(w) {
+ if(sum(w) == 0) { w <- w + 1e-2 }
+  w <- w / sum(w)
+  contribCVaR <- ES(weights = w,
+    method = "gaussian",
+    portfolio_method = "component",
+    mu = mu,
+    sigma = sigma)$contribution
+ tmp1 <- max(contribCVaR)
+ tmp2 <- max(mean(mu) - sum(w * mu), 0)
+ out <- tmp1 + 1e3 * tmp2
+ }
+
+set.seed(1234)
+
+out <- DEoptim(fn = obj,
+ lower = rep(0, 5),
+ upper = rep(1, 5))
+
+wstar <- out$optim$bestmem
+wstar <- wstar / sum(wstar)
+
+setNames(round(100 * wstar, 2), c("GE.Close", "IBM.Close", "JPM.Close", "MSFT.Close", "WMT.Close"))
+
+100 * (sum(wstar * mu) - mean(mu))
+
+```
+
+Esta carteira investe mais em ações JPM e menos no GE (que tem o menor retorno médio)
+em comparação com a carteira com a restrição CVaR percentual superior de 22,5%.
+
+Vide Boudt _et alli_ (2010a) para um estudo mais elaborado sobre o uso de alocações de CVaR como função objetivo ou restrição num problema de otimização de portfólio.
+
+Uma dispersão clássica de risco/retorno (ou seja, CVaR/média) é demonstrada nos resultados dos portfólios testados pelo ``DEoptim`` é exibido a seguir:
+
+
+Elementos em cinza descrevem os resultados para todas as carteiras testadas (usando
+binning hexagonal que é uma forma de histograma bivariado, ver Carr _et alli_ (2011); em regiões de maior densidade que são mais escuros). A linha amarela-vermelha mostra o caminho de o melhor membro da população ao longo do tempo, com a solução mais escura no final é o portfólio ideal. (ver resposta do Ardia aqui nesse parágrafo)
+
+Podemos notar como o ``DEoptim`` não gasta muito tempo em soluções de computação no espaço de dispersão que são subótimos, mas concentra a maior parte do tempo de cálculo próximo ao melhor portfólio final. Observe que não estamos procurando a tangência da carteira; otimização média/CVaR simples pode ser alcançado com otimizadores padrão.
+
+Nós estamos olhando aqui para o melhor equilíbrio entre retorno e concentração de risco.
+
+Utilizamos os exemplos de concentração de retorno médio/CVaR aqui como exemplos mais realistas, mas ainda estilizados, de objetivos não convexos e restrições na otimização de portfólio; outros objetivo não convexos, como a minimização do rebaixamento, também são comuns em carteiras reais, e são igualmente adequados à aplicação da Evolução Diferencial.
+
+Uma das questões-chave na prática com carteiras reais é que um gerente de portfólio raramente tem apenas um único objetivo ou apenas alguns objetivos simples combinados.
+
+Para muitas combinações de objetivos, não há um único ótimo, e as restrições e objetivos formados levam a um espaço de busca não convexo.
+
+Pode levar várias horas em máquinas muito rápidas para obter as melhores respostas, e as melhores respostas podem não ser um verdadeiro ótimo global, eles são tão próximos quanto possível, dados os objetivos potencialmente concorrentes e contraditórios.
+
+Quando as restrições e objetivos são relativamente simples, e pode ser reduzida a quadrática, linear ou formas cônicas, um _solver_ de otimização mais simples produzirá respostas mais rapidamente. Quando os objetivos são mais estratificados, complexos e potencialmente contraditórios, como aqueles em portfólios reais tendem a ser, ``DEoptim`` ou outros algoritmos de otimização global, como como os integrados ao ``PortfolioAnalytics`` fornecem um gerente de portfólio com uma opção viável para otimizar seu portfólio sob condições não convexas do mundo real dadas as restrições e objetivos.
+
+A estrutura do ``PortfolioAnalytics`` permite que qualquer função R arbitrária faça parte do conjunto de objetivos e permite ao usuário definir o peso relativo que eles deseja em qualquer objetivo específico e use o algoritmo do solucionador de otimização apropriadamente ajustado para localizar portfólios que mais se aproximam desses objetivos.
+
+
+# Utilizando o agoritmo de Evolução Diferencial no ``PortfolioAnalitycs``
+
+Primeiro setamos o benchmark:
+
+
+```{r fig.width=9, fig.height=4}
+
+retornos <- xts(retornos[, -1], order.by = as.POSIXct(retornos$Index))
+
+# Equal weight benchmark
+n <- ncol(retornos)
+
+equal_weights <- rep(1 / n, n)
+
+benchmark_returns <- Return.portfolio(R = retornos,
+                                      weights = equal_weights,
+                                      rebalance_on = "years")
+colnames(benchmark_returns) <- "benchmark"
+
+# Benchmark performance
+table.AnnualizedReturns(benchmark_returns)
+
+plot(benchmark_returns)
+
+```
+
+Ploto o gráfico da relação entre risco x retorno e da frente de Pareto  usando o algoritmo``random``, considerando os objetivos básicos de minimizar risco do portfólio e de maximizar os retornos, com as restrições tradicionais de pesos > 0 e restrição de alocações de investimentos somente em posições _long_:
+
+Definição das funções-objetivo e das restrições:
+
+```{r fig.width=9, fig.height=4}
+
+# Seta a especificação do portfólio
+
+port_spec <- portfolio.spec(colnames(retornos))
+port_spec <- add.constraint(portfolio = port_spec, type = "full_investment")
+port_spec <- add.constraint(portfolio = port_spec, type = "long_only")
+port_spec <- add.objective(portfolio  = port_spec, type = "return", name = "mean")
+port_spec <- add.objective(portfolio  = port_spec, type = "risk", name = "StdDev")
+
+```
+
+Roda o algoritmo para _backtest_:
+
+```{r fig.width=9, fig.height=4}
+
+# Resolve o problema de otimização
+
+opt_random <- optimize.portfolio.rebalancing(R = retornos, 
+                                           optimize_method = "random", 
+                                           portfolio = port_spec, 
+                                           rebalance_on = "quarters", 
+                                           training_period = 60, 
+                                           rolling_window = 60)
+# Calculate portfolio returns
+random_returns <- Return.portfolio(retornos, extractWeights(opt_random))
+
+colnames(random_returns) <- "random_target"
+
+plot(random_returns)
+
+#chart.Weights(random_returns)
+
+```
+
+Roda o algoritmo ``random`` de otimização:
+
+```{r fig.width=9, fig.height=4}
+
+# Roda a otimização no espaço do tipo risco-retorno
+
+opt <- optimize.portfolio(retornos, 
+                          portfolio = port_spec,
+                          optimize_method = "random",
+                          trace = TRUE)
+
+chart.RiskReward(opt, risk.col = "StdDev", return.col = "mean", chart.assets = TRUE)
+
+# Apresenta os pesos das 15 carteiras na fronteira eficiente
+
+front_eficiente  <-  create.EfficientFrontier(R = retornos, 
+                                             portfolio = port_spec,  
+                                             type = "mean-StdDev", 
+                                             n.portfolios = 15)
+
+# Apresenta o gráfico da fronteira eficiente
+renda_fixa <- (1+.0025)^(1/12)-1 # Taxa Básica de Juros EUA em 2010 https://g1.globo.com/economia-e-negocios/noticia/2010/06/eua-banco-central-americano-mantem-a-taxa-de-juros-no-mesmo-patamar-1.html
+ 
+chart.EfficientFrontier(front_eficiente, 
+                        match.col = "StdDev", 
+                        type = "l", 
+                        col = "blue",
+                        rf = renda_fixa, 
+                        chart.assets = TRUE,
+                        RAR.text = "Índice de Sharpe", 
+                        pch = 4,
+                        main = 'Frente de Pareto ou Fronteira Eficiente')
+
+```
+
+
+Utilizando as funções-objetivo e as mesmas restrições, ploto o gráfico da relação entre risco x retorno e da frente de Pareto usando``DEoptim``:
+
+Roda o algoritmo para _backtest_:
+
+```{r fig.width=9, fig.height=4}
+
+# Resolve o problema de otimização
+
+opt_DEoptim <- optimize.portfolio.rebalancing(R = retornos, 
+                                           optimize_method = "DEoptim", 
+                                           portfolio = port_spec, 
+                                           rebalance_on = "quarters", 
+                                           training_period = 60, 
+                                           rolling_window = 60)
+# Calculate portfolio returns
+DEoptim_returns <- Return.portfolio(retornos, extractWeights(opt_DEoptim))
+
+colnames(DEoptim_returns) <- "DEoptim_target"
+
+plot(DEoptim_returns)
+
+#chart.Weights(DEoptim_returns)
+
+```
+
+
+
+```{r fig.width=9, fig.height=4}
+
+# Roda a otimização no espaço do tipo risco-retorno
+
+set.seed(1234)
+opt <- optimize.portfolio(retornos, 
+                          portfolio = port_spec,
+                          optimize_method = "DEoptim",
+                          trace = TRUE)
+
+chart.RiskReward(opt, risk.col = "StdDev", return.col = "mean", chart.assets = TRUE)
+
+# Apresenta os pesos das 15 carteiras na fronteira eficiente
+
+front_eficiente  <-  create.EfficientFrontier(R = retornos, 
+                                             portfolio = port_spec,  
+                                             type = "mean-StdDev", 
+                                             n.portfolios = 15)
+
+# Apresenta o gráfico da fronteira eficiente
+renda_fixa <- (1+.0025)^(1/12)-1 # Taxa Básica de Juros EUA em 2010 https://g1.globo.com/economia-e-negocios/noticia/2010/06/eua-banco-central-americano-mantem-a-taxa-de-juros-no-mesmo-patamar-1.html
+ 
+chart.EfficientFrontier(front_eficiente, 
+                        match.col = "StdDev", 
+                        type = "l", 
+                        col = "blue",
+                        rf = renda_fixa, 
+                        chart.assets = TRUE,
+                        RAR.text = "Índice de Sharpe", 
+                        pch = 4,
+                        main = 'Frente de Pareto ou Fronteira Eficiente')
+
+```
+
+
+
+Comparo os dois:
+
+```{r}
+
+# Merge benchmark, portfolio returns and box_returns
+ret <- cbind(benchmark_returns, random_returns, DEoptim_returns)
+
+# Annualized performance
+as.data.frame(t(table.AnnualizedReturns(ret)))
+
+```
+
+
+
+Parece bem evidente que a seleção desses ativos no portfólio não consiste na melhor escolha.
+
+Vamos aguardar a resposta do David Ardia [pra issue que lancei no repo do GitHub](https://github.com/ArdiaD/DEoptim/issues/17) do pacote ``DEoptim``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+# Referências
+
+***
+
+Ardia, D. _et alli_ (2011) **Differential Evolution with DEoptim: An Application to Non-Convex Portfolio Optimization**, _in_ $<$  https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Ardia~et~al.pdf $>$ Acesso em jun-2022. 
+
+Ardia, D. Mullen, B. G. Peterson and J. Ulrich. ``DEoptim:`` **Differential Evolution Optimization in R**, 2011. URL http://CRAN.R-project.org/package=DEoptim. R package version 2.1-0.
+
+Boudt, K. Carl, P. e Peterson, B. G. **Portfolio optimization with conditional value-at-risk budgets.** Working paper, 2010a.
+
+Crama, Y. e Schyns, M. **Simulated annealing for complex portfolio selection problems.** European Journal of Operations Research, 150(3):546–571, 2003.
+
+Fábián C. and Veszprémi, A. **Algorithms for handling CVaR constraints in dynamic stochastic programming models with applications to finance.** Journal of Risk, 10(3):111–131, 2008.
+
+Würtz, D., Chalabi, Y., Chen W., Ellis, A. **Portfolio Optimization with R/Rmetrics.** Rmetrics Association and Finance Online, 2009.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+***
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## R packages
+
+***
+
+
+```{r}
+
+citation(package = "GPareto")
+citation(package = "nsga2R")
+citation(package = "PortfolioAnalytics")
+citation(package = "DEoptim")
+citation(package = "ROI")
+citation(package = "PerformanceAnalytics")
+citation(package = "quadprog")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## Tempo total de compilação deste documento
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time
+
+
+```
