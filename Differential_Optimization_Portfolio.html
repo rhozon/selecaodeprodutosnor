@@ -464,6 +464,9 @@ div.tocify {
     <li>
       <a href="optim_multiobj_portfolio.html">Exemplo de aplicação multiobjetivo portfolio</a>
     </li>
+    <li>
+      <a href="Differential_Optimization_Portfolio.html">Algoritmo de Evolução Diferencial multiobjetivo portfolio</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -1576,7 +1579,7 @@ ret &lt;- cbind(benchmark_returns, random_returns, DEoptim_returns)
 as.data.frame(t(table.AnnualizedReturns(ret)))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0198","2":"0.1637","3":"-0.1208","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0204","2":"0.1591","3":"-0.1284","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Parece bem evidente que a seleção desses ativos no portfólio não
@@ -1778,7 +1781,7 @@ class="section level2">
 <pre class="r"><code># Execution timing
 
 Sys.time() - start_time</code></pre>
-<pre><code>Time difference of 2.760362 mins</code></pre>
+<pre><code>Time difference of 2.627578 mins</code></pre>
 </div>
 </div>
 

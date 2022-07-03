@@ -88,6 +88,8 @@ navbar:
           href: optim_multiobjective.html  
         - text: "Exemplo de aplicação multiobjetivo portfolio"
           href: optim_multiobj_portfolio.html            
+        - text: "Algoritmo de Evolução Diferencial multiobjetivo portfolio"
+          href: Differential_Optimization_Portfolio.html   
           
   right:
     - icon: fa-question fa-lg
