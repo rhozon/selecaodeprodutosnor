@@ -209,9 +209,8 @@ Tutoriais disponíveis:
 
 - [Exemplo introdutório de otimização multiobjetivo com algo NSGA-II](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobjective.html)
 
-- Otimização MultiObjetivo para um portfólio de fundos e commodities
+- [Otimização MultiObjetivo para um portfólio de fundos e commodities](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobj_portfolio.html)
 
-
-
+- Algoritmo de Otimização de Evolução Diferencial MultiObjetivo para um portfólio de ações
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
