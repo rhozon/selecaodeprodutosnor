@@ -1,0 +1,903 @@
+---
+title: "Como schedular a execução de Rmd files no Windows"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+
+```{r }
+
+start_time <- Sys.time()
+
+```
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Automação de execução de arquivos RMarkdown no Ruindow$ </strong> 
+  
+</div>
+
+***
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Neste post mostro como automatizar o agendamento e a execução de documentos RMarkdown no R usando um script R (arquivo.R) com o Task Scheduler no Windows.
+
+</p>
+
+</center>
+
+
+***
+
+# Pacotes do R
+
+```{r}
+
+library(DiagrammeR)
+
+```
+
+# Steps
+
+```{r fig.height=8, fig.width=8 }
+
+grViz(diagram = "digraph flowchart {
+      # define node aesthetics
+      node [fontname = Arial, shape = oval, color = Lavender, style = filled]        
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+      tab3 [label = '@@3']
+
+      # set up node layout
+      tab1 -> tab2;
+      tab2 -> tab3
+      }
+[1]: 'Escrita do(s) seu(s) documento(s) RMarkdown'
+      [2]: 'Chamada da execução do(s) documento(s) RMarkdown via R script'
+      [3]: 'Agendamento da execução via Task Scheduler'
+      ")
+
+```
+
+***
+
+# Passo 1
+
+A primeira etapa consiste na simples criação de seus documentos no RMarkdown. Você pode escrever somente um ou pode colocar vários deles dentro de um único .Rmd que chamará a execução sequenciada de todos os documentos que você desejar executar.
+
+
+Vamos inserir aqui um exemplo reprodutível no caso de vários Rmd´s em que iremos agendar a execução sequenciada de todos os eles diariamente:
+
+
+## Primeiro arquivo .Rmd a ser compilado (``Update_Milho.Rmd``)
+
+````{verbatim}
+
+---
+title: "Primeiro .Rmd: Atualiza dados de commodities: Milho"
+author: "Seu Nome aqui"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y %H:%M:%S')`"
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time <- Sys.time()
+
+```
+
+```` 
+
+````{verbatim}
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Update das cotações do milho na CBOT </strong> 
+  
+</div>
+
+***
+
+```` 
+
+````{verbatim}
+
+# Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```
+
+````
+
+````{verbatim}
+
+# Download dos dados
+
+```{r}
+
+Cotacoes_Milho_CBOT <-  BatchGetSymbols(
+                          tickers = "ZC=F", # Futuros Milho
+                          first.date = "2019-01-01",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Milho_CBOT <- as.data.frame(Cotacoes_Milho_CBOT$df.tickers) %>%
+                       as_tsibble(index = ref.date)
+
+milho <- Cotacoes_Milho_CBOT %>%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %>%
+  as_tsibble(index = ref.date)
+
+```
+````
+
+````{verbatim}
+# Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( milho,  price.adjusted )
+)
+
+ggplotly(
+autoplot( milho, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( milho,  volume )
+)
+
+# autoplot(milho[, c("price.adjusted", "ret.adjusted.prices", "volume")], facets = TRUE)
+
+```
+
+````
+
+````{verbatim}
+
+# Gera csv
+
+```{r}
+
+write.csv(milho, "milho.csv", row.names = FALSE )
+
+```
+
+````
+
+````{verbatim}
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+
+````
+
+***
+
+## Segundo documento .Rmd a ser compilado (``Update_Soja.Rmd``)
+
+
+````{verbatim}
+
+---
+title: "Atualiza dados de commodities: Soja"
+author: "Seu Nome aqui"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y %H:%M:%S')`"
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time <- Sys.time()
+
+```
+````
+
+````{verbatim}
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+```` 
+
+````{verbatim}
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Update das cotações do Soja na CBOT </strong> 
+  
+</div>
+
+***
+```` 
+
+
+````{verbatim}
+# Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```
+````
+
+````{verbatim}
+# Download dos dados
+
+```{r}
+
+Cotacoes_Soja_CBOT <-  BatchGetSymbols(
+                          tickers = "ZL=F", # Futuros Soja
+                          first.date = "2019-01-01",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Soja_CBOT <- as.data.frame(Cotacoes_Soja_CBOT$df.tickers) %>%
+                       as_tsibble(index = ref.date)
+
+head(Cotacoes_Soja_CBOT)
+
+Soja <- Cotacoes_Soja_CBOT %>%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %>%
+  as_tsibble(index = ref.date)
+
+```
+```` 
+
+
+````{verbatim}
+
+# Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( Soja,  price.adjusted )
+)
+
+ggplotly(
+autoplot( Soja, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( Soja,  volume )
+)
+
+# autoplot(Soja[, c("price.adjusted", "ret.adjusted.prices", "volume")], facets = TRUE)
+
+```
+````
+
+````{verbatim}
+
+# Gera csv
+
+
+```{r}
+
+write.csv(Soja, "Soja.csv", row.names = FALSE )
+
+```
+````
+
+````{verbatim}
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+```` 
+
+***
+
+## Terceiro documento .Rmd a ser compilado (``Update_Aveia.Rmd``)
+
+````{verbatim}
+---
+title: "Atualiza dados de commodities: Aveia"
+author: "Seu Nome aqui"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y %H:%M:%S')`"
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time <- Sys.time()
+
+```
+````
+
+````{verbatim}
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+````
+
+````{verbatim}
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Update das cotações do Aveia na CBOT </strong> 
+  
+</div>
+
+***
+````
+
+````{verbatim}
+# Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```
+````
+
+````{verbatim}
+
+# Download dos dados
+
+```{r}
+
+Cotacoes_Aveia_CBOT <-  BatchGetSymbols(
+                          tickers = "ZO=F", # Futuros Aveia
+                          first.date = "2019-01-01",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Aveia_CBOT <- as.data.frame(Cotacoes_Aveia_CBOT$df.tickers) %>%
+                       as_tsibble(index = ref.date)
+
+head(Cotacoes_Aveia_CBOT)
+
+Aveia <- Cotacoes_Aveia_CBOT %>%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %>%
+  as_tsibble(index = ref.date)
+
+```
+````
+
+````{verbatim}
+
+# Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( Aveia,  price.adjusted )
+)
+
+ggplotly(
+autoplot( Aveia, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( Aveia,  volume )
+)
+
+# autoplot(Aveia[, c("price.adjusted", "ret.adjusted.prices", "volume")], facets = TRUE)
+
+```
+````
+````{verbatim}
+# Gera csv
+
+```{r}
+
+write.csv(Aveia, "Aveia.csv", row.names = FALSE )
+
+```
+````
+
+````{verbatim}
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+````
+
+# Passo 2
+
+Salve cada um desses .Rmd´s na mesma pasta para facilitar a chamada das execuções. 
+
+
+Em seguida, criaremos mais um .Rmd que irá chamar a execução sequenciada de cada um dos documentos criados anteriormente:
+
+1. ``Update_Milho.Rmd``
+
+2. ``Update_Soja.Rmd``
+
+3. ``Update_Aveia.Rmd``
+
+## Documento RMarkdown agregador dos 3 Rmd´s criados anteriormente (``Executa_a_atualizacao_das_3_commodities.Rmd``)
+
+Agora que criamos todos os três documentos .Rmd´s criamos um que executa os três sequencialmente:
+
+
+````{verbatim}
+
+---
+title: "Script de agregação das execuções dos updates dos dados de commodities"
+author: "Seu Nome aqui"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y %H:%M:%S')`"
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time <- Sys.time()
+
+```
+```` 
+
+
+````{verbatim}
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+````
+
+````{verbatim}
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Update das cotações de commodities </strong> 
+  
+</div>
+
+***
+````
+
+
+````{verbatim}
+
+Listemos os .Rmd´s disponíveis no diretório:
+ 
+```{r}
+
+lista_rmd_files <- list.files(pattern = ".Rmd$")
+lista_rmd_files
+
+```
+````
+
+````{verbatim}
+
+```{r}
+
+cat("Iniciando a execução dos Rmds que atualizam as cotações das commodities...")
+
+```
+````
+
+````{verbatim}
+
+```{r child = 'Update_Milho.Rmd'}
+
+```
+````
+
+````{verbatim}
+
+```{r child = 'Update_Soja.Rmd'}
+
+```
+````
+
+````{verbatim}
+
+```{r child = 'Update_Aveia.Rmd'}
+
+```
+````
+
+
+````{verbatim}
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+***
+````
+
+````{verbatim}
+
+```{r}
+
+cat("...contabilizando o tempo total de execução dos três Rmds sequencialmente...Fim!")
+# Execution timing
+
+Sys.time() - start_time 
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+````
+
+# Passo 3
+
+O terceiro e último passo consiste nas configurações dos agendamentos pelo Task Scheduler do Windows.
+
+1. No menu Pesquisar da barra do Windows digite Agendador de Tarefas e abra ele;
+
+2. Clique em Ação e em seguida em Criar Tarefa...
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/agendador_windows.png)
+
+3. Crie um nome e insira uma descrição para a sua tarefa e;
+
+4. Na aba Ações vá em Novo...
+
+5. Deixe a opção marcada Iniciar um Programa
+
+6. Navegue nas pastas do Windows onde os binários da linguagem R ficam instaladas...
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/setando_Rscript.png)
+
+Clique em Rscript.exe e com o Shift pressionado, clique com o outro botão do mouse e selecione a opção Copiar como caminho
+
+7. Cole esse caminho (CTRL+V) conforme a imagem a seguir:
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/copiar_caminho_Rscript.png)
+
+8. Agora vá para a pasta aonde você salvou todos os Rmd´s acima conforme o exemplo...
+
+![](https://github.com/rhozon/datasets/raw/master/pasta_dos_arquivos_Rmd.png)
+
+9. Dentro dessa pasta, iremos inserir um script do R para chamar o último documento RMarkdown que executa os três outros Rmds sequencialmente:
+
+- ``Atualiza_Dados_Commodities.R``
+
+````{verbatim}
+```{r}
+
+cat("Inicia a execução da atualização das commodities ...")
+
+Sys.getenv("RSTUDIO_PANDOC") # Cheque a versão e local do seu pandoc
+
+# Copie esse output gerado (path)
+library(rmarkdown)
+
+Sys.setenv(RSTUDIO_PANDOC = "C:/Program Files/RStudio/bin/quarto/bin") # Insira o path copiado dentro dessas aspas...
+cat("Começando o update das cotações ... ")
+rmarkdown::render(
+  input = "C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler/Executa_a_atualizacao_das_3_commodities.Rmd", # Documento RMarkdown que chama a execução sequencial dos três outros Rmds
+  output_file = "C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler/Executa_a_atualizacao_das_3_commodities.html", # O mesmo path do documento RMarkdown acima, só que com formato .html
+  output_dir = "C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler" # A mesma pasta onde os Rmd´s estão localizados
+)
+
+cat("Fim da atualização dos dados ...")
+
+```
+````
+
+10. Copie o path desse arquivo .R 
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/render_scriptR_executa_tds_Rmds.png)
+
+11. Volte ao Agendador de Tarefas e insira esse path em Adicione argumentos (opcional)
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/inserindo_path_do_render_Rscript_para_Rmds.png)
+
+12. Clique em Ok e agora vá na aba Disparadores e clique em Novo...
+
+![](https://raw.githubusercontent.com/rhozon/datasets/master/agendamento_atualiza_commodities.png)
+
+
+Por fim, agende as frequências das atualizações das execuções (via script R sozinho), de acordo com a sua necessidade.
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+***
+
+&nbsp;
+
+&nbsp;
+
+***
+
+# Referências
+
+***
+
+
+MacKintosh,J. **Scheduling Rmarkdown files on Windows – your foolproof guide**,  _In_ $<$ [r-bloggers](https://www.r-bloggers.com/2021/10/scheduling-rmarkdown-files-on-windows-your-foolproof-guide/) $>$
+
+StackOverFlow **How to combine two RMarkdown Rmd Files into a single output ?** _In_ 
+$<$ [stackoverflow.com](https://stackoverflow.com/questions/25824795/how-to-combine-two-rmarkdown-rmd-files-into-a-single-output) $>$
+
+
+&nbsp;
+
+&nbsp;
+
+***
+
+
+&nbsp;
+
+&nbsp;
+
+***
+
+Total execution timing:
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+
+
+
+
