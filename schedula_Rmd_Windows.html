@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Rodrigo Hermont Ozon" />
+
+
+<title>Como schedular a execução de Rmd files no Windows</title>
+
+<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/viz-1.8.2/viz.js"></script>
+<link href="site_libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="site_libs/grViz-binding-1.0.9/grViz.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tutoriais</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="https://rhozon.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="https://rhozon.github.io/site/about.html">
+    <span class="fa fa-info"></span>
+     
+    About
+  </a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <span class="fa fa-gear"></span>
+     
+    Selecione
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">ENSINO</li>
+    <li class="divider"></li>
+    <li>
+      <a href="index.html">Guia de Tutoriais</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a href="EscolhadeProdutoseAnaliseConjuntanoR.html">Mix de produtos com Analise Conjunta no R</a>
+    </li>
+    <li>
+      <a href="ComparandoprecosAirbnb.html">Comparando precos de estadias no Airbnb com R</a>
+    </li>
+    <li>
+      <a href="TesteABnoR.html">Teste AB para campanhas de marketing no R</a>
+    </li>
+    <li>
+      <a href="RegressaodoComPrincipal.html">Regressão do Componente Principal no Excel para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Ridge.html">Regressão Ridge no Excel e no R para Multicolinearidade</a>
+    </li>
+    <li>
+      <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
+    </li>
+    <li>
+      <a href="ETL_R_no_PowerBI.html">ETL com o R direto no Power BI</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="schedula_Rmd_Windows.html">Agendamento automático de execução de RMarkdowns com o R</a>
+    </li>
+    <li>
+      <a href="AAS_Algo_CiencDados_Cruzeiro.html">AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R</a>
+    </li>
+    <li>
+      <a href="AtividadeIeII.html">Projeto Int. Transdiciplinar de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="prophet.html">Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``</a>
+    </li>
+    <li>
+      <a href="prophet_boost.html">Forecasting de séries temporais com algoritmos de machine learning</a>
+    </li>
+    <li>
+      <a href="causalimpact.html">Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
+    </li>
+    <li>
+      <a href="modelo_deep_learning_series_temporais.html">Modelos de Deep Learning em Séries Temporais de preços de commodities</a>
+    </li>
+    <li>
+      <a href="Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html">Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo</a>
+    </li>
+    <li>
+      <a href="GARCH_Bayesiano.html">Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobjective.html">Introdução a otimização multiobjetivo de um portfólio de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobj_portfolio.html">Exemplo de aplicação multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Differential_Optimization_Portfolio.html">Algoritmo de Evolução Diferencial multiobjetivo portfolio</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://rhozon.github.io/PortfolioRodrigo.html">
+    <span class="fa fa-question fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rhozon">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://www.linkedin.com/in/rodrigohermontozon/">
+    <span class="fa fa-linkedin"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://api.whatsapp.com/send?phone=5541988382904&amp;text=">
+    <span class="fa fa-whatsapp"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Como schedular a execução de Rmd files no
+Windows</h1>
+<h4 class="author">Rodrigo Hermont Ozon</h4>
+<h4 class="date">Last Update: julho 31, 2022</h4>
+
+</div>
+
+
+<pre class="r"><code>start_time &lt;- Sys.time()</code></pre>
+<hr />
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+<div class="alert alert-info">
+<p><strong> Automação de execução de arquivos RMarkdown no Ruindow$
+</strong></p>
+</div>
+<hr />
+<hr />
+<center>
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Neste post mostro como automatizar o agendamento e a execução de documentos RMarkdown no R usando um script R (arquivo.R) com o Task Scheduler no Windows.
+
+</p>
+</center>
+<hr />
+<div id="pacotes-do-r" class="section level1">
+<h1>Pacotes do R</h1>
+<pre class="r"><code>library(DiagrammeR)</code></pre>
+</div>
+<div id="steps" class="section level1">
+<h1>Steps</h1>
+<pre class="r"><code>grViz(diagram = &quot;digraph flowchart {
+      # define node aesthetics
+      node [fontname = Arial, shape = oval, color = Lavender, style = filled]        
+      tab1 [label = &#39;@@1&#39;]
+      tab2 [label = &#39;@@2&#39;]
+      tab3 [label = &#39;@@3&#39;]
+
+      # set up node layout
+      tab1 -&gt; tab2;
+      tab2 -&gt; tab3
+      }
+[1]: &#39;Escrita do(s) seu(s) documento(s) RMarkdown&#39;
+      [2]: &#39;Chamada da execução do(s) documento(s) RMarkdown via R script&#39;
+      [3]: &#39;Agendamento da execução via Task Scheduler&#39;
+      &quot;)</code></pre>
+<div id="htmlwidget-a34ca7880883b326cda9" style="width:768px;height:768px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a34ca7880883b326cda9">{"x":{"diagram":"digraph flowchart {\n      # define node aesthetics\n      node [fontname = Arial, shape = oval, color = Lavender, style = filled]        \n      tab1 [label = \"Escrita do(s) seu(s) documento(s) RMarkdown\"]\n      tab2 [label = \"Chamada da execução do(s) documento(s) RMarkdown via R script\"]\n      tab3 [label = \"Agendamento da execução via Task Scheduler\"]\n\n      # set up node layout\n      tab1 -> tab2;\n      tab2 -> tab3\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<hr />
+</div>
+<div id="passo-1" class="section level1">
+<h1>Passo 1</h1>
+<p>A primeira etapa consiste na simples criação de seus documentos no
+RMarkdown. Você pode escrever somente um ou pode colocar vários deles
+dentro de um único .Rmd que chamará a execução sequenciada de todos os
+documentos que você desejar executar.</p>
+<p>Vamos inserir aqui um exemplo reprodutível no caso de vários Rmd´s em
+que iremos agendar a execução sequenciada de todos os eles
+diariamente:</p>
+<div id="primeiro-arquivo-.rmd-a-ser-compilado-update_milho.rmd"
+class="section level2">
+<h2>Primeiro arquivo .Rmd a ser compilado
+(<code>Update_Milho.Rmd</code>)</h2>
+<pre class="default"><code>
+---
+title: &quot;Primeiro .Rmd: Atualiza dados de commodities: Milho&quot;
+author: &quot;Seu Nome aqui&quot;
+date: &quot;Last Update: `r format(Sys.time(), &#39;%B %d, %Y %H:%M:%S&#39;)`&quot;
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time &lt;- Sys.time()
+
+```
+</code></pre>
+<pre class="default"><code>
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+&lt;style&gt;
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+&lt;/style&gt;
+
+&lt;div class=&quot;alert alert-info&quot;&gt;
+
+  &lt;strong&gt; Update das cotações do milho na CBOT &lt;/strong&gt; 
+  
+&lt;/div&gt;
+
+***
+</code></pre>
+<pre class="default"><code>
+# Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```
+</code></pre>
+<pre class="default"><code>
+# Download dos dados
+
+```{r}
+
+Cotacoes_Milho_CBOT &lt;-  BatchGetSymbols(
+                          tickers = &quot;ZC=F&quot;, # Futuros Milho
+                          first.date = &quot;2019-01-01&quot;,
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Milho_CBOT &lt;- as.data.frame(Cotacoes_Milho_CBOT$df.tickers) %&gt;%
+                       as_tsibble(index = ref.date)
+
+milho &lt;- Cotacoes_Milho_CBOT %&gt;%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %&gt;%
+  as_tsibble(index = ref.date)
+
+```</code></pre>
+<pre class="default"><code># Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( milho,  price.adjusted )
+)
+
+ggplotly(
+autoplot( milho, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( milho,  volume )
+)
+
+# autoplot(milho[, c(&quot;price.adjusted&quot;, &quot;ret.adjusted.prices&quot;, &quot;volume&quot;)], facets = TRUE)
+
+```
+</code></pre>
+<pre class="default"><code>
+# Gera csv
+
+```{r}
+
+write.csv(milho, &quot;milho.csv&quot;, row.names = FALSE )
+
+```
+</code></pre>
+<pre class="default"><code>
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```
+</code></pre>
+<hr />
+</div>
+<div id="segundo-documento-.rmd-a-ser-compilado-update_soja.rmd"
+class="section level2">
+<h2>Segundo documento .Rmd a ser compilado
+(<code>Update_Soja.Rmd</code>)</h2>
+<pre class="default"><code>
+---
+title: &quot;Atualiza dados de commodities: Soja&quot;
+author: &quot;Seu Nome aqui&quot;
+date: &quot;Last Update: `r format(Sys.time(), &#39;%B %d, %Y %H:%M:%S&#39;)`&quot;
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time &lt;- Sys.time()
+
+```</code></pre>
+<pre class="default"><code>
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```</code></pre>
+<pre class="default"><code>***
+
+&lt;style&gt;
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+&lt;/style&gt;
+
+&lt;div class=&quot;alert alert-info&quot;&gt;
+
+  &lt;strong&gt; Update das cotações do Soja na CBOT &lt;/strong&gt; 
+  
+&lt;/div&gt;
+
+***</code></pre>
+<pre class="default"><code># Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```</code></pre>
+<pre class="default"><code># Download dos dados
+
+```{r}
+
+Cotacoes_Soja_CBOT &lt;-  BatchGetSymbols(
+                          tickers = &quot;ZL=F&quot;, # Futuros Soja
+                          first.date = &quot;2019-01-01&quot;,
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Soja_CBOT &lt;- as.data.frame(Cotacoes_Soja_CBOT$df.tickers) %&gt;%
+                       as_tsibble(index = ref.date)
+
+head(Cotacoes_Soja_CBOT)
+
+Soja &lt;- Cotacoes_Soja_CBOT %&gt;%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %&gt;%
+  as_tsibble(index = ref.date)
+
+```</code></pre>
+<pre class="default"><code>
+# Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( Soja,  price.adjusted )
+)
+
+ggplotly(
+autoplot( Soja, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( Soja,  volume )
+)
+
+# autoplot(Soja[, c(&quot;price.adjusted&quot;, &quot;ret.adjusted.prices&quot;, &quot;volume&quot;)], facets = TRUE)
+
+```</code></pre>
+<pre class="default"><code>
+# Gera csv
+
+```{r}
+
+write.csv(Soja, &quot;Soja.csv&quot;, row.names = FALSE )
+
+```</code></pre>
+<pre class="default"><code>
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```</code></pre>
+<hr />
+</div>
+<div id="terceiro-documento-.rmd-a-ser-compilado-update_aveia.rmd"
+class="section level2">
+<h2>Terceiro documento .Rmd a ser compilado
+(<code>Update_Aveia.Rmd</code>)</h2>
+<pre class="default"><code>---
+title: &quot;Atualiza dados de commodities: Aveia&quot;
+author: &quot;Seu Nome aqui&quot;
+date: &quot;Last Update: `r format(Sys.time(), &#39;%B %d, %Y %H:%M:%S&#39;)`&quot;
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time &lt;- Sys.time()
+
+```</code></pre>
+<pre class="default"><code>
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```</code></pre>
+<pre class="default"><code>***
+
+&lt;style&gt;
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+&lt;/style&gt;
+
+&lt;div class=&quot;alert alert-info&quot;&gt;
+
+  &lt;strong&gt; Update das cotações do Aveia na CBOT &lt;/strong&gt; 
+  
+&lt;/div&gt;
+
+***</code></pre>
+<pre class="default"><code># Pacotes
+
+```{r}
+
+library(BatchGetSymbols)
+library(tidyverse)
+library(dplyr)
+library(fpp3)
+library(feasts)
+library(plotly)
+library(ggplot2)
+
+```</code></pre>
+<pre class="default"><code>
+# Download dos dados
+
+```{r}
+
+Cotacoes_Aveia_CBOT &lt;-  BatchGetSymbols(
+                          tickers = &quot;ZO=F&quot;, # Futuros Aveia
+                          first.date = &quot;2019-01-01&quot;,
+                          last.date = Sys.Date(),
+                          do.cache = FALSE
+                          ) 
+
+Cotacoes_Aveia_CBOT &lt;- as.data.frame(Cotacoes_Aveia_CBOT$df.tickers) %&gt;%
+                       as_tsibble(index = ref.date)
+
+head(Cotacoes_Aveia_CBOT)
+
+Aveia &lt;- Cotacoes_Aveia_CBOT %&gt;%
+  select(
+    ticker,
+    ref.date,
+    price.adjusted,
+    volume,
+    ret.adjusted.prices
+  ) %&gt;%
+  as_tsibble(index = ref.date)
+
+```</code></pre>
+<pre class="default"><code>
+# Preview dos preços e seus retornos
+
+```{r fig.width=9, fig.height=4}
+
+ggplotly(
+autoplot( Aveia,  price.adjusted )
+)
+
+ggplotly(
+autoplot( Aveia, ret.adjusted.prices )
+)
+
+ggplotly(
+autoplot( Aveia,  volume )
+)
+
+# autoplot(Aveia[, c(&quot;price.adjusted&quot;, &quot;ret.adjusted.prices&quot;, &quot;volume&quot;)], facets = TRUE)
+
+```</code></pre>
+<pre class="default"><code># Gera csv
+
+```{r}
+
+write.csv(Aveia, &quot;Aveia.csv&quot;, row.names = FALSE )
+
+```</code></pre>
+<pre class="default"><code>&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+***
+
+```{r}
+
+# Execution timing
+
+Sys.time() - start_time # Checar se esse timer soma todos os tempos de execução de cada documento
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```</code></pre>
+</div>
+</div>
+<div id="passo-2" class="section level1">
+<h1>Passo 2</h1>
+<p>Salve cada um desses .Rmd´s na mesma pasta para facilitar a chamada
+das execuções.</p>
+<p>Em seguida, criaremos mais um .Rmd que irá chamar a execução
+sequenciada de cada um dos documentos criados anteriormente:</p>
+<ol style="list-style-type: decimal">
+<li><p><code>Update_Milho.Rmd</code></p></li>
+<li><p><code>Update_Soja.Rmd</code></p></li>
+<li><p><code>Update_Aveia.Rmd</code></p></li>
+</ol>
+<div
+id="documento-rmarkdown-agregador-dos-3-rmds-criados-anteriormente-executa_a_atualizacao_das_3_commodities.rmd"
+class="section level2">
+<h2>Documento RMarkdown agregador dos 3 Rmd´s criados anteriormente
+(<code>Executa_a_atualizacao_das_3_commodities.Rmd</code>)</h2>
+<p>Agora que criamos todos os três documentos .Rmd´s criamos um que
+executa os três sequencialmente:</p>
+<pre class="default"><code>
+---
+title: &quot;Script de agregação das execuções dos updates dos dados de commodities&quot;
+author: &quot;Seu Nome aqui&quot;
+date: &quot;Last Update: `r format(Sys.time(), &#39;%B %d, %Y %H:%M:%S&#39;)`&quot;
+output: 
+  html_document:
+    df_print: paged
+---
+
+```{r  }
+
+start_time &lt;- Sys.time()
+
+```</code></pre>
+<pre class="default"><code>
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+    echo = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```</code></pre>
+<pre class="default"><code>***
+
+&lt;style&gt;
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+&lt;/style&gt;
+
+&lt;div class=&quot;alert alert-info&quot;&gt;
+
+  &lt;strong&gt; Update das cotações de commodities &lt;/strong&gt; 
+  
+&lt;/div&gt;
+
+***</code></pre>
+<pre class="default"><code>
+Listemos os .Rmd´s disponíveis no diretório:
+ 
+```{r}
+
+lista_rmd_files &lt;- list.files(pattern = &quot;.Rmd$&quot;)
+lista_rmd_files
+
+```</code></pre>
+<pre class="default"><code>
+```{r}
+
+cat(&quot;Iniciando a execução dos Rmds que atualizam as cotações das commodities...&quot;)
+
+```</code></pre>
+<pre class="default"><code>
+```{r child = &#39;Update_Milho.Rmd&#39;}
+
+```</code></pre>
+<pre class="default"><code>
+```{r child = &#39;Update_Soja.Rmd&#39;}
+
+```</code></pre>
+<pre class="default"><code>
+```{r child = &#39;Update_Aveia.Rmd&#39;}
+
+```</code></pre>
+<pre class="default"><code>&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+&amp;nbsp;
+
+***</code></pre>
+<pre class="default"><code>
+```{r}
+
+cat(&quot;...contabilizando o tempo total de execução dos três Rmds sequencialmente...Fim!&quot;)
+# Execution timing
+
+Sys.time() - start_time 
+
+Sys.info()
+memuse::Sys.meminfo()
+
+```</code></pre>
+</div>
+</div>
+<div id="passo-3" class="section level1">
+<h1>Passo 3</h1>
+<p>O terceiro e último passo consiste nas configurações dos agendamentos
+pelo Task Scheduler do Windows.</p>
+<ol style="list-style-type: decimal">
+<li><p>No menu Pesquisar da barra do Windows digite Agendador de Tarefas
+e abra ele;</p></li>
+<li><p>Clique em Ação e em seguida em Criar Tarefa…</p></li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/agendador_windows.png" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li><p>Crie um nome e insira uma descrição para a sua tarefa e;</p></li>
+<li><p>Na aba Ações vá em Novo…</p></li>
+<li><p>Deixe a opção marcada Iniciar um Programa</p></li>
+<li><p>Navegue nas pastas do Windows onde os binários da linguagem R
+ficam instaladas…</p></li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/setando_Rscript.png" /></p>
+<p>Clique em Rscript.exe e com o Shift pressionado, clique com o outro
+botão do mouse e selecione a opção Copiar como caminho</p>
+<ol start="7" style="list-style-type: decimal">
+<li>Cole esse caminho (CTRL+V) conforme a imagem a seguir:</li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/copiar_caminho_Rscript.png" /></p>
+<ol start="8" style="list-style-type: decimal">
+<li>Agora vá para a pasta aonde você salvou todos os Rmd´s acima
+conforme o exemplo…</li>
+</ol>
+<p><img
+src="https://github.com/rhozon/datasets/raw/master/pasta_dos_arquivos_Rmd.png" /></p>
+<ol start="9" style="list-style-type: decimal">
+<li>Dentro dessa pasta, iremos inserir um script do R para chamar o
+último documento RMarkdown que executa os três outros Rmds
+sequencialmente:</li>
+</ol>
+<ul>
+<li><code>Atualiza_Dados_Commodities.R</code></li>
+</ul>
+<pre class="default"><code>```{r}
+
+cat(&quot;Inicia a execução da atualização das commodities ...&quot;)
+
+Sys.getenv(&quot;RSTUDIO_PANDOC&quot;) # Cheque a versão e local do seu pandoc
+
+# Copie esse output gerado (path)
+library(rmarkdown)
+
+Sys.setenv(RSTUDIO_PANDOC = &quot;C:/Program Files/RStudio/bin/quarto/bin&quot;) # Insira o path copiado dentro dessas aspas...
+cat(&quot;Começando o update das cotações ... &quot;)
+rmarkdown::render(
+  input = &quot;C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler/Executa_a_atualizacao_das_3_commodities.Rmd&quot;, # Documento RMarkdown que chama a execução sequencial dos três outros Rmds
+  output_file = &quot;C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler/Executa_a_atualizacao_das_3_commodities.html&quot;, # O mesmo path do documento RMarkdown acima, só que com formato .html
+  output_dir = &quot;C:/Users/rodri/Documents/Scripts do R/Exemplo_Task_Scheduler&quot; # A mesma pasta onde os Rmd´s estão localizados
+)
+
+cat(&quot;Fim da atualização dos dados ...&quot;)
+
+```</code></pre>
+<ol start="10" style="list-style-type: decimal">
+<li>Copie o path desse arquivo .R</li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/render_scriptR_executa_tds_Rmds.png" /></p>
+<ol start="11" style="list-style-type: decimal">
+<li>Volte ao Agendador de Tarefas e insira esse path em Adicione
+argumentos (opcional)</li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/inserindo_path_do_render_Rscript_para_Rmds.png" /></p>
+<ol start="12" style="list-style-type: decimal">
+<li>Clique em Ok e agora vá na aba Disparadores e clique em Novo…</li>
+</ol>
+<p><img
+src="https://raw.githubusercontent.com/rhozon/datasets/master/agendamento_atualiza_commodities.png" /></p>
+<p>Por fim, agende as frequências das atualizações das execuções (via
+script R sozinho), de acordo com a sua necessidade.</p>
+<p> </p>
+<p> </p>
+<hr />
+<p> </p>
+<p> </p>
+<hr />
+</div>
+<div id="referências" class="section level1">
+<h1>Referências</h1>
+<hr />
+<p>MacKintosh,J. <strong>Scheduling Rmarkdown files on Windows – your
+foolproof guide</strong>, <em>In</em> <span
+class="math inline">\(&lt;\)</span> <a
+href="https://www.r-bloggers.com/2021/10/scheduling-rmarkdown-files-on-windows-your-foolproof-guide/">r-bloggers</a>
+<span class="math inline">\(&gt;\)</span></p>
+<p>StackOverFlow <strong>How to combine two RMarkdown Rmd Files into a
+single output ?</strong> <em>In</em> <span
+class="math inline">\(&lt;\)</span> <a
+href="https://stackoverflow.com/questions/25824795/how-to-combine-two-rmarkdown-rmd-files-into-a-single-output">stackoverflow.com</a>
+<span class="math inline">\(&gt;\)</span></p>
+<p> </p>
+<p> </p>
+<hr />
+<p> </p>
+<p> </p>
+<hr />
+<p>Total execution timing:</p>
+<pre class="r"><code># Execution timing
+
+Sys.time() - start_time</code></pre>
+<pre><code>Time difference of 0.6338298 secs</code></pre>
+<pre class="r"><code>Sys.info()</code></pre>
+<pre><code>          sysname           release           version          nodename 
+        &quot;Windows&quot;          &quot;10 x64&quot;     &quot;build 19044&quot; &quot;LAPTOP-EVMN6V5C&quot; 
+          machine             login              user    effective_user 
+         &quot;x86-64&quot;           &quot;rodri&quot;           &quot;rodri&quot;           &quot;rodri&quot; </code></pre>
+<pre class="r"><code>memuse::Sys.meminfo()</code></pre>
+<pre><code>Totalram:  7.819 GiB 
+Freeram:   1.050 GiB </code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

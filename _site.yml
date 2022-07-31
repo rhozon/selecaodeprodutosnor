@@ -64,6 +64,8 @@ navbar:
           href: problemset2.html 
         - text: "Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)"
           href: anpreliminar.html          
+        - text: "Agendamento automático de execução de RMarkdowns com o R"
+          href: schedula_Rmd_Windows.html          
         - text: "AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R"
           href: AAS_Algo_CiencDados_Cruzeiro.html       
         - text: "Projeto Int. Transdiciplinar de Ciência de Dados"
