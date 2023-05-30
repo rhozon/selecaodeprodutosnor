@@ -66,8 +66,6 @@ navbar:
           href: anpreliminar.html          
         - text: "Agendamento automático de execução de RMarkdowns com o R"
           href: schedula_Rmd_Windows.html          
-        - text: "AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R"
-          href: AtividadeIeII.html 
         - text: "Previsão (forecasting), simulação de cenários e análise de séries temporais"
           href: fcast.html             
         - text: "Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``"

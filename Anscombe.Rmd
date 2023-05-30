@@ -8,8 +8,20 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
 ```
 
 ***
@@ -128,12 +140,13 @@ summary(ans)
 Quando regredimos y1 em x1 e y2 em x2 etc. usando a função lm do R e vemos a saída ao exibir os coeficientes e outros, notamos que os resultados de regressão são os mesmos:
 
 ```{r message=FALSE}
+
 regr1 <- lm(y1 ~ x1, data = ans)
 regr2 <- lm(y2 ~ x2, data = ans)
 regr3 <- lm(y3 ~ x3, data = ans)
 regr4 <- lm(y4 ~ x4, data = ans)
-library(texreg)
 
+library(texreg)
 
 screenreg(list(regr1,regr2,regr3,regr4)) #Resultado comparativo das quatro regressoes
 

@@ -8,8 +8,21 @@ output:
     toc_float: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+```{r include=FALSE  }
+
+# Chunk de setup
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
 ```
 
 
@@ -88,7 +101,7 @@ library(readr)
 
 Para criar árvores de decisão, usaremos a função ctree() do pacote 'party'. Para obter mais informações sobre a função ctree(), você pode usar a sintaxe abaixo.
 
-```{r message=FALSE}
+```{r message=FALSE, eval=FALSE }
 
 ?ctree()
 
@@ -138,15 +151,14 @@ kbl(cbind(ofertas)) %>%
 
 &nbsp;
 
-
 Vamos renomear as variáveis para o R ler sem problemas:
 
 ```{r message=FALSE}
 
 library(tidyverse)
 
-ofertas <- ofertas %>%
-  rename(futurocliente='Futuro Cliente', metpgto= 'Método de Pagamento')
+names(ofertas)[names(ofertas) == "Futuro Cliente"] <- "futurocliente"
+names(ofertas)[names(ofertas) == "Método de Pagamento"] <- "metpgto"
 
 str(ofertas)
 
