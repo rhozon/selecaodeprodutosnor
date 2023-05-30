@@ -1,0 +1,659 @@
+---
+title: "Seleção de Portfólio com Otimização Multicritério"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+      smooth_scroll: false
+---
+
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+***
+
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+
+<div class="alert alert-info">
+
+  <strong> Seleção de Portfólio (Phd Student) </strong> 
+  
+</div>
+
+***
+
+<left>
+![](https://upload.wikimedia.org/wikipedia/commons/f/f0/Pucpr-logo.jpg){width=10%}
+</left>
+
+
+***
+
+<center>
+
+<p >
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="comment">
+
+Documento tutorial de exemplo de testagem de metodologia multicritério para seleção de portfólio.
+
+</p>
+
+</center>
+
+***
+
+
+# Pacotes {.tabset .tabset-fade .tabset-pills}
+
+
+
+```{r}
+
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(lubridate)
+library(mco)
+library(FRAPO)
+library(scatterplot3d)
+library(akima)
+library(fields)
+library(PerformanceAnalytics)
+library(fPortfolio) ## para donlp2NLP
+library(cccp)
+library(fpp3)
+library(BatchGetSymbols)
+library(PortfolioAnalytics)
+library(ROI)
+require(ROI.plugin.glpk)
+require(ROI.plugin.quadprog)
+library(PerformanceAnalytics)
+library(quadprog)
+library(KraljicMatrix)
+library(doParallel)
+registerDoParallel()
+
+```
+
+***
+
+&nbsp;
+
+&nbsp;
+
+***
+
+# Intro {.tabset .tabset-fade .tabset-pills}
+
+Neste _post_ trabalharemos na perspectiva da problemática de Seleção de Portfólio, considerando os seguintes tópicos:
+
+ - Como na maioria dos casos, a limitação pela definição de objetivos de múltiplos critérios (conflitantes) com relação a problemas de otimização de portfólio;
+ 
+ - O conceito de Eficiência de Pareto (soluções não-dominadas)
+ 
+ - Soluções/pontos podem ser determinados com algos do tipo NSGAII (Genéticos ou Evolucionários) e _Multicriteria Decision Making_ (MCDM) 
+ 
+  - Aplicações para um portfolio com diferentes ativos com os seguintes macro-objetivos:
+  
+  - Retornos médios;
+  
+  - Covariância de risco total
+  
+  - Diversificação com relação a contribuições individuais de risco de cada ativo
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## Otimização Multicritério (problema) {.tabset .tabset-fade .tabset-pills}
+
+\begin{align}
+\min \quad f_m (\omega), & \quad m = 1, 2,\cdots,M; \\
+
+s.a. \quad g_j(\omega)\geq 0,  & \quad j = 1, 2, \cdots, J; \\
+
+h_k(\omega) = 0, & \quad k = 1, 2, \cdots, K; \\
+
+\omega_i^{(L)} \leq \omega_i \leq \omega_i^{(U)}, & \quad i = 1, 2, \cdots, n
+\end{align}
+
+Ou seja, temos um problema de $M$ funções-objetivos (conflitantes) e $n$ variáveis (restritas). 
+
+Então a solução $\widehat{\omega} \in \Omega$ será eficiente (Pareto Ótima ou não-dominada ) se não existir $\omega \in \Omega$ tal que $f_k (\omega) \leq f_k (\widehat{\omega})\,|\, k = 1, \cdots,p$ e se $f_i(\omega) < f_i (\widehat{\omega})$ para qualquer $i \in \{ 1, \cdots, k \}$
+
+## Otimização Multicritério (Eficiência de Pareto) {.tabset .tabset-fade .tabset-pills}
+
+**Objetivo:** encontrar soluções que estejam na frente e contemplem todo o alcance da eficiência de Pareto.
+
+Vale ressaltar que o algoritmo NSGAII não necessariamente encontrará os pontos ótimos, ou seja, muito próximos a fronteira.
+
+Esse algoritmo passa pelas seguintes etapas:
+
+(a) cria população aleatória,
+
+(b) seleção/escolha (não dominante/restrição dominante),
+
+(c) aplicação de variação (crossover, mutação),
+
+(d) elitismo (aglomeração de distâncias).
+
+
+
+## Otimização Multicritério (método da soma ponderada)
+
+\begin{align}
+\min \quad \displaystyle \sum_{m=1}^{M}\lambda_m f_m (\omega), & \quad \mbox{com} \,\,\lambda_m \geq 0; \\
+
+s.a. \quad g_j (\omega) \geq 0, & \quad j = 1, 2, \cdots, J;\\
+
+h_k(\omega) = 0, & \quad k = 1,2,\cdots,K;\\
+
+\omega_{i}^{(L)} \geq \omega_i \geq \omega_i^{(U}, & \quad i=1,2,\cdots, n
+\end{align}
+
+
+Aqui a escala ou normalização nas funções-objetivo é importante, sendo que os objetivos e/ou níveis de satisfação podem ser incluídos.
+
+Possibilidade de uma abordagem híbrida, onde alguns objetivos são especificados
+como $\epsilon$-restritos.
+
+## Artigos e trabalhos de reprodução
+
+Cálculo de superfície não dominada em problemas de três critérios: [Hirschberger _et al._ (2013).](https://pubsonline.informs.org/doi/abs/10.1287/opre.1120.1140?journalCode=opre)
+
+Formulação do problema EMO bi-critério com descontinuidades no espaço de busca (risco e retorno com (_i_) alocações zero ou dentro dos limites e (_ii_) restrição de cardinalidade na contagem dos ativos incluídos): [Deb _et al._ (2011).](https://www.egr.msu.edu/~kdeb/papers/k2011007.pdf)
+
+
+Problemas de três critérios (quad-lin-lin):
+
+ - Risco, retorno e custos de transação: [Steuer _et al._ (2005)](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.622.621&rep=rep1&type=pdf), [Steuer _et al._ (2013).](https://core.ac.uk/download/pdf/11555219.pdf)
+
+ - Risco, retorno e índice ESG: [Utz _et al._ (2015).](https://www.sciencedirect.com/science/article/abs/pii/S0377221715003288)
+
+
+# Exemplo de aplicação portfólio $n-$ ativos 
+
+
+## Carga de dados da carteira
+
+```{r}
+
+portfolio <- BatchGetSymbols(
+                          tickers = c("ZC=F", # Futuros Milho
+                                      "ZO=F", # Futuros Aveia
+                                      "KE=F", # Futuros KC HRW Wheat Futures
+                                     # "ZR=F", # Rough Rice Futures
+                                      "GF=F", # Feeder Cattle Futures
+                                      "ZS=F", # Futuros oleo de soja
+                                      "ZL=F", # Futuros Soja
+                                      "ZM=F"  # Futuros farelo soja
+                                      ),
+                          first.date = "2019-01-01",
+                          last.date = Sys.Date(),
+                          do.cache = FALSE) 
+
+portfolio <- as.data.frame(portfolio$df.tickers) %>%
+  select(
+    ref.date,
+    ticker,
+    price.close
+  ) %>%
+  pivot_wider(
+    names_from = ticker, 
+    values_from = price.close
+  )
+
+head(portfolio)
+
+glimpse(portfolio)
+
+
+```
+
+
+Mensalizo o dataset pra pegar o último valor de cada mês (para rodar o script de forma mais rápida)
+
+
+```{r}
+
+library(timetk)
+
+portfolio <- xts::xts(portfolio[,-1], order.by = portfolio$ref.date)
+
+monthly_dataset_xts <- do.call(rbind, lapply(split(portfolio, "months"), last)) 
+
+class(monthly_dataset_xts) 
+
+monthly_dataset <- as.data.frame(monthly_dataset_xts)
+
+monthly_dataset
+
+```
+
+Lembrando que:
+
+- ``ZC=F``, $\Rightarrow$ Futuros Milho
+- ``ZO=F``, $\Rightarrow$ Futuros Aveia
+- ``KE=F``, $\Rightarrow$ Futuros KC HRW Wheat Futures
+- ``ZR=F``, $\Rightarrow$ Rough Rice Futures (não incluído)
+- ``GF=F``, $\Rightarrow$ Feeder Cattle Futures
+- ``ZS=F``, $\Rightarrow$ Futuros oleo de soja
+- ``ZL=F``, $\Rightarrow$ Futuros Soja
+- ``ZM=F``  $\Rightarrow$ Futuros farelo soja
+
+
+Obteremos agora, os valores de partida, considerados _benchmarks_ para o nosso portfólio:
+
+```{r fig.width=9, fig.height=4}
+
+Prices <- timeSeries(monthly_dataset, charvec = rownames(monthly_dataset))
+R <- returns(Prices, method = "discrete", percentage = TRUE) %>%
+  as.data.frame() %>%
+  mutate(
+    Date = seq(ymd('2019-02-01'), Sys.Date(), by = 'month')
+  ) %>%
+  select(
+    Date, everything()
+  )
+
+R <- xts::xts(R[,-1], order.by = R$Date)
+
+# Equal weight benchmark
+n <- ncol(R)
+
+equal_weights <- rep(1 / n, n)
+
+benchmark_returns <- Return.portfolio(R = R,
+                                      weights = equal_weights,
+                                      rebalance_on = "years")
+colnames(benchmark_returns) <- "benchmark"
+
+# Benchmark performance
+table.AnnualizedReturns(benchmark_returns)
+
+plot(benchmark_returns)
+
+```
+
+
+A Otimização Multicritério consistirá em três objetivos:
+
+- Retornos médios;
+
+- Volatilidade e;
+
+- Dispersões das parcelas de risco
+
+Os benchmarks definidos serão pré-estabelecidos como 6% ao ano para os retornos e uma volatilidade esperada anual na ordem dos 4%.
+
+Vamos verificar os padrões temporais de cada ativo no portfólio, iniciando com as séries de preços:
+
+```{r fig.width=9, fig.height=4}
+
+# create function that is used in lapply
+plotlines <- function(variables){
+  
+  ggplot(monthly_dataset, aes(x = seq_along(variables), y = variables)) +
+  geom_line() + xlab("") + ylab("")
+  
+}
+# plot all plots with lapply
+plots <- lapply(monthly_dataset,
+                plotlines) # all colums except 
+plots
+
+```
+
+E em seguida pelos padrões de retornos:
+
+
+
+```{r fig.width=9, fig.height=4 }
+
+Prices <- timeSeries(monthly_dataset, charvec = rownames(monthly_dataset))
+R <- returns(Prices, method = "discrete", percentage = TRUE)
+
+# create function that is used in lapply
+plotlines <- function(variables){
+  
+  ggplot(R %>% as.data.frame(), aes(x = seq_along(variables), y = variables)) +
+  geom_line() + xlab("") + ylab("") +
+    geom_hline(yintercept = 0, color = "red")
+  
+}
+# plot all plots with lapply
+plots <- lapply(R,
+                plotlines) # all colums except 
+plots
+
+```
+
+
+Em seguida definimos os benchmarks (metas ou TMA´s)
+
+```{r}
+
+NAssets <- ncol(Prices) # Numero de ativos na carteira
+
+## Definindo os parâmetros
+TargetRpa <- 6 ## percentagem anual 6%
+TargetR <- 100 * ((1 + TargetRpa / 100)^(1 / 12) - 1) # Equiv. taxas pra mes [(1+i)^(q/t)]-1*100
+TargetVol <- 4 ## percentual ao ano 4%
+
+l <- rep(1, 3) ## objetivo dos pesos
+
+WeightedSum <- FALSE
+
+mu <- colMeans(R) # Media dos retornos por ativo no portfolio
+mu
+
+S <- cov(R) # Ideal covariância negativa
+S
+
+```
+
+
+# Definição das funções objetivo
+
+Objetivos Multicritério e Restrição Orçamentária:
+
+```{r}
+
+# Definição da função-objetivo
+
+f <- function(x){
+ y <- numeric(3)
+ y[1] <- -1.0 * l[1] * drop(crossprod(x, mu)) / TargetR
+ y[2] <- l[2] * drop(sqrt(t(x) %*% S %*% x)) * sqrt(12) / TargetVol
+ y[3] <- l[3] * sum((mrc(x, S) / 100)^2)
+ if(WeightedSum){
+  return(sum(y))
+ } else {
+  return(y)
+ }
+ }
+g <- function(x){
+ c(1.01 - sum(x), sum(x) - 0.99)
+}
+
+```
+
+Formalmente essa função pode ser representada por
+
+\begin{equation}
+    f(x) = 
+    \begin{cases} 
+      \sum_{i=1}^{3} y_i & \text{if } \text{WeightedSum} \\
+      y & \text{otherwise}
+    \end{cases}
+\end{equation}
+\begin{align*}
+    \text{where } y_1 & = -l_1 \frac{x^T\mu}{\text{TargetR}} \\
+    y_2 & = l_2 \frac{\sqrt{x^TSx}\sqrt{12}}{\text{TargetVol}} \\
+    y_3 & = l_3 \sum \left(\frac{\text{mrc}(x, S)}{100}\right)^2
+\end{align*}
+\begin{equation}
+    g(x) = \{1.01 - \sum_{i} x_i, \sum_{i} x_i - 0.99\}
+\end{equation}
+
+
+Determinação das soluções Pareto Eficientes:
+
+```{r}
+
+# Roda um algoritmo NSGAII pra otimização
+
+ans <- nsga2(f,
+             NAssets,
+             3,
+             lower.bounds = rep(0, NAssets),
+             upper.bounds = rep(1, NAssets),
+             constraints = g,
+             cdim = 2, 
+             popsize = 500)
+
+names(ans)
+
+## Setando os valores dos objetivos para os gráficos
+mco <- data.frame(ans$value[ans$pareto.optimal, ])
+mco
+
+mco[, 1] <- ((1 + (-1.0 * mco[, 1] * TargetR) / 100)^12 - 1.0) * 100
+mco[, 2] <- mco[, 2] * TargetVol
+colnames(mco) <- c("Retorno", "Risco", "Diversificacao")
+
+head(mco) # Frente de Pareto
+
+```
+
+Plotamos o gráfico em 3 dimensões:
+
+```{r fig.width=9, fig.height=9}
+
+scatterplot3d(mco,
+ main = "Soluções Pareto Eficientes",
+ sub  = "Frente de Pareto (Superfície)",
+ xlab = "Objetivo: Retornos",
+ ylab = "Objetivo: Risco",
+ zlab = "Dispersão de pesos dos ativos",
+ angle = 15,
+ highlight.3d = FALSE,
+ box = TRUE,
+ color = "steelblue",
+ pch = 19, type = "p",
+ cex.symbols = 0.6)
+
+```
+
+Faremos agora de maneira interativa essa visualização da superfície (frente de Pareto)
+
+```{r fig.width=9, fig.height=9}
+
+p <- plot_ly(data = mco,
+             z = ~ Retorno,
+             x = ~ Risco, 
+             y = ~ Diversificacao,
+             color=~Diversificacao,
+             colors = c('#0C4B8E' ,'#BF382A'),opacity = 0.5) %>%
+           add_markers(x = ~ Risco,
+                       y = ~ Diversificacao,
+                       z = ~ Retorno, #No eixo z sempre coloque a variavel dependente
+                       marker = list(size = 5),
+                       hoverinfo = 'text',
+                       text = ~paste(
+                       "Retorno", Retorno, "<br>",
+                       "Diversificacao", Diversificacao, "<br>",
+                       "Risco", Risco))
+                        
+
+p
+
+```
+
+
+Plotamos o gráfico do conjunto eficiente:
+
+
+```{r fig.width=9, fig.height=9}
+
+s <- interp(mco[, 2], mco[, 1], mco[, 3],
+ xo = seq(min(mco[, 2]), max(mco[, 2]), length = 100),
+ yo = seq(min(mco[, 1]), max(mco[, 1]), length = 100),
+ duplicate = "mean"
+)
+
+par(mar = c(5, 6, 5, 6)) 
+
+image.plot(s, nlevel = 50,
+ main = "Plot do conjunto eficiente",
+ legend.lab = "Dispersão dos pesos dos ativos",
+ xlab = "Objetivo: Risco",
+ ylab = "Objetivo: Retornos",
+ legend.mar = 4,
+ horizontal = TRUE,
+ legend.shrink = 0.7,
+ col = topo.colors(50))
+contour(s, add = TRUE, nlevels = 20, labcex = 0.8)
+points(mco[, 2], mco[, 1], pch = 18, cex = 0.4, col = "orange")
+
+```
+
+Gero a frente de PAreto com o ggplot
+
+```{r fig.width=9, fig.height=9}
+
+ggplotly(
+  ggplot(mco, aes(x = Risco, y = Retorno )) +
+    
+    geom_point() + 
+    
+    theme(axis.text = element_text(size = 7),
+          axis.title = element_text(size = 7) ) +
+    theme(plot.title = element_text(size = 7, face = "bold")) +
+    
+    ggtitle("Frente de Pareto para risco x retorno portfolio de commodities") +
+  # geom_smooth(span = 0.3) +
+    geom_frontier() 
+    
+)
+
+```
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+
+## Referências {.tabset .tabset-fade .tabset-pills}
+
+***
+
+Deb, K., R. Steuer, R. Tewari, and R. Tewari. **On the effectiveness of a nsga-ii local search approach customized for portfolio optimization**. KanGAL Report 2011007, Indian Institute of Technology Kanpur, Kanpur, India, 2011.
+
+Steuer, R., Y. Qi, and M. Hirschberger. **Multiple objectives in portfolio selection.** Journal of Financial Decision Making 1 (1)., jun, 2005.
+
+Steuer, R., M. Wimmer, and M. Hirschberger. **Overviewing the transition of Markowitz bi-criterion portfolio selection to tri-criterion portfolio selection.** Journal of Business Economics 83(1), 61–85, 2013, fev.
+
+Hirschberger, M., R. Steuer, S. Utz, and M. Wimmer. **Computing the nondominated surface in tri-criterion portfolio selection.** Operations Research 61(1), 169–183, jan-fev. 2013. 
+Utz, S., M. Wimmer, and R. Steuer. **Tri-criterion modeling for constructing more-sustainable mutual funds.** European Journal of Operational Research 246(1), 331–338, out., 2015.
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+&nbsp;
+
+
+***
+
+## R packages {.tabset .tabset-fade .tabset-pills}
+
+***
+
+```{r}
+
+citation(package = "akima")
+
+citation(package = "cccp")
+
+citation(package = "fields")
+
+citation(package = "mco")
+
+citation(package = "fPortfolio")
+
+citation(package = "PerformanceAnalytics")
+
+citation(package = "FRAPO")
+
+```
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+***
+
+Total execution timing:
+
+```{r}
+
+end_time <- Sys.time()
+
+end_time - start_time
+
+```
+
+
+

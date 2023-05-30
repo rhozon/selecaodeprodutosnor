@@ -491,7 +491,6 @@ CORN_splits <- initial_time_split(CORN_df, prop = 0.8)
 ```
 
 
-
 ## Rodando os modelos de Deep Learning
 
 

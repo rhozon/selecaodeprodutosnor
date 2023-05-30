@@ -92,6 +92,8 @@ navbar:
           href: optim_multiobj_portfolio.html            
         - text: "Algoritmo de Evolução Diferencial multiobjetivo portfolio"
           href: Differential_Optimization_Portfolio.html   
+        - text: "Seleção de Portfólio Multicritério com NSGAII"
+          href: Multicriteria_Portfolio_Selection_Commodities.html  
           
   right:
     - icon: fa-question fa-lg
