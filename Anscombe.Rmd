@@ -148,6 +148,7 @@ Veja como os coeficientes de regressão e o $R^{2}$ são idênticos em todos os 
 Usamos a função ggplot para traçar os diagramas de dispersão para os 4 conjuntos de ys e xs e avaliar o nível de ajuste das reta de regressão estimada aos pontos:
 
 ```{r message=FALSE}
+
 library(plotly)
 library(ggpmisc)
 library(ggplot2)
@@ -181,10 +182,12 @@ ggplotly(x3y3)#Diagrama de dispersão de Y3 contra X3
 ggplotly(x4y4)#Diagrama de dispersão de Y4 contra X4
 ```
 
-```{r}
-ggscatter(mtcars, x = wt, y = mpg, add = reg.line) +
+```{r eval=FALSE}
+
+ggpubr::ggscatter(mtcars, x = wt, y = mpg, add = reg.line) +
   stat_cor(label.x = 3, label.y = 34) +
   stat_regline_equation(label.x = 3, label.y = 32)
+
 ```
 
 
@@ -218,6 +221,7 @@ ggplotly(x1y1)
 ggplotly(x2y2)
 ggplotly(x3y3)
 ggplotly(x4y4)
+
 ```
 
 
