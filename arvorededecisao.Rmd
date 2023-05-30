@@ -79,14 +79,17 @@ O pacote que usaremos para criar árvores de decisão é chamado de 'party'. É 
 Para instalar o pacote, use a sintaxe abaixo. Também usaremos os pacotes plyr e readr para alguma estruturação do conjunto de dados.
 
 ```{r message=FALSE}
+
 library(party)
 library(plyr)
 library(readr)
+
 ```
 
 Para criar árvores de decisão, usaremos a função ctree() do pacote 'party'. Para obter mais informações sobre a função ctree(), você pode usar a sintaxe abaixo.
 
 ```{r message=FALSE}
+
 ?ctree()
 
 ```
@@ -117,7 +120,7 @@ Esse conjunto de dados apresenta as variáveis relacionadas a coleta de pesquisa
 
 library(readxl)
   
-url<-"https://github.com/rhozon/datasets/blob/master/ofertas.xlsx?raw=true"
+url <- "https://github.com/rhozon/datasets/blob/master/ofertas.xlsx?raw=true"
 ofertas <- tempfile()
 download.file(url, ofertas, mode="wb")
 ofertas<-read_excel(path = ofertas, sheet = 1)
@@ -139,16 +142,20 @@ kbl(cbind(ofertas)) %>%
 Vamos renomear as variáveis para o R ler sem problemas:
 
 ```{r message=FALSE}
+
 library(tidyverse)
-ofertas<-ofertas%>%
+
+ofertas <- ofertas %>%
   rename(futurocliente='Futuro Cliente', metpgto= 'Método de Pagamento')
 
 str(ofertas)
+
 ```
 
 Agora transformaremos as variáveis como fatores para o R ler:
 
 ```{r}
+
 ofertas<-ofertas%>%
   mutate(futurocliente=as.factor(futurocliente),
          metpgto=as.factor(metpgto),
@@ -156,6 +163,7 @@ ofertas<-ofertas%>%
          Sexo=as.factor(Sexo))
 
 str(ofertas)
+
 ```
 
 
@@ -166,8 +174,10 @@ Agora construimos a árvore de decisão sendo que a variável final; que é a qu
 
 
 ```{r}
+
 arvore1<-ctree(futurocliente~Idade,data=ofertas)
 plot(arvore1)
+
 ```
 
 # Interpretando a árvore de decisão
@@ -187,9 +197,11 @@ Podemos visualizar o modelo a ser construído, observando a relação entre a va
 Veremos como a árvore se comporta quando desejamos ver o sexo para a chance de ser futuro cliente:
 
 ```{r message=FALSE}
+
 arvore2<-ctree(futurocliente~Sexo,data=ofertas)
 
 plot(arvore2)
+
 ```
 
 Fica fácil vermos que os homens tem mais chance de se tornarem futuros clientes do que as mulheres (temos quase 80% contra somente quase outros 20% das mulheres).
@@ -199,6 +211,7 @@ Fica fácil vermos que os homens tem mais chance de se tornarem futuros clientes
 Vamos ver como fica a questão da razão de chance pela escolha de método de pagamento somente:
 
 ```{r message=FALSE}
+
 arvore3<-ctree(futurocliente~metpgto,data=ofertas)
 plot(arvore3)
 
@@ -209,8 +222,10 @@ Como a visualização acima é autoexplicativa, a interpretação segue o mesmo 
 # A árvore de decisão com todas as variáveis
 
 ```{r message=FALSE, fig.width=12,fig.height=12}
+
 arvorecompleta<-ctree(futurocliente~Idade+Sexo+metpgto,data=ofertas)
 plot(arvorecompleta)
+
 ```
 
 

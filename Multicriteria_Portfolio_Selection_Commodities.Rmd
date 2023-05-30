@@ -142,11 +142,11 @@ Neste _post_ trabalharemos na perspectiva da problemática de Seleção de Portf
  
   - Aplicações para um portfolio com diferentes ativos com os seguintes macro-objetivos:
   
-  - Retornos médios;
+    - Retornos médios;
   
-  - Covariância de risco total
+    - Covariância de risco total
   
-  - Diversificação com relação a contribuições individuais de risco de cada ativo
+    - Diversificação com relação a contribuições individuais de risco de cada ativo
 
 &nbsp;
 
@@ -433,11 +433,11 @@ Formalmente essa função pode ser representada por
     f(x) = 
     \begin{cases} 
       \sum_{i=1}^{3} y_i & \text{if } \text{WeightedSum} \\
-      y & \text{otherwise}
+      y & \text{caso contrário}
     \end{cases}
 \end{equation}
 \begin{align*}
-    \text{where } y_1 & = -l_1 \frac{x^T\mu}{\text{TargetR}} \\
+    \text{Onde: } y_1 & = -l_1 \frac{x^T\mu}{\text{TargetR}} \\
     y_2 & = l_2 \frac{\sqrt{x^TSx}\sqrt{12}}{\text{TargetVol}} \\
     y_3 & = l_3 \sum \left(\frac{\text{mrc}(x, S)}{100}\right)^2
 \end{align*}
