@@ -117,30 +117,34 @@ glimpse(exp)
 
 Concateno CO_ANO com CO_MES
 
-```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
+```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE} 
+
 library(tidyverse)
 
 exp<-exp%>%
-  mutate(CO_MES = formatC(CO_MES, width = 2, flag = "0")) #Arrumo pra dois digitos no mes
+  mutate(CO_MES = formatC(CO_MES, width = 2, flag = "0")) # Arrumo pra dois digitos no mes
 
 library(lubridate)
 
-exp$AnoMes<-str_c(exp$CO_ANO,"/",exp$CO_MES) #uno uma coluna com a outra e chamo ela de MesAno
+exp$AnoMes<- str_c(exp$CO_ANO,"/",exp$CO_MES) # uno uma coluna com a outra e chamo ela de AnoMes
 
 glimpse(exp)
 
-colSums(is.na(exp)) #Conta quantos missings temos em cada variavel
+colSums(is.na(exp)) # Conta quantos missings temos em cada variavel
+
 ```
 
 Agrego por período e organizo de modo decrescente temporalmente:
 
 
 ```{r message=FALSE, warning=FALSE, comment=NA, null_prefix=TRUE}
-expper<-exp%>%
+
+expper<- exp %>%
   group_by(AnoMes)%>%
-  summarise(TotalExp_AnoMes =sum(VL_FOB, na.rm = TRUE))
+  summarise(TotalExp_AnoMes = sum(VL_FOB, na.rm = TRUE))
 
 arrange(expper, AnoMes)
+
 ```
 
 Vamos ver num gráfico:
