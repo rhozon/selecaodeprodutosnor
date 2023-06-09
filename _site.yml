@@ -90,6 +90,8 @@ navbar:
           href: Differential_Optimization_Portfolio.html   
         - text: "Seleção de Portfólio Multicritério com NSGAII"
           href: Multicriteria_Portfolio_Selection_Commodities.html  
+        - text: "R and Python in the same script"
+          href: R_and_Python_using_Quarto.html  
           
   right:
     - icon: fa-question fa-lg
