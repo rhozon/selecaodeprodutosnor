@@ -217,12 +217,14 @@ Tutoriais disponíveis:
 
 - Algoritmo de Otimização de Evolução Diferencial MultiObjetivo para um portfólio de ações
 
-
 - [Seleção de Portfólio Multicritério com NSGAII](https://rhozon.github.io/selecaodeprodutosnor/Multicriteria_Portfolio_Selection_Commodities.html)
 
 - Exercício de replicação de otimização com abordagem multicritério com NSGAII para um portfólio de commodities e diversificado.
 
 
+### *R and Python in the same script using Quarto*
+
+- [R + Python example](https://rhozon.github.io/selecaodeprodutosnor/Multicriteria_Portfolio_Selection_Commodities.html)
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 

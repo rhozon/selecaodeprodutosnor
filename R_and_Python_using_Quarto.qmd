@@ -1,0 +1,169 @@
+---
+title: "R + Python in the same document"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    self-contained: true
+    toc: true
+    code-fold: false
+    df-print: paged
+editor: visual
+---
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+## Quarto
+
+Quarto is a powerful tool that allows you to combine multiple programming languages, including Python and R, in a single document. To use Python and R in the same Quarto document, you'll need to have both Python and R installed, as well as the reticulate package in R.
+
+Here's an example of using Python and R together in a Quarto document, and manipulating a pandas DataFrame using the R tidyverse package:
+
+### Loading Python and R Libraries
+
+::: panel-tabset
+### R packages
+
+```{r}
+
+library(reticulate)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+
+```
+
+### Python libs
+
+```{python}
+
+import pandas as pd
+import statsmodels.api as sm
+import numpy as np
+
+```
+:::
+
+### R and Python in the same script example
+
+::: panel-tabset
+### Loading data example file
+
+First we are gonna read the csv file using R base commands:
+
+```{r}
+
+lemurs <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-24/lemur_data.csv')
+
+#Data wrangling
+#Filter the data to only look at adult male Collared Brown Lemurs, and extract only the age and weight columns:
+
+lemur_data <- lemurs |>
+  filter(taxon == "ECOL",
+         sex == "M",
+         age_category == "adult") %>% 
+  select(c(age_at_wt_mo, weight_g)) %>% 
+  rename(Age = age_at_wt_mo, 
+         Weight = weight_g)
+
+glimpse(lemur_data)
+
+```
+
+### Reading R dataframe with Python
+
+```{python}
+
+#| label: modelling
+#| echo: true
+#| message: false
+lemur_data_py = r.lemur_data # That command converts R dataframe to Python df
+
+y = lemur_data_py[["Weight"]]
+x = lemur_data_py[["Age"]]
+x = sm.add_constant(x)
+
+mod = sm.OLS(y, x).fit()
+
+lemur_data_py["Predicted"] = mod.predict(x)
+lemur_data_py["Residuals"] = mod.resid
+
+```
+
+Now plotting the residuals with ggplot R package:
+
+```{r fig.width=9}
+
+lemur_residuals <- py$lemur_data_py # This functions transform residuals in a new Python df
+
+ggplot(data = lemur_residuals,
+       mapping = aes(x = Predicted,
+                     y = Residuals)) +
+  geom_point(colour = "#2F4F4F") +
+  geom_hline(yintercept = 0,
+             colour = "red") +
+  theme(panel.background = element_rect(fill = "#eaf2f2",
+                                        colour = "#eaf2f2"),
+        plot.background = element_rect(fill = "#eaf2f2",
+                                       colour = "#eaf2f2"))
+
+```
+
+### Reading Python dataframe with R
+
+```{python}
+
+py_arr = np.array([1, 2, 3, 4, 5])
+
+for item in py_arr:
+  print(item, end = ', ')
+  
+```
+
+Now we are gonna read this vector with R:
+
+```{r}
+
+r_arr <- as.vector(py$py_arr)
+
+print(r_arr)
+
+```
+:::
+
+ 
+
+ 
+
+------------------------------------------------------------------------
+
+# References
+
+\< <https://www.r-bloggers.com/2023/01/combining-r-and-python-with-reticulate-and-quarto/> \>
+
+\< <https://blog.devgenius.io/heads-up-quarto-is-here-to-stay-aa861ef87491> \>
