@@ -17,42 +17,18 @@ params:
 
 <!-- ================================================================================= -->
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-#linha para retirar os [1] prefixo de resultados dos output dos comandos do r
-# veja https://stackoverflow.com/questions/22524822/how-can-i-remove-the-prefix-index-indicator-1-in-knitr-output/22563357
-knitr::opts_chunk$set(opts.label="kill_prefix")
-```
 
 ```{r include=FALSE}
-# cunhk para retiraar os prefixos
-default_output_hook <- knitr::knit_hooks$get("output")
-# Output hooks handle normal R console output.
-knitr::knit_hooks$set( output = function(x, options) {
 
-  comment <- knitr::opts_current$get("comment")
-  if( is.na(comment) ) comment <- ""
-  can_null <- grepl( paste0( comment, "\\s*\\[\\d?\\]" ),
-                     x, perl = TRUE)
-  do_null <- isTRUE( knitr::opts_current$get("null_prefix") )
-  if( can_null && do_null ) {
-    # By default R print output aligns at the right brace.
-    align_index <- regexpr( "\\]", x )[1] - 1
-    # Two cases: start or newline
-    re <- paste0( "^.{", align_index, "}\\]")
-    rep <- comment
-    x <- gsub( re, rep,  x )
-    re <- paste0( "\\\n.{", align_index, "}\\]")
-    rep <- paste0( "\n", comment )
-    x <- gsub( re, rep,  x )
-  }
-
-  default_output_hook( x, options )
-
-})
-
-knitr::opts_template$set("kill_prefix"=list(comment=NA, null_prefix=TRUE))
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
 
 ```
 

@@ -1,0 +1,231 @@
+---
+title: "Fuzzy Regression in fault machines forecasting"
+author: "Rodrigo Hermont Ozon"
+date: "Last Update: `r format(Sys.time(), '%B %d, %Y')`"
+format:
+  html:
+    self-contained: true
+    toc: true
+    code-fold: true
+    df-print: paged
+editor: visual
+---
+
+```{r, echo=FALSE}
+
+start_time <- Sys.time() 
+
+```
+
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+
+
+
+
+***
+
+# Intro
+
+***
+
+
+## Abstract
+
+
+## Optimal Control Theory vs Intelligent Control Systems vs ML
+
+
+**Optimal Control Theory:** This is a mathematical optimization method that deals with finding a control for a dynamical system over a period of time such that an objective function is optimized. It has numerous applications in both science and engineering. Traditional optimal control theory mainly deals with designing a control law for a system such that a certain optimality criterion is achieved.
+
+**Intelligent Control Systems:** These are a set of control techniques that use various artificial intelligence computing approaches like neural networks, Bayesian probability, fuzzy logic, machine learning, evolutionary computation and genetic algorithms. Intelligent control can be divided into the following major sub-domains: neural networks, fuzzy control, and genetic algorithms. The goal of intelligent control systems is to enhance the performance, robustness, and adaptability of traditional control systems.
+
+**Machine Learning:** This is a type of artificial intelligence that provides systems the ability to learn and improve from experience without being explicitly programmed. Machine learning focuses on the development of computer programs that can access data and use it to learn for themselves. The process of learning begins with observations or data, such as examples, direct experience, or instruction, in order to look for patterns in data and make better decisions in the future based on the examples that we provide.
+
+Now, let's look at the differences:
+
+_Optimal Control Theory vs Intelligent Control Systems:_ While optimal control theory is a mathematical approach to optimize the control of a system, intelligent control systems use artificial intelligence techniques to enhance the performance and adaptability of control systems. Optimal control theory usually requires a mathematical model of the system, while intelligent control systems can work with approximate or incomplete models.
+
+_Optimal Control Theory vs Machine Learning:_ Optimal control theory is a model-based approach that requires a complete and accurate model of the system. On the other hand, machine learning can work with incomplete or approximate models and can learn and improve over time based on data. Machine learning techniques can be used in control systems where the model of the system is not known or is too complex to be modeled mathematically.
+
+_Intelligent Control Systems vs Machine Learning:_ Intelligent control systems use various artificial intelligence techniques, including machine learning, to control systems. Machine learning is a subset of the techniques used in intelligent control systems. While machine learning focuses on learning from data and improving decision-making, intelligent control systems focus on using these techniques to control a system.
+
+
+
+## Log of failure machines
+
+First we need to create artificially the dataset to aproximate as the most as possible to the real data:
+
+```{r}
+
+library(xts)
+
+# # Set the number of seconds (for example in one day)
+n <- 24*60*60
+
+# Crie uma série temporal com valores aleatórios em torno de um número positivo (por exemplo, 10)
+set.seed(123) # para reprodutibilidade
+data <- rnorm(n, mean = 10, sd = 1)
+
+# Adicione alguns picos aleatórios
+peak_indices <- sample(1:n, size = 10)
+data[peak_indices] <- data[peak_indices] + rnorm(10, mean=20, sd=5)
+
+# Crie um objeto de série temporal indexado por data/hora
+time_index <- seq(from=as.POSIXct("2023-06-09 00:00:00"), by = "sec", length.out = n)
+ts <- xts(data, order.by = time_index)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+
+
+***
+
+# References
+
+***
+
+
+Glover, F. (1986). ***Future paths for integer programming and links to artificial intelligence.*** This paper discusses the links between artificial intelligence and operations research, which includes optimal control theory. It also discusses the future of integer programming, which is a method used in optimal control theory. [PDF Link](http://leeds-faculty.colorado.edu/glover/TS%20-%20Future%20Paths%20for%20Integer%20Programming.pdf)
+
+Hofmann, T. (2001). ***Probabilistic Latent Semantic Analysis.*** <mark> *This paper presents a novel statistical method for factor analysis of binary and count data which is closely related to a technique known as Latent Semantic Analysis. This technique uses a generative latent class model to perform a probabilistic mixture decomposition. This results in a more principled approach with a solid foundation in statistical inference.* </mark> [DOI Link](https://doi.org/10.1023/a:1007617005950)
+
+Hofmann, T. (1999). ***Probabilistic latent semantic indexing.*** <mark> *This paper discusses a technique known as Probabilistic Latent Semantic Indexing, which is a method used in machine learning for text analysis and information retrieval.*</mark> [PDF Link](https://dl.acm.org/doi/pdf/10.1145/312624.312649)
+
+van Hateren, J. H., & Ruderman, D. L. (1998). ***Independent component analysis of natural image sequences yields spatio-temporal filters similar to simple cells in primary visual cortex.*** <mark> *This paper discusses the use of independent component analysis, a machine learning technique, in the analysis of natural image sequences.* </mark> [PDF Link](https://dl.acm.org/doi/pdf/10.1145/312624.312649)
+
+
+
+&nbsp;
+
+&nbsp;
+
+***
+
+## R packages references
+
+***
+
+
+
+
+
+
+
+
+&nbsp;
+
+&nbsp;
+
+
+
+```{r}
+
+# Total timing for compiling this document
+
+Sys.time() - start_time 
+
+```
+
+
+
+
+
