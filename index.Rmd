@@ -233,7 +233,7 @@ Tutoriais disponíveis:
 
 ### *Apresentação Econometria no CiDAMO*
 
-- [CiDAMO -- Econometria e Inferência Causal, o que é econometria e sua importância]()
+- [CiDAMO -- Econometria e Inferência Causal, o que é econometria e sua importância](https://rhozon.github.io/selecaodeprodutosnor/Apresentacao_Econometria_CiDAMO_Rodrigo_H_Ozon.html#/title-slide)
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
