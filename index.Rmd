@@ -226,6 +226,14 @@ Tutoriais disponíveis:
 
 - [R + Python example](https://rhozon.github.io/selecaodeprodutosnor/Multicriteria_Portfolio_Selection_Commodities.html)
 
+
+### *Exemplo de exposição de uma proposta de pesquisa acadêmica*
+
+- [MultiObjective Optim. Portfolio with non linear time series]()
+
+
+
+
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 
 

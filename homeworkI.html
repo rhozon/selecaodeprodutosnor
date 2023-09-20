@@ -15,13 +15,23 @@
 
 <title>Homework: Econometrics (Shangai University of Finance)</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -29,15 +39,19 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -50,32 +64,8 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
+
 
 
 
@@ -85,10 +75,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -105,40 +91,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -166,7 +128,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -178,7 +140,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -188,11 +150,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -204,13 +183,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -218,16 +196,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -330,7 +301,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -344,7 +315,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -368,7 +339,7 @@ div.tocify {
   </a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fa fa-gear"></span>
      
     Selecione
@@ -425,6 +396,12 @@ div.tocify {
       <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
     </li>
     <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="ETL_R_no_PowerBI.html">ETL com o R direto no Power BI</a>
+    </li>
+    <li>
       <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
     </li>
     <li>
@@ -432,6 +409,60 @@ div.tocify {
     </li>
     <li>
       <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="schedula_Rmd_Windows.html">Agendamento automático de execução de RMarkdowns com o R</a>
+    </li>
+    <li>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="prophet.html">Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``</a>
+    </li>
+    <li>
+      <a href="prophet_boost.html">Forecasting de séries temporais com algoritmos de machine learning</a>
+    </li>
+    <li>
+      <a href="causalimpact.html">Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
+    </li>
+    <li>
+      <a href="modelo_deep_learning_series_temporais.html">Modelos de Deep Learning em Séries Temporais de preços de commodities</a>
+    </li>
+    <li>
+      <a href="Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html">Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo</a>
+    </li>
+    <li>
+      <a href="GARCH_Bayesiano.html">Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobjective.html">Introdução a otimização multiobjetivo de um portfólio de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobj_portfolio.html">Exemplo de aplicação multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Differential_Optimization_Portfolio.html">Algoritmo de Evolução Diferencial multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Multicriteria_Portfolio_Selection_Commodities.html">Seleção de Portfólio Multicritério com NSGAII</a>
+    </li>
+    <li>
+      <a href="R_and_Python_using_Quarto.html">R and Python in the same script</a>
+    </li>
+    <li>
+      <a href="Research_Presentation_RHO.html">MultiObjective Optim. Portfolio with non linear time series Research Presentation</a>
     </li>
   </ul>
 </li>
@@ -466,11 +497,12 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
-<h1 class="title toc-ignore">Homework: Econometrics (Shangai University of Finance)</h1>
+<h1 class="title toc-ignore">Homework: Econometrics (Shangai University
+of Finance)</h1>
 <h4 class="author">Ozon, R. H. and Peixoto, F., S.</h4>
 <h4 class="date">01/10/2020</h4>
 
@@ -480,17 +512,31 @@ div.tocify {
 <!-- ================================================================================= -->
 <!-- ================================================================================= -->
 <hr />
-<p><a href="https://github.com/rhozon/homeworkI">See the repo on github</a></p>
+<p><a href="https://github.com/rhozon/homeworkI">See the repo on
+github</a></p>
 <hr />
-<p>2 In the simple linear regression model <span class="math inline">\(y=\beta_{0}+\beta_{1}x+u\)</span>, suppose that <span class="math inline">\(E(u)\neq 0\)</span>. Letting <span class="math inline">\(\alpha_{0}=E(u)\)</span>, show that the model can always be rewritten with the same slope, but a new intercept and error, where the new error has a zero expected value.</p>
+<p>2 In the simple linear regression model <span
+class="math inline">\(y=\beta_{0}+\beta_{1}x+u\)</span>, suppose that
+<span class="math inline">\(E(u)\neq 0\)</span>. Letting <span
+class="math inline">\(\alpha_{0}=E(u)\)</span>, show that the model can
+always be rewritten with the same slope, but a new intercept and error,
+where the new error has a zero expected value.</p>
 <p><strong>Solution:</strong></p>
 <p><span class="math display">\[\begin{align}
-y=&amp;\beta_{0}+\beta_{1}x+u\quad \mbox{then we can add $\alpha_{0}$ and subtract $\alpha_{0}$}\\
+y=&amp;\beta_{0}+\beta_{1}x+u\quad \mbox{then we can add $\alpha_{0}$
+and subtract $\alpha_{0}$}\\
 y=&amp;(\alpha_{0}+\beta_{0}) +\beta_{1}x+ (u−\alpha_{0})\\
 \end{align}\]</span></p>
-<p>We can call the new error <span class="math inline">\(e=u-\alpha_{0}\)</span> and so that <span class="math inline">\(E(e) = 0\)</span>. The new intercept is <span class="math inline">\(α_0+β_0\)</span>, but the slope is still <span class="math inline">\(β_1\)</span>.</p>
+<p>We can call the new error <span
+class="math inline">\(e=u-\alpha_{0}\)</span> and so that <span
+class="math inline">\(E(e) = 0\)</span>. The new intercept is <span
+class="math inline">\(α_0+β_0\)</span>, but the slope is still <span
+class="math inline">\(β_1\)</span>.</p>
 <hr />
-<p>3 The following table contains the ACT scores and the GPA (grade point average) for eight college students. Grade point average is based on a four-point scale and has been rounded to one digit after the decimal</p>
+<p>3 The following table contains the ACT scores and the GPA (grade
+point average) for eight college students. Grade point average is based
+on a four-point scale and has been rounded to one digit after the
+decimal</p>
 <table>
 <thead>
 <tr class="header">
@@ -543,15 +589,23 @@ y=&amp;(\alpha_{0}+\beta_{0}) +\beta_{1}x+ (u−\alpha_{0})\\
 </tbody>
 </table>
 <ol style="list-style-type: lower-roman">
-<li>Estimate the relationship <em>GPA</em> and <em>ACT</em> using OLS; that is, obtain the intercept and the slope estimates in this equation</li>
+<li>Estimate the relationship <em>GPA</em> and <em>ACT</em> using OLS;
+that is, obtain the intercept and the slope estimates in this
+equation</li>
 </ol>
 <p><span class="math display">\[
 \widehat{GPA}=\widehat{\beta}_{0}+\widehat{\beta}_{1}ACT
 \]</span></p>
-<p>Comment on the direction of the relationship. Does the intercept have useful interpretation here ? Explain. How much higher is the <em>GPA</em> predicted to be if the <em>ACT</em> score is increased by five points ?</p>
+<p>Comment on the direction of the relationship. Does the intercept have
+useful interpretation here ? Explain. How much higher is the
+<em>GPA</em> predicted to be if the <em>ACT</em> score is increased by
+five points ?</p>
 <p><strong>Solution</strong>:</p>
-<p><a href="https://github.com/rhozon/homeworkI/blob/main/gpaxact.xlsx?raw=true">*Download the table here</a></p>
-<p>The estimated relationship between <em>GPA</em> and <em>ACT</em> is:</p>
+<p><a
+href="https://github.com/rhozon/homeworkI/blob/main/gpaxact.xlsx?raw=true">*Download
+the table here</a></p>
+<p>The estimated relationship between <em>GPA</em> and <em>ACT</em>
+is:</p>
 <p><span class="math display">\[
 \widehat{GPA}=0.568+0.102ACT
 \]</span></p>
@@ -685,23 +739,34 @@ F Statistic
 <em>Note:</em>
 </td>
 <td style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05;
+<sup></strong></em></sup>p&lt;0.01
 </td>
 </tr>
 </table>
 </center>
 <p> </p>
-<p>The direction of the relationship is positive, i.e. when ACT grows (one point), GPA is expected to grow by about 0.10 score points.</p>
-<p>The intercept shows the GPA value when the other coefficients are equal to zero. That is, if any student in the class gets a score of 0 we expect GPA = 0.568.</p>
-<p>If the ACT score is increased by 5 points the GPA will be about 0.51 (=0.102*5) greater.</p>
+<p>The direction of the relationship is positive, i.e. when ACT grows
+(one point), GPA is expected to grow by about 0.10 score points.</p>
+<p>The intercept shows the GPA value when the other coefficients are
+equal to zero. That is, if any student in the class gets a score of 0 we
+expect GPA = 0.568.</p>
+<p>If the ACT score is increased by 5 points the GPA will be about 0.51
+(=0.102*5) greater.</p>
 <ol start="2" style="list-style-type: lower-roman">
-<li>Compute the fitted values and residuals for each observation and verify that residuals (approximately) sum to zero.</li>
+<li>Compute the fitted values and residuals for each observation and
+verify that residuals (approximately) sum to zero.</li>
 </ol>
 <p><strong>Solution</strong>:</p>
-<p>The fitted values are obtained by applying the OLS equation and multiplying by the ACT values. For example, for the second student, we estimate a GPA of 0.568 + 0.102 * 24 = 3.021.</p>
-<p>The residuals are obtained by the equation <span class="math inline">\(GPA-\widehat{GPA}\)</span>, and the sum <span class="math inline">\(\displaystyle\sum_{i=1}^{n}(GPA-\widehat{GPA})\)</span></p>
-<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px;  margin-left: auto; margin-right: auto;" class="table table-striped table-hover table-condensed">
-<table class=" lightable-paper" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
+<p>The fitted values are obtained by applying the OLS equation and
+multiplying by the ACT values. For example, for the second student, we
+estimate a GPA of 0.568 + 0.102 * 24 = 3.021.</p>
+<p>The residuals are obtained by the equation <span
+class="math inline">\(GPA-\widehat{GPA}\)</span>, and the sum <span
+class="math inline">\(\displaystyle\sum_{i=1}^{n}(GPA-\widehat{GPA})\)</span></p>
+<div class="table table-striped table-hover table-condensed"
+style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:600px;  margin-left: auto; margin-right: auto;">
+<table class=" lightable-paper" style="font-family: &quot;Arial Narrow&quot;, arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
@@ -880,51 +945,94 @@ NA
 </div>
 <p>In R we can call:</p>
 <pre class="r"><code>sum(GPA.fitted$.residuals)</code></pre>
-<pre><code>[1] 0</code></pre>
+<pre><code> 0</code></pre>
 <ol start="3" style="list-style-type: lower-roman">
-<li>What is the predicted value of <em>GPA</em> when <em>ACT</em>=20 ?</li>
+<li>What is the predicted value of <em>GPA</em> when <em>ACT</em>=20
+?</li>
 </ol>
 <p><strong>Solution</strong>:</p>
-<p>Using the OLS estimated equation <span class="math inline">\(\widehat{GPA}=0.568+0.102\times 20 = 2.612\)</span></p>
+<p>Using the OLS estimated equation <span
+class="math inline">\(\widehat{GPA}=0.568+0.102\times 20 =
+2.612\)</span></p>
 <ol start="4" style="list-style-type: lower-roman">
-<li>How much of the variation in <em>GPA</em> for these eight students is explained by <em>ACT</em> ? Explain.</li>
+<li>How much of the variation in <em>GPA</em> for these eight students
+is explained by <em>ACT</em> ? Explain.</li>
 </ol>
 <p><strong>Solution:</strong></p>
-<p>By the <span class="math inline">\(R^{2}=0.5774\)</span> we cain expect that about 57.74% of the variations in GPA can be explained by ACT.</p>
+<p>By the <span class="math inline">\(R^{2}=0.5774\)</span> we cain
+expect that about 57.74% of the variations in GPA can be explained by
+ACT.</p>
 <hr />
-<p>10 Let <span class="math inline">\(\widehat{\beta}_{0}\)</span> and <span class="math inline">\(\widehat{\beta}_{1}\)</span> be the OLS intercept and slope estimators, respectively, and let <span class="math inline">\(\overline{u}\)</span> be the sample average of errors (not the residuals!).</p>
+<p>10 Let <span class="math inline">\(\widehat{\beta}_{0}\)</span> and
+<span class="math inline">\(\widehat{\beta}_{1}\)</span> be the OLS
+intercept and slope estimators, respectively, and let <span
+class="math inline">\(\overline{u}\)</span> be the sample average of
+errors (not the residuals!).</p>
 <ol style="list-style-type: lower-roman">
-<li>Show that <span class="math inline">\(\widehat{\beta}_{1}\)</span> can be written as <span class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\displaystyle\sum_{i=1}^{n}w_{i}u_{i},\)</span> where <span class="math inline">\(w_{i}=d_{i}/\mbox{SST}_{x}\)</span> and <span class="math inline">\(d_{i}=x_{i}-\overline{x}\)</span></li>
+<li>Show that <span class="math inline">\(\widehat{\beta}_{1}\)</span>
+can be written as <span
+class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\displaystyle\sum_{i=1}^{n}w_{i}u_{i},\)</span>
+where <span class="math inline">\(w_{i}=d_{i}/\mbox{SST}_{x}\)</span>
+and <span class="math inline">\(d_{i}=x_{i}-\overline{x}\)</span></li>
 </ol>
 <p><strong>Solution:</strong></p>
-<p>If we can call <span class="math inline">\(w=\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span> than <span class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span>. Then, now, define that <span class="math inline">\(w_{i}=d_{i}/SST_{x}\)</span> .</p>
+<p>If we can call <span
+class="math inline">\(w=\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span>
+than <span
+class="math inline">\(\widehat{\beta}_{1}=\beta_{1}+\frac{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})u_{i}}{\displaystyle\sum_{i=1}^{n}(x_{i}-\overline{x})^{2}}\)</span>.
+Then, now, define that <span
+class="math inline">\(w_{i}=d_{i}/SST_{x}\)</span> .</p>
 <ol start="2" style="list-style-type: lower-roman">
-<li>Use part (i), along with <span class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}u_{i}=0\)</span>, to show that <span class="math inline">\(\widehat{\beta}_{1}\)</span> and <span class="math inline">\(\overline{u}\)</span> are uncorrelated. [<em>Hint:</em> You are been asked to show that <span class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\cdot \overline{u}]=0\)</span>]</li>
+<li>Use part (i), along with <span
+class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}u_{i}=0\)</span>,
+to show that <span class="math inline">\(\widehat{\beta}_{1}\)</span>
+and <span class="math inline">\(\overline{u}\)</span> are uncorrelated.
+[<em>Hint:</em> You are been asked to show that <span
+class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\cdot
+\overline{u}]=0\)</span>]</li>
 </ol>
 <p><strong>Solution:</strong></p>
-<p>We show that the latter is zero because <span class="math inline">\(Cov(\widehat{\beta}_{1},\overline{u})=E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]\)</span>.</p>
-<p>Remember that <span class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]=E[(\displaystyle\sum^{n}_{i=1}w_{i}u_{i})\overline{u}]=\displaystyle\sum^{n}_{i=1}w_{i}E(u_{i}\overline{u}).\)</span></p>
-<p>The <span class="math inline">\(u_{i}\)</span> are pairwise uncorrelated (they are independent), <span class="math inline">\(E(u_{i},\overline{u})=E(u_{i}^{2}/n)=\sigma^{2}/n\)</span> (because <span class="math inline">\(E(u_{i},u_{h})=0,\,\,i\neq h\)</span>). Therefore, <span class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}E(u_{i},\overline{u})=\sum^{n}_{i=1}w_{i}(\sigma^{2}/n)=(\sigma^{2}/n)\displaystyle\sum^{n}_{i=1}w_{i}=0\)</span></p>
+<p>We show that the latter is zero because <span
+class="math inline">\(Cov(\widehat{\beta}_{1},\overline{u})=E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]\)</span>.</p>
+<p>Remember that <span
+class="math inline">\(E[(\widehat{\beta}_{1}-\beta_{1})\overline{u}]=E[(\displaystyle\sum^{n}_{i=1}w_{i}u_{i})\overline{u}]=\displaystyle\sum^{n}_{i=1}w_{i}E(u_{i}\overline{u}).\)</span></p>
+<p>The <span class="math inline">\(u_{i}\)</span> are pairwise
+uncorrelated (they are independent), <span
+class="math inline">\(E(u_{i},\overline{u})=E(u_{i}^{2}/n)=\sigma^{2}/n\)</span>
+(because <span class="math inline">\(E(u_{i},u_{h})=0,\,\,i\neq
+h\)</span>). Therefore, <span
+class="math inline">\(\displaystyle\sum_{i=1}^{n}w_{i}E(u_{i},\overline{u})=\sum^{n}_{i=1}w_{i}(\sigma^{2}/n)=(\sigma^{2}/n)\displaystyle\sum^{n}_{i=1}w_{i}=0\)</span></p>
 <ol start="3" style="list-style-type: lower-roman">
-<li>Show that <span class="math inline">\(\widehat{\beta}_{0}\)</span> can be written as <span class="math inline">\(\widehat{\beta}_{0}=\beta_{0}+\overline{u}-(\widehat{\beta}_{1}-\beta_{1})\overline{x}\)</span></li>
+<li>Show that <span class="math inline">\(\widehat{\beta}_{0}\)</span>
+can be written as <span
+class="math inline">\(\widehat{\beta}_{0}=\beta_{0}+\overline{u}-(\widehat{\beta}_{1}-\beta_{1})\overline{x}\)</span></li>
 </ol>
 <p><strong>Solution:</strong></p>
-<p>Remember that the OLS intercept formula is: <span class="math inline">\(\widehat{\beta}_{0}=\overline{y}-\widehat{\beta}\overline{x}\)</span> and if we can insert this in <span class="math inline">\(\overline{y}=\beta_{0}+\beta_{1}\overline{x}+\overline{u}\)</span> we can obtain:</p>
+<p>Remember that the OLS intercept formula is: <span
+class="math inline">\(\widehat{\beta}_{0}=\overline{y}-\widehat{\beta}\overline{x}\)</span>
+and if we can insert this in <span
+class="math inline">\(\overline{y}=\beta_{0}+\beta_{1}\overline{x}+\overline{u}\)</span>
+we can obtain:</p>
 <p><span class="math display">\[
 \widehat{\beta}_{0}=(\beta_{0}+\beta_{1}\overline{x}+\overline{u})-\widehat{\beta}_{1}\overline{x}=\beta_{0}+\overline{u}-(\widehat{\beta}-\beta_{1})\overline{x}
 \]</span></p>
 <ol start="4" style="list-style-type: lower-roman">
-<li>Use parts (ii) and (iii) to show that <span class="math inline">\(Var(\widehat{\beta}_{0}) =\sigma^{2}/n+\sigma^{2}(\overline{x})^{2}/SST_{x}\)</span>.</li>
+<li>Use parts (ii) and (iii) to show that <span
+class="math inline">\(Var(\widehat{\beta}_{0})
+=\sigma^{2}/n+\sigma^{2}(\overline{x})^{2}/SST_{x}\)</span>.</li>
 </ol>
 <p><strong>Solution:</strong></p>
-<p><span class="math inline">\(\widehat{\beta}_{1}\)</span> and <span class="math inline">\(\overline{u}\)</span> are uncorrelated than</p>
+<p><span class="math inline">\(\widehat{\beta}_{1}\)</span> and <span
+class="math inline">\(\overline{u}\)</span> are uncorrelated than</p>
 <p><span class="math display">\[
 Var(\beta_{0})=Var(\overline{u})+Var(\widehat{\beta_{1}})\overline{x}^{2}=\\
 \sigma^{2}/n+(\sigma^{2}/SST_{x})\overline{x}^{2}=\\
 \sigma^{2}/n+\sigma^{2}\overline{x^{2}}/SST_{x}
 \]</span></p>
 <ol start="22" style="list-style-type: lower-alpha">
-<li>Do the algebra to simplify the expression in part (iv) to equation (2.58) [<em>Hint:</em> <span class="math inline">\(SST_{x}/n=n^{-1}\displaystyle\sum_{i=1}^{n}x^{2}_{i}-(\overline{x})^{2}\)</span>.]</li>
+<li>Do the algebra to simplify the expression in part (iv) to equation
+(2.58) [<em>Hint:</em> <span
+class="math inline">\(SST_{x}/n=n^{-1}\displaystyle\sum_{i=1}^{n}x^{2}_{i}-(\overline{x})^{2}\)</span>.]</li>
 </ol>
 <p><strong>Solution</strong>:</p>
 <p>The substitution gives</p>
@@ -934,13 +1042,21 @@ Var(\widehat{\beta}_{0})=\sigma^{2}[SST_{x}/n+\overline{x}^{2}]/SST_{x}=\\
 \sigma^{2}(n^{-1}\sum^{n}_{i=1}x^{2}_{i})/SST_{x}
 \]</span></p>
 <hr />
-<p>3 The following model is a simplified version of the multiple regression model used by Biddle and Hamermesh (1990) to study the tradeoff between time spent sleeping and working and to look at other factors affecting sleep:</p>
+<p>3 The following model is a simplified version of the multiple
+regression model used by Biddle and Hamermesh (1990) to study the
+tradeoff between time spent sleeping and working and to look at other
+factors affecting sleep:</p>
 <p><span class="math display">\[
 sleep=\beta_{0}+\beta_{1}totwrk+\beta_{2}educ+\beta_{3}age+u,
 \]</span></p>
-<p>where <span class="math inline">\(sleep\)</span> and <span class="math inline">\(totwrk\)</span> (total work) are measured in minutes per week and <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> are measured in years (See also Computer Exercise C3 in Chapter 2.)</p>
+<p>where <span class="math inline">\(sleep\)</span> and <span
+class="math inline">\(totwrk\)</span> (total work) are measured in
+minutes per week and <span class="math inline">\(educ\)</span> and <span
+class="math inline">\(age\)</span> are measured in years (See also
+Computer Exercise C3 in Chapter 2.)</p>
 <ol style="list-style-type: lower-roman">
-<li>If adults trade off sleep for work, what is the sign of <span class="math inline">\(\beta_{1}\)</span> ?</li>
+<li>If adults trade off sleep for work, what is the sign of <span
+class="math inline">\(\beta_{1}\)</span> ?</li>
 </ol>
 <p><strong>Solution</strong>:</p>
 <pre class="r"><code>library(wooldridge)
@@ -1159,7 +1275,8 @@ F Statistic
 <em>Note:</em>
 </td>
 <td style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05;
+<sup></strong></em></sup>p&lt;0.01
 </td>
 </tr>
 </table>
@@ -1168,13 +1285,25 @@ F Statistic
 <pre class="r"><code>#generating the dataset
 library(xlsx)
 write.xlsx(sleep75, file=&quot;sleep75.xlsx&quot;)</code></pre>
-<p><a href="https://github.com/rhozon/homeworkI/blob/main/sleep75.xlsx?raw=true">You can download the dataset here</a></p>
-<p>Soon if adults trade off sleep for work, more work implies less sleep (other things equal), so <span class="math inline">\(β_1 &lt; 0\)</span>.</p>
+<p><a
+href="https://github.com/rhozon/homeworkI/blob/main/sleep75.xlsx?raw=true">You
+can download the dataset here</a></p>
+<p>Soon if adults trade off sleep for work, more work implies less sleep
+(other things equal), so <span class="math inline">\(β_1 &lt;
+0\)</span>.</p>
 <ol start="2" style="list-style-type: lower-roman">
-<li>What signs do you think <span class="math inline">\(\beta_{2}\)</span> and <span class="math inline">\(\beta_{3}\)</span> will have ?</li>
+<li>What signs do you think <span
+class="math inline">\(\beta_{2}\)</span> and <span
+class="math inline">\(\beta_{3}\)</span> will have ?</li>
 </ol>
 <p><strong>Solution</strong></p>
-<p>The signs of <span class="math inline">\(\beta_2\)</span> and <span class="math inline">\(\beta_3\)</span> are not obvious. One could argue that more educated people like to get more out of life, and so, other things equal, they sleep less (<span class="math inline">\(\beta_2 &lt; 0\)</span>). The relationship between sleeping and age is more complicated than this model suggests, and economists are not in the best position to judge such things.</p>
+<p>The signs of <span class="math inline">\(\beta_2\)</span> and <span
+class="math inline">\(\beta_3\)</span> are not obvious. One could argue
+that more educated people like to get more out of life, and so, other
+things equal, they sleep less (<span class="math inline">\(\beta_2 &lt;
+0\)</span>). The relationship between sleeping and age is more
+complicated than this model suggests, and economists are not in the best
+position to judge such things.</p>
 <ol start="3" style="list-style-type: lower-roman">
 <li>Using th data in SLEEP75, the estimated equation is</li>
 </ol>
@@ -1182,47 +1311,110 @@ write.xlsx(sleep75, file=&quot;sleep75.xlsx&quot;)</code></pre>
 \widehat{sleep}=3,638.25-.148totwrk-11.13educ+2.20age\\
 n=706,\,\, R^{2}=.113.
 \]</span></p>
-<p>If someone works five more hours per week, by how many minutes is <em>sleep</em> predicted to fall ? Is this a large tradeoff ?</p>
+<p>If someone works five more hours per week, by how many minutes is
+<em>sleep</em> predicted to fall ? Is this a large tradeoff ?</p>
 <p><strong>Solution</strong></p>
-<p>Since <span class="math inline">\(totwrk\)</span> is in minutes, we must convert five hours into minutes: <span class="math inline">\(∆totwrk = 5(60) = 300\)</span>. Then sleep is predicted to fall by 0.148(300) = 44.4 minutes. Fo a week, 45 minutes less sleep is not an overwhelming change</p>
+<p>Since <span class="math inline">\(totwrk\)</span> is in minutes, we
+must convert five hours into minutes: <span
+class="math inline">\(∆totwrk = 5(60) = 300\)</span>. Then sleep is
+predicted to fall by 0.148(300) = 44.4 minutes. Fo a week, 45 minutes
+less sleep is not an overwhelming change</p>
 <ol start="4" style="list-style-type: lower-roman">
-<li>Discuss the sign and magnitude of the estimated coefficient on <em>educ</em></li>
+<li>Discuss the sign and magnitude of the estimated coefficient on
+<em>educ</em></li>
 </ol>
 <p><strong>Solution</strong></p>
-<p>More education implies less predicted time sleeping, but the effect is quite small. If we assume the difference between college and high school is four years, the college graduate sleeps about 45 minutes less per week, other things equal</p>
+<p>More education implies less predicted time sleeping, but the effect
+is quite small. If we assume the difference between college and high
+school is four years, the college graduate sleeps about 45 minutes less
+per week, other things equal</p>
 <ol start="22" style="list-style-type: lower-alpha">
-<li>Would you say <span class="math inline">\(totwrk\)</span>, <span class="math inline">\(educ\)</span> and <span class="math inline">\(age\)</span> explain much of the variation in sleep? What other factors might affect the time spent sleeping ? Are these likely to be correlated with <span class="math inline">\(totwrk\)</span> ?</li>
+<li>Would you say <span class="math inline">\(totwrk\)</span>, <span
+class="math inline">\(educ\)</span> and <span
+class="math inline">\(age\)</span> explain much of the variation in
+sleep? What other factors might affect the time spent sleeping ? Are
+these likely to be correlated with <span
+class="math inline">\(totwrk\)</span> ?</li>
 </ol>
 <p><strong>Solution</strong></p>
-<p>As shown in the (i) the <span class="math inline">\(R^2=0.113\)</span> that the three explanatory variables explain only about 11.3% of the variation in sleep. One important factor in the error term is general health.</p>
-<p>Another is marital status, and whether the person has children. Health (however we measure that), marital status, and number and ages of children would generally be correlated with totwrk. (For example, less healthy people would tend to work less.)</p>
+<p>As shown in the (i) the <span
+class="math inline">\(R^2=0.113\)</span> that the three explanatory
+variables explain only about 11.3% of the variation in sleep. One
+important factor in the error term is general health.</p>
+<p>Another is marital status, and whether the person has children.
+Health (however we measure that), marital status, and number and ages of
+children would generally be correlated with totwrk. (For example, less
+healthy people would tend to work less.)</p>
 <hr />
-<p>9 The following equation describes the median housing price in a community in terms of amount of pollution (nox for nitrous oxide) and the average number of rooms in houses in the community (rooms):</p>
+<p>9 The following equation describes the median housing price in a
+community in terms of amount of pollution (nox for nitrous oxide) and
+the average number of rooms in houses in the community (rooms):</p>
 <p><span class="math display">\[
 \log(price)=\beta_{0} +\beta_{1}\log(nox)+\beta_{2}rooms+u.
 \]</span></p>
 <ol style="list-style-type: lower-roman">
-<li>What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> and <span class="math inline">\(\beta_{2}\)</span>? What is the interpretation of <span class="math inline">\(\beta_{1}\)</span> ? Explain.</li>
+<li>What is the interpretation of <span
+class="math inline">\(\beta_{1}\)</span> and <span
+class="math inline">\(\beta_{2}\)</span>? What is the interpretation of
+<span class="math inline">\(\beta_{1}\)</span> ? Explain.</li>
 </ol>
 <p><strong>Solution</strong></p>
-<p>We hope <span class="math inline">\(\beta_1 &lt; 0\)</span> because more pollution can be expected to lower housing values; <span class="math inline">\(\beta_1\)</span> is the elasticity of price with respect to <span class="math inline">\(nox\)</span>. <span class="math inline">\(\beta_2\)</span> is probably positive because <span class="math inline">\(rooms\)</span> roughly measures the size of a house. (However, it does not allow us to distinguish homes where each room is large from homes where each room is small.)</p>
+<p>We hope <span class="math inline">\(\beta_1 &lt; 0\)</span> because
+more pollution can be expected to lower housing values; <span
+class="math inline">\(\beta_1\)</span> is the elasticity of price with
+respect to <span class="math inline">\(nox\)</span>. <span
+class="math inline">\(\beta_2\)</span> is probably positive because
+<span class="math inline">\(rooms\)</span> roughly measures the size of
+a house. (However, it does not allow us to distinguish homes where each
+room is large from homes where each room is small.)</p>
 <ol start="2" style="list-style-type: lower-roman">
-<li>Why might <span class="math inline">\(nox\)</span> [or more precisely <span class="math inline">\(\log(nox)\)</span>] and <span class="math inline">\(rooms\)</span> be negatively correlated? If this is the case, does the simple regression of <span class="math inline">\(log(price)\)</span> on <span class="math inline">\(log(nox)\)</span> produce an upward or a downward biased estimator of <span class="math inline">\(\beta_{1}\)</span>?</li>
+<li>Why might <span class="math inline">\(nox\)</span> [or more
+precisely <span class="math inline">\(\log(nox)\)</span>] and <span
+class="math inline">\(rooms\)</span> be negatively correlated? If this
+is the case, does the simple regression of <span
+class="math inline">\(log(price)\)</span> on <span
+class="math inline">\(log(nox)\)</span> produce an upward or a downward
+biased estimator of <span class="math inline">\(\beta_{1}\)</span>?</li>
 </ol>
 <p><strong>Soloution</strong></p>
-<p>If we assume that <span class="math inline">\(rooms\)</span> increases with quality of the home, then <span class="math inline">\(log(nox)\)</span> and <span class="math inline">\(rooms\)</span> are negatively correlated when poorer neighborhoods have more pollution, something that is often true. If <span class="math inline">\(\beta_2 &gt; 0\)</span> and <span class="math inline">\(Corr(x1, x2) &lt; 0\)</span>, the simple regression estimator <span class="math inline">\(\widetilde{β}_1\)</span> has a downward bias. But because <span class="math inline">\(\beta_1 &lt; 0\)</span>, this means that the simple regression, on average, overstates the importance of pollution. <span class="math inline">\((E(\widetilde{\beta}_1)\)</span> is more negative than <span class="math inline">\(\beta_1\)</span>.)</p>
+<p>If we assume that <span class="math inline">\(rooms\)</span>
+increases with quality of the home, then <span
+class="math inline">\(log(nox)\)</span> and <span
+class="math inline">\(rooms\)</span> are negatively correlated when
+poorer neighborhoods have more pollution, something that is often true.
+If <span class="math inline">\(\beta_2 &gt; 0\)</span> and <span
+class="math inline">\(Corr(x1, x2) &lt; 0\)</span>, the simple
+regression estimator <span
+class="math inline">\(\widetilde{β}_1\)</span> has a downward bias. But
+because <span class="math inline">\(\beta_1 &lt; 0\)</span>, this means
+that the simple regression, on average, overstates the importance of
+pollution. <span class="math inline">\((E(\widetilde{\beta}_1)\)</span>
+is more negative than <span class="math inline">\(\beta_1\)</span>.)</p>
 <ol start="3" style="list-style-type: lower-roman">
-<li>Using the data in HPRICE2, the following equations were estimated:</li>
+<li>Using the data in HPRICE2, the following equations were
+estimated:</li>
 </ol>
 <p><span class="math display">\[
 \widehat{\log(price)}=11.71-1.043\log(nox), n=506,\,R^{2}=.264\\
 \widehat{\log(price)}=9.23-.718\log(nox)+.306rooms, n=506,\,R^{2}=.514
 \]</span></p>
-<p>Is the relationship between the simple and multiple regression estimates of the elasticity of <span class="math inline">\(price\)</span> with respect to <span class="math inline">\(nox\)</span> what would have predicted, given your answer in part (ii)? Does this mean that -.718 is definitely closer to the true elasticity than -1.043 ?</p>
+<p>Is the relationship between the simple and multiple regression
+estimates of the elasticity of <span
+class="math inline">\(price\)</span> with respect to <span
+class="math inline">\(nox\)</span> what would have predicted, given your
+answer in part (ii)? Does this mean that -.718 is definitely closer to
+the true elasticity than -1.043 ?</p>
 <p><strong>Solution:</strong></p>
-<p>This is what we expect from the typical sample based on our analysis in part (i). The simple regression estimate, −1.043, is more negative (larger in magnitude) than the multiple regression estimate, −0.718. As those estimates are only for one sample, we can never know which is closer to <span class="math inline">\(\beta_1\)</span>. But if this is a “typical” sample, <span class="math inline">\(\beta_1\)</span> is closer to −0.718.</p>
+<p>This is what we expect from the typical sample based on our analysis
+in part (i). The simple regression estimate, −1.043, is more negative
+(larger in magnitude) than the multiple regression estimate, −0.718. As
+those estimates are only for one sample, we can never know which is
+closer to <span class="math inline">\(\beta_1\)</span>. But if this is a
+“typical” sample, <span class="math inline">\(\beta_1\)</span> is closer
+to −0.718.</p>
 <hr />
-<p>16 The following equations were estimated using the data in LAWSCH85:</p>
+<p>16 The following equations were estimated using the data in
+LAWSCH85:</p>
 <p><span class="math display">\[\begin{align}
 \widehat{lsalary}=&amp; 9.9 -.0041rank +.294GPA\\
 &amp;(.24)\quad(.0003)\quad(.069)\\
@@ -1233,7 +1425,9 @@ n=706,\,\, R^{2}=.113.
 &amp;(.29)\quad(.0004)\,\,\,\,\quad(.083)\quad\,\,(.00036)\\
 &amp;n=99\quad R^{2}=.8036
 \end{align}\]</span></p>
-<p>How can it be that the <span class="math inline">\(R^{2}\)</span> is smaller when the variable <span class="math inline">\(age\)</span> is added to equation.</p>
+<p>How can it be that the <span class="math inline">\(R^{2}\)</span> is
+smaller when the variable <span class="math inline">\(age\)</span> is
+added to equation.</p>
 <p><strong>Solution</strong>:</p>
 <p>By using the wooldridge package in R we can see:</p>
 <pre class="r"><code>library(wooldridge)
@@ -1264,22 +1458,15 @@ str(lawsch85)</code></pre>
  $ lcost  : num  9.03 8.85 9.7 9.77 9.03 ...
  - attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
 <pre class="r"><code>head(lawsch85)</code></pre>
-<pre><code>  rank salary  cost LSAT  GPA libvol faculty age clsize north south east west
-1  128  31400  8340  155 3.15    216      45  12    210     1     0    0    0
-2  104  33098  6980  160 3.50    256      44 113    190     0     1    0    0
-3   34  32870 16370  155 3.25    424      78 134    270     0     0    1    0
-4   49  35000 17566  157 3.20    329     136  89    277     0     0    1    0
-5   95  33606  8350  162 3.38    332      56  70    150     0     0    0    1
-6   98  31700  8350  161 3.40    311      40  29    156     0     0    0    1
-   lsalary  studfac top10 r11_25 r26_40 r41_60  llibvol    lcost
-1 10.35456 4.666667     0      0      0      0 5.375278 9.028818
-2 10.40723 4.318182     0      0      0      0 5.545177 8.850804
-3 10.40032 3.461539     0      0      1      0 6.049734 9.703206
-4 10.46310 2.036765     0      0      0      1 5.796058 9.773721
-5 10.42246 2.678571     0      0      0      0 5.805135 9.030017
-6 10.36407 3.900000     0      0      0      0 5.739793 9.030017</code></pre>
+<pre><code>  rank salary  cost LSAT  GPA libvol faculty age clsize north south east west  lsalary  studfac top10 r11_25 r26_40 r41_60  llibvol    lcost
+1  128  31400  8340  155 3.15    216      45  12    210     1     0    0    0 10.35456 4.666667     0      0      0      0 5.375278 9.028818
+2  104  33098  6980  160 3.50    256      44 113    190     0     1    0    0 10.40723 4.318182     0      0      0      0 5.545177 8.850804
+3   34  32870 16370  155 3.25    424      78 134    270     0     0    1    0 10.40032 3.461539     0      0      1      0 6.049734 9.703206
+4   49  35000 17566  157 3.20    329     136  89    277     0     0    1    0 10.46310 2.036765     0      0      0      1 5.796058 9.773721
+5   95  33606  8350  162 3.38    332      56  70    150     0     0    0    1 10.42246 2.678571     0      0      0      0 5.805135 9.030017
+6   98  31700  8350  161 3.40    311      40  29    156     0     0    0    1 10.36407 3.900000     0      0      0      0 5.739793 9.030017</code></pre>
 <pre class="r"><code>sum(is.na(lawsch85))</code></pre>
-<pre><code>[1] 101</code></pre>
+<pre><code> 101</code></pre>
 <pre class="r"><code>na_count &lt;-sapply(lawsch85, function(y) sum(length(which(is.na(y)))))
 
 na_count &lt;- data.frame(na_count)
@@ -1308,11 +1495,13 @@ r41_60         0
 llibvol        1
 lcost          6</code></pre>
 <pre class="r"><code>sum(na_count)</code></pre>
-<pre><code>[1] 101</code></pre>
+<pre><code> 101</code></pre>
 <pre class="r"><code>#generating the dataset
 library(xlsx)
 write.xlsx(lawsch85, file=&quot;lawsch85.xlsx&quot;)</code></pre>
-<p><a href="https://github.com/rhozon/homeworkI/raw/main/lawsch85.xlsx">Now you can download the lawsch85.xlsx here</a></p>
+<p><a
+href="https://github.com/rhozon/homeworkI/raw/main/lawsch85.xlsx">Now
+you can download the lawsch85.xlsx here</a></p>
 <p>By running the two regression models, we can have:</p>
 <pre class="r"><code>mod1&lt;-lm(lsalary~rank+GPA,data=lawsch85)
 
@@ -1550,14 +1739,21 @@ F Statistic
 <em>Note:</em>
 </td>
 <td colspan="2" style="text-align:right">
-<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05; <sup></strong></em></sup>p&lt;0.01
+<sup><em></sup>p&lt;0.1; <sup><strong></sup>p&lt;0.05;
+<sup></strong></em></sup>p&lt;0.01
 </td>
 </tr>
 </table>
 </center>
 <p> </p>
-<p>The coefficient of the age variable was shown to be insignificant in model 2.</p>
-<p>With different observations the <span class="math inline">\(R^2\)</span> are been incomparable (see the <span class="math inline">\(n\)</span> in the two estimated equations). The residual standard error consumed more degrees of freedom in model 2 and increased compared to model 1.As seen above, the age variable has 45 missing data and the other variables in the both models…</p>
+<p>The coefficient of the age variable was shown to be insignificant in
+model 2.</p>
+<p>With different observations the <span
+class="math inline">\(R^2\)</span> are been incomparable (see the <span
+class="math inline">\(n\)</span> in the two estimated equations). The
+residual standard error consumed more degrees of freedom in model 2 and
+increased compared to model 1.As seen above, the age variable has 45
+missing data and the other variables in the both models…</p>
 <pre class="r"><code>library(dplyr)
 regvars&lt;-lawsch85%&gt;%
 select(lsalary,rank,GPA,age)
@@ -1572,13 +1768,23 @@ lsalary            8
 rank               0
 GPA                7
 age               45</code></pre>
-<p>Although the general <span class="math inline">\(F\)</span> test is significant in both models, the <span class="math inline">\(t\)</span> statistic shows that the inclusion of the <span class="math inline">\(age\)</span> variable does not improve the model’s fit to explain lsalary.</p>
+<p>Although the general <span class="math inline">\(F\)</span> test is
+significant in both models, the <span class="math inline">\(t\)</span>
+statistic shows that the inclusion of the <span
+class="math inline">\(age\)</span> variable does not improve the model’s
+fit to explain lsalary.</p>
 <hr />
 <div id="references" class="section level3">
 <h3>References</h3>
-<p><a href="https://cran.r-project.org/web/packages/wooldridge/wooldridge.pdf">CRAN Wooldridge documentation: Data Sets from “Introductory Econometrics: A Modern Approach, 6e” by Jeffrey M. Wooldridge</a></p>
-<p><a href="http://english.sufe.edu.cn/">Shangai University of Finance: Avaible in http://english.sufe.edu.cn/</a></p>
-<p><a href="https://book4you.org/book/3372803/9610fc">Wooldridge, J. <em><strong>Introductory econometrics: A modern approach</strong></em>, 2016, 6.ed., Cengage Learning, ISBN 13: 978-1-305-27010-7</a></p>
+<p><a
+href="https://cran.r-project.org/web/packages/wooldridge/wooldridge.pdf">CRAN
+Wooldridge documentation: Data Sets from “Introductory Econometrics: A
+Modern Approach, 6e” by Jeffrey M. Wooldridge</a></p>
+<p><a href="http://english.sufe.edu.cn/">Shangai University of Finance:
+Avaible in http://english.sufe.edu.cn/</a></p>
+<p><a href="https://book4you.org/book/3372803/9610fc">Wooldridge, J.
+<em><strong>Introductory econometrics: A modern approach</strong></em>,
+2016, 6.ed., Cengage Learning, ISBN 13: 978-1-305-27010-7</a></p>
 </div>
 
 
@@ -1592,7 +1798,7 @@ age               45</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -1610,7 +1816,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -1619,6 +1825,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')

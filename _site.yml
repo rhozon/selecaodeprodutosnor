@@ -48,8 +48,6 @@ navbar:
           href: rmarkdownepowerbi.html
         - text: "Big Data com o R: Lendo os microdados do CAGED com sparklyr"
           href: sparklyr.html           
-        - text: "Automação da visualização da base de dados da balança comercial brasileira"
-          href: automsecex.html 
         - text: "ETL com o R direto no Power BI"
           href: ETL_R_no_PowerBI.html            
         - text: "Webscrapping CoinMarketCap x Icoinomia"
@@ -92,6 +90,8 @@ navbar:
           href: Multicriteria_Portfolio_Selection_Commodities.html  
         - text: "R and Python in the same script"
           href: R_and_Python_using_Quarto.html  
+        - text: "MultiObjective Optim. Portfolio with non linear time series Research Presentation"
+          href: Research_Presentation_RHO.html  
           
   right:
     - icon: fa-question fa-lg
