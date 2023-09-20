@@ -231,7 +231,9 @@ Tutoriais disponíveis:
 
 - [MultiObjective Optim. Portfolio with non linear time series]()
 
+### *Apresentação Econometria no CiDAMO*
 
+- [CiDAMO -- Econometria e Inferência Causal, o que é econometria e sua importância]()
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
