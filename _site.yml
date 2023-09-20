@@ -92,6 +92,8 @@ navbar:
           href: R_and_Python_using_Quarto.html  
         - text: "MultiObjective Optim. Portfolio with non linear time series Research Presentation"
           href: Research_Presentation_RHO.html  
+        - text: "Apresentação Econometria no CiDAMO"
+          href: Apresentacao_Econometria_CiDAMO_Rodrigo_H_Ozon.html 
           
   right:
     - icon: fa-question fa-lg
