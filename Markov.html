@@ -15,27 +15,41 @@
 
 <title>Cadeias de Markov</title>
 
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -48,32 +62,8 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
+
 
 
 
@@ -83,10 +73,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -103,40 +89,16 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -164,7 +126,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -176,7 +138,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -186,11 +148,28 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.parent().addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -202,13 +181,12 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -216,16 +194,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -328,7 +299,7 @@ div.tocify {
 
 
 <!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
+<div class="row">
 <div class="col-xs-12 col-sm-4 col-md-3">
 <div id="TOC" class="tocify">
 </div>
@@ -342,7 +313,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -366,7 +337,7 @@ div.tocify {
   </a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     <span class="fa fa-gear"></span>
      
     Selecione
@@ -397,6 +368,99 @@ div.tocify {
     </li>
     <li>
       <a href="Markov.html">Processos Estocásticos e Cadeias de Markov</a>
+    </li>
+    <li>
+      <a href="ExercicioAnaliseFatorial.html">Análise de Componentes Principais e Fatorial</a>
+    </li>
+    <li>
+      <a href="grafsuperficie.html">Gráfico 3D interativo para regressão múltipla</a>
+    </li>
+    <li>
+      <a href="arvorededecisao.html">Árvores de Decisão para modelos de regressão</a>
+    </li>
+    <li>
+      <a href="economiaderedes.html">Redes econômicas: Teoria de Redes na Economia usando R</a>
+    </li>
+    <li>
+      <a href="cotacoes.html">Modelos da família ARCH em tempo real para dados de ações (VALE e PETRO)</a>
+    </li>
+    <li>
+      <a href="inferenciacausal.html">Inferência Causal na Economia</a>
+    </li>
+    <li>
+      <a href="varinstrumentais.html">Variáveis Instrumentais e Inferência Causal</a>
+    </li>
+    <li>
+      <a href="rmarkdownepowerbi.html">Fluxo de Salarios Microdados CAGED</a>
+    </li>
+    <li>
+      <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
+    </li>
+    <li>
+      <a href="ETL_R_no_PowerBI.html">ETL com o R direto no Power BI</a>
+    </li>
+    <li>
+      <a href="coinmarketcapxicoinomia.html">Webscrapping CoinMarketCap x Icoinomia</a>
+    </li>
+    <li>
+      <a href="projetointegrador.html">Projeto Integrador de Ciência de Dados</a>
+    </li>
+    <li>
+      <a href="homeworkI.html">Homework I: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="problemset2.html">Homework II: Econometrics (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
+    </li>
+    <li>
+      <a href="schedula_Rmd_Windows.html">Agendamento automático de execução de RMarkdowns com o R</a>
+    </li>
+    <li>
+      <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
+    </li>
+    <li>
+      <a href="prophet.html">Previsão (forecasting) de séries temporais financeiras com o ``Facebook Prophet``</a>
+    </li>
+    <li>
+      <a href="prophet_boost.html">Forecasting de séries temporais com algoritmos de machine learning</a>
+    </li>
+    <li>
+      <a href="causalimpact.html">Análise de Intervenção em Séries Temporais com o algoritmo do Google ´´CausalImpact``</a>
+    </li>
+    <li>
+      <a href="exerbolsadeestudos.html">Bolsa de Estudos x Matriculas: Uma abordagem de regressão bayesiana</a>
+    </li>
+    <li>
+      <a href="modelo_deep_learning_series_temporais.html">Modelos de Deep Learning em Séries Temporais de preços de commodities</a>
+    </li>
+    <li>
+      <a href="Modelo_Bayesiano_Monte_Carlo_Markov_Chain_Elasticidades.html">Modelo Bayesiano normal-normal Monte Carlo Markov Chain para estimativa das elasticidades de consumo</a>
+    </li>
+    <li>
+      <a href="GARCH_Bayesiano.html">Aplicação de um modelo GARCH(1,1) Bayesiano em séries de retornos de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobjective.html">Introdução a otimização multiobjetivo de um portfólio de commodities</a>
+    </li>
+    <li>
+      <a href="optim_multiobj_portfolio.html">Exemplo de aplicação multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Differential_Optimization_Portfolio.html">Algoritmo de Evolução Diferencial multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Multicriteria_Portfolio_Selection_Commodities.html">Seleção de Portfólio Multicritério com NSGAII</a>
+    </li>
+    <li>
+      <a href="R_and_Python_using_Quarto.html">R and Python in the same script</a>
+    </li>
+    <li>
+      <a href="Research_Presentation_RHO.html">MultiObjective Optim. Portfolio with non linear time series Research Presentation</a>
     </li>
   </ul>
 </li>
@@ -431,7 +495,7 @@ div.tocify {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -458,12 +522,47 @@ div.tocify {
 </div>
 <div id="processos-de-markov-de-primeira-ordem" class="section level1">
 <h1>Processos de Markov de Primeira Ordem</h1>
-<p>As sequências de observações ou resultados experimentais às vezes são consideradas como independentes, isto é, supõe-se que a probabilidade de se observar um resultado particular seja constante. A generalização mais simples desse modelo permite que a probabilidade do resultado de qualquer experimento ou observação dependa do resultado da observação imediatamente precedente, mas não dependa das outras observações anteriores. Um processo ou sequência deste tipo denomina-se um <em>processo em cadeia de Markov de primeira ordem, uma cadeia de Markov de primeira ordem</em> ou um <em>processo de Markov de primeira ordem</em> e os seus estados estacionários ou de equilíbrio.</p>
+<p>As sequências de observações ou resultados experimentais às vezes são
+consideradas como independentes, isto é, supõe-se que a probabilidade de
+se observar um resultado particular seja constante. A generalização mais
+simples desse modelo permite que a probabilidade do resultado de
+qualquer experimento ou observação dependa do resultado da observação
+imediatamente precedente, mas não dependa das outras observações
+anteriores. Um processo ou sequência deste tipo denomina-se um
+<em>processo em cadeia de Markov de primeira ordem, uma cadeia de Markov
+de primeira ordem</em> ou um <em>processo de Markov de primeira
+ordem</em> e os seus estados estacionários ou de equilíbrio.</p>
 </div>
-<div id="definição-de-processo-de-markov-de-primeira-ordem" class="section level1">
+<div id="definição-de-processo-de-markov-de-primeira-ordem"
+class="section level1">
 <h1>Definição de Processo de Markov de Primeira Ordem</h1>
-<p>Suponha que o resultado de cada sequência de experimentos ou observações esteja num conjunto de possíveis resultados <span class="math inline">\(a_{1},a_{2},\ldots,a_{r}\)</span>. A probabilidade do resultado <span class="math inline">\(a_{j}\)</span> de cada experimento ou observação depende no máximo do resultado da observação imediatamente precedente. Estas prbabilidades são denotadas por <span class="math inline">\(p_{ij},i=1,2,\ldots,r\)</span> e <span class="math inline">\(j=1,2,\ldots,r\)</span>, onde <span class="math inline">\(p_{ij}\)</span> representa a probabilidade do resultado <span class="math inline">\(a_{j}\)</span> de qualquer observação particular, dado que o resultado <span class="math inline">\(a_{i}\)</span> ocorreu na observação imediatamente anterior. Os resultados <span class="math inline">\(a_{1},a_{2},\ldots,a_{r}\)</span> são denominados <em>estados</em> e as <span class="math inline">\(p_{ij}\)</span> são denominadas <em>probabilidades de transição</em> de uma cadeia de Markov de primeira ordem. Se é suposto que o processo se inicia em algum estado particular, as probabilidades de várias sequências de observações podem ser calculadas. Assim, uma cadeia de Markov de primeira ordem está determinada se forem especificadas os seus possíveis estados de Markov de primeiraa ordem está determinada se forem especificadas os seus possíveis estados, a distribuição inicial de probabilidade e a matriz de transição.</p>
-<p>As probabilidades de transição podem ser resumidas numa matriz quadrada. A matriz das probabilidades de transição de um processo de Markov, com estados <span class="math inline">\(a_{1},a_{2},\ldots,a_{r},\)</span> é</p>
+<p>Suponha que o resultado de cada sequência de experimentos ou
+observações esteja num conjunto de possíveis resultados <span
+class="math inline">\(a_{1},a_{2},\ldots,a_{r}\)</span>. A probabilidade
+do resultado <span class="math inline">\(a_{j}\)</span> de cada
+experimento ou observação depende no máximo do resultado da observação
+imediatamente precedente. Estas prbabilidades são denotadas por <span
+class="math inline">\(p_{ij},i=1,2,\ldots,r\)</span> e <span
+class="math inline">\(j=1,2,\ldots,r\)</span>, onde <span
+class="math inline">\(p_{ij}\)</span> representa a probabilidade do
+resultado <span class="math inline">\(a_{j}\)</span> de qualquer
+observação particular, dado que o resultado <span
+class="math inline">\(a_{i}\)</span> ocorreu na observação imediatamente
+anterior. Os resultados <span
+class="math inline">\(a_{1},a_{2},\ldots,a_{r}\)</span> são denominados
+<em>estados</em> e as <span class="math inline">\(p_{ij}\)</span> são
+denominadas <em>probabilidades de transição</em> de uma cadeia de Markov
+de primeira ordem. Se é suposto que o processo se inicia em algum estado
+particular, as probabilidades de várias sequências de observações podem
+ser calculadas. Assim, uma cadeia de Markov de primeira ordem está
+determinada se forem especificadas os seus possíveis estados de Markov
+de primeiraa ordem está determinada se forem especificadas os seus
+possíveis estados, a distribuição inicial de probabilidade e a matriz de
+transição.</p>
+<p>As probabilidades de transição podem ser resumidas numa matriz
+quadrada. A matriz das probabilidades de transição de um processo de
+Markov, com estados <span
+class="math inline">\(a_{1},a_{2},\ldots,a_{r},\)</span> é</p>
 <p><span class="math display">\[
 p={p_{ij}}=\begin{bmatrix}
            p_{11}&amp;p_{12}&amp;\ldots&amp;p_{1r}\\
@@ -472,10 +571,19 @@ p={p_{ij}}=\begin{bmatrix}
            p_{r1}&amp;p_{r2}&amp;\cdots&amp;p_{rr}
 \end{bmatrix}
 \]</span></p>
-<p>Observe que a soma dos elementos de cada linha da matriz <span class="math inline">\(p\)</span> é 1, pois os elementos da <span class="math inline">\(i-\)</span>ésima linha representam as probabilidades de todas as possíveis transições quando o processo está no estado <span class="math inline">\(a_{i}\)</span>. Isto é,</p>
+<p>Observe que a soma dos elementos de cada linha da matriz <span
+class="math inline">\(p\)</span> é 1, pois os elementos da <span
+class="math inline">\(i-\)</span>ésima linha representam as
+probabilidades de todas as possíveis transições quando o processo está
+no estado <span class="math inline">\(a_{i}\)</span>. Isto é,</p>
 <p><span class="math display">\[
-\displaystyle\sum^{r}_{j=1}p_{ij}=1\quad \mbox{para}\quad  i=1,2,\ldots,r
-\]</span> Assim, se a distribuição de probabilidades dos estados no ensaio <span class="math inline">\(n\)</span> é <span class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span>, a distribuição de probabilidade dos estados no ensaio <span class="math inline">\(n+1\)</span> é:</p>
+\displaystyle\sum^{r}_{j=1}p_{ij}=1\quad
+\mbox{para}\quad  i=1,2,\ldots,r
+\]</span> Assim, se a distribuição de probabilidades dos estados no
+ensaio <span class="math inline">\(n\)</span> é <span
+class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span>, a
+distribuição de probabilidade dos estados no ensaio <span
+class="math inline">\(n+1\)</span> é:</p>
 <p><span class="math display">\[
 [p_{1}, p_{2},\ldots,p_{r}]\begin{bmatrix}
 p_{11}&amp;p_{12}&amp;\ldots&amp;p_{1r}\\
@@ -490,12 +598,48 @@ p_{r1}&amp;p_{r2}&amp;\cdots&amp;p_{rr}
 </div>
 <div id="estado-estacionário-ou-equilíbrio" class="section level1">
 <h1>Estado Estacionário ou Equilíbrio</h1>
-<p>A distribuição de probabilidade dos resultados da <span class="math inline">\(n-\)</span>ésima observação de um processo de Markov de primeira ordem é o produto do vetor das probabilidades iniciais pela <span class="math inline">\(n-\)</span>ésima potência da matriz de transição. Isto pode ser mostrado, estendendo-se os argumentos da seção anterior. Se o vetor das probabilidades iniciais é denotado por <span class="math inline">\(p_{0}\)</span> e o vetor de probabilidades no estágio <span class="math inline">\(n\)</span> é denotado por <span class="math inline">\(p_{n}\)</span>, então <span class="math inline">\(p_{1}=p_{0}p,\,\,p_{2}=p_{1}p=p_{0}p^{2},\,p_{3}=p_{2}p=p_{0}p^{3},\ldots,p_{n}=p_{0}p^{n}\)</span>. Com algumas hipóteses matemáticas pouco restritivas, pode se mostrar que um processo de Markov de primeira ordem se aproxima de um estado estacionário ou equilíbrio, quando o número de observações aumenta, isto é, quando <span class="math inline">\(n\)</span> tende ao infinito.</p>
-<p>Por definição, quando uim processo de Markov de primeira ordem está no equilíbrio, a probabilidade de cada estado ou resultado possível é constante, não variando de uma observação para outra. O processo de Markov de primeira ordem utilizando para descrever situações da Administração e da Economia preenche, quase invariavelmente, as condições matemáticas de equilíbrio ou estacionário, quando o número de observações ou transições tende ao infinito, a distribuição da probabilidade estacionária (de equilíbrio) de seus estados é única e depende somente da matriz de transição e não da distribuição inicial de probabilidade dos estados. Toda cadeia de Markov particular está claramente num só estado particular, para qualquer observação dada. O significado físico e computacional da estacionariedade torna-se assim, claro apenas se um número de processos de Markov estpa simultaneamente no mesmo estado de equilíbrio. Neste caso, se existem <span class="math inline">\(N\)</span> de tais processos estejam no estado <span class="math inline">\(i\)</span> para qualquer observação dada. Assim, se <span class="math inline">\(N\)</span> é grande, um estado de equilíbrio macroscópio é mantido com um grande número de transições em direções opostas. Muitos equilíbrios estatísticos em Física são desta natureza.</p>
-<p>Do ponto de vista computacional, obtém-se a distribuição de probabilidade estacionária <span class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span> dos estados de uma cadeia de Markov, resolvendo-se as equações dadas em forma matricial por</p>
+<p>A distribuição de probabilidade dos resultados da <span
+class="math inline">\(n-\)</span>ésima observação de um processo de
+Markov de primeira ordem é o produto do vetor das probabilidades
+iniciais pela <span class="math inline">\(n-\)</span>ésima potência da
+matriz de transição. Isto pode ser mostrado, estendendo-se os argumentos
+da seção anterior. Se o vetor das probabilidades iniciais é denotado por
+<span class="math inline">\(p_{0}\)</span> e o vetor de probabilidades
+no estágio <span class="math inline">\(n\)</span> é denotado por <span
+class="math inline">\(p_{n}\)</span>, então <span
+class="math inline">\(p_{1}=p_{0}p,\,\,p_{2}=p_{1}p=p_{0}p^{2},\,p_{3}=p_{2}p=p_{0}p^{3},\ldots,p_{n}=p_{0}p^{n}\)</span>.
+Com algumas hipóteses matemáticas pouco restritivas, pode se mostrar que
+um processo de Markov de primeira ordem se aproxima de um estado
+estacionário ou equilíbrio, quando o número de observações aumenta, isto
+é, quando <span class="math inline">\(n\)</span> tende ao infinito.</p>
+<p>Por definição, quando uim processo de Markov de primeira ordem está
+no equilíbrio, a probabilidade de cada estado ou resultado possível é
+constante, não variando de uma observação para outra. O processo de
+Markov de primeira ordem utilizando para descrever situações da
+Administração e da Economia preenche, quase invariavelmente, as
+condições matemáticas de equilíbrio ou estacionário, quando o número de
+observações ou transições tende ao infinito, a distribuição da
+probabilidade estacionária (de equilíbrio) de seus estados é única e
+depende somente da matriz de transição e não da distribuição inicial de
+probabilidade dos estados. Toda cadeia de Markov particular está
+claramente num só estado particular, para qualquer observação dada. O
+significado físico e computacional da estacionariedade torna-se assim,
+claro apenas se um número de processos de Markov estpa simultaneamente
+no mesmo estado de equilíbrio. Neste caso, se existem <span
+class="math inline">\(N\)</span> de tais processos estejam no estado
+<span class="math inline">\(i\)</span> para qualquer observação dada.
+Assim, se <span class="math inline">\(N\)</span> é grande, um estado de
+equilíbrio macroscópio é mantido com um grande número de transições em
+direções opostas. Muitos equilíbrios estatísticos em Física são desta
+natureza.</p>
+<p>Do ponto de vista computacional, obtém-se a distribuição de
+probabilidade estacionária <span
+class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span> dos estados de
+uma cadeia de Markov, resolvendo-se as equações dadas em forma matricial
+por</p>
 <p><span class="math display">\[
 [p_{1},p_{2},\ldots,p_{r}]
-\begin{bmatrix} 
+\begin{bmatrix}
 p_{11}&amp;p_{12}&amp;\ldots&amp;p_{1r}\\
 p_{21}&amp;p_{22}&amp;\ldots&amp;p_{2r}\\
 \vdots&amp;\vdots&amp;      &amp;\vdots\\
@@ -503,13 +647,21 @@ p_{r1}&amp;p_{r2}&amp;\cdots&amp;p_{rr}
 \end{bmatrix}=
 [p_{1},p_{2},\ldots,p_{r}]
 \]</span></p>
-<p>onde <span class="math inline">\(p_{i}\)</span> é a probabilidade de estar no estado <span class="math inline">\(i,i=1,\ldots,r\)</span> e <span class="math inline">\(\displaystyle \sum^{r}_{i=1}p_{i}=1\)</span>. Isto envolve a solução das <span class="math inline">\(r\)</span> equações lineares independentes</p>
+<p>onde <span class="math inline">\(p_{i}\)</span> é a probabilidade de
+estar no estado <span class="math inline">\(i,i=1,\ldots,r\)</span> e
+<span class="math inline">\(\displaystyle
+\sum^{r}_{i=1}p_{i}=1\)</span>. Isto envolve a solução das <span
+class="math inline">\(r\)</span> equações lineares independentes</p>
 <p><span class="math display">\[\begin{align}
-\displaystyle\sum^{r}_{i=1}p_{i}p_{ij}&amp;=p_{j}\quad\mbox{para}\quad j=1,2,\ldots,r\,\,(r-1\,\,\mbox{das quais são independentes})\\
+\displaystyle\sum^{r}_{i=1}p_{i}p_{ij}&amp;=p_{j}\quad\mbox{para}\quad
+j=1,2,\ldots,r\,\,(r-1\,\,\mbox{das quais são independentes})\\
 
 \displaystyle\sum^{r}_{i=1}p_{i}&amp;=1
 \end{align}\]</span></p>
-<p>Observe que estas equações realmente definem o equilíbrio: Se <span class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span> é a distribuição de probabilidade dos estados para uma dada observação, o produto</p>
+<p>Observe que estas equações realmente definem o equilíbrio: Se <span
+class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span> é a
+distribuição de probabilidade dos estados para uma dada observação, o
+produto</p>
 <p><span class="math display">\[
 [p_{1},p_{2},\ldots,p_{r}]\begin{bmatrix}
 p_{11}&amp;p_{12}&amp;\ldots&amp;p_{1r}\\
@@ -518,60 +670,102 @@ p_{21}&amp;p_{22}&amp;\ldots&amp;p_{2r}\\
 p_{r1}&amp;p_{r2}&amp;\ldots&amp;p_{rr}
 \end{bmatrix}
 \]</span></p>
-<p>dá a distribuição de probabilidade dos estados para a próxima observação. Se esta distribuição também é <span class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span>, da mesma forma que a observação precedente, então o sistema está em desequilíbrio.</p>
+<p>dá a distribuição de probabilidade dos estados para a próxima
+observação. Se esta distribuição também é <span
+class="math inline">\([p_{1},p_{2},\ldots,p_{r}]\)</span>, da mesma
+forma que a observação precedente, então o sistema está em
+desequilíbrio.</p>
 <div id="exemplo-1" class="section level2">
 <h2>Exemplo 1</h2>
-<p>Suponha que, no 1 de setembro, dos assinantes de uma determinada região, a Folha tenha 50%, a Tribuna, 25% e a Gazeta outros 25%. Durante o mês de setembro, a Folha retém 87,5% de seus assinantes e perde 12,5% deles à Tribuna, esta retém 8,33% de seus assinantes e perde 75% deles à Folha e 16,67% deles à Gazeta; a Gazeta retém 33,33% de seus assinantes e perde 50% deles à Folha e 16,67% deles à Tribuna. Suponha que não haja novos assinantes e que nenhum deles deixe de sê-lo.</p>
+<p>Suponha que, no 1 de setembro, dos assinantes de uma determinada
+região, a Folha tenha 50%, a Tribuna, 25% e a Gazeta outros 25%. Durante
+o mês de setembro, a Folha retém 87,5% de seus assinantes e perde 12,5%
+deles à Tribuna, esta retém 8,33% de seus assinantes e perde 75% deles à
+Folha e 16,67% deles à Gazeta; a Gazeta retém 33,33% de seus assinantes
+e perde 50% deles à Folha e 16,67% deles à Tribuna. Suponha que não haja
+novos assinantes e que nenhum deles deixe de sê-lo.</p>
 <ol style="list-style-type: lower-alpha">
-<li>Que proporção dos assinantes tem cada jornal no primeiro dia de outubro ?</li>
+<li>Que proporção dos assinantes tem cada jornal no primeiro dia de
+outubro ?</li>
 </ol>
 <p>A matriz de transição é:</p>
 <center>
-<img src="matriztransicao.png" style="width:30.0%" />
+<img
+src="matriztransicao.png"
+style="width:30.0%" />
 </center>
-<p>multiplicando a matriz linha no estado inicial (1 de setembro, <span class="math inline">\(t_{0}\)</span>) pela matriz de transição exposta acima</p>
+<p>multiplicando a matriz linha no estado inicial (1 de setembro, <span
+class="math inline">\(t_{0}\)</span>) pela matriz de transição exposta
+acima</p>
 <center>
-<p><img src="questaoa.png" style="width:50.0%" /></p>
+<p><img
+src="questaoa.png"
+style="width:50.0%" /></p>
 </center>
-<p>selecionando as três colunas com o mouse no Excel e inserindo a fórmula =MATRIZ.MULT() escolhendo a matriz de estados iniciais seguido de ponto e vírgula e selecionando a matriz de transição e apertando as teclas conjuntamente CTRL+SHIFT+ENTER obtemos o seguinte resultado</p>
+<p>selecionando as três colunas com o mouse no Excel e inserindo a
+fórmula =MATRIZ.MULT() escolhendo a matriz de estados iniciais seguido
+de ponto e vírgula e selecionando a matriz de transição e apertando as
+teclas conjuntamente CTRL+SHIFT+ENTER obtemos o seguinte resultado</p>
 <center>
-<p><img src="questaoaa.png" style="width:50.0%" /></p>
+<p><img
+src="questaoaa.png"
+style="width:50.0%" /></p>
 </center>
-<p>Vemos que no dia 1 de outubro (mês subsequente ao de setembro, ou <span class="math inline">\(t+1\)</span>), a Folha tem 75%, a Tribuna tem 13%, e a Gazeta tem 13% dos assinantes.</p>
+<p>Vemos que no dia 1 de outubro (mês subsequente ao de setembro, ou
+<span class="math inline">\(t+1\)</span>), a Folha tem 75%, a Tribuna
+tem 13%, e a Gazeta tem 13% dos assinantes.</p>
 <ol start="2" style="list-style-type: lower-alpha">
-<li>Se o mesmo modelo de ganhos e perdas continua em cada mês, que proporção dos assinantes terá cada jornal no dia 1 de novembro ?</li>
+<li>Se o mesmo modelo de ganhos e perdas continua em cada mês, que
+proporção dos assinantes terá cada jornal no dia 1 de novembro ?</li>
 </ol>
-Utilizando os valores encontrados pela multiplicação da matriz de estados iniciais pela matriz de transição (<span class="math inline">\(t+1\)</span>), simplesmente obtemos os valores para o 1 de novembro
+Utilizando os valores encontrados pela multiplicação da matriz de
+estados iniciais pela matriz de transição (<span
+class="math inline">\(t+1\)</span>), simplesmente obtemos os valores
+para o 1 de novembro
 <center>
-<p><img src="matriztmais1.png" style="width:50.0%" /></p>
+<p><img
+src="matriztmais1.png"
+style="width:50.0%" /></p>
 </center>
-<p>Então no período <span class="math inline">\(t+1\)</span>, ou seja, no dia 1 de novembro, a Folha tem 81,25%, a Tribuna tem 12,5% e a Gazeta tem 6,25% dos assinantes.</p>
+<p>Então no período <span class="math inline">\(t+1\)</span>, ou seja,
+no dia 1 de novembro, a Folha tem 81,25%, a Tribuna tem 12,5% e a Gazeta
+tem 6,25% dos assinantes.</p>
 <ol start="3" style="list-style-type: lower-alpha">
-<li>Se o mesmo modelo de ganhos e perdas contínuas em cada mês, que proporção dos assinantes terá cada jornal depois de um longo período (isto é, no equilíbrio) ?</li>
+<li>Se o mesmo modelo de ganhos e perdas contínuas em cada mês, que
+proporção dos assinantes terá cada jornal depois de um longo período
+(isto é, no equilíbrio) ?</li>
 </ol>
 <center>
-<p><img src="matriznesima.png" style="width:50.0%" /></p>
+<p><img
+src="matriznesima.png"
+style="width:50.0%" /></p>
 </center>
-<p>O resultado da multiplicação da matriz de probabilidades futuras (lado direito) pela matriz de transição</p>
+<p>O resultado da multiplicação da matriz de probabilidades futuras
+(lado direito) pela matriz de transição</p>
 <p><span class="math display">\[\begin{align}
 p_{1}87,5\%+p_{2}75\%+p_{3}50\%&amp;=p_{1}\\
 p_{1}12,5\%+p_{2}8,33\%+p_{3}16,67\%&amp;=p_{2}\\
 p_{2}16,67\%+p_{3}33,33\%&amp;=p_{3}\\
 p_{1}+p_{2}+p_{3}&amp;=1
 \end{align}\]</span></p>
-<p>Transformando essas equações pela multiplicação da primeira por 8, a segunda por 24 e a terceira por 6:</p>
+<p>Transformando essas equações pela multiplicação da primeira por 8, a
+segunda por 24 e a terceira por 6:</p>
 <p><span class="math display">\[\begin{align}   
 -p_{1}+6p_{2}+4p_{3}&amp;=0\\
 3p_{1}-22p_{2}+4p_{3}&amp;=0\\
 p_{2}-4p_{3}=0\\
 p_{1}+p_{2}+p_{3}=1
 \end{align}\]</span></p>
-<p>Então resolvendo a primeira, a terceira e a quarta equações simultaneamente<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> (quaisquer três das quatro equações são independentes),</p>
+<p>Então resolvendo a primeira, a terceira e a quarta equações
+simultaneamente<a href="#fn1" class="footnote-ref"
+id="fnref1"><sup>1</sup></a> (quaisquer três das quatro equações são
+independentes),</p>
 <p><span class="math display">\[
 \begin{bmatrix}
 -p_1+6p_2+4p_3=0\\ p_2-4p_3=0\\ p_1+p_2+p_3=1
 \end{bmatrix}
-\]</span> Substituindo <span class="math inline">\(p_{2}=4p_{3}\)</span></p>
+\]</span> Substituindo <span
+class="math inline">\(p_{2}=4p_{3}\)</span></p>
 <p><span class="math display">\[
 \begin{bmatrix}
 -p_1+6\cdot \:4p_3+4p_3=0\\
@@ -583,7 +777,10 @@ p_1+4p_3+p_3=1
 -p_1+28p_3=0\\
 p_1+5p_3=1
 \end{bmatrix}
-\]</span> isolando <span class="math inline">\(\:p_1\:\mathrm{de}\:-p_1+28p_3=0:\quad p_1=28p_3\)</span> e substituindo <span class="math inline">\(p_1=28p_3\)</span></p>
+\]</span> isolando <span
+class="math inline">\(\:p_1\:\mathrm{de}\:-p_1+28p_3=0:\quad
+p_1=28p_3\)</span> e substituindo <span
+class="math inline">\(p_1=28p_3\)</span></p>
 <p><span class="math display">\[
 \begin{bmatrix}
 28p_3+5p_3=1
@@ -592,25 +789,38 @@ p_1+5p_3=1
 <p><span class="math display">\[
 \begin{bmatrix}33p_3=1\end{bmatrix}
 \]</span></p>
-<p>Isolando <span class="math inline">\(p_3\:\mathrm{de}\:33p_3=1:\quad p_3=\frac{1}{33}\)</span> para <span class="math inline">\(p_1=28p_3\)</span> substituindo <span class="math inline">\(p_3=\frac{1}{33}\)</span></p>
+<p>Isolando <span class="math inline">\(p_3\:\mathrm{de}\:33p_3=1:\quad
+p_3=\frac{1}{33}\)</span> para <span
+class="math inline">\(p_1=28p_3\)</span> substituindo <span
+class="math inline">\(p_3=\frac{1}{33}\)</span></p>
 <p><span class="math display">\[
 p_1=28\cdot \frac{1}{33}=\frac{28}{33}
-\]</span> Para <span class="math inline">\(p_2=4p_3\)</span> substituindo <span class="math inline">\(p_1=\frac{28}{33},\:p_3=\frac{1}{33}\)</span></p>
+\]</span> Para <span class="math inline">\(p_2=4p_3\)</span>
+substituindo <span
+class="math inline">\(p_1=\frac{28}{33},\:p_3=\frac{1}{33}\)</span></p>
 <p><span class="math display">\[
 p_2=4\cdot \frac{1}{33}=\frac{4}{33}
 \]</span> As soluções para o sistema de equações são:</p>
 <p><span class="math display">\[
 p_1=\frac{28}{33},\:p_3=\frac{1}{33},\:p_2=\frac{4}{33}
-\]</span> Então concluímos que após um longo período, a Folha terá 84,85%, a Tribuna 12,12% e a Gazeta 3,03% dos assinantes.</p>
+\]</span> Então concluímos que após um longo período, a Folha terá
+84,85%, a Tribuna 12,12% e a Gazeta 3,03% dos assinantes.</p>
 </div>
 <div id="exemplo-2" class="section level2">
 <h2>Exemplo 2</h2>
-<p>Todos os anos, 5% dos residentes de uma cidade muda-se para os subúrbios e 2% da população dos subúrbios muda-se para a cidade. Admitindo que o número total de pessoas da comunidade permaneça constante, determine a proporção, a longo prazo, dos residentes da cidade e dos subúrbios.</p>
+<p>Todos os anos, 5% dos residentes de uma cidade muda-se para os
+subúrbios e 2% da população dos subúrbios muda-se para a cidade.
+Admitindo que o número total de pessoas da comunidade permaneça
+constante, determine a proporção, a longo prazo, dos residentes da
+cidade e dos subúrbios.</p>
 <p>A matriz de transição é</p>
 <center>
-<p><img src="ex2.png" style="width:50.0%" /></p>
+<p><img
+src="ex2.png"
+style="width:50.0%" /></p>
 </center>
-<p>Então ao multiplicarmos a matriz de probabilidades pela matriz de transição, obtemos:</p>
+<p>Então ao multiplicarmos a matriz de probabilidades pela matriz de
+transição, obtemos:</p>
 <p><span class="math display">\[\begin{align}
 95\%p_{1}+2%p_{2}&amp;=p_{1}\\
 5\%p_{1}+98%p_{2}&amp;=p_{2}\\
@@ -622,14 +832,18 @@ p_{1}+p_{2}=1
 5p_{1}-2p_{2}=0\\
 p_{1}+p_{2}=1
 \end{align}\]</span></p>
-<p>Resolvendo-se a primeira e a terceira equações simultaneamente (quaisquer duas das três equações são independentes),</p>
+<p>Resolvendo-se a primeira e a terceira equações simultaneamente
+(quaisquer duas das três equações são independentes),</p>
 <p><span class="math display">\[
 \begin{bmatrix}
--5p_1+2p_2=0\\ 
+-5p_1+2p_2=0\\
 p_1+p_2=1
 \end{bmatrix}
 \]</span></p>
-<p>Isolamos <span class="math inline">\(p_1\:\mathrm{de}\:-5p_1+2p_2=0:\quad p_1=\frac{2p_2}{5}\)</span> e substituimos <span class="math inline">\(p_1=\frac{2p_2}{5}\)</span></p>
+<p>Isolamos <span
+class="math inline">\(p_1\:\mathrm{de}\:-5p_1+2p_2=0:\quad
+p_1=\frac{2p_2}{5}\)</span> e substituimos <span
+class="math inline">\(p_1=\frac{2p_2}{5}\)</span></p>
 <p><span class="math display">\[
 \begin{bmatrix}
 \frac{2p_2}{5}+p_2=1
@@ -639,7 +853,9 @@ p_1+p_2=1
 \begin{bmatrix}
 \frac{7p_2}{5}=1
 \end{bmatrix}
-\]</span> Isolando <span class="math inline">\(p_2\:\mathrm{de}\:\frac{7p_2}{5}=1:\quad p_2=\frac{5}{7}\)</span></p>
+\]</span> Isolando <span
+class="math inline">\(p_2\:\mathrm{de}\:\frac{7p_2}{5}=1:\quad
+p_2=\frac{5}{7}\)</span></p>
 <p>Para <span class="math inline">\(p_1=\frac{2p_2}{5}\)</span></p>
 <p><span class="math display">\[
 p_1=\frac{2\cdot \frac{5}{7}}{5}
@@ -653,16 +869,30 @@ p_1=\frac{2}{7}
 <p>Então, as soluções para o sistema de equações são:</p>
 <p><span class="math display">\[
 p_1=\frac{2}{7}\Rightarrow 28,57\%,\:p_2=\frac{5}{7}\Rightarrow 71,43\%
-\]</span> Então, eventualmente, 28,57% da população serão residentes da cidade e 71,43% serão residentes dos subúrbios. Observe que neste estado de equilíbrio, a cada ano 50% de 28,57%= 14,28% da população muda-se dos subúrbios para a cidade – os números de residentes das cidades e suburbanos são, assim, invariáveis ou estáveis.</p>
+\]</span> Então, eventualmente, 28,57% da população serão residentes da
+cidade e 71,43% serão residentes dos subúrbios. Observe que neste estado
+de equilíbrio, a cada ano 50% de 28,57%= 14,28% da população muda-se dos
+subúrbios para a cidade – os números de residentes das cidades e
+suburbanos são, assim, invariáveis ou estáveis.</p>
 </div>
 <div id="exemplo-3" class="section level2">
 <h2>Exemplo 3</h2>
-<p>Um corretor está estudando o movimento de preço de várias ações no mercado e está particularmente interessado numa companhia de equipamentos agrícolas. Ele observou que se estas ações têm uma alta num determinado dia, então, no dia seguinte elas tem uma chance de 50:50 de ter uma alta de novo, uma chance de 1/3 (33,33%) de permanecer com o mesmo preço e uma chance de 1/6 (16,66%) de subir. Que proporção do tempo (a longo prazo) as ações sobem, permanecem iguais e baixam de preço ?</p>
+<p>Um corretor está estudando o movimento de preço de várias ações no
+mercado e está particularmente interessado numa companhia de
+equipamentos agrícolas. Ele observou que se estas ações têm uma alta num
+determinado dia, então, no dia seguinte elas tem uma chance de 50:50 de
+ter uma alta de novo, uma chance de 1/3 (33,33%) de permanecer com o
+mesmo preço e uma chance de 1/6 (16,66%) de subir. Que proporção do
+tempo (a longo prazo) as ações sobem, permanecem iguais e baixam de
+preço ?</p>
 <p>A matriz de transição é definida por:</p>
 <center>
-<p><img src="matriztranscorretor.png" style="width:30.0%" /></p>
+<p><img
+src="matriztranscorretor.png"
+style="width:30.0%" /></p>
 </center>
-<p>Como vimos nos exercícios anteriores, as probabilidades de equilíbrio são dadas por</p>
+<p>Como vimos nos exercícios anteriores, as probabilidades de equilíbrio
+são dadas por</p>
 <p><span class="math display">\[\begin{align}
 50\%p_{1}+33\%p_{2}+17\%p_{3}&amp;=p_{1}\\
 33\%p_{1}+33\%p_{2}+33\%p_{3}&amp;=p_{2}\\
@@ -676,21 +906,27 @@ p_{1}+p_{2}+p_{3}&amp;=1
 \frac{1}{6}p_{1}+\frac{1}{3}p_{2}+\frac{1}{2}p_{3}&amp;=p_{3}\\
 p_{1}+p_{2}+p_{3}&amp;=1
 \end{align}\]</span></p>
-<p>Multiplicando a primeira equação por 6, a segunda por 2 e a terceira equação por 6, temos:</p>
+<p>Multiplicando a primeira equação por 6, a segunda por 2 e a terceira
+equação por 6, temos:</p>
 <p><span class="math display">\[\begin{align}   
 -3p_{1}+2p_{2}+p_{3}&amp;=0\\
 p_{1}-2p_{2}+p_{3}&amp;=0\\
 p_{1}+2p_{2}-3p_{3}&amp;=0\\
 p_{1}+p_{2}+p_{3}&amp;=1
 \end{align}\]</span></p>
-<p>Resolvendo-se a segunda, a terceira e a quarta equações simultaneamente (quaisquer três das quatro equações são independentes),</p>
+<p>Resolvendo-se a segunda, a terceira e a quarta equações
+simultaneamente (quaisquer três das quatro equações são
+independentes),</p>
 <p><span class="math display">\[
 \begin{bmatrix}
 p_1-2p_2+p_3=0\\
-p_1+2p_2-3p_3=0\\ 
+p_1+2p_2-3p_3=0\\
 p_1+p_2+p_3=1
 \end{bmatrix}
-\]</span> Isolando <span class="math inline">\(p_1\:\mathrm{de}\:p_1-2p_2+p_3=0:\quad p_1=-p_3+2p_2\)</span> e substituindo <span class="math inline">\(p_1=-p_3+2p_2\)</span></p>
+\]</span> Isolando <span
+class="math inline">\(p_1\:\mathrm{de}\:p_1-2p_2+p_3=0:\quad
+p_1=-p_3+2p_2\)</span> e substituindo <span
+class="math inline">\(p_1=-p_3+2p_2\)</span></p>
 <p><span class="math display">\[
 \begin{bmatrix}
 -p_3+2p_2+2p_2-3p_3=0\\
@@ -703,7 +939,10 @@ p_1+p_2+p_3=1
 4p_2-4p_3=0\\
 3p_2=1
 \end{bmatrix}
-\]</span> Isolando <span class="math inline">\(p_2\:\mathrm{de}\:3p_2=1:\quad p_2=\frac{1}{3}\)</span> e substituindo <span class="math inline">\(p_2=\frac{1}{3}\)</span></p>
+\]</span> Isolando <span
+class="math inline">\(p_2\:\mathrm{de}\:3p_2=1:\quad
+p_2=\frac{1}{3}\)</span> e substituindo <span
+class="math inline">\(p_2=\frac{1}{3}\)</span></p>
 <p><span class="math display">\[
 \begin{bmatrix}
 4\cdot \frac{1}{3}-4p_3=0
@@ -714,11 +953,14 @@ p_1+p_2+p_3=1
 \frac{4}{3}-4p_3=0
 \end{bmatrix}
 \]</span></p>
-<p>Isolando <span class="math inline">\(p_3\:\mathrm{de}\:\frac{4}{3}-4p_3=0:\quad p_3=\frac{1}{3}\)</span></p>
+<p>Isolando <span
+class="math inline">\(p_3\:\mathrm{de}\:\frac{4}{3}-4p_3=0:\quad
+p_3=\frac{1}{3}\)</span></p>
 <p><span class="math display">\[
 \frac{4}{3}-4p_3=0
 \]</span></p>
-<p>Subtrair <span class="math inline">\(\frac{4}{3}\)</span> de ambos os lados</p>
+<p>Subtrair <span class="math inline">\(\frac{4}{3}\)</span> de ambos os
+lados</p>
 <p><span class="math display">\[
 \frac{4}{3}-4p_3-\frac{4}{3}=0-\frac{4}{3}
 \]</span></p>
@@ -733,7 +975,9 @@ p_1+p_2+p_3=1
 <p><span class="math display">\[
 p_3=\frac{1}{3}
 \]</span></p>
-<p>e para <span class="math inline">\(p_1=-p_3+2p_2\)</span> e substituindo <span class="math inline">\(p_3=\frac{1}{3},\:p_2=\frac{1}{3}\)</span></p>
+<p>e para <span class="math inline">\(p_1=-p_3+2p_2\)</span> e
+substituindo <span
+class="math inline">\(p_3=\frac{1}{3},\:p_2=\frac{1}{3}\)</span></p>
 <p><span class="math display">\[
 p_1=-\frac{1}{3}+2\cdot \frac{1}{3}
 \]</span></p>
@@ -747,18 +991,22 @@ p_1=\frac{1}{3}
 <p><span class="math display">\[
 p_1=\frac{1}{3},\:p_3=\frac{1}{3},\:p_2=\frac{1}{3}
 \]</span></p>
-<p>Conforme o processo de Markov, podemos projetar que a longo prazo, 33,33% das ações sobem, outros 33,33% se mantém e outros 33,33% baixam de preço.</p>
+<p>Conforme o processo de Markov, podemos projetar que a longo prazo,
+33,33% das ações sobem, outros 33,33% se mantém e outros 33,33% baixam
+de preço.</p>
 <hr />
 </div>
 </div>
 <div id="referências" class="section level1">
 <h1>Referências</h1>
-<p>Weber, J.,E. <strong>Matemática para Economia e Administração</strong>. 2a ed. Harbra, São Paulo, 1986.</p>
+<p>Weber, J.,E. <strong>Matemática para Economia e
+Administração</strong>. 2a ed. Harbra, São Paulo, 1986.</p>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>sistema de equações lineares<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>sistema de equações lineares<a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
@@ -773,7 +1021,7 @@ p_1=\frac{1}{3},\:p_3=\frac{1}{3},\:p_2=\frac{1}{3}
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
@@ -791,7 +1039,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
@@ -800,6 +1048,9 @@ $(document).ready(function () {
 
 <script>
 $(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
 
     // move toc-ignore selectors from section div to header
     $('div.section.toc-ignore')

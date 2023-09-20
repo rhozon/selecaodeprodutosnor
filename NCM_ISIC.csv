@@ -1,0 +1,3088 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br" xml:lang="pt-br">
+
+<head>
+    <meta charset="utf-8" />
+  <!-- Google Tag Manager -->
+  <script type="text">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NHZSKTD');</script>
+  <!-- End Google Tag Manager -->
+
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "url": "https://www.gov.br/mdic",
+            "logo": "https://www.gov.br/mdic/logo.png"
+        }</script>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "url": "https://www.gov.br/mdic",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://www.gov.br/mdic/search?SearchableText={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+        }</script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    
+        <base href="https://www.gov.br/mdic/pt-br/mdic/" /><!--[if lt IE 7]></base><![endif]-->
+    
+
+    
+        <meta property="og:title" content="MDIC" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.gov.br/mdic/pt-br/mdic" />
+<meta property="og:image" content="https://www.gov.br/mdic/logo.png" />
+
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:site_name" content="Ministério do Desenvolvimento, Indústria, Comércio e Serviços" />
+
+
+  
+
+  
+  
+  <script type="text">
+    (function() {
+        var po = document.createElement('script');
+        po.async = true;
+        po.src = document.location.protocol + '//connect.facebook.net/pt_BR/all.js#xfbml=1';
+        var head = document.getElementsByTagName('head')[0];
+        head.appendChild(po);
+    }());
+    </script>
+
+
+
+  
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@" />
+  
+
+
+
+
+
+<meta property="creator.productor" content="https://www.gov.br/pt-br" />
+
+
+
+  
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/reset-cachekey-2357f072337dac75061e95fb0af9d3cb.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/base-cachekey-1facea2cc891a0e98496bab08f62f850.css" />
+    <style type="text/css" media="screen">@import url(https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourceplone.app.jquerytools.dateinput-cachekey-4dc24425d6492b56ce31db52cf02808f.css);</style>
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourceplone.formwidget.datetimestyles-cachekey-c43fdcb7d20c2c6182ff4bf0ee5a8a2e.css" />
+    <style type="text/css" media="screen">@import url(https://www.gov.br/mdic/portal_css/Sunburst%20Theme/jquery.autocomplete-cachekey-8d20cb8427f8896d5a014f1fa59a8e39.css);</style>
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/embedder-cachekey-402b59372ae804fed28f9b4d73ed6147.css" media="screen" />
+    <style type="text/css" media="screen">@import url(https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourcecollective.pollscsscollective.polls-cachekey-1ce7920fa55f43b07d03ea5ea602b809.css);</style>
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/ploneCustom-cachekey-b73dada63501b7e31c9fdba570a92cc7.css" />
+        <!--[if lt IE 8]>    
+    
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/IEFixes-cachekey-e147a7ee957d9fc0db0d422eb9cc08bd.css" media="screen" />
+        <![endif]-->
+    
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourcelgpd.plugindsgov.min-cachekey-f5b5aa4f21b1971cb915c37952121ab4.css" media="screen" />
+    <style type="text/css" media="all">@import url(https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourcepas.plugins.loginunicologinunico-cachekey-f85cef42f8618b4dca08542ff841fec8.css);</style>
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/css/swiper.min.css" media="screen" />
+    <style type="text/css" media="screen">@import url(https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourcecollective.nitfstyles-cachekey-359b89f0910b870e2de41fd8b4caa319.css);</style>
+    <link rel="stylesheet" type="text/css" href="https://www.gov.br/mdic/portal_css/Sunburst%20Theme/resourcegovbr.policycanais-cachekey-7abd6b6a1939cf7e0f62f4ea13035457.css" media="screen" />
+
+  
+  
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/++resource++govbr.recomendacao/govbr.recom.9e3eea160cd9e43452ac.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourceplone.app.jquery-cachekey-0b3d938e3465cf37d688887880eec836.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcegovbr.policyfolder_contents-cachekey-38af46a2b0bc1798e7635b3675c21d08.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcegovbr.policycookiebar_1_3_55-cachekey-05e8b1475b6dad0ca5f3b4f74316e785.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcegovbr.policyapplication_cookiebar_1_3_55-cachekey-2a4c9dd9cbd0aa5d0edfab7a59a9fdab.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/collective.js.jqueryui.custom.min-cachekey-2b9fb8841ee3ffb5a62f5c06ae9c83d7.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourceplone.formwidget.recurrencejquery.tmpl-beta1-cachekey-7477d22fd5bfa8b786a47c39670571fa.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcecollective.js.bootstrapjsbootstrap.min-cachekey-2398f2a0133a55f48fdbc8a37bf6a053.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcecollective.coverjsmain-cachekey-dbfa33cf5b4ce884a02ade42bc2296f9.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcebrasil.gov.tilesvendorjquery.jplayer.min-cachekey-a49c5b964a2541872ea0f6ab93a5e695.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcedropdown-menu-cachekey-46f27bee49ed730553cb965f019fdee7.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Swiper/3.4.2/js/swiper.min.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcelgpd.pluginchangeCookieImage-cachekey-8e53f9b6e86377c5459e9b2aa7e5a6d0.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcelgpd.pluginblock_cookies-cachekey-34d49a41a1548c26aa5663a71b5a21b6.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/resourcegovbr.policyclipboard.min-cachekey-6fe735e1844562859be0dd8e561fb3b7.js"></script>
+    <script type="text/javascript" src="https://www.gov.br/mdic/portal_javascripts/Sunburst%20Theme/themegovbr.institucionaljslistar_autoridades_eagenda-cachekey-0f0e1afa254ea26a9a4b27eb17962065.js"></script>
+
+
+
+  <link rel="stylesheet" href="https://www.gov.br/mdic/++resource++brasil.gov.agenda/brasilgovagenda-720c34e.css" />
+
+
+  <script defer="defer" src="https://www.gov.br/mdic/++resource++brasil.gov.agenda/brasilgovagenda-720c34e.js"></script>
+
+
+
+  <link rel="stylesheet" href="https://www.gov.br/mdic/++resource++brasil.gov.portal/brasilgovportal-ee510e4.css" />
+
+
+  <script defer="defer" src="https://www.gov.br/mdic/++resource++brasil.gov.portal/brasilgovportal-ee510e4.js"></script>
+
+
+
+  <link rel="stylesheet" href="https://www.gov.br/mdic/++resource++brasil.gov.tiles/brasilgovtiles-7d5753d.css" />
+
+
+  <script defer="defer" src="https://www.gov.br/mdic/++resource++brasil.gov.tiles/brasilgovtiles-7d5753d.js"></script>
+
+
+
+<title>MDIC — Ministério do Desenvolvimento, Indústria, Comércio e Serviços</title>
+<link rel="http://purl.org/dc/terms/subject http://schema.org/about http://xmlns.com/foaf/0.1/primaryTopic" href="http://vocab.e.gov.br/2011/03/vcge#esquema" />
+        
+    <link rel="author" href="https://www.gov.br/mdic/pt-br" title="Informações do Autor" />
+
+    <link rel="canonical" href="https://www.gov.br/mdic/pt-br" />
+
+    
+    
+
+
+<script type="text/javascript">
+        jQuery(function($){
+            if (typeof($.datepicker) != "undefined"){
+              $.datepicker.setDefaults(
+                jQuery.extend($.datepicker.regional['pt-BR'],
+                {dateFormat: 'dd/mm/yy'}));
+            }
+        });
+        </script>
+
+
+
+
+    <link rel="search" href="https://www.gov.br/mdic/pt-br/@@search" title="Buscar neste site" />
+
+
+
+        
+        
+        
+  
+
+        
+        
+
+        
+        <meta name="generator" content="Plone - http://plone.org" />
+    
+
+    
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/mdic/++theme++padrao_govbr/favicons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/mdic/++theme++padrao_govbr/favicons/favicon-32x32.png" />
+    <link rel="shortcut icon" type="image/png" href="/mdic/++theme++padrao_govbr/favicons/favicon-48x48.png" />
+    <link rel="mask-icon" href="/mdic/++theme++padrao_govbr/favicons/safari-pinned-tab.svg" color="#00a300" />
+    <meta name="msapplication-config" content="favicons/browserconfig.xml" />
+    <meta name="theme-color" content="#00a300" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css" crossorigin="anonymous" />
+    <style>
+        body.userrole-authenticated .btn.btn-success.fileinput-button span:after {
+            content: "Adicionar Arquivos" !important;
+        }
+    </style>
+    <script type="module" id="sso-status-bar-js" src="/cdn/sso-status-bar/src/js/sso-status-bar.js"></script>
+<link href="/mdic/++theme++padrao_govbr/govbrtheme-2a3d2b2.css" rel="stylesheet" /></head>
+
+<body id="" class="default-header-template portal-institucional cover-layout-layout-vazio template-view portaltype-collective-cover-content site-pt-br section-mdic userrole-anonymous" data-base-url="https://www.gov.br/mdic/pt-br/mdic" data-portal-url="https://www.gov.br/mdic" dir="ltr">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe height="0" width="0" style="display:none;visibility:hidden" data-src="https://www.googletagmanager.com/ns.html?id=GTM-NHZSKTD"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <nav class="govbr-skip-menu" aria-label="Acesso rápido">
+    <a href="#wrapper" accesskey="1">
+      <span class="sr-only">Ir para o</span>
+      Conteúdo
+      <span class="access-key">1</span>
+    </a>
+    <a href="/" accesskey="2">
+      <span class="sr-only">Ir para a</span>
+      Página Inicial
+      <span class="access-key">2</span>
+    </a>
+    <a href="#main-navigation" accesskey="3">
+      <span class="sr-only">Ir para o menu de</span>
+      Navegação
+      <span class="access-key">3</span>
+    </a>
+    <a href="#govbr-busca-input" accesskey="4">
+      <span class="sr-only">Ir para a</span>
+      Busca
+      <span class="access-key">4</span>
+    </a>
+    <a href="#portal-footer" accesskey="5">
+      <span class="sr-only">Ir para o</span>
+      Mapa do site
+      <span class="access-key">5</span>
+    </a>
+  </nav>
+
+  <noscript aria-label="Aviso de Javascript desabilitado">
+    <dl class="portalMessage attention erro-javascript">
+      <dt>Atenção!</dt>
+      <dd>Seu navegador não pode executar javascript. Alguns recursos podem não funcionar corretamente.</dd>
+    </dl>
+  </noscript>
+<div id="barra-identidade">
+    <div id="barra-brasil" style="background:#7F7F7F; height: 20px; padding:0 0 0 10px;display:block;">
+            
+    </div>
+</div><!-- modal session message --><!-- User --><!-- Header --><!--
+    Para habilitar o novo menu &#233; necess&#225;rio descoment&#225;-lo em:
+    govbr/institucional/viewlets/institucional_menu_govbr.pt
+    --><!-- <header id="site-header" class="has-navigation-swipe"> --><header id="site-header" class="has-navigation-dropdown">
+        <div class="header-wrapper secondary">
+            <div class="portal-name">
+                <a href="https://www.gov.br/pt-br" class="portal-logo">
+                    <span class="sr-only">Portal Gov.br</span>
+                </a>
+                
+            </div>
+
+            
+
+        </div>
+
+        <div class="main">
+            <div class="header-wrapper">
+                <div class="site-name-wrapper">
+                    <a class="ico-navegacao toggle-main-navigation" href="#">
+                        <span class="sr-only">Abrir menu principal de navegação</span>
+                        <span class="fa fa-bars" aria-hidden="true"></span>
+                        <span class="fa fa-times" aria-hidden="true"></span>
+                    </a>
+
+                    <!-- <a href="/" class="site-name">Nome do site</a> -->
+                    <!-- Usar nome completo -->
+                    <h1 class="site-name">
+                        <a href="https://www.gov.br/mdic/pt-br">Ministério do Desenvolvimento, Indústria, Comércio e Serviços</a>
+                    </h1>
+                    
+                </div>
+
+                <div class="govbr-busca-header">
+                    <div id="govbr-busca-input"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Menu -->
+        <nav class="navigation-wrapper navigation-dropdown" aria-label="Menu Principal">
+            <div class="navigation-content">
+                <div id="main-navigation" class="navigation-cell">
+                    <ul class="list-navigation"><li id="portaltab-govbr-root" class="plain dropdown-submenu menu-govbr-root">
+            <a class="plain" href="https://www.gov.br/mdic/pt-br/mdic">
+                <span>GOV.BR</span>
+            </a>
+            <!-- Menu nivel1 -->
+            <ul class="submenu navTree">
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/servicos" class="hasDropDown">Serviços</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="dropdown-submenu">
+                <a href="https://www.gov.br/pt-br/servicos/buscar-servicos-por">Buscar serviços por</a>
+                
+                    
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/categorias">Categorias</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_orgaos">Órgãos</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos-estaduais">Estados</a>
+                
+            </li>
+        
+    </ul>
+
+                
+            </li>
+        
+            <li class="dropdown-submenu">
+                <a href="https://www.gov.br/pt-br/servicos/servicos-por-publico-alvo">Serviços por público alvo</a>
+                
+                    
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_cidadaos">Cidadãos</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_empresas">Empresas</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_orgaos">Órgãos e Entidades Públicas</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_outros">Demais segmentos (ONGs, organizações sociais, etc)</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/servicos/listar_servicos_segmento?segmento=publico_alvo_servidor">Servidor Público</a>
+                
+            </li>
+        
+    </ul>
+
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/temas-em-destaque" class="hasDropDown">Temas em Destaque</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/transparencia-fiscal-orcamento-nacional">Orçamento Nacional</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/redes-civis-de-unidades-de-atendimento-do-governo-federal">Redes de Atendimento do Governo Federal</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/protecao-de-dados-pessoais">Proteção de Dados Pessoais</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/servicos-para-imigrantes">Serviços para Imigrantes</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/politica-e-orcamento-educacional">Política e Orçamento Educacionais</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/bolsas-de-estudos-e-financiamentos-estudantis">Bolsas de Estudo e Financiamentos Estudantis</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/educacao-profissional-e-tecnologica-1">Educação Profissional e Tecnológica</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/habilidades-online-para-jovens-e-adultos">Educação Profissional para Jovens e Adultos</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/trabalho-emprego">Trabalho e Emprego</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/acesso-a-educacao-para-pessoas-com-deficiencia">Serviços para Pessoas com Deficiência</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/politica-e-legislacao-contra-a-discriminacao-racial">Combate à Discriminação Racial</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/politica-e-orcamento-de-protecao-social">Política de Proteção Social</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/politica-para-mulheres">Política para Mulheres</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/saude-reprodutiva-da-mulher">Saúde Reprodutiva da Mulher</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/desenvolvimento-cuidados-e-educacao-pre-escolar">Cuidados na Primeira Infância</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/habitacao-popular">Habitação Popular</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/temas/controle-da-poluicao-e-outras-medidas-de-precaucao">Controle de Poluição e Resíduos Sólidos</a>
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/noticias" class="hasDropDown">Notícias</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/servicos-para-o-cidadao">Serviços para o cidadão</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/saude-e-vigilancia-sanitaria">Saúde</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/agricultura-e-pecuaria">Agricultura e Pecuária</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/assistencia-social">Cidadania e Assistência Social</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/ciencia-e-tecnologia">Ciência e Tecnologia</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/comunicacao">Comunicação</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/cultura-artes-historia-e-esportes">Cultura e Esporte</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/financas-impostos-e-gestao-publica">Economia e Gestão Pública</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/educacao-e-pesquisa">Educação e Pesquisa</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/energia-minerais-e-combustiveis">Energia</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/forcas-armadas">Forças Armadas e Defesa Civil</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/transito-e-transportes">Infraestrutura</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/justica-e-seguranca">Justiça e Segurança</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/meio-ambiente-e-clima">Meio Ambiente</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/trabalho-e-previdencia">Trabalho e Previdência</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/noticias/viagens-e-turismo">Turismo</a>
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos" class="hasDropDown">Galeria de Aplicativos</a>
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="/planalto" class="hasDropDown">Acompanhe o Planalto</a>
+                        
+                    </li>
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/navegacao" class="hasDropDown">Navegação</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/governodigital/pt-br/acessibilidade-digital">Acessibilidade</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/sitemap">Mapa do Site</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="/pt-br/termos-de-uso">Termo de Uso e Aviso de Privacidade</a>
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="http://solicitacao.servicos.gov.br/" class="hasDropDown">Acesse sua conta gov.br</a>
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="https://www.gov.br/pt-br/orgaos-do-governo" class="hasDropDown">Órgãos do Governo</a>
+                        
+                    </li>
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/por-dentro-do-govbr" class="hasDropDown">Por dentro do Gov.br</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/por-dentro-do-govbr/perguntas-frequentes">Dúvidas Frequentes em relação ao Portal gov.br</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="http://faq-login-unico.servicos.gov.br/en/latest/">Dúvidas Frequentes da conta gov.br</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/por-dentro-do-govbr/ajuda-para-navegar-o-portal">Ajuda para Navegar o Portal</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/por-dentro-do-govbr/conheca-os-elementos-do-portal">Conheça os elementos do Portal</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/participamaisbrasil/sobre">Política de e-participação</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="/pt-br/termos-de-uso">Termos de Uso</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/governodigital/pt-br">Governo Digital</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="https://www.gov.br/pt-br/guia-de-edicao-de-servicos-do-gov.br/bem-vindo-editor">Guia de Edição de Serviços do Portal Gov.br</a>
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="dropdown-submenu">
+                        <a href="https://www.gov.br/pt-br/dados-do-governo-federal" class="hasDropDown">Dados do Governo Federal</a>
+                        
+                            
+    <ul class="submenu navTree">
+        
+            <li class="plain">
+                <a href="/governodigital/pt-br/dados-abertos">Dados Abertos</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="/economia/pt-br/acesso-a-informacao/servidores/servidores-publicos/painel-estatistico-de-pessoal">Painel Estatístico de Pessoal</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="http://paineldecompras.economia.gov.br">Painel de Compras do Governo Federal</a>
+                
+            </li>
+        
+            <li class="plain">
+                <a href="/acessoainformacao/pt-br">Acesso à Informação</a>
+                
+            </li>
+        
+    </ul>
+
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="https://www.gov.br/empresas-e-negocios/pt-br" class="hasDropDown">Empresas e Negócios</a>
+                        
+                    </li>
+                
+                    <li class="plain">
+                        <a href="https://www.gov.br/fazenda/pt-br/canais_atendimento/ouvidoria/simplifique/simplifique" class="hasDropDown">Simplifique!</a>
+                        
+                    </li>
+                
+            </ul>
+        </li></ul>
+                </div>
+            </div>
+
+            <div class="navigation-content-extra">
+                <div class="links-redes-wrap">
+            <div class="links-uteis">
+              <div class="titulo">Links Úteis</div>
+              <ul>
+                <!-- <li>
+                  <a href="#">Órgãos do Governo</a>
+                </li> -->
+                <li>
+                  <a href="https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos">Galeria de Aplicativos</a>
+                </li>
+                <li>
+                  <a href="https://www.gov.br/pt-br/participacao-social">Participe</a>
+                </li>
+              </ul>
+            </div>
+            <div class="header-accessibility">
+              <ul>
+                <!--li>
+                  <a
+                    href="https://www.gov.br/pt-br/orgaos-do-governo"
+                    class="orgaos-de-governo"
+                    i18n:translate="orgaos_do_governo"
+                    >Órgãos do Governo</a
+                  >
+                </li-->
+                <li>
+                  <a href="https://www.gov.br/pt-br/apps/@@galeria-de-aplicativos">Galeria de Aplicativos</a>
+                </li>
+                <!--li>
+                  <a href="http://www4.planalto.gov.br/legislacao" i18n:translate="legislacao"
+                    >Legislação</a
+                  >
+                </li>
+                <li>
+                  <a href="https://www.gov.br/acessoainformacao/pt-br" i18n:translate="acesso_a_informacao"
+                    >Acesso à Informação</a
+                  >
+                </li-->
+                <li>
+                  <a href="https://www.gov.br/pt-br/participacao-social">Participe</a>
+                </li>
+              </ul>
+            </div>
+          
+                    <div class="redes-sociais">
+                        <div class="titulo">Redes sociais</div>
+                    <ul class="portal-redes">
+            
+                <li class="portalredes-twitter portalredes-item">
+                    <a href="https://www.twitter.com/MDICoficial">Twitter</a>
+                </li>
+            
+                <li class="portalredes-youtube portalredes-item">
+                    <a href="https://www.youtube.com/@MDICoficial">YouTube</a>
+                </li>
+            
+                <li class="portalredes-facebook portalredes-item">
+                    <a href="https://www.facebook.com/MDICoficial">Facebook</a>
+                </li>
+            
+                <li class="portalredes-flickr portalredes-item">
+                    <a href="https://www.flickr.com/mdicgovbr">Flickr</a>
+                </li>
+            
+                <li class="portalredes-instagram portalredes-item">
+                    <a href="https://www.instagram.com/mdicoficial">Instagram</a>
+                </li>
+            
+        </ul></div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Menu -->
+        
+    </header><div id="portal-breadcrumbs-wrapper">
+        
+    </div><!-- <div class="video"></div> --><div id="wrapper">
+        <!-- Columns -->
+
+        <div id="main">
+            
+
+            <div class="viewlet-institucionais-servicos-govbr linha-recom">
+
+    <script type="text/javascript">window.mais_acessados=["10966","10418","10445","10666","60","10690"];</script>
+
+    <script type="text/javascript">window.destaques=["10976","976","985","10189","10796"];</script>
+
+    <script type="text/javascript">window.quantidade_servicos_destaque="5";</script>
+
+    <script type="text/javascript">window.quantidade_mais_acessados="6";</script>
+
+    <div class="desktop">
+        <div class="row links-destaque-desktop headerDestaquesSwiper">
+            <div class="row-content">
+                <div class="column col-md-4">
+                    <a class="desktop-toggle-btn tile-name recomendado" href="#" data-slider="0">Serviços recomendados para você</a>
+                </div>
+
+                <div class="column col-md-4">
+                    <a class="desktop-toggle-btn tile-name mais-acessados" href="#" data-slider="1">Serviços mais acessados do govbr</a>
+                </div>
+
+                <div class="column col-md-4">
+                    <a class="desktop-toggle-btn tile-name destaque" href="#" data-slider="2">Serviços em destaque do govbr</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="swiper-container headerDestaquesSwiper swiper-mobile-recom">
+        <div class="swiper-wrapper">            
+            <a class="tile-name swiper-slide mobile-recom-toggle-btn recomendado" href="#" data-slider="0">Serviços recomendados para você</a>
+            <a class="tile-name swiper-slide mobile-recom-toggle-btn mais-acessados" href="#" data-slider="1">Serviços mais acessados do govbr</a>
+            <a class="tile-name swiper-slide mobile-recom-toggle-btn destaque" href="#" data-slider="2">Serviços em destaque do govbr</a>
+            <div class="swiper-slide fillin"></div>
+        </div>
+    </div>
+    
+    <div class="swiper-container headerDestaquesSwiper swiper-mobile-no-recom">
+        <div class="swiper-wrapper">                
+            <a class="tile-name swiper-slide mobile-no-recom-toggle-btn mais-acessados" href="#" data-slider="1">Serviços mais acessados do govbr</a>
+            <a class="tile-name swiper-slide mobile-no-recom-toggle-btn destaque" href="#" data-slider="2">Serviços em destaque do govbr</a>
+        </div>
+    </div>    
+
+    <div class="row linha-recom swiper-container destaquesSwiper">
+        <div class="row-content swiper-wrapper">
+            <div class="column col-md-4 swiper-slide govbr-recom-wrapper">
+                <div class="tile tile-default">
+                    <div class="govbr-recom-render" data-recom-title="Serviços recomendados para você" data-recom-size="6">
+                        <div class="header-mobile"><span>Serviços recomendados para você</span></div>
+                        <div class="govbr-recom-api" data-recom-uri="https://api.recomgov.df-1.estaleiro.serpro.gov.br/api/v1" data-recom-url-portal="https://www.gov.br" data-recom-timeout="3000">
+                        </div>
+
+                    </div>  
+                </div>
+            </div>
+
+            <div class="column col-md-4 swiper-slide">
+                <div class="tile tile-default">
+                    <div class="cover-list-tile tile-content servicos-mais-acessados">
+                        <div class="tile-header header-mobile">
+                            <span>Serviços mais acessados do govbr</span>
+                        </div>
+                        <div class="itens">
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/consultar-restituicao-de-imposto-de-renda">
+                                    <span class="ranking">1</span>
+                                    <span class="texto">Consultar restituição do imposto de renda</span>
+                                </a>
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/consultar-cadastro-de-pessoas-fisicas">
+                                    <span class="ranking">2</span>
+                                    <span class="texto">Consultar CPF</span>
+                                </a>
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/emitir-certidao-de-regularidade-fiscal">
+                                    <span class="ranking">3</span>
+                                    <span class="texto">Emitir certidão de regularidade fiscal</span>
+                                </a>
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/consultar-cadastro-nacional-de-pessoas-juridicas">
+                                    <span class="ranking">4</span>
+                                    <span class="texto">Consultar CNPJ</span>
+                                </a>
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/obter-a-carteira-de-trabalho">
+                                    <span class="ranking">5</span>
+                                    <span class="texto">Obter a Carteira de Trabalho</span>
+                                </a>
+                            
+                                <a class="item-tile-servico-mais-acessados" href="https://www.gov.br/pt-br/servicos/consultar-dividas-e-pendencias-fiscais">
+                                    <span class="ranking">6</span>
+                                    <span class="texto">Consultar dívidas e pendências fiscais</span>
+                                </a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>                
+
+            <div class="column col-md-4 swiper-slide">
+                <div class="tile tile-default">
+                    <div class="cover-list-tile tile-content servicos-em-destaque-govbr">
+                        <div class="tile-header header-mobile">
+                            <span>Serviços em destaque do govbr</span>
+                        </div>
+
+                        <div class="itens">
+                            
+                                <a class="item-tile-servico-destaque" href="https://www.gov.br/pt-br/servicos/inscrever-ou-atualizar-cadastro-nacional-de-pessoas-juridicas">
+                                    <span class="categoria-container">
+                                        <span class="categoria">Pessoa Jurídica (CNPJ)</span>
+                                        
+                                    </span>
+                                    <span class="texto">Inscrever ou atualizar CNPJ</span>
+                                    
+                                </a>
+                            
+                                <a class="item-tile-servico-destaque" href="https://www.gov.br/pt-br/servicos/receber-tecnologia-social-de-acesso-a-agua-para-consumo-familiar">
+                                    <span class="categoria-container">
+                                        <span class="categoria">Acesso à Àgua</span>
+                                        
+                                    </span>
+                                    <span class="texto">Programa Cisternas</span>
+                                    
+                                </a>
+                            
+                                <a class="item-tile-servico-destaque" href="https://www.gov.br/pt-br/servicos/solicitar-bolsa-podio">
+                                    <span class="categoria-container">
+                                        <span class="categoria">Esportes</span>
+                                        
+                                    </span>
+                                    <span class="texto">Bolsa Atleta</span>
+                                    
+                                </a>
+                            
+                                <a class="item-tile-servico-destaque" href="https://www.gov.br/pt-br/servicos/criar-sua-conta-gov.br">
+                                    <span class="categoria-container">
+                                        <span class="categoria">Inclusão Digital</span>
+                                        
+                                    </span>
+                                    <span class="texto">Criar sua conta gov.br</span>
+                                    
+                                </a>
+                            
+                                <a class="item-tile-servico-destaque" href="https://www.gov.br/pt-br/servicos/assinatura-eletronica">
+                                    <span class="categoria-container">
+                                        <span class="categoria">Inclusão Digital</span>
+                                        <span class="badge novo">Novo</span>
+                                    </span>
+                                    <span class="texto">Assinatura Eletrônica</span>
+                                    
+                                </a>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="swiper-pagination-destaques"></div>
+
+        <nav class="close-btn desktop-close-btn">
+            <a href="#">
+                <span class="fa fa-chevron-up">
+                    <span class="sr-only">Fechar</span>
+                </span>
+            </a>
+        </nav>
+
+        <nav class="close-btn mobile-close-btn">
+            <a href="#">
+                <span class="fa fa-chevron-up">
+                    <span class="sr-only">Fechar</span>
+                </span>            
+            </a>
+        </nav>
+
+        <nav class="close-btn mobile-close-btn-no-recom">
+            <a href="#">
+                <span class="fa fa-chevron-up">
+                    <span class="sr-only">Fechar</span>
+                </span>
+            </a>
+        </nav>
+
+        <div class="linha-no-recom-btn-close-mobile"></div>
+        <div class="linha-recom-btn-close-mobile"></div>
+    </div>
+</div><main id="main-content">
+
+            <div id="viewlet-above-content">
+
+
+
+
+
+<div id="viewlet-tileshare" data-title-fb="Compartilhar no Facebook (abre em nova janela)" data-title-twitter="Tweet (abre em nova janela)" data-title-linkedin="Compartilhar no Linkedin  (abre em nova janela)" data-title-gplus="Compartilhar no Google+  (abre em nova janela)" data-title-link="Copiar para área de transferência" data-title-more="Mais opções">
+</div>
+
+
+
+    
+</div>
+
+            
+                <div class="">
+
+                    
+
+                    
+
+    <dl class="portalMessage info" id="kssPortalMessage" style="display:none">
+        <dt>Info</dt>
+        <dd></dd>
+    </dl>
+
+    
+
+
+                    
+                        <div id="content">
+
+                            
+
+                            
+    
+    
+        
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-4 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="f8579023-9f1a-4485-aa8a-0da9c39fa9b3">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+
+      
+
+      
+        <a class="imag" href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/governo-antecipa-fim-da-reducao-da-tarifa-de-importacao-de-12-produtos-de-aco" title="Gecex excluiu os itens da siderurgia de Resolução Gecex, de 2022, que reduziu 10% do imposto de importação;  medida visa tornar o aço brasileiro mais competitivo no mercado interno">
+          <img src="https://www.gov.br/mdic/pt-br/mdic/@@govbr.institucional.tile.nitf/f8579023-9f1a-4485-aa8a-0da9c39fa9b3/@@images/7dff1c47-95e5-4942-80be-111b169c0755.jpeg" width="1620" height="1080" class="" alt="Governo antecipa fim da redução da tarifa de importação de aço" />
+        </a>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">GECEX</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/governo-antecipa-fim-da-reducao-da-tarifa-de-importacao-de-12-produtos-de-aco">Governo antecipa fim da redução da tarifa de importação de aço</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-4 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="e647ef4b-62cc-47cb-a8f6-9de5464626f3">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+
+      
+
+      
+        <a class="imag" href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/alckmin-reune-ministros-para-definir-medidas-de-incentivo-ao-setor-de-leite" title="Grupo de trabalho interministerial vai estabelecer ações para aumentar a produtividade da cadeia do leite e gerar renda para os produtores">
+          <img src="https://www.gov.br/mdic/pt-br/mdic/@@govbr.institucional.tile.nitf/e647ef4b-62cc-47cb-a8f6-9de5464626f3/@@images/593bff61-a216-4ae4-a23f-c795b61e1101.jpeg" width="799" height="533" class="" alt="Alckmin reúne ministros para definir medidas de incentivo ao setor de leite" />
+        </a>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">INDÚSTRIA NACIONAL</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/alckmin-reune-ministros-para-definir-medidas-de-incentivo-ao-setor-de-leite">Alckmin reúne ministros para definir medidas de incentivo ao setor de leite</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-4 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="e5b24c0a-68da-4baa-b7b1-d8ff47a054dd">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+
+      
+
+      
+        <a class="imag" href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/comite-realiza-primeira-reuniao-e-cria-gtt-para-atualizar-politica-nacional-sobre-mudanca-do-clima" title="Em reunião conduzida pelo ministro Rui Costa, o vice-presidente destacou o comprometimento do Brasil com a descarbonização e o combate ao aquecimento global">
+          <img src="https://www.gov.br/mdic/pt-br/mdic/@@govbr.institucional.tile.nitf/e5b24c0a-68da-4baa-b7b1-d8ff47a054dd/@@images/25c2e2b2-395a-439e-8ec8-931082dcef53.jpeg" width="799" height="533" class="" alt="Comitê realiza primeira reunião e cria grupo para atualizar Política Nacional" />
+        </a>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">ECONOMIA VERDE</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/comite-realiza-primeira-reuniao-e-cria-gtt-para-atualizar-politica-nacional-sobre-mudanca-do-clima">Comitê realiza primeira reunião e cria grupo para atualizar Política Nacional</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="d0258733-5a7c-4b7c-9136-2e797cbaca79">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">CONFAC</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/comite-aprova-novo-plano-de-trabalho-para-facilitacao-do-comercio-exterior">Comitê aprova novo plano de trabalho para facilitação do comércio exterior</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="ec3f6665-a2e2-4b0c-8eac-ad30f43c58a9">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">COMÉRCIO JUSTO</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/portaria-da-mais-transparencia-a-acoes-de-combate-a-fraudes-no-comercio-exterior">Portaria dá mais transparência a ações de combate a fraudes no comércio exterior</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="dc312e46-da60-4110-9b98-63b7eafe5b72">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">ECONOMIA</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/alckmin-brasil-vive-bom-momento-e-tem-grandes-oportunidades-para-atrair-investimentos-com-o-novo-pac">Alckmin: Brasil vive bom momento e tem grandes oportunidades para atrair investimentos com o novo PAC</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="ccdfbd98-7cfd-451d-8607-c42a3f6c4e1b">
+                        
+  
+  <div class="nitf-basic-tile tile-content">
+    
+      
+
+      
+
+      
+        <p class="tile-subtitle">CONSULTA PÚBLICA</p>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+        <h2><a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/2023/setembro/mdic-lanca-tres-consultas-publicas-sobre-processos-produtivos-basicos">MDIC lança três consultas públicas sobre Processos Produtivos Básicos</a></h2>
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+    
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-2 " data-panel="">
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-8 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="ca353616-f7c6-4071-90b6-d05bd2826c1a">
+                        
+  
+
+  <div class="cover-banner-tile tile-content">
+
+    
+        <a href="https://www.gov.br/mdic/pt-br/assuntos/noticias/informes/conselho-nacional-de-desenvolvimento-industrial-cndi/boletim-mensal-do-cndi-edicao-1-setembro-de-2023">
+          <img src="https://www.gov.br/mdic/pt-br/mdic/@@govbr.institucional.banner/ca353616-f7c6-4071-90b6-d05bd2826c1a/@@images/563e7cc1-a388-4860-8bb1-57641d94f9cb.jpeg" width="1600" height="322" alt="" />
+        </a>
+    
+
+    
+
+    <div class="visualClear"><!-- --></div>
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-2 " data-panel="">
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="a9d44034-3948-43bd-91d8-097af8c3c0db">
+                        
+
+    <div class="outstanding-header tile-content">
+    
+
+      
+
+          <a class="outstanding-link" href="https://www.gov.br/mdic/pt-br/noticias">Ver todas as notícias</a>
+
+      
+
+      
+
+        
+
+      
+
+      
+    
+
+      
+
+      
+
+        
+
+      
+
+      
+    
+
+    </div>
+
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="e1fb720b-f2d6-4fcb-a154-75b33a00674e">
+                        
+
+    <div class="outstanding-header tile-content">
+    
+
+      
+
+          <a class="outstanding-link" href="https://www.gov.br/mdic/pt-br/composicao/quem-e-quem">Quem é Quem</a>
+
+      
+
+      
+
+        
+
+      
+
+      
+    
+
+      
+
+      
+
+        
+
+      
+
+      
+    
+
+    </div>
+
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-12 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="e4c7a6d5-05fd-475d-b902-7cbc05f01f33">
+                        
+
+    <div class="outstanding-header tile-content">
+    
+
+    </div>
+
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="cb7a7bb1-c38f-4c26-85cc-de76a9b9cdaa">
+                        
+
+    <div class="outstanding-header tile-content">
+    
+
+      
+
+          <a class="outstanding-link" href="https://www.gov.br/mdic/pt-br/canais_atendimento/imprensa">IMPRENSA</a>
+
+      
+
+      
+
+      
+
+        
+
+      
+    
+
+      
+
+      
+
+      
+
+        
+
+      
+    
+
+      
+
+      
+
+      
+
+        
+
+      
+    
+
+    </div>
+
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="eb5dcf38-6f24-4810-891d-36918ccd8dc5">
+                        
+
+    <div class="outstanding-header tile-content">
+    
+
+    </div>
+
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-12 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="aac3a625-bb13-43ce-9352-ed732c6e8920">
+                        
+
+  <div class="cover-banner-eagenda-tile tile-content">
+        
+
+            
+
+            
+                <a href="https://eagendas.cgu.gov.br?filtro_codigo_orgao=308814&amp;filtro_tipo_cargo=cargo_comissao&amp;filtro_descricao_cargo=Ministro%28a%29%20do%20Desenvolvimento%2C%20Ind%C3%BAstria%2C%20Com%C3%A9rcio%20e%20Servi%C3%A7os&amp;filtro_nome_servidor=Geraldo%20Jos%C3%A9%20Rodrigues%20Alckmin%20Filho&amp;origem_request=govbr" target="_blank">
+                  <img src="https://www.gov.br/mdic/++theme++govbr.institucional/images/Banner_APO_Desktop.jpg" class="desktop left" alt="e-agendas" />
+                </a>
+            
+
+            
+
+            
+                <a href="https://eagendas.cgu.gov.br?filtro_codigo_orgao=308814&amp;filtro_tipo_cargo=cargo_comissao&amp;filtro_descricao_cargo=Ministro%28a%29%20do%20Desenvolvimento%2C%20Ind%C3%BAstria%2C%20Com%C3%A9rcio%20e%20Servi%C3%A7os&amp;filtro_nome_servidor=Geraldo%20Jos%C3%A9%20Rodrigues%20Alckmin%20Filho&amp;origem_request=govbr" target="_blank">
+                  <img src="https://www.gov.br/mdic/++theme++govbr.institucional/images/Banner_APO_Mobile.jpg" class="mobile left" alt="e-agendas" />
+                </a>
+            
+
+            
+        
+
+        
+
+    <div class="visualClear"><!-- --></div>
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row linha-discreta">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-12 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="c0b841a5-8b3b-47e5-9883-bd6ee080572e">
+                        
+        
+            <div class="tile-cards">
+                <h2 class="tile-header">Redes Sociais</h2>
+                
+                <div class="govbr-cards tile-content linha-cards-3c centralizar-cars">
+                    <div class="wrapper">
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://twitter.com/MDICoficial">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-twitter icone"></span>
+                                            
+                                        
+                                        <span class="titulo">Twitter</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://www.instagram.com/mdicoficial/">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-instagram icone"></span>
+                                            
+                                        
+                                        <span class="titulo">Instagram</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://www.youtube.com/@MDICoficial">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-youtube icone"></span>
+                                            
+                                        
+                                        <span class="titulo">YouTube</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://www.facebook.com/MDICoficial">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-facebook icone"></span>
+                                            
+                                        
+                                        <span class="titulo">Facebook</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://www.flickr.com/photos/mdicgovbr/">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-flickr icone"></span>
+                                            
+                                        
+                                        <span class="titulo">Flickr</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                            <div class="card great-cards">
+                                <a class="govbr-card-content" href="https://www.linkedin.com/company/mdic-oficial/">
+                                    <span class="front">
+                                        
+                                            <span aria-hidden="true" class="fab fa-linkedin icone"></span>
+                                            
+                                        
+                                        <span class="titulo">LinkedIn</span>
+                                    </span>
+                                    
+                                        
+                                    
+                                </a>
+                            </div>
+                        
+                    </div>
+                </div>
+                
+            </div>
+        
+        
+    
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="e32f6930-444d-44c5-9455-df894d44e198">
+                        
+  
+
+  <div class="cover-embed-tile tile-content">
+    
+      
+        <!-- FIXME -->
+        <a data-flickr-embed="true" href="https://www.flickr.com/photos/63210659@N05" title=""><img src="https://live.staticflickr.com/65535/53107613625_7b88e03aba_z.jpg" width="100%" height="350" alt="" /></a><script async="" src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-6 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="c44d70aa-c7c0-4cb2-8ef4-40e6459a3b21">
+                        
+  
+
+  <div class="cover-embed-tile tile-content">
+    
+      
+        <!-- FIXME -->
+        <div class="fb-page" data-href="https://www.facebook.com/MDICoficial" data-tabs="timeline" data-width="650" data-height="380" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="false"><blockquote cite="https://www.facebook.com/MDICoficial" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/MDICoficial">MDIC</a></blockquote></div>
+      
+
+      
+
+      
+
+      
+        <div class="visualClear"><!-- --></div>
+      
+    
+  </div>
+
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+                
+
+
+    
+
+        
+            
+            
+                <div class="row">
+                    <div class="row-content">
+
+                        
+                            
+    
+        
+            
+                
+                
+                    <div class="column col-md-12 " data-panel="">
+
+                        
+                            
+    
+        
+
+            
+                
+                    
+
+                    <div class="tile tile-default" id="f8ffb5bf-bf0d-412b-b701-c8444bbffeaa">
+                        
+        
+        <div class="canais-atendimento">
+
+            <div class="title">
+                Canais de atendimento
+            </div>
+            
+
+            <ul class="cards">
+                <li>
+                    <a href="https://falabr.cgu.gov.br/Login/Identificacao/Identificacao.aspx?idFormulario=4&amp;tipo=1&amp;ReturnUrl=%2fpublico%2fManifestacao%2fRegistrarManifestacao.aspx%3fidFormulario%3d4%26tipo%3d1%26origem%3didp%26modo%3d">
+                        <span class="fas fa-bullhorn"></span>
+                        <div class="title">Denúncia</div>
+                        
+                    </a>
+                </li>
+                <li>
+                    <a href="https://falabr.cgu.gov.br/Login/Identificacao/Identificacao.aspx?idFormulario=1&amp;tipo=5&amp;ReturnUrl=%2fpublico%2fManifestacao%2fRegistrarManifestacao.aspx%3fidFormulario%3d1%26tipo%3d5%26origem%3didp%26modo%3d">
+                        <span class="fa fa-comments"></span>
+                        <div class="title">Solicitação</div>
+                        
+                    </a>
+                </li>
+                <li>
+                    <a href="https://falabr.cgu.gov.br/Login/Identificacao/Identificacao.aspx?idFormulario=1&amp;tipo=4&amp;ReturnUrl=%2fpublico%2fManifestacao%2fRegistrarManifestacao.aspx%3fidFormulario%3d1%26tipo%3d4%26origem%3didp%26modo%3d">
+                        <span class="fas fa-comment"></span>
+                        <div class="title">Sugestão</div>
+                        
+                    </a>
+                </li>
+                <li>
+                    <a href="https://falabr.cgu.gov.br/Login/Identificacao/Identificacao.aspx?idFormulario=1&amp;tipo=3&amp;ReturnUrl=%2fpublico%2fManifestacao%2fRegistrarManifestacao.aspx%3fidFormulario%3d1%26tipo%3d3%26origem%3didp%26modo%3d">
+                        <span class="fa fa-thumbs-up"></span>
+                        <div class="title">Elogio</div>
+                        
+                    </a>
+                </li>
+            </ul>
+        </div>
+    
+                    </div>
+                
+            
+
+            
+
+            
+
+        
+    
+
+
+                        
+
+                    </div>
+                
+            
+        
+    
+
+
+                        
+
+                    </div>
+                </div>
+            
+        
+
+    
+
+
+
+            
+        
+    
+
+
+
+                        </div>
+                    
+
+                    
+                </div>
+            
+
+            <div id="viewlet-below-content">
+
+
+
+
+
+
+    
+        <script class="social-links-script">
+        $(document).ready(function () {
+            for (let tile of $('.nitf-basic-tile')) {
+                if (!$(tile).find('.social-links').length) {
+                    var url = '#'
+                    $(tile).find('a').each(function(){
+                        url = $(this).attr('href');
+                    });
+                    var titulo = '#'
+                    $(tile).find('a').each(function(){
+                        titulo = $(this).text();
+                    });
+                    var imagem = url+'/logo.png'
+                    $(tile).find('img').each(function(){
+                        imagem = $(this).attr('src');
+                    });
+                    var link_telegram = $('<a title="Telegram" class="link-whatsapp"><span class="fab fa-telegram-plane"></span></a>');
+                    $(link_telegram).attr('href', 'https://telegram.me/share/url?url='+url);
+                    var link_whatsapp = $('<a title="WhatsApp" class="link-whatsapp"><span class="fab fa-whatsapp"></span></a>');
+                    $(link_whatsapp).attr('href', 'https://api.whatsapp.com/send?text='+url);
+                    var link_facebook = $('<a title="Facebook"><span class="fab fa-facebook-f"></span></a>');
+                    $(link_facebook).attr('href', 'http://www.facebook.com/sharer.php?u='+url);
+                    var link_twitter = $('<a title="Twitter"><span class="fab fa-twitter"></span></a>');
+                    $(link_twitter).attr('href', 'https://twitter.com/share?text='+titulo+'&url='+url);
+                    var link_linkedin = $('<a title="LinkedIn"><span class="fab fa-linkedin-in"></span></a>');
+                    $(link_linkedin).attr('href', 'https://www.linkedin.com/shareArticle?mini=true&title='+titulo+'&url='+url);
+                    var link_google = $('<a title="Google+"><span class="fab fa-google-plus-g"></span></a>');
+                    $(link_google).attr('href', 'https://plus.google.com/share?url='+url);
+                    var link_email = $('<a title="E-mail"><span class="fas fa-at"></span></a>');
+                    $(link_email).attr('href', url+'/sendto_form');
+                    var link_pinterest = $('<a title="Pinterest"><span class="fab fa-pinterest-p"></span></a>');
+                    $(link_pinterest).attr('href', 'https://pinterest.com/pin/create/button/?url='+url+'&media='+imagem+'&description='+titulo);
+                    var link_clipboard = $('<a class="link-clipboard" onclick="event.preventDefault()"><span class="fas fa-link"></span></a>');
+                    $(link_clipboard).attr('href', url);
+                    $(link_clipboard).attr('title', $('#viewlet-tileshare')[0].dataset.titleLink);
+                    var link_x = $('<a href="#" class="toggle-social-links"><span class="fas fa-share-alt"></span><span class="fas fa-times"></span></a>');
+                    var div_principal = $('<div class="social-links"></div>');
+                    $(div_principal).append(link_facebook);$(div_principal).append(link_twitter);
+                    $(div_principal).append(link_clipboard);
+                    $(div_principal).prepend(link_x);
+
+                    var container = $(tile).children('.tile-subtitle');
+                    $(container).append(div_principal);
+                }
+            }
+            new ClipboardJS('.link-clipboard', {
+                text: function (trigger) {
+                    return trigger.getAttribute('href');
+                }
+            });
+        });
+        </script>
+    
+    
+
+
+    
+        <script class="social-links-script">
+        $(document).ready(function () {
+            for (let tile of $('.nitf-basic-tile')) {
+                if (!$(tile).find('.social-links').length) {
+                    var url = '#'
+                    $(tile).find('a').each(function(){
+                        url = $(this).attr('href');
+                    });
+                    var titulo = '#'
+                    $(tile).find('a').each(function(){
+                        titulo = $(this).text();
+                    });
+                    var imagem = url+'/logo.png'
+                    $(tile).find('img').each(function(){
+                        imagem = $(this).attr('src');
+                    });
+                    var link_telegram = $('<a title="Telegram" class="link-whatsapp"><span class="fab fa-telegram-plane"></span></a>');
+                    $(link_telegram).attr('href', 'https://telegram.me/share/url?url='+url);
+                    var link_whatsapp = $('<a title="WhatsApp" class="link-whatsapp"><span class="fab fa-whatsapp"></span></a>');
+                    $(link_whatsapp).attr('href', 'https://api.whatsapp.com/send?text='+url);
+                    var link_facebook = $('<a title="Facebook"><span class="fab fa-facebook-f"></span></a>');
+                    $(link_facebook).attr('href', 'http://www.facebook.com/sharer.php?u='+url);
+                    var link_twitter = $('<a title="Twitter"><span class="fab fa-twitter"></span></a>');
+                    $(link_twitter).attr('href', 'https://twitter.com/share?text='+titulo+'&url='+url);
+                    var link_linkedin = $('<a title="LinkedIn"><span class="fab fa-linkedin-in"></span></a>');
+                    $(link_linkedin).attr('href', 'https://www.linkedin.com/shareArticle?mini=true&title='+titulo+'&url='+url);
+                    var link_google = $('<a title="Google+"><span class="fab fa-google-plus-g"></span></a>');
+                    $(link_google).attr('href', 'https://plus.google.com/share?url='+url);
+                    var link_email = $('<a title="E-mail"><span class="fas fa-at"></span></a>');
+                    $(link_email).attr('href', url+'/sendto_form');
+                    var link_pinterest = $('<a title="Pinterest"><span class="fab fa-pinterest-p"></span></a>');
+                    $(link_pinterest).attr('href', 'https://pinterest.com/pin/create/button/?url='+url+'&media='+imagem+'&description='+titulo);
+                    var link_clipboard = $('<a class="link-clipboard" onclick="event.preventDefault()"><span class="fas fa-link"></span></a>');
+                    $(link_clipboard).attr('href', url);
+                    $(link_clipboard).attr('title', $('#viewlet-tileshare')[0].dataset.titleLink);
+                    var link_x = $('<a href="#" class="toggle-social-links"><span class="fas fa-share-alt"></span><span class="fas fa-times"></span></a>');
+                    var div_principal = $('<div class="social-links"></div>');
+                    $(div_principal).append(link_facebook);$(div_principal).append(link_twitter);
+                    $(div_principal).append(link_clipboard);
+                    $(div_principal).prepend(link_x);
+
+                    var container = $(tile).children('.tile-subtitle');
+                    $(container).append(div_principal);
+                }
+            }
+            new ClipboardJS('.link-clipboard', {
+                text: function (trigger) {
+                    return trigger.getAttribute('href');
+                }
+            });
+        });
+        </script>
+    
+    
+
+
+  
+
+
+<div class="govbr-recom-config" data-recom-history-title="Serviços que você acessou">
+
+
+            
+    
+
+</div>
+
+
+
+
+</div>
+        </main>
+
+            
+        </div>
+
+        <div class="conteudo-relacionado"></div>
+
+        <div class="govbr-history-render"></div>
+
+        <footer id="portal-footer" class="portal-footer">
+            <div class="footer-wrapper">
+                <div class="govbr-logo"></div>
+                <!--<div class="colunas-rodape">
+              <div class="coluna-menu">-->
+                <ul class="list-navigation"></ul>
+                <!--</div>
+            </div>-->
+
+                
+        <div class="lgpd-reset-cookies">
+        <a href="#" class="reset-cookies" onclick="_redefinirCookies(); return false;">Redefinir Cookies</a>
+    </div>
+    <div class="redes-e-logos">
+                    <div class="redes-sociais">
+                        <div class="titulo">Redes sociais</div>
+                    <ul class="portal-redes">
+            
+                <li class="portalredes-twitter portalredes-item">
+                    <a href="https://www.twitter.com/MDICoficial">Twitter</a>
+                </li>
+            
+                <li class="portalredes-youtube portalredes-item">
+                    <a href="https://www.youtube.com/@MDICoficial">YouTube</a>
+                </li>
+            
+                <li class="portalredes-facebook portalredes-item">
+                    <a href="https://www.facebook.com/MDICoficial">Facebook</a>
+                </li>
+            
+                <li class="portalredes-flickr portalredes-item">
+                    <a href="https://www.flickr.com/mdicgovbr">Flickr</a>
+                </li>
+            
+                <li class="portalredes-instagram portalredes-item">
+                    <a href="https://www.instagram.com/mdicoficial">Instagram</a>
+                </li>
+            
+        </ul></div>
+                    <div id="footer-govbr">
+                        <div id="wrapper-footer-brasil">
+                            <a class="logo-acesso-footer" href="https://www.gov.br/acessoainformacao/pt-br">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 117 49" height="49" width="117" shape-rendering="geometricPrecision" text-rendering="geometricPrecision"><defs><style type="text/css"><![CDATA[.a {font: normal bold 11px Open Sans, sans-serif;}]]></style></defs><circle cx="22" cy="23" r="22" fill="#222"></circle><path style="stroke:#fff;stroke-width:9;stroke-linecap:round;" d="m 22,23 v 13"></path><path style="stroke:#222;stroke-width:4;stroke-linejoin:round;" d="m 4,43 3,-6 4,3 z"></path><circle r="4.5" cy="11" cx="22" fill="#fff"></circle><g fill="#222"><text x="47" y="22"><tspan class="a" y="18">Acesso à</tspan><tspan class="a" x="47" y="31">Informação</tspan></text></g></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="texto-copyright">
+    Todo o conteúdo deste site está publicado sob a licença <a rel="license" href="https://creativecommons.org/licenses/by-nd/3.0/deed.pt_BR">Creative Commons Atribuição-SemDerivações 3.0 Não Adaptada</a>.
+  </div>
+        </footer>
+
+        <nav class="back-to-top" aria-label="Voltar ao topo da página">
+            <a href="#wrapper">
+                <span class="fa fa-chevron-up"></span>
+                <span class="sr-only">Voltar ao topo da página</span>
+            </a>
+        </nav>
+    <div id="govbr-busca-input-data" style="display: none" data-autocomplete-api="https://portalunico.estaleiro.serpro.gov.br/api/" data-autocomplete-index="//www.gov.br/mdic" data-autocomplete-orgao="ministerio-do-desenvolvimento-industria-comercio-e-servicos" data-autocomplete-search="https://www.gov.br/mdic/pt-br" data-autocomplete-portal="https://www.gov.br" data-historico-title="Histórico de buscas" data-servicos-title="Serviços e Apps" data-sugestoes-title="Você quis dizer?" data-input-placeholder="O que você procura?"></div></div><div id="main-navigation-overlay"></div><div class="redefinir-cookies">
+
+    
+
+</div><div class="dsgov">
+    <div class="br-cookiebar default d-none" tabindex="-1">
+      <div class="br-modal">
+        <div class="br-card">
+          <div class="container">
+            <div class="wrapper">
+              <div class="br-modal-header entry-content">
+                <div class="br-modal-title"></div>
+                <div class="last-update"></div>
+                <div class="entry-text"></div>
+              </div>
+              <div class="br-modal-body">
+                <div class="info-text"></div>
+                <div class="br-list main-content">
+                </div>
+              </div>
+            </div>
+            <div class="br-modal-footer actions">
+              <button class="br-button small btn-manage" type="button" aria-label="Definir Cookies"></button>
+              <button class="br-button secondary small reject-all" type="button" aria-label="Rejeitar">Rejeitar</button>
+              <button class="br-button secondary small btn-accept" type="button" aria-label="Aceitar"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><script id="lgpd-cookie-handling" type="text/javascript" src="https://www.gov.br/mdic/++resource++govbr.policy/lgpd_cookie_handling_1_3_55.js"></script><div id="govbr-login-overlay-wrapper"></div><script type="text/javascript" src="/mdic/++theme++padrao_govbr/govbrtheme-2a3d2b2.js"></script><div id="plone-analytics"></div>
+    
+    
+      <script async="" src="//barra.brasil.gov.br/barra_2.0.js"></script>
+    
+</body>
+</html>

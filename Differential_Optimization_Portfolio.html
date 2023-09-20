@@ -14,7 +14,7 @@
 
 <title>Otimização Multiobjetivo: Alocação de Risco em Portfólio com Evolução Diferencial</title>
 
-<script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -30,7 +30,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -39,8 +39,8 @@
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
 <script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -150,11 +150,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -183,8 +187,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -192,16 +196,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -405,9 +402,6 @@ div.tocify {
       <a href="sparklyr.html">Big Data com o R: Lendo os microdados do CAGED com sparklyr</a>
     </li>
     <li>
-      <a href="automsecex.html">Automação da visualização da base de dados da balança comercial brasileira</a>
-    </li>
-    <li>
       <a href="ETL_R_no_PowerBI.html">ETL com o R direto no Power BI</a>
     </li>
     <li>
@@ -429,10 +423,7 @@ div.tocify {
       <a href="anpreliminar.html">Análise preliminar de dados (Inclusão Financeira) (Shangai University of Finance)</a>
     </li>
     <li>
-      <a href="AAS_Algo_CiencDados_Cruzeiro.html">AAS: Disciplina Algoritmos para Ciência de Dados com Weka + R</a>
-    </li>
-    <li>
-      <a href="AtividadeIeII.html">Projeto Int. Transdiciplinar de Ciência de Dados</a>
+      <a href="schedula_Rmd_Windows.html">Agendamento automático de execução de RMarkdowns com o R</a>
     </li>
     <li>
       <a href="fcast.html">Previsão (forecasting), simulação de cenários e análise de séries temporais</a>
@@ -466,6 +457,15 @@ div.tocify {
     </li>
     <li>
       <a href="Differential_Optimization_Portfolio.html">Algoritmo de Evolução Diferencial multiobjetivo portfolio</a>
+    </li>
+    <li>
+      <a href="Multicriteria_Portfolio_Selection_Commodities.html">Seleção de Portfólio Multicritério com NSGAII</a>
+    </li>
+    <li>
+      <a href="R_and_Python_using_Quarto.html">R and Python in the same script</a>
+    </li>
+    <li>
+      <a href="Research_Presentation_RHO.html">MultiObjective Optim. Portfolio with non linear time series Research Presentation</a>
     </li>
   </ul>
 </li>
@@ -515,7 +515,7 @@ div.tocify {
 <h1 class="title toc-ignore">Otimização Multiobjetivo: Alocação de Risco
 em Portfólio com Evolução Diferencial</h1>
 <h4 class="author">Rodrigo Hermont Ozon</h4>
-<h4 class="date">Last Update: julho 03, 2022</h4>
+<h4 class="date">Last Update: setembro 20, 2023</h4>
 
 </div>
 
@@ -687,12 +687,12 @@ tickers &lt;- cbind(
 
 head(tickers)</code></pre>
 <pre><code>           GE.Close IBM.Close JPM.Close MSFT.Close WMT.Close
-2000-12-01 392.3077  91.41969   37.3125   28.31250   51.1875
-2000-12-04 397.1154  94.04876   37.9375   28.21875   53.8125
-2000-12-05 416.3462  98.82887   41.3125   29.93750   55.2500
-2000-12-06 414.9038  92.49522   40.0625   28.34375   54.8125
-2000-12-07 411.5385  89.02964   39.1875   26.56250   55.0000
-2000-12-08 424.5192  92.73422   40.0000   27.21875   54.4375</code></pre>
+2000-12-01 306.2511  91.41969   37.3125   28.31250   51.1875
+2000-12-04 310.0042  94.04876   37.9375   28.21875   53.8125
+2000-12-05 325.0165  98.82887   41.3125   29.93750   55.2500
+2000-12-06 323.8906  92.49522   40.0625   28.34375   54.8125
+2000-12-07 321.2634  89.02964   39.1875   26.56250   55.0000
+2000-12-08 331.3968  92.73422   40.0000   27.21875   54.4375</code></pre>
 <pre class="r"><code>tickers &lt;- fortify(tickers) </code></pre>
 <p>Veremos os comportamentos dessas séries temporais diárias:</p>
 <pre class="r"><code>ggplot(tickers, aes(x = Index,
@@ -729,7 +729,7 @@ tickers_tidy &lt;- tickers %&gt;%
 head(tickers_tidy)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2000 dez","2":"368.7500","3":"81.26195","4":"45.4375","5":"21.68750","6":"53.125"},{"1":"2001 jan","2":"353.6923","3":"107.07457","4":"54.9900","5":"30.53125","6":"56.800"},{"1":"2001 fev","2":"357.6923","3":"95.50669","4":"46.6600","5":"29.50000","6":"50.090"},{"1":"2001 mar","2":"322.0000","3":"91.95029","4":"44.9000","5":"27.34375","6":"50.500"},{"1":"2001 abr","2":"373.3077","3":"110.07649","4":"47.9800","5":"33.87500","6":"51.740"},{"1":"2001 mai","2":"376.9231","3":"106.88336","4":"49.1500","5":"34.59000","6":"51.750"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2000 dez","2":"287.8611","3":"81.26195","4":"45.4375","5":"21.68750","6":"53.125"},{"1":"2001 jan","2":"276.1064","3":"107.07457","4":"54.9900","5":"30.53125","6":"56.800"},{"1":"2001 fev","2":"279.2290","3":"95.50669","4":"46.6600","5":"29.50000","6":"50.090"},{"1":"2001 mar","2":"251.3661","3":"91.95029","4":"44.9000","5":"27.34375","6":"50.500"},{"1":"2001 abr","2":"291.4190","3":"110.07648","4":"47.9800","5":"33.87500","6":"51.740"},{"1":"2001 mai","2":"294.2413","3":"106.88336","4":"49.1500","5":"34.59000","6":"51.750"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Construo as séries de retornos:</p>
@@ -747,23 +747,23 @@ retornos &lt;- retornos[-1,]
 head(retornos)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2001 jan","2":"-0.041691519","3":"0.27584764","4":"0.19081363","5":"0.34201469","6":"0.0668886809"},{"1":"2001 fev","2":"0.011245793","3":"-0.11432920","4":"-0.16426412","5":"-0.03436049","6":"-0.1257149208"},{"1":"2001 mar","2":"-0.105121636","3":"-0.03794824","4":"-0.03844943","5":"-0.07590228","6":"0.0081519489"},{"1":"2001 abr","2":"0.147851408","3":"0.17992737","4":"0.06634642","5":"0.21418930","6":"0.0242578791"},{"1":"2001 mai","2":"0.009638141","3":"-0.02943728","4":"0.02409263","5":"0.02088734","6":"0.0001932167"},{"1":"2001 jun","2":"0.000000000","3":"0.01509132","4":"-0.10006206","5":"0.05374764","6":"-0.0586941398"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["Index"],"name":[1],"type":["mth"],"align":["right"]},{"label":["GE.Close"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["IBM.Close"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["JPM.Close"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["MSFT.Close"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["WMT.Close"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"2001 jan","2":"-0.041691558","3":"0.27584765","4":"0.19081363","5":"0.34201469","6":"0.0668886851"},{"1":"2001 fev","2":"0.011245786","3":"-0.11432920","4":"-0.16426412","5":"-0.03436049","6":"-0.1257149219"},{"1":"2001 mar","2":"-0.105121619","3":"-0.03794824","4":"-0.03844943","5":"-0.07590228","6":"0.0081519459"},{"1":"2001 abr","2":"0.147851492","3":"0.17992737","4":"0.06634642","5":"0.21418930","6":"0.0242578729"},{"1":"2001 mai","2":"0.009638073","3":"-0.02943728","4":"0.02409263","5":"0.02088735","6":"0.0001932229"},{"1":"2001 jun","2":"0.000000000","3":"0.01509132","4":"-0.10006205","5":"0.05374763","6":"-0.0586941349"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Obtenhos os valores dos retornos mensais de cada ativo:</p>
 <pre class="r"><code>mu &lt;- colMeans(retornos[,-1]) # mu = media dos retornos de cada ativo
 mu</code></pre>
 <pre><code>     GE.Close     IBM.Close     JPM.Close    MSFT.Close     WMT.Close 
--0.0080752172  0.0045461158 -0.0006100574  0.0020841409  0.0001469323 </code></pre>
+-0.0080752176  0.0045461158 -0.0006100575  0.0020841410  0.0001469323 </code></pre>
 <p>Calculo os devios-padrão mensais dos retornos de cada ativo:</p>
 <pre class="r"><code>sigma &lt;- cov(retornos[,-1]) # sigma = matriz de covariância dos ativos do portfolio
 sigma</code></pre>
 <pre><code>              GE.Close   IBM.Close   JPM.Close  MSFT.Close   WMT.Close
-GE.Close   0.007908450 0.002970725 0.004320653 0.003424919 0.001122085
+GE.Close   0.007908450 0.002970725 0.004320652 0.003424919 0.001122085
 IBM.Close  0.002970725 0.006317555 0.003911824 0.003922411 0.001329021
-JPM.Close  0.004320653 0.003911824 0.009312092 0.004044448 0.002183117
+JPM.Close  0.004320652 0.003911824 0.009312091 0.004044448 0.002183116
 MSFT.Close 0.003424919 0.003922411 0.004044448 0.006926902 0.001493245
-WMT.Close  0.001122085 0.001329021 0.002183117 0.001493245 0.002841469</code></pre>
+WMT.Close  0.001122085 0.001329021 0.002183116 0.001493245 0.002841469</code></pre>
 <p>Vamos verificar os comportamentos desses retornos ao longo dos
 meses:</p>
 <pre class="r"><code>###########GE.Close#############################
@@ -1579,7 +1579,7 @@ ret &lt;- cbind(benchmark_returns, random_returns, DEoptim_returns)
 as.data.frame(t(table.AnnualizedReturns(ret)))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0389","2":"0.1586","3":"-0.2450","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0443","2":"0.1745","3":"-0.2540","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Parece bem evidente que a seleção desses ativos no portfólio não
@@ -1630,10 +1630,8 @@ Online, 2009.</p>
 <pre><code>
 To cite GPareto in publications use:
 
-Binois M, Picheny V (2019). &quot;GPareto: An R Package for
-Gaussian-Process-Based Multi-Objective Optimization and Analysis.&quot;
-_Journal of Statistical Software_, *89*(8), 1-30. doi:
-10.18637/jss.v089.i08 (URL: https://doi.org/10.18637/jss.v089.i08).
+  Binois M, Picheny V (2019). &quot;GPareto: An R Package for Gaussian-Process-Based Multi-Objective Optimization and Analysis.&quot; _Journal of
+  Statistical Software_, *89*(8), 1-30. doi:10.18637/jss.v089.i08 &lt;https://doi.org/10.18637/jss.v089.i08&gt;.
 
 A BibTeX entry for LaTeX users is
 
@@ -1651,9 +1649,8 @@ A BibTeX entry for LaTeX users is
 <pre><code>
 To cite package &#39;nsga2R&#39; in publications use:
 
-  Ching-Shih Tsou (2022). nsga2R: Elitist Non-Dominated Sorting Genetic
-  Algorithm. R package version 1.1.
-  https://CRAN.R-project.org/package=nsga2R
+  Tsou C (2022). _nsga2R: Elitist Non-Dominated Sorting Genetic Algorithm_. R package version 1.1,
+  &lt;https://CRAN.R-project.org/package=nsga2R&gt;.
 
 A BibTeX entry for LaTeX users is
 
@@ -1665,17 +1662,14 @@ A BibTeX entry for LaTeX users is
     url = {https://CRAN.R-project.org/package=nsga2R},
   }
 
-ATTENTION: This citation information has been auto-generated from the
-package DESCRIPTION file and may need manual editing, see
+ATTENTION: This citation information has been auto-generated from the package DESCRIPTION file and may need manual editing, see
 &#39;help(&quot;citation&quot;)&#39;.</code></pre>
 <pre class="r"><code>citation(package = &quot;PortfolioAnalytics&quot;)</code></pre>
 <pre><code>
 To cite package &#39;PortfolioAnalytics&#39; in publications use:
 
-  Brian G. Peterson and Peter Carl (2018). PortfolioAnalytics:
-  Portfolio Analysis, Including Numerical Methods for Optimization of
-  Portfolios. R package version 1.1.0.
-  https://CRAN.R-project.org/package=PortfolioAnalytics
+  Peterson BG, Carl P (2018). _PortfolioAnalytics: Portfolio Analysis, Including Numerical Methods for Optimization of Portfolios_. R
+  package version 1.1.0, &lt;https://CRAN.R-project.org/package=PortfolioAnalytics&gt;.
 
 A BibTeX entry for LaTeX users is
 
@@ -1691,49 +1685,31 @@ of Portfolios},
 <pre><code>
 To cite &#39;DEoptim&#39; in publications use:
 
-  Katharine Mullen, David Ardia, David Gil, Donald Windover, James
-  Cline (2011). &#39;DEoptim&#39;: An R Package for Global Optimization by
-  Differential Evolution. Journal of Statistical Software, 40(6), 1-26.
-  doi:10.18637/jss.v040.i06.
+  Katharine Mullen, David Ardia, David Gil, Donald Windover, James Cline (2011). &#39;DEoptim&#39;: An R Package for Global Optimization by
+  Differential Evolution. Journal of Statistical Software, 40(6), 1-26. doi:10.18637/jss.v040.i06.
 
-  Ardia, D., Boudt, K., Carl, P., Mullen, K.M., Peterson, B.G. (2010).
-  Differential Evolution with &#39;DEoptim&#39;: An Application to Non-Convex
-  Portfolio Optimization. R Journal, 3(1), 27-34.
-  doi:10.32614/RJ-2011-005
+  Ardia, D., Boudt, K., Carl, P., Mullen, K.M., Peterson, B.G. (2010). Differential Evolution with &#39;DEoptim&#39;: An Application to Non-Convex
+  Portfolio Optimization. R Journal, 3(1), 27-34. doi:10.32614/RJ-2011-005
 
 BibTeX entries for LaTeX users: use &#39;toBibtex(citation(&quot;DEoptim&quot;))&#39;
-To see these entries in BibTeX format, use &#39;print(&lt;citation&gt;,
-bibtex=TRUE)&#39;, &#39;toBibtex(.)&#39;, or set
-&#39;options(citation.bibtex.max=999)&#39;.</code></pre>
+To see these entries in BibTeX format, use &#39;print(&lt;citation&gt;, bibtex=TRUE)&#39;, &#39;toBibtex(.)&#39;, or set &#39;options(citation.bibtex.max=999)&#39;.</code></pre>
 <pre class="r"><code>citation(package = &quot;ROI&quot;)</code></pre>
 <pre><code>
-To cite ROI in publications use:
+To cite package &#39;ROI&#39; in publications use:
 
-Theußl S, Schwendinger F, Hornik K (2020). &quot;ROI: An Extensible R
-Optimization Infrastructure.&quot; _Journal of Statistical Software_,
-*94*(15), 1-64. doi: 10.18637/jss.v094.i15 (URL:
-https://doi.org/10.18637/jss.v094.i15).
+  Hornik K, Meyer D, Schwendinger F, Theussl S (2023). _ROI: R Optimization Infrastructure_. R package version 1.0-1,
+  &lt;https://CRAN.R-project.org/package=ROI&gt;.
 
-A BibTeX entry for LaTeX users is
+  Theußl, S., Schwendinger, F., &amp; Hornik, K. (2020). ROI: An Extensible R Optimization Infrastructure. Journal of Statistical Software,
+  94(15), 1–64. https://doi.org/10.18637/jss.v094.i15
 
-  @Article{,
-    title = {{ROI}: An Extensible {R} Optimization Infrastructure},
-    author = {Stefan Theu{\ss}l and Florian Schwendinger and Kurt Hornik},
-    journal = {Journal of Statistical Software},
-    year = {2020},
-    volume = {94},
-    number = {15},
-    pages = {1--64},
-    doi = {10.18637/jss.v094.i15},
-  }</code></pre>
+To see these entries in BibTeX format, use &#39;print(&lt;citation&gt;, bibtex=TRUE)&#39;, &#39;toBibtex(.)&#39;, or set &#39;options(citation.bibtex.max=999)&#39;.</code></pre>
 <pre class="r"><code>citation(package = &quot;PerformanceAnalytics&quot;)</code></pre>
 <pre><code>
 To cite package &#39;PerformanceAnalytics&#39; in publications use:
 
-  Brian G. Peterson and Peter Carl (2020). PerformanceAnalytics:
-  Econometric Tools for Performance and Risk Analysis. R package
-  version 2.0.4.
-  https://CRAN.R-project.org/package=PerformanceAnalytics
+  Peterson BG, Carl P (2020). _PerformanceAnalytics: Econometric Tools for Performance and Risk Analysis_. R package version 2.0.4,
+  &lt;https://CRAN.R-project.org/package=PerformanceAnalytics&gt;.
 
 A BibTeX entry for LaTeX users is
 
@@ -1748,11 +1724,8 @@ A BibTeX entry for LaTeX users is
 <pre><code>
 To cite package &#39;quadprog&#39; in publications use:
 
-  S original by Berwin A. Turlach R port by Andreas Weingessel
-  &lt;Andreas.Weingessel@ci.tuwien.ac.at&gt; Fortran contributions from Cleve
-  Moler dpodi/LINPACK) (2019). quadprog: Functions to Solve Quadratic
-  Programming Problems. R package version 1.5-8.
-  https://CRAN.R-project.org/package=quadprog
+  dpodi/LINPACK) SobBATRpbAW&lt;FcfCM (2019). _quadprog: Functions to Solve Quadratic Programming Problems_. R package version 1.5-8,
+  &lt;https://CRAN.R-project.org/package=quadprog&gt;.
 
 A BibTeX entry for LaTeX users is
 
@@ -1764,8 +1737,7 @@ A BibTeX entry for LaTeX users is
     url = {https://CRAN.R-project.org/package=quadprog},
   }
 
-ATTENTION: This citation information has been auto-generated from the
-package DESCRIPTION file and may need manual editing, see
+ATTENTION: This citation information has been auto-generated from the package DESCRIPTION file and may need manual editing, see
 &#39;help(&quot;citation&quot;)&#39;.</code></pre>
 <p> </p>
 <p> </p>
@@ -1781,7 +1753,7 @@ class="section level2">
 <pre class="r"><code># Execution timing
 
 Sys.time() - start_time</code></pre>
-<pre><code>Time difference of 2.523638 mins</code></pre>
+<pre><code>Time difference of 2.135855 mins</code></pre>
 </div>
 </div>
 
