@@ -1,0 +1,896 @@
+---
+title: "Seleção e otimização de portfólio de _commodities_ em condições de incerteza:"
+subtitle: "***Econometria de Séries Temporais e Otimização MultiObjetivo Multiperíodo***"
+author: <a href="https://rhozon.github.io/selecaodeprodutosnor/index.html">Rodrigo Hermont Ozon</a>
+title-slide-attributes:
+    data-background-image: "https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img.png"
+    data-background-size: contain
+    data-background-opacity: "number"
+format:
+  revealjs:
+    incremental: true   
+    slide-number: true
+    chalkboard: 
+      buttons: true
+    preview-links: auto
+    css: styles.css
+    footer: <a href="http://cidamo.com.br/"> -- CiDAMO, May 25th 2023 -- </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon ] </a>
+---
+
+```{r setup, include=FALSE}
+
+start_time <- Sys.time()
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+
+## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+ - O que é econometria ?
+
+ - Econometria _versus_ Data Science 
+ 
+ - Regressão e Causalidade
+ 
+ - Machine Learning x Big Data x Econometria
+
+ - 10 erros comuns na construção de um modelo econométrico
+
+ - Um exemplo de aplicação: Econometria de Séries Temporais e Otimização MultiObjetivo MultiPeríodo
+
+ - Porque aprender econometria impulsiona minha carreira ?
+
+</font>
+
+:::
+
+
+## O que é econometria ? {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+Quatro grupos de conceituação presentes na literatura:
+
+ - a ciência de testar teorias econômicas;
+ 
+ - o conjunto de ferramentas usadas para prever valores futuros de variávies econômicas, como vendas de uma empresa, o crescimento geral da economia ou os preços das ações;
+
+ - o processo de ajustar modelos econômicos matemáticos a dados do mundo real.
+
+ - é a ciência e a arte de usar dados históricos para criar recomendações de políticas numéricas ou quantitativas no governo e nas empresas
+
+
+:::
+
+Como a Economia é uma ciência social aplicada (não é exata), o desafio que a faz extremamente interessante paira na questão da incerteza e das inúmeradas descobertas e possibilidades ! Afinal...
+
+_"Herrar é umano!"_
+
+</font>
+
+
+
+## O método da econometria {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 4px>
+
+::: {#fig-economethods layout-ncol=2}
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/metodoeconometria.png){width=20%}
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/tiposdeeconometria.png){width=40%} 
+
+**Fonte:** Gujarati (2011, p. 34)
+:::
+
+
+
+</font>
+
+
+## O método da econometria  {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+&nbsp;
+
+<font size = 5px>
+
+Segundo Maddala, (2001, p. 6):
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"Esta abordagem pode ser denominada de abordagem de confirmação da teoria econômica. O problema dessa abordagem, de acordo com Mark Blaug, é que: <br>
+
+<br>
+  
+[Em muitas áreas da economia, diferentes estudos econométricos chegam a conclusões conflitantes, e com base nos dados disponíveis, frequentemente não há método eficiente para decidir qual conclusão é a correta. Em consequência, às vezes, pressupostos contraditórios continuam a coexistir por décadas ou mais.] <br>
+
+<br>
+    
+"Um modo mais válido de testar uma teoria econômica é verificar se ela é capaz de formular previsões melhores do que as teorias alternativas sugerem anteriormente. Assim, torna-se necessário comparar um dado modelo com os anteriores. Esta abordagem de avaliação de teorias tem recebido maior atenção nos últimos anos."  
+
+</p>
+```
+
+
+- Curva de Phillips 
+
+- Curva de Kuznets
+
+</font>
+
+
+## Econometria x Data Science (hype) {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+
+<font size = 3px>
+
+<iframe width="1400" height="400" src="https://www.youtube.com/embed/2EhRT2mOXm8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+**Source:** [Marginal Revolution University](https://mru.org/) 
+
+</font>
+
+
+
+## Regressão x Causalidade {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 5px>
+
+<center>
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/bayes_freq_causal_inf.jpg){width=40%}
+</center>
+</font>
+
+
+
+## Regressão x Causalidade {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 5px>
+
+- [Spurious Correlations](https://www.tylervigen.com/spurious-correlations) 
+
+Vamos distinguir a análise de regressão de análise de correlação:
+
+- **Correlação** busca refletir o grau de associação numérica entre duas variáveis;
+
+- **Análise de regressão** é utilizada como propósito de desenvolvimento estatístico que possa ser utilizada para prever os valores de uma variável dependente ou variável de resposta com base nos valores de pelo menos uma variável independente ou explicativa.
+
+
+
+O interessante é pensarmos que os resultados gerados por uma análise de regressão não indica causalidade, ou seja, ela não é precisa no que diz respeito a verdadeira direção da causa e efeito:
+
+
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"É importante ressaltar que embora a análise de regressão lide com a dependência de uma variável em relação a outras variáveis, ela não implica necessariamente em causa. Uma relação estatística, por mais forte e sugestiva que seja, jamais pode estabelecer uma relação causal. As idéias sobre causa devem vir de fora da estatística, enfim, de outra teoria."
+
+</p> 
+```
+
+</font>
+
+<font size = 3.5px>
+
+Fonte: [FGV (2010)](https://www.cps.fgv.br/cps/pesquisas/Politicas_sociais_alunos/2010/BES_raiz_aanew/pdf/BES_%20Regress%C3%A3oLinear.pdf)
+
+</font>
+
+<font size = 5px>
+
+[Em séries temporais vide p .ex. o teste de causalidade de Granger (precedência):](https://rhozon.github.io/selecaodeprodutosnor/fcast.html)
+
+</font>
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"Granger parte da premissa de que o futuro não pode "causar" o presente ou o passado. Se o evento A ocorre após o evento B, sabemos que A não pode "causar" B. Ao mesmo tempo, se A ocorre antes de B, isso não implica necessariamente que A causa B. Por exemplo, a previsão do tempo ocorre antes da chuva. Isso não significa que a previsão "cause" a chuva. Na prática, observamos A e B como séries temporais e gostaríamos de saber se A precede B, ou se B precede A, ou se eles são contemporâneos. Por exemplo, se os preços precedem movimentos nas taxas de juros, ou ocorre o contrário, ou os movimentos são contemporâneos ? Esse é o propósito da causalidade de Granger, que não é causalidade conforme ela é geralmente compreendida." 
+
+```
+
+<font size = 3.5px>
+
+(Maddala, p. 202, 2003)
+
+</font>
+
+
+
+
+
+## Métodos de Regressão e Causalidade {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4.5px>
+
+Alguns métodos de regressão muito comuns em inferência causal na econometria:
+
+- Variáveis instrumentais $\Rightarrow$ É um método utilizado quando existe endogeneidade, ou seja, quando uma variável explicativa está correlacionada com o termo de erro do modelo. O IV usa variáveis instrumentais que estão correlacionadas com a variável explicativa, mas não com o termo de erro, para estimar o efeito causal corrigido. [(leia esse artigo interessantíssimo do prof Rob Hyndman demonstrando as diferenças da estatística e da econometria e inferência causal)](https://robjhyndman.com/hyndsight/statistics-vs-econometrics/) _"Econometrics is often “theory driven” while statistics tends to be “data driven”."_
+
+- Modelos Dif-and-Dif $\Rightarrow$ É um método utilizado para estimar o efeito causal de uma intervenção ou tratamento em um grupo de tratamento em relação a um grupo de controle. Ele compara as mudanças nas médias antes e depois da intervenção entre os dois grupos.
+
+- Regressão com Discontinuidade $\Rightarrow$ É um método utilizado quando há uma variável contínua que determina se uma observação é tratada ou não. Ele compara as unidades próximas a um ponto de corte que determina a aplicação do tratamento, permitindo estimar o efeito causal desse tratamento.
+
+- _Propensity Score Matching_ $\Rightarrow$ É um método causal utilizado na econometria para estimar o efeito causal de um tratamento ou intervenção em relação a um grupo de controle. Ele baseia-se na construção do escore de propensão, que é a probabilidade de um indivíduo receber o tratamento com base em suas características observáveis.
+
+- Análise de Intervenção em Séries Temporais $\Rightarrow$ Esse método busca identificar a mudança na série temporal após a introdução de uma intervenção, controlando fatores externos que poderiam influenciar a variável de interesse. Um exemplo popular de algoritmo que implementa esse método é o Google CausalImpact. O Google CausalImpact utiliza um modelo de espaço de estado Bayesianos para modelar a série temporal antes da intervenção e estima a contrafactual (o que teria acontecido sem a intervenção) após a intervenção. Ele calcula uma métrica chamada "Impacto Causal" que mede a diferença entre o valor observado e o valor contrafactual para determinar o efeito causal da intervenção. Esse método permite uma análise rigorosa do efeito causal de uma intervenção em uma série temporal, controlando o efeito de fatores não relacionados à intervenção. [(vide um artigo sobre esse tema aqui)](https://rhozon.github.io/selecaodeprodutosnor/causalimpact.html)
+
+- [Curso de Inferência Causal no coursera (Columbia University)](https://www.coursera.org/learn/causal-inference) no [codeacademy](https://www.codecademy.com/learn/learn-the-basics-of-causal-inference-with-r/modules/causal-inference-course-welcome) no [datacamp](https://campus.datacamp.com/courses/causal-inference-with-r-experiments/introduction-5b0e1f6d-49d9-4009-939a-7ffd05141448?ex=1) ...
+
+</font>
+
+
+
+## Machine Learning x Big Data x Econometria {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 3px>
+
+<iframe width="1400" height="400" src="https://www.youtube.com/embed/Bm6CAjVtrIw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+**Source:** [Marginal Revolution University](https://mru.org/) 
+
+</font>
+
+## Machine Learning x Big Data x Econometria {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 5px>
+
+O fato é que o _big data_ existe, ou seja, **a informação** e a sua disseminação estão ao dispor de todos e a sua velocidade acelerando-se a cada dia mais e mais, mas menos que proporcionalmente a essa velocidade o crescimento do **conhecimento** para tratá-la não segue o mesmo ritmo!
+
+</font>
+
+<font size = 3px>
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"Em alguns casos, estou um pouco preocupado com o fato de o grande volume de dados estar meio que se tornando uma distração." 
+
+</p>
+```
+
+[Josh Angrist _in_ The Mastering Econometrics](https://mru.org/courses/mastering-econometrics/are-machine-learning-and-big-data-changing-econometrics)
+</font>
+
+<font size = 5px>
+
+$\Rightarrow$ Princípio "KISS" e overfitting num modelo com muitas variáveis
+
+</font>
+
+## 10 erros comuns na construção de um modelo econométrico {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<center>
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/pedace_econometricsfordummies.png){width=35%}
+</center>
+
+## 10 erros comuns na construção de um modelo econométrico {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+- Deixar de usar seu bom senso e conhecimento da teoria econômica
+
+- Começar com as perguntas erradas sobre o fenômeno investigado
+
+- Ignorar os trabalhos e contribuições de outros econometristas (pesquisas científicas)
+
+- Não se familiarizar com os dados
+
+- Complicar excessivamente o(s) modelo(s); (_Keep it simple, stupid_!)
+
+- Obsessão por medidas de melhor ajuste e significância estatística
+
+- Esquecer da significância econômica
+
+- Supor que seus resultados sejam robustos sempre
+
+- Ser inflexível com as complexidades do mundo real
+
+- Ignorar quando encontra resultados bizarros
+
+:::
+
+</font>
+
+
+<font size = 4px>
+**Fonte:** Pedace (2013, cap 19, págs. 315-320)
+</font>
+
+
+
+
+## Proposta de Pesquisa {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+
+<font size = 4px>
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"Pode-se seguramente declarar [...] que a população, quando não controlada, dobra a cada 25 anos, ou aumenta numa razão geométrica. [...] Mas o alimento, para suportar o aumento de um número tão grande, de nenhum modo será obtido com a mesma facilidade. [...] Pode-se com justeza declarar [...] que, considerando-se na média o presente estado da terra, os meios de subsistência, sob as condições mais favoráveis da indústria humana, possivelmente
+não poderiam crescer mais rapidamente do que numa média aritmética.” (Thomas Malthus, 1766 - 1834)
+
+</p>
+
+```
+
+<center>
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Thomas_Robert_Malthus_Wellcome_L0069037_-crop.jpg/330px-Thomas_Robert_Malthus_Wellcome_L0069037_-crop.jpg){width=20%}
+
+</center>
+
+- Segundo estudos da FAO de 2009 e 2013, foi exatamente o crescimento da produtividade que permitiu elevar a oferta acima da demanda mundial de alimentos no período pós-revolução tecnológica no campo. A Revolução Verde dos anos 1960 também marcou uma nova era para o crescimento da oferta via ampliação da produtividade.
+
+
+
+
+
+</font>
+:::
+
+
+## Um exemplo de aplicação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4px>
+ 
+$\Rightarrow$ Modelo de Projeção da série temporal dos retornos dos preços dos ativos e recomendação de compra e venda
+
+</font>
+
+
+```{r echo=FALSE}
+
+library(plotly)
+library(fpp3)
+library(tsibble)
+library(dplyr)
+library(quantmod)
+library(gridExtra)
+
+tickers <- c(
+         "ZC=F", # Futuros Milho
+#         "ZO=F", # Futuros Aveia
+#         "KE=F", # Futuros KC HRW Wheat Futures
+#         "ZR=F", # Rough Rice Futures
+#         "GF=F", # Feeder Cattle Futures
+#         "ZS=F", # Futuros oleo de soja
+#         "ZM=F",  # Futuros farelo soja
+         "ZL=F" # Futuros Soja
+)
+
+# Calcula os retornos diários:
+
+portfolioPrices <- NULL
+  for ( Ticker in tickers )
+    portfolioPrices <- cbind(
+      portfolioPrices, 
+      getSymbols.yahoo(
+        Ticker,
+        from = "2019-01-01",
+        auto.assign = FALSE
+      )[,4]
+    )
+
+# Limpa todas as datas sem preços:
+portfolioPrices <- portfolioPrices[apply(portfolioPrices, 1, function(x) all(!is.na(x))),]
+
+# Renomeio as colunas
+colnames(portfolioPrices) <- tickers
+
+#tail(portfolioPrices)
+
+data_df <- data.frame(
+                      time = index(portfolioPrices), 
+                      coredata(portfolioPrices)
+)
+
+#glimpse(data_df)
+
+# Quebras 2021-05-07 
+# 2022-04-18
+# 2022-06-30
+```
+
+```{r, echo=FALSE }
+
+milho <- ggplotly(
+data_df |> ggplot(aes(x = time,
+                      y = ZC.F )) +
+  geom_line() +
+    geom_vline(xintercept = as.numeric(as.Date(c("2021-05-07", "2022-04-18", "2022-06-30"))),
+               linetype = "dashed",
+               color = "red",
+               alpha = 0.5) +
+  theme(plot.title = element_text(size = 9, face = "bold" )) + 
+  theme(legend.position = "none") + xlab("") + ylab("US$\bushel") +
+  theme(axis.title.y = element_text(size = 9)) +
+  ggtitle("Evolução dos valores dos preços dos contratos futuros de milho na CBOT") +
+  labs(  
+  caption = "Source: Data extraction from Yahoo!Finances API"
+ )
+)
+
+soja <- ggplotly(
+data_df |> ggplot(aes(x = time,
+                      y = ZL.F )) +
+  geom_line() +
+    geom_vline(xintercept = as.numeric(as.Date(c("2021-05-07", "2022-04-18", "2022-06-30"))),
+               linetype = "dashed",
+               color = "red",
+               alpha = 0.5) +
+  theme(plot.title = element_text(size = 9, face = "bold" )) + 
+  theme(legend.position = "none") + xlab("") + ylab("US$\bushel") +
+  theme(axis.title.y = element_text(size = 9)) +
+  ggtitle("Evolução dos valores dos preços dos contratos futuros de milho e de soja na CBOT (em US$/bushel)") +
+  labs(  
+  caption = "Source: Data extraction from Yahoo!Finances API"
+ )
+)
+
+subplot(milho, soja, nrows = 2, shareX = TRUE)
+
+
+```
+
+
+
+<font size = -1>
+
+**Source:** Data extraction from [Yahoo!Finances API](https://cran.r-project.org/web/packages/quantmod/quantmod.pdf)
+
+</font>
+
+
+
+
+## Problemática de Pesquisa {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 6>
+
+::: {.callout-important icon=false}
+## Perguntas
+
+- Quais as causas ou desencadeadores desses movimentos repentinos de inversão de tendência nas séries de preços ?
+
+
+
+- É possível estimar/medir o quanto essas mudanças bruscas de tendência geram de impacto na economia e no mercado de _commodities_ agrícolas ?
+
+
+
+
+- Como podemos antecipar/prever o acontecimento dessas "quebras" nas séries temporais de preços no futuro ?
+
+
+
+
+- Pode-se otimizar o processo decisório de compra e venda de grãos recomendando as melhores alocações de portfólio de _commodities_ em condições de risco e incerteza ?
+
+
+
+:::
+
+
+</font>
+
+
+
+## Teorias de Base {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 5>
+
+::: {.callout-note appearance="simple" icon=false}
+
+| Área de Ciência | Teoria                                                | Pensadores                                                       |
+|----------------|-------------------------------------------------------|------------------------------------------------------------------|
+| Microeconomia   | Teoria da Demanda e do Consumidor                     | Walrás, Pareto, Arrow, Debreu, Samuelson, Hicks                   |
+| Microeconomia   | Estruturas de Mercado                                 | Porter, Chamberlin, Joan Robinson, Bain                           |
+| Microeconomia   | Finanças Comportamentais                              | Daniel Kahneman, Amos Tversky, Robert Shiller                     |
+| Microeconomia   | Eficiência de Mercado                                  | Eugene Fama, Fischer Black e Myron Scholes, Jensen                |
+| Microeconomia   | Teoria do Portfólio                                    | Harry Markowitz, Milton Friedman, Keynes                          |
+| Finanças        | Teoria dos Ciclos Financeiros                          | Hyman Minsky, Irving Fischer, Joseph Schumpeter e Kondratiev      |
+| Finanças        | Teoria do Mais Tolo (ou Teoria do Toque de Midas Reverso)| John Kenneth Galbraith, Nassim Taleb                             |
+| Econometria Financeira | Bayesian GARCH with Markov Regime Switching     | David Ardia, Robert Engle, Tim Bollerslev, Gary Koop               |
+| Macroeconomia   | Teoria da Formação das Expectativas                   | Robert Lucas, Milton Friedman, Edmund Phelps, Franco Modigliani   |
+| Neuroeconomia   | Teoria da Hipótese da Antecipação de Recompensa       | Wolfram Schultz, Antonio Rangel, Paul Glimcher                    |
+| Microeconomia   | Teoria da Seleção Adversa                             | George Akerlof, Michael Spence, Stiglitz                          |
+| Complexidade (Física de redes) | Sistemas Dinâmicos Adpatativos não-lineares | Arthur Ávila, Brian Arthur, Robert May                         |
+
+:::
+
+
+</font>
+
+
+
+
+
+## Hipóteses Científicas {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 6>
+
+::: {.callout-tip }
+## Insights
+
+- _Volatility Clustering_ e mudanças estruturais
+
+&nbsp;
+
+- Análise de Intervenção Causal em Séries Temporais nas quebras e "efeito disseminação"
+
+&nbsp;
+
+- Desenvolvimentos do modelo de otimização de portfolio de Markowitz (CAPM, B&S, Merton, Black-Litterman ...)
+
+&nbsp;
+
+- Múltiplos Objetivos variando conforme o contexto de mercado e as expectativas percebidas (risco e incerteza)
+
+:::
+
+
+</font>
+
+
+## Justificativa e relevância {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 5>
+
+::: {.callout-caution collapse="false" appearance="simple"}
+## Contribuições teóricas
+
+- Identificação dos _drivers_ dos preços auxilia na investigação da causa dos movimentos repentinos nas séries de preços (Teoria da Demanda do Consumidor, Estruturas de Mercado e Teoria do Portfólio [motivo transação, especulação ou precaução]) pode ser utilizada em conjunto com a técnica Econométrica de Análise de Intervenção em Séries Temporais [Angrist e Imbens, Brodersen _et. alli_ (2015)] para avaliar seu impacto causal na série de preço estudada;
+
+- A Teoria dos Ciclos Financeiros ajuda a compreender em qual contexto econômico a disseminação de efeito econômico-financeiro nocivo ou positivo está inserida frente a quebra repentina da tendência da trajetória de preços de alimentos (_commodities_)
+
+- O uso das técnicas pertinentes dentro da teoria da Econometria Financeira com o uso do modelo [Bayesiano GARCH com mudanças de regime markovianos]() se mostra aderente à realidade dos dados e condizente com os últimos desenvolvimentos teóricos a respeito do fenômeno da dinâmica complexa dos preços dessas _commodities_;
+
+- A teoria de alocação de portfólio desde Markowitz pode ser melhor elaborada combinando as ferramentas de otimização multiobjetivo multiperíodo de maneira dinâmica em consonância com modelos econométricos que consigam incorporar com maior clareza a "incerteza" percebida pelos _players_ de mercado na sua aferição de risco x retorno. Assim, os processos decisórios de compra e venda em momentos oportunos se tornariam mais claros.
+
+:::
+</font>
+
+
+## Testes e resultados experimentais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 5>
+
+ - [Aplicação dos modelos ARCH pra VALE x Brumadinho](https://rhozon.github.io/selecaodeprodutosnor/cotacoes.html)
+
+ - [Time Series Intervention: Causal Impact estimatives](https://rhozon.github.io/selecaodeprodutosnor/causalimpact.html)
+
+ - [Otimização Multiobjetivo: Exercício teórico e aplicação em portfolio de commodities](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobjective.html#Roda_o_algoritmo_de_otimiza%C3%A7%C3%A3o) 
+ 
+ - [Otimização Multiobjetivo: Exercício teórico e aplicação em portfolio de commodities (backtests)](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobj_portfolio.html)
+
+ - [Otimização Multiobjetivo: Alocação de Risco em Portfólio com Evolução Diferencial](https://rhozon.github.io/selecaodeprodutosnor/Differential_Optimization_Portfolio.html)
+ 
+
+</font>
+ 
+ 
+ 
+## Testes e resultados experimentais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 4>
+
+Modelo de Markowitz...
+
+$$
+\max \displaystyle \sum_{i=1}^{n} \mu_i w_i
+$$
+$$
+\min \displaystyle\sum_{i=1}^{n}\sum_{j=1}^{n} \sigma_{ij}w_i w_j
+$$
+Sujeito a:
+
+$$
+\displaystyle\sum_{ij=1}^{n}w_{ij} \geq 0
+$$
+
+$$
+\displaystyle \sum_{ij=1}^{n}\mu_{ij} \geq \mbox{taxa básica de juros
+(TMA)}
+$$
+
+
+
+</font>
+
+
+## Testes e resultados experimentais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 5>
+
+Limitações do Modelo de Markowitz:
+
+- a Hipótese de Eficiência de Mercado, que anuncia que um investidor não conseguirá atingir de forma consistentemente retornos superiores à média do mercado, considerando as informações publicamente disponíveis quando o investimento é feito;
+- Os investidores são racionais, e evitam o risco quando possível;
+- Não há assimetria de informação no mercado;
+- Não há investidores suficientes para influenciar os preços de mercado;
+- Os investidores têm acesso ilimitado a empréstimos e empréstimos à taxa de juros livre de risco.
+
+
+</font>
+
+
+## Modelando o Risco dos retornos dos preços {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<center>
+<font size = 5>
+
+![Evolução dos modelos heterocedásticos (elaborado pelo autor)](https://raw.githubusercontent.com/rhozon/Doutorado/main/evolucao_garch.png){width=50%}
+</center>
+
+
+</font>
+
+## Brainstorm {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<center>
+<font size = 5>
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/brainstorm_garch.png){width=60%}
+
+</font>
+
+## Multiobjetivo Markowitz (adaptado) {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+
+<center>
+<font size = 4>
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/multiobjetivo_portfolio_Pareto_front.png){width=60%}
+
+
+</font>
+</center>
+
+
+
+## Revisão Sistemática de Literatura {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<center>
+
+<font size = 5>
+
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/revsislit_begins.png){width=95%}
+
+</font>
+
+</center>
+ 
+
+## Artigos replicados e adaptados {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 5>
+
+- [***Bayesian estimation of a Markov-switching threshold asymmetric GARCH model with Student-t innovations***
+David Ardia, The Econometrics Journal, Vol. 12, No. 1 (2009), pp. 105-126 (22 pages)](https://www.jstor.org/stable/23116668)
+
+- Ardia D, Boudt K, Carl P, Mullen KM, Peterson BG (2011). ***Differential Evolution with DEoptim: An Application to Non-Convex Portfolio Optimization.*** R Journal, 3(1), 27–34. doi:10.32614/RJ-2011-005.
+
+- Ardia, D., Bolliger, G., Boudt, K., & Gagnon-Fleury, J.-P. (2017). ***The impact of covariance misspecification in risk-based portfolios.*** Annals of Operations Research, 254(1-2), 1–16. doi:10.1007/s10479-017-2474-7 
+
+- Jian, L. and Wang, S. (2021). ***Robust multi-period and multi-objective portfolio selection.*** Journal of Industrial and Management Optimization. Volume 17, Number 2, March 2021 doi:10.3934/jimo.2019130 in [aimsciences.org](https://www.aimsciences.org/article/doi/10.3934/jimo.2019130?viewType=HTML)
+
+- Kenneth B., Anish G., S. Kusiaka, Markowitz H., Savoulidesa N. and Zheng, Q. ***Multi-Period portfolio selection: A practical simulation-based framework.*** Journal Of Investment Management, Vol. 18, No. 4, (2020), pp. 94–129 _in_ [invesco.com](https://www.invesco.com/content/dam/invesco/emea/en/pdf/joim_multi_period_portfolio_selection.pdf) 
+
+- [Yunjong Eo, James Morley, 2023, **Does the Survey of Professional Forecasters Help
+Predict the Shape of Recessions in Real Time?**](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4451874)
+
+</font>
+
+
+
+
+## Futuros Estudos {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<center>
+<font size = 4>
+
+![](https://raw.githubusercontent.com/rhozon/Doutorado/main/multi_frentes_Pareto.png){width=60%}
+
+
+</font>
+</center>
+
+
+## Porque aprender econometria impulsiona minha carreira ? {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:12pt; font-style:italic"; class="quote">
+
+"Bem, se você acha que a econometria é chata, devo dizer que seus professores falharam com você. Talvez você tenha sofrido um curso de econometria que basicamente trata a disciplina como um tipo de matemática aplicada - muito teórica, muito abstrata."
+
+```
+
+<font size = 3.5px>
+
+Josh Angrist _in_ [Mastering Econometrics](https://mru.org/courses/mastering-econometrics/isnt-econometrics-boring)
+
+</font>
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+- Muitas fórmulas e abstrações matemáticas...
+
+- O raciocínio analítico fornecido pelo conhecimento de aplicação da teoria econômica é fundamental para o negócio;
+
+- Viabilidade de uso de modelos de estimativas econômicas complexas com recursos computacionais;
+
+- Diferencial em relação aos profissionais que saem "analfabetos funcionais" das universidades mundo afora
+
+- Diferencial em relação ao "programador puro" erroneamente chamado de "cientista de dados"
+
+</font>
+
+
+
+
+:::
+
+
+## Referências {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+<div style="text-align: left;">
+<hr color="black" size="1" style="dashed; float: left; width: 70%;">
+</div>
+
+<br>
+
+<font size = 4>
+
+Angrist, Joshua D., and Jörn-Steffen Pischke. ***Mastering 'Metrics: The Path from Cause to Effect.*** Princeton University Press, 2014.
+
+Angrist, Joshua D., and Jörn-Steffen Pischke. ***Mostly Harmless Econometrics: An Empiricist's Companion.*** Princeton University Press, 2009.
+
+FAO. ***Price volatility in food and agricultural markets: Policy Responses.*** 2011. Disponível em: http://www.oecd.org/tad/agricultural-trade/48152638.pdf. Acessado em Abr 2022
+
+Pearl, Judea, Madelyn Glymour, and Nicholas P. Jewell. ***Causal Inference in Statistics: A Primer.*** Wiley, 2016.
+
+Granger, C. W. J. ***Empirical modeling in economics.*** Reino Unido: Cambridge University Press, 1999. p. 58.
+
+Gujarati, D.,N. ***Basic Econometrics***, fourth edition, McGraw-HiII/lrwin, 2011.
+
+Hyndman, R.J., & Athanasopoulos, G. (2021) ***Forecasting: principles and practice,*** 3rd edition, OTexts: Melbourne, Australia. [OTexts.com/fpp3](https://otexts.com/fpp3/). Accessed on <may 2023>.
+
+Maddala, G.,S. ***Introdução à Econometria***, terceira edição, LTC, Rio de Janeiro, 2001.
+
+Pedace, R. ***Econometrics for Dummies.*** John Wiley & Sons, 2013.
+
+
+</font>
+
+
+
+## Obrigado! {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+&nbsp;
+
+<font size = 6>
+
+::: {.callout-note appearance="simple"}
+## Rodrigo Hermont Ozon
+
+$\Rightarrow$ A todos os organizadores do [CiDAMO](http://cidamo.com.br/) pela oportunidade!
+
+$\Rightarrow$ Agradecimentos aos pesquisadores do [PPGEPS/PUCPR](https://www.pucpr.br/escola-politecnica/mestrado-doutorado/engenharia-de-producao-e-sistemas/), aos ouvintes e em especial ao meu orientador, prof. Dr. Gilberto Reynoso Meza 
+
+- Meu perfil no [Google Scholar](https://scholar.google.com/citations?user=hPcIR9oAAAAJ&hl=en)
+- Meu [CV Lattes](http://lattes.cnpq.br/3532649625879285)
+- Meu [site com posts, tutoriais e artigos](https://rhozon.github.io/selecaodeprodutosnor/index.html) 
+- Meu [perfil no LinkeDin](https://www.linkedin.com/in/rodrigohermontozon/)
+
+:::
+
+
+&nbsp;
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:11pt; font-style:italic"; class="quote">
+
+"Situations emerge in the process of creative destruction in which many firms may have to perish that nevertheless would be able to live on vigorously and usefully if they could weather a particular storm. <br>
+
+[... Capitalism requires] the perennial gale of Creative Destruction." Schumpeter, Joseph A. (1994) [1942]. Capitalism, Socialism and Democracy. London: Routledge. pp. 82–83. ISBN 978-0-415-10762-4. Retrieved 23 November 2011. 
+
+</p>
+```
+
+ 
+
+</font>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
