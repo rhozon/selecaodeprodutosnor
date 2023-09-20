@@ -33,6 +33,26 @@ knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
 
 ```
 
+## Live YouTube {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<center>
+
+<iframe width="660" height="315" src="https://www.youtube.com/embed/E_VVJzJkmQQ?si=Ava3J59OJT8dcumw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+</center>
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+ - [Link YouTube para essa apresentação AQUI](https://www.youtube.com/live/E_VVJzJkmQQ?si=bLv8VlUbAP7RQkX1)
+
+ 
+ 
+</font>
+:::
+
 
 ## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/cidamo_background_img_conteudo.png" background-size="1500px" background-repeat="no-repeat"}
 
@@ -40,6 +60,8 @@ knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
 <font size = 5px>
+
+ - [Link YouTube para essa apresentação AQUI](https://www.youtube.com/live/E_VVJzJkmQQ?si=bLv8VlUbAP7RQkX1)
 
  - O que é econometria ?
 
@@ -435,7 +457,7 @@ data_df <- data.frame(
 
 ```{r, echo=FALSE }
 
-milho <- ggplotly(
+milho <- #ggplotly(
 data_df |> ggplot(aes(x = time,
                       y = ZC.F )) +
   geom_line() +
@@ -450,9 +472,9 @@ data_df |> ggplot(aes(x = time,
   labs(  
   caption = "Source: Data extraction from Yahoo!Finances API"
  )
-)
+#)
 
-soja <- ggplotly(
+soja <-# ggplotly(
 data_df |> ggplot(aes(x = time,
                       y = ZL.F )) +
   geom_line() +
@@ -467,10 +489,11 @@ data_df |> ggplot(aes(x = time,
   labs(  
   caption = "Source: Data extraction from Yahoo!Finances API"
  )
-)
+#)
 
-subplot(milho, soja, nrows = 2, shareX = TRUE)
+#subplot(milho, soja, nrows = 2, shareX = TRUE)
 
+milho
 
 ```
 
