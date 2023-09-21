@@ -235,6 +235,10 @@ Tutoriais disponíveis:
 
 - [CiDAMO -- Econometria e Inferência Causal, o que é econometria e sua importância](https://rhozon.github.io/selecaodeprodutosnor/Apresentacao_Econometria_CiDAMO_Rodrigo_H_Ozon.html#/title-slide)
 
+### *Apresentação Desagregação de Séries Temporais*
+
+- [Veja a apresentação que utilizei pra demonstrar pros pesquisadores do PPGEPS/UTFPR sobre como desagregar séries temporais]()
+
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 

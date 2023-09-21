@@ -1,0 +1,464 @@
+---
+title: "Desagregação de Séries Temporais"
+subtitle: "***Uma abordagem introdutória***"
+author: <a href="https://rhozon.github.io/selecaodeprodutosnor/index.html">Rodrigo Hermont Ozon</a>
+title-slide-attributes:
+    data-background-image: "https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png"
+    data-background-size: contain
+    data-background-opacity: "number"
+format:
+  revealjs:
+    incremental: true   
+    slide-number: true
+    chalkboard: 
+      buttons: true
+    preview-links: auto
+    css: styles.css
+    footer: <a href="http://www.utfpr.edu.br/cursos/coordenacoes/stricto-sensu/ppgeps"> -- PPGEPS/UTFPR , Sep 21th 2023 -- </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon -- PhD Researcher at PPGEPS/PUCPR] </a>
+---
+
+```{r setup, include=FALSE}
+
+start_time <- Sys.time()
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+
+## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+ - Quando podemos e usamos agregação de dados de séries temporais ?
+
+ - Distinções entre dividir e desagregar dados de séries temporais
+ 
+ - Como e por quê desagregar uma série temporal ?
+ 
+ - Quais critérios de desagregação devo empregar ?
+
+ - Alguns exemplos de aplicação
+
+ - Esclarecimento de dúvidas 
+
+ - Agradecimentos
+
+</font>
+
+:::
+
+
+## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+Alguns exemplos de séries temporais usualmente agregadas...
+
+<center>
+
+![](https://github.com/rhozon/Doutorado/blob/main/news_inflation1.png?raw=true){width=50%}
+
+
+
+Fonte: [moneyreport.com.br, 12/09/23](https://www.moneyreport.com.br/economia/ipca-sobe-023-em-agosto-e-taxa-acumulada-chega-a-461/)
+
+</center>
+
+
+Aqui os economistas fazem um produtório pra denotar a taxa acumulada até o período $n$:
+
+$$
+i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
+$$
+
+:::
+
+
+
+
+</font>
+
+
+
+## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+<center>
+![](https://github.com/rhozon/Doutorado/blob/main/producao_acumulada2.png?raw=true){width=50%}
+
+Fonte: [Agencia de Noticias IBGE](https://agenciadenoticias.ibge.gov.br/agencia-noticias/2012-agencia-de-noticias/noticias/37832-estimativa-de-agosto-preve-safra-recorde-de-313-3-milhoes-de-toneladas-para-2023)
+
+</center>
+
+Aqui geralmente se faz uma soma da quantidade produzida em kgs ou toneladas ao longo de um determinado período de tempo:
+
+$$
+\widehat{\mbox{Safra}}_t = \sum^{n}_{t=1} \mbox{volume}_t
+$$
+
+
+:::
+
+
+
+
+</font>
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+Imagine que você necessita calcular as parcelas de um financiamento mensalmente. Você sabe de antemão que a taxa de juros básica (referência) da economia brasileira é a taxa SELIC que é unicamente de contabilização anual...
+
+<center>
+
+![](https://github.com/rhozon/Doutorado/blob/main/selic_taxa3.png?raw=true){width=50%}
+
+Fonte: [monitordomercado.com.br](https://monitordomercado.com.br/noticias/economia/46870-selic-hoje-previsao-para-2023-continua-em-11)
+
+</center>
+
+Aqui a taxa SELIC mensal é dada por $\mbox{SELIC}_{\mbox{mês}} = (1+i)^{(q/t)} = (1+13,25\%)^{(1/12)} \Rightarrow 1,042290887\%\,a.m.$
+:::
+
+
+</font>
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+<center>
+![](https://github.com/rhozon/Doutorado/blob/main/safra2023estimada4.png?raw=true){width=50%}
+
+Fonte: [Brasil61](https://brasil61.com/n/safra-de-2023-esta-prevista-em-299-7-milhoes-de-toneladas-de-graos-aponta-ibge-bras238116)
+
+</center>
+
+- Aqui simplesmente dividiriamos os valores da produção prevista pro ano de 2023, se quiséssemos dados mensais por 12...
+
+
+
+:::
+
+</font>
+
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+- Mas, qual seria o problema em se fazer essas operações simples de dividir, somar ou multiplicar ?
+
+ - E se quiséssemos construir um modelo econométrico de séries temporais, digamos pra prever os preços diários do milho na CBOT em função de alguns dados de demanda e de oferta, por exemplo ?
+
+
+:::
+
+</font>
+
+
+
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 3px>
+
+<center>
+
+ ![](https://github.com/rhozon/Doutorado/blob/main/us_exports_mensal5.png?raw=true){width=60%}
+
+
+ ![](https://github.com/rhozon/Doutorado/blob/main/us_exportsdividida5.png?raw=true){width=60%}
+
+Fonte: Bloomberg a partir de dados de FAS/USDA, dados de exportações mensais e "diarizadas" de milho norte-americano 
+
+ 
+</center>
+
+
+
+
+
+
+
+</font>
+
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+
+
+<font size = 3px>
+
+<center>
+
+Será que terá um bom fit estatístico ?
+
+![](https://github.com/rhozon/Doutorado/blob/main/cornprices_target6.png?raw=true){width=60% height=50%}
+
+![](https://github.com/rhozon/Doutorado/blob/main/us_exportsdividida5.png?raw=true){width=60%}
+
+Fonte: Bloomberg a partir de dados de FAS/USDA, dados de preços de fechamento diário de milho norte-americano x exportações americanas 
+
+</center>
+
+</font>
+
+
+
+
+
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+```{=html}
+
+<p style="font-family: times, serif; font-size:13pt; font-style:italic"; class="quote">
+
+"Uma variável aleatória é nada mais que uma função que mapeia os resultados de um processo estocástico (aleatório) em valores numéricos." 
+
+</p>
+```
+
+[(Zibetti, 2023)](https://www.inf.ufsc.br/~andre.zibetti/probabilidade/variaveis_aleatorias.html)
+
+- Relações determinísticas x estocásticas (vide Gujarati & Porter, 2011 p. 28)
+
+- O sentido "econômico" das relações com os dados disponíveis precisa existir !
+
+- Um bom modelo sempre será aquele que mais se adequa à realidade de acordo com as possibilidades ...
+
+- Mas então, como construir um modelo que seja "mais realista" com os dados de exportação, produção, taxas e etc. ?
+
+- Como preservar a verdadeira variabilidade nas exportações dia-a-dia e construi-la de maneira mais realista ?
+
+- Afinal, quem exporta, exporta todo dia, quem produz, produz todo dia e não somente mensalmente p. ex. ...
+
+:::
+
+</font>
+
+
+## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 4px>
+
+O glorioso trabalho e contribuição de [Sax & Steiner (2013)](https://journal.r-project.org/archive/2013-2/sax-steiner.pdf) !!!
+
+<center>
+![](https://github.com/rhozon/Doutorado/blob/main/saxsteiner_tempdisagR.png?raw=true){width=90%}
+
+Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.html)
+</center>
+
+
+
+</font>
+
+
+## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+<font size = 4px>
+
+- Os autores uparam alguns "tutoriais de uso" [Vignettes -- "Disaggregating annual data to quarterly"](https://cran.r-project.org/web/packages/tempdisagg/vignettes/intro.html) para usuários do R;
+
+
+- Ps* No Python existe [uma iniciativa de replicação](https://stackoverflow.com/questions/60058095/temporal-disaggregation-of-time-series-in-python) da tempdisagg, mas me pareceu inacabada [(veja aqui o repo no GitHub da biblioteca timedisagg)](https://github.com/jstephenj14/timedisagg)
+
+
+- Como que eu utilizei e adaptei o tratamento da desagregação para o meu caso ?
+
+</font>
+
+- ![](https://github.com/rhozon/Doutorado/blob/main/timeseriesdisagregation_us_exp.png?raw=true){width=80%}
+
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+ - Mas, como sei qual critério devo utilizar para a minha série temporal, em específico ?
+ 
+ - Afinal, não posso desagregar uma série temporal de um dado de produção do mesmo modo que desagrego uma taxa, por exemplo ...
+ 
+ - Como desagrego, pra diário, uma série temporal de preços com disponibilidade de publicação unicamente semanal numa fonte oficial ? 
+ 
+ - Como desagrego, pra construir uma série diária, um dado que é um número-índice, [como o índice de anomalia do El Niño, por exemplo ?](https://www.cpc.ncep.noaa.gov/products/precip/CWlink/MJO/enso.shtml)
+ 
+ 
+
+
+
+:::
+</font>
+
+
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+
+
+
+![](https://github.com/rhozon/Doutorado/blob/main/criteriadisag.png?raw=true)
+
+
+
+:::
+</font>
+
+
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+- Como no meu caso, os dados que eu possuía se referiam as quantidades de milho exportadas mensalmente, eu utilizei o critério de desagregação pela soma.
+
+- Afinal os órgãos de estatística oficiais dos governos contabilizam uma soma do volume total exportado em toneladas mensalmente e as divulgam dessa maneira...
+
+- Mas se a série for de preços, posso utilizar o critério de desagregação por "similaridade" como o last ou o first por exemplo;
+
+- Para variáveis que seriam taxas acumuladas, posso utilizar o critério de desagregação pelas médias (geométricas) por exemplo...
+
+- Para números-indices como o El Niño por exemplo, posso utilizar de técnicas mais elaboradas de desagregação combinando p. ex. similaridade com os desvios em relação as oscilações médias...Ou criar uma feature utilizando um simulador de ruído branco...
+
+
+
+
+:::
+</font>
+
+
+
+## Um exemplo de séries desagregadas {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+<center>
+
+![](https://github.com/rhozon/Doutorado/blob/main/us_exportsdividida5.png?raw=true){width=80%}
+
+![](https://github.com/rhozon/Doutorado/blob/main/desagregation_us_expcorn.png?raw=true){width=80%}
+
+</center>
+
+:::
+</font>
+
+## Mostrando mais exemplos... {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 5px>
+
+- Desagregação da série temporal da Produção de Milho no Brasil de mês pra dia;
+
+- Desagregação da série do El Niño
+
+- Desagregação e preenchimento de missing data com técnica de backcasting e bootstrapping
+
+- Desgregação de dados temporais de área colhida de milho na Ucrânia 
+
+- Desagregação a séries de preços do óleo de palma negociado na Malásia/Mundo
+
+:::
+</font>
+
+
+## Referências {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<div style="text-align: left;">
+<hr color="black" size="1" style="dashed; float: left; width: 70%;">
+</div>
+
+<br>
+
+<font size = 4>
+
+Angrist, Joshua D., and Jörn-Steffen Pischke. ***Mastering 'Metrics: The Path from Cause to Effect.*** Princeton University Press, 2014.
+
+Angrist, Joshua D., and Jörn-Steffen Pischke. ***Mostly Harmless Econometrics: An Empiricist's Companion.*** Princeton University Press, 2009.
+
+FAO. ***Price volatility in food and agricultural markets: Policy Responses.*** 2011. Disponível em: http://www.oecd.org/tad/agricultural-trade/48152638.pdf. Acessado em Abr 2022
+
+Pearl, Judea, Madelyn Glymour, and Nicholas P. Jewell. ***Causal Inference in Statistics: A Primer.*** Wiley, 2016.
+
+Granger, C. W. J. ***Empirical modeling in economics.*** Reino Unido: Cambridge University Press, 1999. p. 58.
+
+Gujarati, D.,N. ***Basic Econometrics***, fourth edition, McGraw-HiII/lrwin, 2011.
+
+Hyndman, R.J., & Athanasopoulos, G. (2021) ***Forecasting: principles and practice,*** 3rd edition, OTexts: Melbourne, Australia. [OTexts.com/fpp3](https://otexts.com/fpp3/). Accessed on <may 2023>.
+
+Maddala, G.,S. ***Introdução à Econometria***, terceira edição, LTC, Rio de Janeiro, 2001.
+
+Pedace, R. ***Econometrics for Dummies.*** John Wiley & Sons, 2013.
+
+Sax, C. & Steiner, P. ***Temporal Disaggregation of Time Series***. _In_ The R Journal Vol. 5/2, December 2013 ISSN 2073-4859.
+
+
+</font>
+
+
+
+## Obrigado! {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+&nbsp;
+
+<font size = 6>
+
+::: {.callout-note appearance="simple"}
+## Rodrigo Hermont Ozon
+
+$\Rightarrow$ Ao professor [Matheus Dal Molin Ribeiro](https://www.linkedin.com/in/matheus-dal-molin-ribeiro-8b581016a/) pela oportunidade de contribuir com os novos pesquisadores;
+
+$\Rightarrow$ Agradecimentos aos pesquisadores do [PPGEPS/PUCPR](https://www.pucpr.br/escola-politecnica/mestrado-doutorado/engenharia-de-producao-e-sistemas/), aos ouvintes e em especial ao meu orientador, prof. Dr. Gilberto Reynoso Meza 
+
+- Meu perfil no [Google Scholar](https://scholar.google.com/citations?user=hPcIR9oAAAAJ&hl=en)
+- Meu [CV Lattes](http://lattes.cnpq.br/3532649625879285)
+- Meu [site com posts, tutoriais e artigos](https://rhozon.github.io/selecaodeprodutosnor/index.html) 
+- Meu [perfil no LinkeDin](https://www.linkedin.com/in/rodrigohermontozon/)
+
+:::
+
+

@@ -52,8 +52,8 @@ navbar:
           href: sparklyr.html           
         - text: "ETL com o R direto no Power BI"
           href: ETL_R_no_PowerBI.html            
-        - text: "Webscrapping CoinMarketCap x Icoinomia"
-          href: coinmarketcapxicoinomia.html 
+        - text: "Deagregação de Séries Temporais"
+          href: Apresentacao_DesagregacaoSeriesTemporais.html  
         - text: "Projeto Integrador de Ciência de Dados"
           href: projetointegrador.html 
         - text: "Homework I: Econometrics (Shangai University of Finance)"
@@ -93,7 +93,6 @@ navbar:
         - text: "MultiObjective Optim. Portfolio with non linear time series Research Presentation"
           href: Research_Presentation_RHO.html  
 
-          
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
