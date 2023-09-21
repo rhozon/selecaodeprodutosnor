@@ -237,7 +237,7 @@ Tutoriais disponíveis:
 
 ### *Apresentação Desagregação de Séries Temporais*
 
-- [Veja a apresentação que utilizei pra demonstrar pros pesquisadores do PPGEPS/UTFPR sobre como desagregar séries temporais]()
+- [Veja a apresentação que utilizei pra demonstrar pros pesquisadores do PPGEPS/UTFPR sobre como desagregar séries temporais](https://rhozon.github.io/selecaodeprodutosnor/Apresentacao_DesagregacaoSeriesTemporais.html#/title-slide)
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
