@@ -1,0 +1,386 @@
+---
+title: "O algoritmo Non-dominated Sorting Genetic Algorithm II (NSGA-II)"
+subtitle: "***Métodos Heurísticos Populacionais***"
+author: <a href="https://rhozon.github.io/selecaodeprodutosnor/index.html">Rodrigo Hermont Ozon</a>
+title-slide-attributes:
+    data-background-image: "https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png"
+    data-background-size: contain
+    data-background-opacity: "number"
+format:
+  revealjs:
+    incremental: true   
+    slide-number: true
+    chalkboard: 
+      buttons: true
+    preview-links: auto
+    css: styles.css
+    footer: <a href="http://www.utfpr.edu.br/cursos/coordenacoes/stricto-sensu/ppgeps"> -- PPGEPS/UTFPR , Oct 6th 2023 -- </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon -- PhD Researcher at PPGEPS/PUCPR] </a>
+---
+
+```{r setup, include=FALSE}
+
+start_time <- Sys.time()
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+
+## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+...em até 15 minutinhos, pretendo abordar brevemente
+
+ - Contextualização (Introdução)
+
+ - Histórico da evolução do NSGAII
+ 
+ - Avanços e marcos teóricos de seu desenvolvimento
+ 
+ - Funcionamento do NSGAII
+
+ - Algumas aplicações do NSGAII na minha pesquisa
+
+ - Esclarecimento de dúvidas 
+
+ - Meus Contatos
+
+</font>
+
+:::
+
+
+## Intro {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+- O NSGA-II, ou _"Non-dominated Sorting Genetic Algorithm II"_, é um algoritmo evolutivo popular usado para otimização multiobjetivo.
+
+- Ele é projetado para resolver problemas onde há múltiplos objetivos em conflito, e a solução ideal é um conjunto de soluções, conhecido como "Frente ou Fronteira de Pareto".
+
+
+
+```{=html}
+
+<div class="fragment" style="display: flex; justify-content: center;">
+    <div style="width: 30%; text-align: center; margin-right: 20px;">
+        <img src="https://www.researchgate.net/profile/Rafal-Drezewski/publication/319259031/figure/fig1/AS:530860069462016@1503578311268/The-example-of-the-Pareto-optimal-front-of-a-portfolio-optimization-problem.png" width="100%">
+        <figcaption style="font-size: 10px;">
+            Fonte: <a href="https://www.researchgate.net/publication/319259031_An_Agent-Based_Co-Evolutionary_Multi-Objective_Algorithm_for_Portfolio_Optimization">Drezewski, Rafal & Doroz, Krzysztof. (2017). An Agent-Based Co-Evolutionary Multi-Objective Algorithm for Portfolio Optimization. Symmetry. 9. 168. 10.3390/sym9090168.</a>
+        </figcaption>
+    </div>
+    <div style="width: 35%; text-align: center;">
+        <img src="https://static.hindawi.com/articles/mpe/volume-2017/4197914/figures/4197914.fig.002.jpg" width="100%">
+        <figcaption style="font-size: 10px;">
+            Fonte: <a href="https://www.hindawi.com/journals/mpe/2017/4197914/">Qu, B., Zhou, Q., Xiao, J., & Suganthan, P. N. (2017). Large-scale portfolio optimization using multiobjective evolutionary algorithms and preselection methods. Mathematical Problems in Engineering, 2017, 1-14. https://doi.org/10.1155/2017/4197914</a>
+        </figcaption>
+    </div>
+</div>
+
+```
+
+- O NSGA-II é amplamente reconhecido por sua eficiência e capacidade de encontrar um conjunto diversificado de soluções na fronteira de Pareto.
+
+- Ele supera muitos de seus predecessores em termos de velocidade, precisão e diversidade das soluções.
+
+- É aplicado em uma variedade de campos, desde engenharia, bioinformática (para otimização de redes metabólicas) até economia, devido à sua capacidade de lidar com complexidades e múltiplos objetivos.
+
+:::
+
+</font>
+
+## Breve Histórico {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+- O NSGA<sup><a href="#ref1" style="text-decoration:none;">[1]</a></sup> (Non-dominated Sorting Genetic Algorithm) é um algoritmo evolutivo desenvolvido para otimização multiobjetivo. Ele utiliza uma abordagem baseada em dominância para classificar e selecionar soluções, identificando aquelas que estão na fronteira de Pareto, o conjunto ideal de soluções em problemas multiobjetivo. Para garantir uma distribuição diversificada de soluções ao longo desta fronteira, o NSGA incorpora o conceito de "compartilhamento de nicho". Combinando essas características com operadores genéticos tradicionais, como seleção, cruzamento e mutação, o NSGA busca soluções ótimas em problemas onde múltiplos objetivos estão em conflito.
+
+- O NSGA original foi introduzido em 1995 e, embora fosse eficaz, tinha algumas limitações, especialmente em termos de compartilhamento de nicho e complexidade computacional.
+ 
+ -  *Compartilhamento de nicho é uma técnica usada em algoritmos genéticos e outros algoritmos evolutivos para manter a diversidade na população durante o processo de evolução. A ideia é evitar a convergência prematura para uma solução subótima e garantir que várias regiões do espaço de busca sejam exploradas.
+ 
+- O NSGA-II<sup><a href="#ref2" style="text-decoration:none;">[2]</a></sup> foi proposto em 2002 por Kalyanmoy Deb, Amrit Pratap, Sameer Agarwal e T. Meyarivan como uma melhoria significativa do algoritmo original, abordando suas limitações.
+
+</font>
+
+```{=html}
+
+<div class="fragment" id="ref1" style="font-size:10px;">
+    [1] <a href="https://ieeexplore.ieee.org/document/6791678" target="_blank">Deb, K. (1995). Multi-objective genetic algorithms: Problem difficulties and construction of test problems. Evolutionary Computation, 7(3), 205-230</a>
+</div>
+
+<div class="fragment" id="ref2" style="font-size:10px;">
+    [2] <a href="https://link.springer.com/chapter/10.1007/3-540-45356-3_83" target="_blank">Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. (2002). A Fast Elitist Non-dominated Sorting Genetic Algorithm for Multi-objective Optimisation: NSGA-II.</a> DOI: 10.1007/3-540-45356-3_83.
+</div>
+
+```
+
+:::
+
+</font>
+
+
+## Inspiração e evolução {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4px>
+
+***Inspiração:***
+
+- Baseado em algoritmos genéticos, o NSGA foi desenvolvido para abordar a otimização multiobjetivo, onde múltiplos objetivos muitas vezes estão em conflito.
+- A necessidade de encontrar um conjunto diversificado de soluções na fronteira de Pareto levou ao desenvolvimento do NSGA e, posteriormente, do NSGA-II.
+
+***Evolução:***
+
+- NSGA: Introduzido em 1995, focado na otimização multiobjetivo, mas tinha limitações em compartilhamento de nicho e complexidade.
+- NSGA-II: Proposto em 2002 como uma melhoria significativa, introduzindo conceitos como elitismo$^1$, compartilhamento de nicho aprimorado e uma estratégia de seleção mais eficiente.
+- Desenvolvimentos Subsequentes: Ao longo dos anos, várias melhorias e variações do NSGA-II foram propostas para abordar cenários específicos e limitações percebidas.
+
+</font>
+
+<font size = 3px>
+
+
+1. Elitismo é um conceito usado em algoritmos genéticos e outras técnicas de otimização evolutiva. Refere-se à prática de preservar as melhores soluções (indivíduos) de uma geração para a próxima, garantindo que os indivíduos de alta qualidade não sejam perdidos devido a operações de cruzamento ou mutação. Em outras palavras, o elitismo garante que a qualidade da população não degrade ao longo das gerações.
+
+</font>
+
+## Evolução desde o artigo original {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+| Ano  | Título                                                                                                      | Descrição                                                                                                   |
+|------|-------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| $\pm$ 60´s   | Algoritmos Ponderados                                                                                      | Abordagem clássica para otimização multiobjetivo convertendo em problemas de objetivo único.                |
+| $\pm$ 70´s | Algoritmo de Otimização Vetorial (VGA)                                                                       | Abordagem clássica em otimização multiobjetivo otimizando todos os objetivos simultaneamente.              |
+| $\pm$ 70´s | Método de Otimização de Função Escalar (SFMO)                                                               | Abordagem que tenta otimizar uma combinação escalar dos objetivos.                                         |
+| $\pm$ 70´s e 80´s  | Algoritmo de Otimização de Compromisso (TCGA)                                                               | Busca soluções que sejam um compromisso entre diferentes objetivos.                                        |
+| 1995 | Multi-objective genetic algorithms: Problem difficulties and construction of test problems [Deb, 1995]    | Introdução do NSGA original. Aborda otimização multiobjetivo e suas dificuldades.                          |
+| 2002 | A Fast Elitist Non-dominated Sorting Genetic Algorithm for Multi-objective Optimisation: NSGA-II [Deb et al., 2002] | Melhoria significativa do NSGA original. Aborda compartilhamento de nicho e complexidade computacional.   |
+| Anos subsequentes | Vários estudos e melhorias [ [Hort, M., Sarro, F. (2021)](https://dl.acm.org/doi/10.1145/3449726.3459479), [Wang, Y. et al. (2019)](https://linkinghub.elsevier.com/retrieve/pii/S0306261919304568), [El-Abbasy, M. S., Elazouni, A., Zayed, T. (2020)](https://doi.org/10.1016/J.AUTCON.2020.103392), [Ouyang, J., Yang, F., Yang, S., Nie, Z. (2008)](https://www.tandfonline.com/doi/abs/10.1163/156939308784160703), [Ardakan, M. A., Rezvan, M. T. (2018)](https://linkinghub.elsevier.com/retrieve/pii/S0951832017303939), [Fettaka, S., Thibault, J., Gupta, Y. (2015)](https://link.springer.com/article/10.1007/s11081-014-9271-9) ]                                                                 | Estudos propuseram melhorias no NSGA-II para abordar suas limitações em cenários específicos, desde otimização de minas de metal até otimização de portfólio. |
+
+:::
+
+</font>
+
+
+## Comparação com outros algoritmos {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4px>
+
+- O NSGA-II é frequentemente comparado a outros algoritmos de otimização multiobjetivo, como o SPEA2 (Strength Pareto Evolutionary Algorithm 2) e o MOEA/D (Multi-Objective Evolutionary Algorithm based on Decomposition). Em muitos benchmarks e aplicações, o NSGA-II demonstrou ter uma performance superior em termos de encontrar uma fronteira de Pareto mais diversificada e precisa.
+
+- A complexidade computacional do NSGA-II é principalmente influenciada pela operação de ordenação não dominada. Para uma população de tamanho $N$, a complexidade é da ordem de $O(N^2)$, tornando-o eficiente para muitos problemas práticos, embora possa ser desafiador para problemas com grandes populações ou muitos objetivos.
+
+***Razões para Comparação:***
+
+</font>
+
+<font size = 4px>
+
+- Avaliar eficiência e uso de recursos.
+- Determinar qualidade e proximidade da fronteira de Pareto.
+- Medir diversidade das soluções.
+- Testar generalidade em diferentes problemas.
+
+***Comparativos geralmente presentes na literatura***
+
+</font>
+
+<font size = 3px>
+
+- NSGA: Versão anterior do NSGA-II. Avalia melhorias na segunda versão.
+
+- SPEA2: Abordagem diferente para classificação e diversidade. Ajuda a entender vantagens e desvantagens de cada método.[ [Zitzler, E., Laumanns, M., & Thiele, L. (2001). SPEA2: Improving the strength Pareto evolutionary algorithm. TIK-Report 103](https://www.researchgate.net/publication/216301720_SPEA2_Improving_the_Strength_Pareto_Evolutionary_Algorithm_for_Multiobjective_Optimization) ]
+
+- MOEA/D: Decompõe problemas multiobjetivo. Compara eficiência em convergência e diversidade. [ [Zhang, Q., Li, H. (2007). MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition. IEEE Transactions on Evolutionary Computation, 11(6), 712-731.](https://ieeexplore.ieee.org/document/4358754) ]
+
+- PAES: Estratégia baseada em arquivo. Destaca diferenças entre abordagens baseadas em população e arquivo. [ [Knowles, J., & Corne, D. (2000). Approximating the Nondominated Front Using the Pareto Archived Evolution Strategy. Evolutionary Computation, 8(2), 149-172.](https://www.mitpressjournals.org/doi/abs/10.1162/106365600568167) ]
+
+- OMOPSO: Versão otimizada do algoritmo de enxame. Contrasta algoritmos genéticos e baseados em enxames. [ [Sierra, M. R., & Coello, C. A. C. (2005). Improving PSO-based multi-objective optimization using crowding, mutation and ε-dominance. In Proceedings of the 3rd international conference on Evolutionary Multi-Criterion Optimization (pp. 505-519). Springer, Berlin, Heidelberg.](https://link.springer.com/chapter/10.1007/978-3-540-31880-4_34)  ]
+
+</font>
+
+## Desafios e Limitações {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
+<font size = 4px>
+
+- Eficiência em Problemas de Grande Escala: Em alguns estudos, variantes melhoradas do NSGA-II foram propostas para otimização de problemas de grande escala, indicando que o NSGA-II padrão pode não ser o mais eficiente para tais problemas [Xiaowei Gu et al., 2020](https://ieeexplore.ieee.org/document/8985327/).
+
+- Comparação com NSGA-III: Em certos problemas multiobjetivos, o NSGA-III, uma versão subsequente do NSGA-II, mostrou desempenho superior em métricas como distância central, métrica de espaçamento e eficiência computacional [Yihan Wang et al., 2019.](https://www.sciencedirect.com/science/article/pii/S0306261919304568?via%3Dihub) No entanto, em outros estudos, foi observado que o NSGA-III não supera sempre o NSGA-II, mesmo para problemas com muitos objetivos [H. Ishibuchi et al., 2016.](https://www.sciencedirect.com/science/article/pii/S0306261919304568?via%3Dihub)
+
+- Comparação com Outros Algoritmos: Em alguns cenários, o NSGA-II foi superado por outros algoritmos em termos de eficiência e qualidade de solução. Por exemplo, o 2-phase NSGA II superou o NSGA-II em otimização de portfólio [Seyedeh Elham Eftekharian et al., 2017.](https://www.mdpi.com/1999-4893/10/4/130) Em outro estudo, o NSGA-II teve um desempenho melhor do que o MOPSO em problemas de pequena escala, mas pode não ser o caso em problemas de maior escala [Nima Farmand et al., 2021.](https://doi.org/10.5267/J.IJIEC.2021.3.002)
+
+- Necessidade de Melhorias e Modificações: Vários estudos propuseram melhorias e modificações no NSGA-II para abordar suas limitações. Por exemplo, um estudo propôs uma versão melhorada do NSGA-II para otimizar o processo de produção de minas de metal [Xiaowei Gu et al., 2020](https://ieeexplore.ieee.org/document/8985327/). Outro estudo apresentou um NSGA-II híbrido que superou todos os métodos de decomposição em um problema de agendamento [M. Rabbani et al., 2017.](https://link.springer.com/article/10.1007/s40092-016-0172-8)
+
+
+:::
+
+
+
+
+</font>
+
+## Funcionamento do NSGA-II {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4px>
+
+***Passos do NSGA-II:***
+
+1. **Inicialização**: Gere uma população inicial aleatoriamente e calcule a aptidão (fitness) de cada indivíduo.
+
+2. **Classificação**: Classifique a população com base na dominância. Aqueles que não são dominados por outros são colocados na primeira frente, os próximos na segunda frente e assim por diante.
+
+3. **Cálculo da Distância de Aglomeração**: Para cada frente, calcule a distância de aglomeração para cada indivíduo. Isso ajuda a manter a diversidade na população.
+
+4. **Seleção**: Use operadores de seleção, como torneio binário, para selecionar pais para cruzamento.
+
+5. **Cruzamento e Mutação**: Aplique operadores de cruzamento (crossover) e mutação para gerar descendentes.
+
+6. **Combinação**: Combine a população atual com os descendentes gerados.
+
+7. **Seleção da Próxima Geração**: Selecione os melhores indivíduos com base na classificação de dominância e distância de aglomeração para formar a próxima geração.
+
+8. **Repetição**: Repita os passos de 2 a 7 até que o número máximo de gerações seja atingido ou outro critério de parada seja satisfeito.
+
+</font>
+
+
+
+## Passos e Funcionamento do NSGA-II {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+<font size = 5px>
+
+
+```{=html}
+
+<div class="fragment" style="display: flex; justify-content: center;">
+    <div style="width: 35%; text-align: center; margin-right: 20px;">
+        <img src="https://www.researchgate.net/profile/Yuqing-Chang-2/publication/283129353/figure/fig2/AS:321687187935233@1453707610655/NSGA-II-algorithm-flowchart.png" width="100%">
+        <figcaption style="font-size: 10px;">
+            Fonte: <a href="https://www.researchgate.net/publication/283129353_Multi-objective_optimization_for_rapid_and_robust_optimal_oilfield_development_under_geological_uncertainty">Chang, Yuqing & Bouzarkouna, Zyed & Devegowda, Deepak. (2015). Multi-objective optimization for rapid and robust optimal oilfield development under geological uncertainty. Computational Geosciences. 19. 933-950.</a>
+        </figcaption>
+    </div>
+    <div style="width: 45%; text-align: center;">
+        <img src="https://www.researchgate.net/publication/305662662/figure/fig7/AS:391244921491502@1470291466991/Pseudocode-of-NSGA-II-adapted-from-Coello-et-al-2006.png" width="100%">
+        <figcaption style="font-size: 10px;">
+            Fonte: <a href="https://www.researchgate.net/publication/305662662_A_multi-objective_test_data_generation_approach_for_mutation_testing_of_feature_models">Filho, Rui & Vergilio, Silvia. (2016). A multi-objective test data generation approach for mutation testing of feature models. Journal of Software Engineering Research and Development. 4.</a>
+        </figcaption>
+    </div>
+</div>
+
+
+```
+
+
+</font>
+
+## Exemplos de aplicação do NSGA-II {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+&nbsp;
+
+<font size = 4px>
+
+- [Seleção Multicritério de Portfólio de Commodities com NSGAII](https://rhozon.github.io/selecaodeprodutosnor/Multicriteria_Portfolio_Selection_Commodities.html) Aqui utilizo visualização 3d da frente de Pareto com 3 objetivos...
+
+- [Otimização MultiObjetivo de Portfólio com muitas restrições](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobj_portfolio.html)
+
+- [Otimização MultiObjetivo de Portfólio usando Evolução Diferencial otimização não-convexa](https://rhozon.github.io/selecaodeprodutosnor/Differential_Optimization_Portfolio.html)
+
+- [Otimização Multiobjetivo: Exercício teórico e aplicação em portfolio de commodities](https://rhozon.github.io/selecaodeprodutosnor/optim_multiobjective.html) aqui utilizo um NSGAII para fazer a seleção de portfólio
+
+</font>
+
+## Considerações finais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<font size = 4px>
+
+- O NSGA-II é um algoritmo evolutivo robusto e eficiente para otimização multiobjetivo, com uma rica história de desenvolvimento e aplicação em diversos campos.
+
+- Ele supera muitos de seus predecessores e competidores em termos de velocidade, precisão e diversidade das soluções, embora tenha suas próprias limitações e desafios.
+
+- Histórico e Evolução: Desde sua introdução em 1995, o NSGA e sua versão melhorada, NSGA-II, têm sido referências em otimização multiobjetivo.
+
+- Funcionamento: O NSGA-II combina classificação baseada em dominância, cálculo de distância de aglomeração e operadores genéticos tradicionais para encontrar soluções ótimas.
+
+- Aplicações: O NSGA-II tem sido aplicado em uma variedade de campos, desde engenharia até economia, demonstrando sua versatilidade e eficácia.
+
+- O NSGA-II continua sendo uma ferramenta valiosa para pesquisadores e profissionais que lidam com problemas de otimização multiobjetivo. Seu legado e impacto na comunidade científica são inegáveis.
+
+- Como em qualquer ferramenta ou método, é essencial entender suas forças e limitações, adaptando-o conforme necessário para atender às demandas específicas de cada problema.
+
+</font>
+
+
+## Referências {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+<div style="text-align: left;">
+<hr color="black" size="1" style="dashed; float: left; width: 70%;">
+</div>
+
+<br>
+
+<font size = 3>
+
+Deb, K. (1995). Multi-objective genetic algorithms: Problem difficulties and construction of test problems. **Evolutionary Computation**, 7(3), 205-230. [\[Link\]](https://ieeexplore.ieee.org/document/6791678)
+
+Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. (2002). A Fast Elitist Non-dominated Sorting Genetic Algorithm for Multi-objective Optimisation: NSGA-II. [\[Link\]](https://link.springer.com/chapter/10.1007/3-540-45356-3_83)
+
+Drezewski, Rafal & Doroz, Krzysztof. (2017). An Agent-Based Co-Evolutionary Multi-Objective Algorithm for Portfolio Optimization. **Symmetry**. 9. 168. [\[Link\]](https://www.researchgate.net/publication/319259031_An_Agent-Based_Co-Evolutionary_Multi-Objective_Algorithm_for_Portfolio_Optimization)
+
+Qu, B., Zhou, Q., Xiao, J., & Suganthan, P. N. (2017). Large-scale portfolio optimization using multiobjective evolutionary algorithms and preselection methods. **Mathematical Problems in Engineering**, 2017, 1-14. [\[Link\]](https://www.hindawi.com/journals/mpe/2017/4197914/)
+
+Zitzler, E., Laumanns, M., & Thiele, L. (2001). SPEA2: Improving the strength Pareto evolutionary algorithm. **TIK-Report 103**. [\[Link\]](https://www.researchgate.net/publication/216301720_SPEA2_Improving_the_Strength_Pareto_Evolutionary_Algorithm_for_Multiobjective_Optimization)
+
+Zhang, Q., Li, H. (2007). MOEA/D: A Multiobjective Evolutionary Algorithm Based on Decomposition. **IEEE Transactions on Evolutionary Computation**, 11(6), 712-731. [\[Link\]](https://ieeexplore.ieee.org/document/4358754)
+
+Knowles, J., & Corne, D. (2000). Approximating the Nondominated Front Using the Pareto Archived Evolution Strategy. **Evolutionary Computation**, 8(2), 149-172. [\[Link\]](https://www.mitpressjournals.org/doi/abs/10.1162/106365600568167)
+
+Sierra, M. R., & Coello, C. A. C. (2005). Improving PSO-based multi-objective optimization using crowding, mutation and ε-dominance. In **Proceedings of the 3rd international conference on Evolutionary Multi-Criterion Optimization** (pp. 505-519). Springer, Berlin, Heidelberg. [\[Link\]](https://link.springer.com/chapter/10.1007/978-3-540-31880-4_34)
+
+Chang, Yuqing & Bouzarkouna, Zyed & Devegowda, Deepak. (2015). Multi-objective optimization for rapid and robust optimal oilfield development under geological uncertainty. **Computational Geosciences**. 19. 933-950. [\[Link\]](https://www.researchgate.net/publication/283129353_Multi-objective_optimization_for_rapid_and_robust_optimal_oilfield_development_under_geological_uncertainty)
+
+Filho, Rui & Vergilio, Silvia. (2016). A multi-objective test data generation approach for mutation testing of feature models. **Journal of Software Engineering Research and Development**. 4. [\[Link\]](https://www.researchgate.net/publication/305662662_A_multi-objective_test_data_generation_approach_for_mutation_testing_of_feature_models)
+
+</font>
+
+
+
+## Obrigado! {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+
+
+&nbsp;
+
+<font size = 6>
+
+::: {.callout-note appearance="simple"}
+## Rodrigo Hermont Ozon
+
+$\Rightarrow$ Ao professor [Roberto Zanetti Freire](https://www.linkedin.com/in/roberto-zanetti-freire-830912197/?originalSubdomain=br) pela oportunidade de contribuir com os novos pesquisadores;
+
+$\Rightarrow$ Agradecimentos aos pesquisadores do [PPGEPS/PUCPR](https://www.pucpr.br/escola-politecnica/mestrado-doutorado/engenharia-de-producao-e-sistemas/), aos ouvintes e em especial ao meu orientador, prof. Dr. Gilberto Reynoso Meza 
+
+- Meu perfil no [Google Scholar](https://scholar.google.com/citations?user=hPcIR9oAAAAJ&hl=en)
+- Meu [CV Lattes](http://lattes.cnpq.br/3532649625879285)
+- Meu [site com posts, tutoriais e artigos](https://rhozon.github.io/selecaodeprodutosnor/index.html) 
+- Meu [perfil no LinkeDin](https://www.linkedin.com/in/rodrigohermontozon/)
+
+:::
+

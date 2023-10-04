@@ -92,7 +92,8 @@ navbar:
           href: R_and_Python_using_Quarto.html  
         - text: "MultiObjective Optim. Portfolio with non linear time series Research Presentation"
           href: Research_Presentation_RHO.html  
-
+        - text: "NSGAII Apresentação Inteligência Computacional na UTFPR"
+          href: NSGAII_Rodrigo_Hermont_Ozon.html  
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html

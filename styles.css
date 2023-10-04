@@ -3,7 +3,7 @@
 }
 
 body {
- background-image: url("capa_ppt_Felipe.png");
+ background-image: url("background_UTFPR.png");
  background-color: #cccccc;
 }
 
@@ -22,4 +22,8 @@ body {
 .panel-tabset .nav-item {
   font-size: 5px;
   font-style: italic
+}
+
+footnote, .footnote {
+    font-size: 3px;
 }
