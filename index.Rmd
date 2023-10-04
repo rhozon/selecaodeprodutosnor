@@ -241,7 +241,7 @@ Tutoriais disponíveis:
 
 ### *Apresentação sobre o algoritmo NSGAII*
 
-- [Leia a apresentação que fiz na disciplina de Inteligência Computacional no PPGEPS/UTFPR]()
+- [Leia a apresentação que fiz na disciplina de Inteligência Computacional no PPGEPS/UTFPR](https://rhozon.github.io/selecaodeprodutosnor/NSGAII_Rodrigo_Hermont_Ozon.html#/title-slide)
 
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
