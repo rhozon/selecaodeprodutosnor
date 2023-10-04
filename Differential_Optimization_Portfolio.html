@@ -467,6 +467,9 @@ div.tocify {
     <li>
       <a href="Research_Presentation_RHO.html">MultiObjective Optim. Portfolio with non linear time series Research Presentation</a>
     </li>
+    <li>
+      <a href="NSGAII_Rodrigo_Hermont_Ozon.html">NSGAII Apresentação Inteligência Computacional na UTFPR</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -515,7 +518,7 @@ div.tocify {
 <h1 class="title toc-ignore">Otimização Multiobjetivo: Alocação de Risco
 em Portfólio com Evolução Diferencial</h1>
 <h4 class="author">Rodrigo Hermont Ozon</h4>
-<h4 class="date">Last Update: setembro 20, 2023</h4>
+<h4 class="date">Last Update: outubro 04, 2023</h4>
 
 </div>
 
@@ -1579,7 +1582,7 @@ ret &lt;- cbind(benchmark_returns, random_returns, DEoptim_returns)
 as.data.frame(t(table.AnnualizedReturns(ret)))</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0511","2":"0.1738","3":"-0.2937","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Annualized Return"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Annualized Std Dev"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Annualized Sharpe (Rf=0%)"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"-0.0309","2":"0.2043","3":"-0.1510","_rn_":"benchmark"},{"1":"-0.0259","2":"0.1631","3":"-0.1585","_rn_":"random_target"},{"1":"-0.0341","2":"0.1693","3":"-0.2016","_rn_":"DEoptim_target"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Parece bem evidente que a seleção desses ativos no portfólio não
@@ -1753,7 +1756,7 @@ class="section level2">
 <pre class="r"><code># Execution timing
 
 Sys.time() - start_time</code></pre>
-<pre><code>Time difference of 3.253471 mins</code></pre>
+<pre><code>Time difference of 3.47044 mins</code></pre>
 </div>
 </div>
 
