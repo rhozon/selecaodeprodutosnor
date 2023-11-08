@@ -1,0 +1,536 @@
+---
+title: <span style="font-size:18pt;"> Algoritmos Genéticos x Força Bruta para seleção de modelos de regressão </span> 
+author: "Rodrigo Hermont Ozon"
+date: "2023-09-11"
+format:
+  html:
+    self-contained: true
+    toc: true
+    code-fold: true
+    df-print: paged
+    mainfont: Arial
+editor: visual
+---
+
+```{r}
+
+start_time <- Sys.time()
+
+```
+
+```{css toc-content, echo = FALSE}
+
+#TOC {
+  left: 220px;
+  margin: 50px 30px 55px 30px;
+}
+
+.main-container {
+    margin-left: 300px;
+}
+
+```
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE,
+	comment = NA
+)
+knitr::opts_chunk$set(comment = NA)    # Remove all coments # of R outputs
+knitr::opts_chunk$set(warning = FALSE) # Remove all warnings # of R outputs
+knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
+
+```
+
+------------------------------------------------------------------------
+
+```{=html}
+<style>
+p.comment {
+background-color: #DBDBDB;
+padding: 10px;
+border: 1px solid black;
+margin-left: 25px;
+border-radius: 5px;
+font-style: italic;
+}
+
+</style>
+```
+::: {.callout-note icon="false"}
+## Algoritmos Genéticos x Força Bruta para seleção de modelos
+
+O cerne de qualquer modelo de regressão ou classificação reside na sua capacidade de elucidar a relação entre uma variável dependente e um conjunto de variáveis independentes, frequentemente referidas como preditores. A seleção desses preditores é uma tarefa desafiadora, pois não é intuitivamente evidente quais são essenciais e em que quantidade devem ser incorporados ao modelo.
+
+A relevância dessa seleção é amplificada pelo risco de overfitting --- quando um modelo é excessivamente complexo, capturando o ruído ao invés das verdadeiras relações subjacentes nos dados. Inversamente, um modelo com poucos preditores pode sofrer de underfitting, falhando em capturar relações significativas e comprometendo o seu desempenho preditivo.
+
+Diante desses desafios, o objetivo torna-se identificar o modelo ideal que emprega um conjunto ótimo de preditores --- aqueles que maximizam a explicação da variável dependente sem sucumbir ao ruído dos dados. Este artigo explora o uso de algoritmos genéticos como uma ferramenta eficaz para alcançar tal feito, destacando suas vantagens em relação às técnicas de força bruta, que, embora precisas, são computacionalmente onerosas e muitas vezes impraticáveis. Demonstramos como os algoritmos genéticos podem ser uma estratégia superior para equilibrar a complexidade do modelo e a precisão preditiva, conduzindo a insights mais profundos e a modelos mais generalizáveis.
+:::
+
+------------------------------------------------------------------------
+
+<left> ![](https://seeklogo.com/images/P/PUC_PR-logo-6EF79E6431-seeklogo.com.png){width="10%"} </left>
+
+------------------------------------------------------------------------
+
+# Intro {style="font-size:14pt;"}
+
+A seleção de características é um passo crítico no processo de modelagem de regressão e classificação, pois influencia diretamente a performance e a eficiência do modelo final. Em contextos onde o número de características potenciais é vasto, a escolha de um método de seleção torna-se crucial. Tradicionalmente, poderíamos considerar a abordagem de força bruta, que testa todas as combinações possíveis de características para determinar o melhor conjunto. No entanto, essa estratégia é muitas vezes impraticável devido à sua complexidade exponencial, especialmente à medida que o número de características cresce. É aqui que os algoritmos genéticos (AGs) oferecem uma alternativa promissora.
+
+Os algoritmos genéticos são inspirados nos processos de seleção natural e evolução biológica. Eles operam através da geração de uma população de soluções possíveis e, em seguida, aplicam operadores genéticos como seleção, cruzamento e mutação para evoluir as soluções ao longo de várias gerações. O objetivo é encontrar uma solução ótima ou satisfatória para o problema em questão.
+
+Quando aplicados à seleção de características, os AGs têm várias vantagens sobre a abordagem de força bruta:
+
+-   **Eficiência Computacional:** Ao invés de avaliar todas as combinações possíveis, os AGs exploram o espaço de busca de maneira inteligente, focando nas soluções mais promissoras. Isso pode reduzir significativamente o tempo de computação necessário.
+
+-   **Flexibilidade:** Os AGs são capazes de lidar com espaços de busca não-lineares e com múltiplos ótimos locais, o que é comum em problemas de seleção de características.
+
+-   **Escalabilidade:** Eles são mais escaláveis em relação ao número de características, tornando-os adequados para datasets de alta dimensão.
+
+-   **Adaptabilidade:** Os AGs podem se adaptar a mudanças no espaço de busca, o que é útil em cenários onde os dados estão evoluindo.
+
+-   **Soluções Globais:** Enquanto a força bruta garante encontrar a solução ótima global, ela é muitas vezes inviável. Os AGs, embora não garantam a solução ótima global, têm uma boa chance de se aproximar dela ou encontrar soluções que sejam suficientemente boas.
+
+Dentro do contexto da seleção de variáveis, os algoritmos genéticos desempenham um papel crucial na mitigação do sobreajuste, ou overfitting, um problema comum quando um modelo é excessivamente complexo.
+
+<center>![](https://miro.medium.com/v2/resize:fit:1100/format:webp/1*lARssDbZVTvk4S-Dk1g-eA.png)</center>
+
+**Fonte:** [Minhas (2021)](https://towardsdatascience.com/techniques-for-handling-underfitting-and-overfitting-in-machine-learning-348daa2380b9)
+
+Ao simular o processo de evolução natural para otimizar a seleção de características, os algoritmos genéticos buscam um equilíbrio entre a adequação do modelo aos dados e a sua generalização para dados não vistos. Eles fazem isso ao penalizar conjuntos de características que são muito grandes ou que não contribuem significativamente para o poder preditivo do modelo. Isso é comparável à seleção natural, onde apenas os traços mais adaptáveis são passados para a próxima geração. Ao aplicar essa abordagem iterativa e seletiva, os algoritmos genéticos evitam eficazmente a armadilha de modelar o ruído estatístico presente nos dados de treinamento, o que é uma causa comum de sobreajuste em modelos preditivos. Assim, eles ajudam a assegurar que o modelo final seja robusto e confiável, com uma capacidade aprimorada de generalizar bem para novos conjuntos de dados.
+
+Em resumo, os algoritmos genéticos oferecem uma abordagem mais viável e eficiente para a seleção de características em modelos de regressão e classificação, especialmente quando confrontados com um grande número de características. Eles não apenas economizam recursos computacionais valiosos, mas também fornecem um meio robusto e adaptável para navegar pelo complexo processo de identificar as características mais significativas para a modelagem.
+
+::: panel-tabset
+## R packages {style="font-size:14pt;"}
+
+```{r}
+
+library(dplyr)
+library(tidyverse)
+library(car)        
+library(MASS)       
+library(ISLR)       
+library(tictoc)     
+library(sjPlot)     
+library(glmulti)    
+library(flextable)  
+library(performance)
+
+theme_set(theme_light(base_size = 12))  # Ajusta os temas dos gráficos
+theme_update(panel.grid.minor = element_blank())
+
+```
+:::
+
+# Método StepWise e Força Bruta
+
+::: panel-tabset
+## Método Stepwise {style="font-size:14pt;"}
+
+A técnica stepwise é um método estatístico iterativo utilizado para selecionar um subconjunto ótimo de variáveis preditoras para um modelo estatístico, como regressão linear ou logística. Funciona através de um processo de seleção sequencial onde, em cada etapa, uma variável é adicionada ou removida do modelo baseado em critérios específicos, como o valor do teste F, o critério de informação de Akaike (AIC) ou o critério de informação bayesiano (BIC). Existem duas formas principais da técnica stepwise: a seleção para frente (forward selection), que começa com nenhum preditor e adiciona o mais significativo em cada passo, e a seleção para trás (backward elimination), que começa com todos os possíveis preditores e remove o menos significativo em cada etapa.
+
+<center>![](https://github.com/rhozon/Doutorado/blob/main/Example-of-forward-stepwise-selection-with-five-variables-43.png?raw=true)</center>
+
+**Fonte:** Siddiqi *et. alli* (2022)
+
+O processo continua até que nenhum novo preditor melhore significativamente o modelo ao ser adicionado ou removido, resultando em um modelo que se espera que tenha um bom equilíbrio entre a simplicidade e a capacidade preditiva.
+
+Para exemplificar, utilizaremos aqui um conjunto de dados bastante conhecido:
+
+```{r}
+
+glimpse(mtcars)
+
+head(mtcars)
+
+```
+
+Se quisermos prever o consumo de combustível desses modelos de automóveis, (em mpg/milhas por galão) deveremos utilizar as combinações ideias das variáveis explicativas que melhor descreveriam tais relações:
+
+-   Set de modelos (completo e nulo)
+
+```{r}
+
+# Modelo completo e nulo
+full_model <- glm(mpg ~ (hp + drat + wt + qsec + gear)^2, 
+                 data = mtcars, family = gaussian)
+
+null_model <- glm(mpg ~ 1, data = mtcars, family = gaussian)
+
+```
+
+-   Rodo o procedimento backward
+
+```{r results='hide'}
+
+# Roda o procedimento backward
+optimal_model_backward <- step(full_model, direction = "backward",
+                        scope = list(upper = full_model, lower = null_model))
+
+```
+
+-   Rodo o forward
+
+```{r results='hide'}
+
+optimal_model_forward <- step(null_model, direction = "forward",
+                        scope = list(upper = full_model, lower = null_model))
+
+```
+
+-   Comparando o modelo escolhido pelo backward com o forward:
+
+-   Melhor backward
+
+```{r}
+
+summary(optimal_model_backward)
+
+```
+
+-   Melhor forward
+
+```{r}
+
+summary(optimal_model_forward)
+
+```
+
+A seleção de variáveis utilizando o método stepwise é uma técnica amplamente adotada na busca pelo modelo mais eficaz. Contudo, apesar de sua popularidade, ela não é infalível. O método stepwise incorpora duas estratégias principais: a seleção progressiva (forward selection) e a seleção regressiva (backward elimination). No entanto, essa abordagem enfrenta desafios significativos. Um deles é a falta de convergência para um modelo consistente, pois as estratégias progressiva e regressiva podem resultar em modelos distintos, como ilustrado em nosso exemplo. Além disso, mesmo na eventual convergência para um modelo comum, não há garantia de que este seja o mais adequado. Essa limitação decorre da natureza incremental do método stepwise, que avalia os modelos adicionando ou removendo variáveis sequencialmente, sem considerar todas as combinações possíveis de variáveis simultaneamente. Este processo iterativo de comparação e seleção pode, portanto, negligenciar a configuração ideal de variáveis que maximizaria o desempenho do modelo.
+
+Veja pelo teste de $\chi^2$ na ANOVA e da tabela de métricas de performance:
+
+-   $\chi^2$
+
+```{r}
+
+anova(optimal_model_backward, optimal_model_forward, test = "Chisq")
+
+```
+
+-   Tabela comparativa:
+
+```{r}
+
+compare_performance(optimal_model_backward, optimal_model_forward)
+
+```
+
+Aqui os critérios de informação (AIC, BIC) são preferíveis em relação ao R\^2 por exemplo, pois eles demonstram melhor o ajuste do modelo, onde ele possa ser analisado/considerado como aquele de menor AIC/BIC como preferível, na medida em que o modelo for incorporando mais preditores (mais parâmetros então maior a chance de overfitting, p. ex. e menor, underfitting).
+
+## Método Exaustivo (Força Bruta) {style="font-size:14pt;"}
+
+Utilizando o pacote `glmulti` no ambiente de programação R, é viável implementar um método exaustivo que constrói todos os modelos estatísticos concebíveis, levando em conta todas as combinações de preditores e, se desejado, suas interações binárias. Esta técnica é conhecida como "força bruta", refletindo sua abrangência e intensidade computacional.
+
+O `glmulti` procede à avaliação comparativa dos modelos, baseando-se na quantidade de informação relevante que cada um oferece. Para tal, emprega-se critérios de informação, tais como o Critério de Informação de Akaike (AIC) ou o Critério de Informação Bayesiano (BIC). Esses critérios são preferidos em detrimento de métricas tradicionais como o R², pois oferecem uma medida de "adequação" do modelo que incorpora uma penalidade proporcional ao número de preditores utilizados.
+
+![](https://github.com/rhozon/Doutorado/blob/main/criteria_info_changing.png?raw=true)
+
+Fonte: [Hebbali (2020)](https://cran.r-project.org/web/packages/olsrr/vignettes/variable_selection.html)
+
+Diferentemente dos critérios de informação, o R² tende a aumentar à medida que mais termos são adicionados ao modelo, o que pode levar a um sobreajuste. Um modelo sobreajustado é problemático, pois tende a refletir o ruído dos dados em vez de capturar as relações substanciais entre as variáveis. Isso torna os coeficientes estimados e os valores-p associados pouco confiáveis para inferências estatísticas.
+
+O sobreajuste não apenas compromete a precisão do modelo, mas também sua aplicabilidade, pois um modelo que se ajusta demais às idiossincrasias de uma amostra específica falha em ser generalizável para outras amostras, reduzindo sua utilidade prática. Portanto, é essencial construir uma gama abrangente de modelos e utilizar Critérios de Informação para sua comparação, em vez de se fiar exclusivamente no R². Apesar da eficácia da abordagem de força bruta, o desafio reside na gestão do grande número de modelos potenciais, o que exige estratégias para otimizar o processo de seleção e análise, mantendo a integridade e a eficiência computacional.
+
+Mudamos o nosso dataset (não mais o `mtcars`) e neste estudo, nosso foco é analisar o salário de 3.000 trabalhadores americanos, utilizando cinco variáveis preditoras: classe de trabalho, educação, idade, saúde e seguro de saúde. Para realizar essa análise, selecionamos o conjunto de dados "Wage", disponível no pacote `ISLR` do ambiente estatístico R.
+
+A escolha do Critério de Informação (CI) para avaliar os modelos é crucial. Por padrão, utilizamos o Critério de Informação de Akaike (AIC), mas temos à disposição outras opções como o Critério de Informação Bayesiano (BIC), o quasi-AIC para dados com superdispersão ou de contagem (qaic e qaicc), e o AIC corrigido para amostras pequenas (aicc). Este último é de minha preferência pessoal, pois oferece resultados consistentes com o AIC em amostras grandes e supera seu desempenho em amostras menores, proporcionando uma avaliação mais precisa em contextos com limitações de dados. Essa flexibilidade na escolha do CI permite uma adaptação mais fina à natureza dos dados e aos objetivos específicos da análise, garantindo que a seleção do modelo seja tanto rigorosa quanto relevante para a interpretação dos fatores que influenciam os salários no mercado de trabalho americano.
+
+Veremos até quantos candidatos a modelos possíveis rodando a rotina presente no pacote `glmulti`. O argumento `method = "d"` conta o número de modelos candidatos sem realizar nenhum cálculo. Para o nosso exemplo com 5 preditores, teremos 32 modelos sem interações e 1921 modelos com interações. Se o `method = "h"`, uma triagem exaustiva é realizada, o que significa que todos os modelos possíveis serão criados. Se o `method = "g"`, o algoritmo genético é empregado (recomendado para grandes conjuntos de candidatos).
+
+-   Possibilidades de Modelos sem as interações
+
+```{r}
+
+glmulti(wage   ~ jobclass + education + age + health + health_ins,
+        data   = Wage, 
+        crit   = aicc,       # AICC é o AIC corrigido para pequenas amostras
+        level  = 1,          # 2 com interações, 1 sem  
+        method = "d",        # "d", ou "h", ou "g"
+        family = gaussian, 
+        fitfunction = glm,   # Tipo de modelo (LM, GLM etc.)
+        confsetsize = 100)   # utiliza somente os 100 melhores modelos
+
+```
+
+-   Possibilidades de Modelos com as interações
+
+```{r}
+
+glmulti(wage   ~ jobclass + education + age + health + health_ins,
+        data   = Wage, 
+        crit   = aicc,       # AICC é o AIC corrigido para pequenas amostras
+        level  = 2,          # 2 com interações, 1 sem  
+        method = "d",        # "d", ou "h", ou "g"
+        family = gaussian, 
+        fitfunction = glm,   # Tipo de modelo (LM, GLM etc.)
+        confsetsize = 100)   # utiliza somente os 100 melhores modelos
+
+```
+
+Veja que dispomos de 32 modelos válidos sem interações entre as explicativas e 1921 com as interações entre elas.
+
+Procederemos agora à execução do algoritmo exaustivo para calcular 1921 regressões, com o objetivo de identificar o modelo ótimo que integra as interações entre os cinco preditores selecionados. Para monitorar o tempo de processamento, utilizaremos as funções de contagem de tempo do pacote `tictoc`.
+
+De maneira encorajadora, o método exaustivo consumiu meros 60 segundos para ser concluído. Esta é uma performance notável, a meu ver. Contudo, é importante salientar que, em situações onde o número de preditores excede significativamente cinco, podemos nos deparar com desafios relacionados ao desempenho computacional.
+
+```{r}
+
+tic()
+
+h_model <- glmulti(wage ~ jobclass + education + age + health + health_ins,
+          data   = Wage, 
+          crit   = aicc,       
+          level  = 2,         
+          method = "h",       
+          family = gaussian, 
+          fitfunction = glm,   
+          confsetsize = 100)  
+
+toc() # 19 sec elapsed: 1921 models 
+
+```
+:::
+
+# Técnicas de melhoria de desempenho {style="font-size:14pt;"}
+
+::: panel-tabset
+## Remover termos desnecessários {style="font-size:14pt;"}
+
+A estratégia inicial para aprimorar o desempenho consiste na eliminação de preditores ou interações que sejam redundantes. Tomemos, por exemplo, o peso e o índice de massa corporal (IMC), que tendem a fornecer informações sobrepostas --- em termos estatísticos, diríamos que apresentam alta multicolinearidade. A inclusão simultânea de ambos os termos pode inflar desnecessariamente a quantidade de modelos possíveis, sem agregar valor significativo à análise.
+
+Ilustrativamente, a adição de apenas dois preditores categóricos adicionais --- estado civil (`maritl`) e região (`region`) --- ao modelo salarial previamente mencionado, eleva o número de modelos potenciais para mais de 2,5 milhões (exatamente 2.604.485).
+
+```{r}
+
+glmulti(wage ~ jobclass + education + age + health + health_ins + maritl + region,
+        data   = Wage, 
+        crit   = aicc,       
+        level  = 2,           
+        method = "d",        
+        family = gaussian, 
+        fitfunction = glm,  
+        confsetsize = 100,
+        plotty=FALSE)
+
+```
+
+Diante de um volume tão elevado, que excede a capacidade de processamento convencional, o algoritmo genético surge como uma solução viável, capaz de navegar por este vasto espaço de modelos de maneira eficiente.
+
+## Algoritmos Genéticos para Otimização {style="font-size:14pt;"}
+
+Ao lidar com um conjunto de 6 preditores numéricos e suas respectivas interações, a metodologia de "força bruta" pode demandar aproximadamente 3 horas para processamento completo. \[Aqui demonstraremos somente com 5 preditores, para fins de comparação com o tempo e resultados obtidos do método exaustivo x força bruta e o tempo de execução.\] Em contraste, a utilização de algoritmos genéticos reduz significativamente esse tempo para apenas 50 a 60 segundos. Essa abordagem eficiente não só economiza tempo valioso, mas também alcança resultados comparáveis aos obtidos pelo método mais demorado, embora possa ocasionalmente resultar em valores ligeiramente superiores do Critério de Informação.
+
+Vamos comparar os timings com o nosso primeiro dataset de exemplo, o `mtcars`:
+
+### Método Exaustivo
+
+```{r }
+
+tic()
+
+test_h <- glmulti(mpg ~ hp + drat + wt + qsec + gear, 
+                 data   = mtcars, 
+                 method = "h",       # h = método exaustivo (força bruta)
+                 crit   = aic,     
+                 level  = 2,        
+                 family = gaussian,
+                 fitfunction = glm, 
+                 confsetsize = 100)  
+
+toc()
+
+```
+
+A excelência do algoritmo genético é reconhecida, particularmente pela sua capacidade de processamento rápido. No entanto, a sua aplicabilidade universal não é isenta de limitações. Notavelmente, quando se trata de variáveis categóricas com um vasto número de categorias, a performance do algoritmo genético pode ser eclipsada pela abordagem exaustiva. A título de exemplo, o nosso modelo de análise salarial, que incorpora uma multiplicidade de preditores categóricos, completou a triagem exaustiva em apenas 19 segundos, enquanto o algoritmo genético demandou 117 segundos para alcançar a convergência, resultando em um tempo quase seis vezes superior. Adicionalmente, o algoritmo genético está sujeito a desafios de convergência, podendo operar por um período indefinido sem previsibilidade de conclusão. Mais ainda, o método exaustivo tende a resultar em valores de Critério de Informação superiores. Portanto, recomenda-se enfaticamente a geração de todos os modelos possíveis por meio da triagem exaustiva, ou da aplicação da metodologia de "força bruta", sempre que factível, reservando o uso do algoritmo genético estritamente para contextos com uma quantidade substancial de preditores numéricos.
+
+### Algoritmos Genéticos
+
+```{r}
+
+tic()
+
+test_g <- glmulti(mpg ~ hp + drat + wt + qsec + gear, 
+                 data   = mtcars, 
+                 method = "g",     # g = genetic algorithms
+                 crit   = aic,      
+                 level  = 2,         
+                 family = gaussian,
+                 fitfunction = glm,  
+                 confsetsize = 100) 
+
+toc()
+
+```
+:::
+
+# Melhor Modelo {style="font-size:14pt;"}
+
+Cumpre recordar que, no início desta exposição, foi apresentada uma análise crítica da seleção sequencial, sugerindo-se que a metodologia disponível dentro do uso do pacote `glmulti` (força bruta e algoritmos genéticos) poderia ser superior. Assim, propõe-se agora uma comparação meticulosa entre os resultados obtidos pelos algoritmos exaustivo e genético e aqueles advindos das técnicas de seleção pra frente (forward) e pra trás (backward), com o intuito de determinar qual estratégia resulta no modelo de análise mais acurado e eficaz.
+
+::: panel-tabset
+## Seleção do melhor modelo
+
+```{r}
+
+optimal_model_glmulti_exhaustive <- test_h@objects[[1]]
+optimal_model_glmulti_genetic    <- test_g@objects[[1]]
+
+compare_performance(
+  optimal_model_glmulti_exhaustive, 
+  optimal_model_glmulti_genetic, 
+  optimal_model_backward, 
+  optimal_model_forward
+)
+
+
+```
+
+-   Melhor força-bruta:
+
+```{r}
+
+optimal_model_glmulti_exhaustive$formula
+
+```
+
+-   Melhor algo genético:
+
+```{r}
+
+optimal_model_glmulti_genetic$formula
+
+```
+
+-   Melhor *backward*:
+
+```{r}
+
+optimal_model_backward$formula
+
+```
+
+-   Melhor *forward*:
+
+```{r}
+
+optimal_model_forward$formula
+
+```
+
+Observa-se que a metodologia implementada pelo pacote `glmulti` resultou em valores inferiores tanto para o Critério de Informação de Akaike (AIC) quanto para o Critério de Informação Bayesiano (BIC), indicando uma eficácia notável. De forma interessante, o coeficiente de determinação (R²) obtido por `glmulti` situa-se medianamente entre os R²s advindos das seleções forward e backward, o que implica que os modelos gerados por `glmulti` não apresentam nem subajuste nem sobreajuste.
+
+Em nosso estudo de caso, os algoritmos exaustivo e genético apresentaram resultados coincidentes (embora isso não seja uma constante) e identificaram três interações (drat:hp + qsec:wt + gear:wt) como significativas. Em contrapartida, a seleção backward indicou oito interações como relevantes, o que pode sugerir um sobreajuste, conforme refletido pelo R² elevado. Por outro lado, a seleção forward apontou apenas uma interação significativa, sugerindo um possível subajuste, em consonância com o R² mais baixo observado.
+
+Assim sendo, almejo ter fornecido argumentos convincentes de que a abordagem `glmulti` supera a seleção Stepwise e culmina na elaboração de um modelo de análise verdadeiramente superior.
+
+A saída de uma análise `glmulti` é um objeto que contém o set de modelos significativos (os 100 melhores modelos por padrão). Funções padrão de regressão do R como `summary()`, `coef()` ou `plot()` podem todas ser usadas para fazer uma inferência multi-modelo. Mas vamos começar com um breve resumo dos resultados que podem ser obtidos por meio do comando `print()`:
+
+```{r}
+
+print(h_model)
+
+```
+
+... onde vemos as informações mais importantes, como a função de ajuste, os critérios de informação usados para classificar os modelos, a fórmula do melhor modelo e até o número de modelos que são tão bons quanto o melhor modelo. Existem 6 modelos, que também podemos ver se plotarmos nosso objeto:
+
+```{r}
+
+plot(h_model)
+
+```
+
+Este gráfico mostra os valores dos Critérios de Informação (IC) para todos os 100 modelos do set de modelos significativos. Uma linha horizontal separa os 6 melhores modelos, que estão a menos de 2 unidades de IC de distância do MELHOR modelo. Mas quais preditores e interações esses 6 modelos contêm? Utilizando a função `weightable`, podemos exibi-los facilmente:
+
+```{r}
+
+weightable(h_model)[1:6,] |>
+  regulartable() |>       # mostra tabelas mais apresentáveis...
+  autofit()
+
+```
+
+Neste momento, apresentamos as equações, os Critérios de Informação e os pesos de Akaike de nossos seis modelos mais destacados. O peso de Akaike de um modelo em particular indica a probabilidade de esse modelo ser o mais acertado entre todos os avaliados, servindo como um indicador de eficiência na minimização da perda de informação. Observa-se que, apesar de o modelo considerado "o melhor" possuir o maior peso, a diferença para o segundo colocado (e os subsequentes) não é significativa. Isso nos leva a questionar se o modelo mais bem classificado é de fato superior aos demais, dado que vários modelos apresentam plausibilidade similar. Surge, portanto, a questão: qual modelo deveríamos adotar?
+
+Diante de seis modelos igualmente competentes, porém com distintas combinações de preditores e interações, identificar os elementos mais relevantes pode ser decisivo na escolha do modelo mais adequado. A função `plot()`, com o parâmetro `type="s"`, facilita essa tarefa ao destacar a relevância dos termos do modelo de forma agregada. A relevância de um preditor ou interação é calculada pela soma dos pesos dos modelos que incluem tal variável. Portanto, uma variável frequente nos modelos de maior peso terá uma relevância elevada. Uma linha vertical em 80% é comumente utilizada para distinguir as variáveis de maior importância, embora esse ponto de corte seja arbitrário. Poderíamos, por exemplo, ajustar esse limite para 50% e considerar para o modelo final todos os preditores e interações com relevância superior a esse percentual.
+
+```{r}
+
+plot(h_model, type = "s")
+
+```
+
+É digno de nota que o modelo inicial já incorpora a interação `age:health_ins`, atribuída com aproximadamente 50% de relevância. Esta escolha seria plenamente justificável. No entanto, considerando a presença de múltiplos termos com uma relevância próxima a 80%, opto por adotar apenas estes, incluindo a interação `education:health_insurance` e o preditor `health`, devido à sua distinta separação dos demais termos. Uma análise dos seis modelos mais eficazes revela que o segundo modelo contém precisamente esses termos. O terceiro modelo é ligeiramente inferior, pois omite a variável `health`, mas, dado que `health` é componente da interação mais significativa - `age:health`, sua inclusão é preferível. Portanto, em vez de aceitar de forma acrítica o modelo preeminente sugerido pelo algoritmo, procedemos a uma avaliação meticulosa dos resultados e decidimos, com base sólida, adotar o segundo modelo como O NOSSO MODELO IDEAL.
+
+Estamos agora em posição de interpretar, visualizar e avaliar as premissas do NOSSO MODELO IDEAL com a diligência habitual.
+
+```{r fig.width=10, fig.height=10}
+
+best_model <- h_model@objects[[2]]
+
+car::Anova(best_model)
+
+plot_model(best_model, type = "int") |>
+  plot_grid()
+
+```
+
+No R temos o pacote `performance` que facilita e muito a investigação das inferências de um modelo de regressão. Vale a pena conhecê-lo um pouco melhor.
+:::
+
+# Conclusão {style="font-size:14pt;"}
+
+Neste estudo, exploramos metodologias avançadas de seleção de modelos utilizando o pacote `glmulti` no ambiente estatístico R, com o objetivo de identificar o modelo mais adequado para explicar a variação nos salários de trabalhadores americanos. A abordagem de "força bruta", que considera todas as combinações possíveis de preditores e suas interações, foi comparada com métodos de seleção passo a passo e algoritmos genéticos, revelando insights significativos sobre a adequação e eficácia dos modelos.
+
+A análise exaustiva, embora computacionalmente mais intensiva, mostrou-se uma ferramenta valiosa, capaz de fornecer modelos com valores de Critério de Informação mais precisos, refletindo um equilíbrio entre a complexidade do modelo e a qualidade do ajuste. Por outro lado, o algoritmo genético emergiu como uma alternativa robusta, especialmente útil quando lidamos com um grande número de preditores numéricos, oferecendo resultados quase idênticos em uma fração do tempo.
+
+Curiosamente, a análise revelou que a inclusão de termos altamente multicolineares, como o exemplo do peso e índice de massa corporal (IMC), poderia inflar desnecessariamente a complexidade do modelo sem adicionar valor interpretativo. Isso ressalta a importância de uma seleção criteriosa de preditores para evitar o sobreajuste e garantir a generalização do modelo.
+
+Ao examinar os resultados, identificamos que o modelo com a interação `age:health_ins` (idade:seguro_saúde) e o preditor `health` (saúde), apesar de não ser o modelo com o menor Critério de Informação, oferece um equilíbrio entre a simplicidade e a capacidade de explicação, destacando-se como o modelo ideal para a nossa análise. Este modelo não apenas captura as nuances dos dados mas também evita a armadilha do overfitting, sugerindo que os termos selecionados representam relações genuínas e não artefatos dos dados.
+
+A escolha cuidadosa do nosso modelo ideal, portanto, não foi o resultado de uma aceitação acrítica dos resultados algorítmicos, mas de uma consideração ponderada das evidências estatísticas e da relevância prática. A capacidade de interpretar, visualizar e verificar as premissas do modelo reforça a confiança em sua aplicabilidade e utilidade.
+
+Em suma, este trabalho demonstra que a seleção de modelos, quando conduzida com rigor metodológico e uma compreensão profunda dos dados e das técnicas estatísticas, pode levar a descobertas significativas e modelos robustos, capazes de informar decisões práticas e teóricas no campo da economia laboral.
+
+ 
+
+ 
+
+------------------------------------------------------------------------
+
+# References {style="font-size:14pt;"}
+
+Siddiqi, Muhammad & Alsayat, Ahmed & Alhwaiti, Yousef & Azad, Mohammad & Alruwaili, Madallah & Alanazi, Saad & Kamruzzaman, MM & Khan, Asfandyar. (2022). ***A Precise Medical Imaging Approach for Brain MRI Image Classification.*** Computational Intelligence and Neuroscience. 2022. 1-15. 10.1155/2022/6447769. Disponível em [https://www.researchgate.net](https://www.researchgate.net/publication/360323986_A_Precise_Medical_Imaging_Approach_for_Brain_MRI_Image_Classification)
+
+Gujarati, D., N. (2004) **Basic Econometrics**, fourth edition, The McGraw−Hill Companies
+
+Hebbali A (2020). *olsrr: Tools for Building OLS Regression Models*. R package version 0.5.3, <https://CRAN.R-project.org/package=olsrr>.
+
+Hyndman, R.J., & Athanasopoulos, G. (2021) **Forecasting: principles and practice**, 3rd edition, OTexts: Melbourne, Australia. [OTexts.com/fpp3](https://otexts.com/fpp3/decomposition.html). Accessed on Nov 2023.
+
+Minhas, M., S. ***Techniques for handling underfitting and overfitting in Machine Learning***, Medium, Jun 5, 2021. Disponível em [medium.com](https://towardsdatascience.com/techniques-for-handling-underfitting-and-overfitting-in-machine-learning-348daa2380b9), Acesso em Out/2023.
+
+Zablotski (2023, Nov. 5). yuzaR-Blog: R package reviews `glmulti` find the best model!. Retrieved from https://yuzar-blog.netlify.app/posts/2022-05-31-glmulti/
+
+## R packages {style="font-size:14pt;"}
+
+```{r}
+
+citation(package = "glmulti")
+
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+
+# Total timing to compile this Quarto document
+
+Sys.time() - start_time
+
+```
