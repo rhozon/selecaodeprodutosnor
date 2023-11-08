@@ -246,7 +246,7 @@ Tutoriais disponíveis:
 
 ### *Algoritmos Genéticos x Força Bruta para a seleção de modelos de regressão*
 
-- [Veja aqui a apresentação sobre o paper de referência](https://rhozon.github.io/selecaodeprodutosnor/NSGAII_Rodrigo_Hermont_Ozon.html#/title-slidehttps://rhozon.github.io/selecaodeprodutosnor/NSGAII_Rodrigo_Hermont_Ozon.html#/title-slide)
+- [Veja aqui a apresentação sobre o paper de referência](https://rhozon.github.io/selecaodeprodutosnor/AlgoGeneticos_selecaovariaveis_RegressaoEconometria.html#/title-slide)
 
 - [Acompanhe aqui o case explicativo](https://rhozon.github.io/selecaodeprodutosnor/AlgoGenxForcaBruta_modelselection.html)
 
