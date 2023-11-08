@@ -244,6 +244,12 @@ Tutoriais disponíveis:
 - [Leia a apresentação que fiz na disciplina de Inteligência Computacional no PPGEPS/UTFPR](https://rhozon.github.io/selecaodeprodutosnor/NSGAII_Rodrigo_Hermont_Ozon.html#/title-slide)
 
 
+### *Algoritmos Genéticos x Força Bruta para a seleção de modelos de regressão*
+
+- [Acompanhe aqui o case explicativo]()
+
+
+
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 
 
