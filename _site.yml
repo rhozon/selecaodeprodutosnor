@@ -96,6 +96,8 @@ navbar:
           href: NSGAII_Rodrigo_Hermont_Ozon.html  
         - text: "Algoritmos Genéticos x Força Bruta para seleção de modelos de regressão"
           href: AlgoGenxForcaBruta_modelselection.html  
+        - text: "Apresentação: Algoritmos Genéticos para seleção de modelos econométricos"
+          href: AlgoGeneticos_selecaovariaveis_RegressaoEconometria.html 
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
