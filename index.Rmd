@@ -246,7 +246,7 @@ Tutoriais disponíveis:
 
 ### *Algoritmos Genéticos x Força Bruta para a seleção de modelos de regressão*
 
-- [Acompanhe aqui o case explicativo]()
+- [Acompanhe aqui o case explicativo](https://rhozon.github.io/selecaodeprodutosnor/AlgoGenxForcaBruta_modelselection.html)
 
 
 
