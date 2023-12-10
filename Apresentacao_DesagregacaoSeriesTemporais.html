@@ -8,7 +8,7 @@
 <link href="Apresentacao_DesagregacaoSeriesTemporais_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="Apresentacao_DesagregacaoSeriesTemporais_files/libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="Apresentacao_DesagregacaoSeriesTemporais_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.3.353">
+  <meta name="generator" content="quarto-1.3.433">
 
   <meta name="author" content="Rodrigo Hermont Ozon">
   <title>Desagregação de Séries Temporais</title>
@@ -327,7 +327,7 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-opacity="number" data-background-size="contain" class="quarto-title-block center">
+<section id="title-slide" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-opacity="number" data-background-size="contain" class="quarto-title-block center">
   <h1 class="title">Desagregação de Séries Temporais</h1>
   <p class="subtitle"><strong><em>Uma abordagem introdutória</em></strong></p>
 
@@ -340,13 +340,13 @@
 </div>
 
 </section>
-<section id="conteúdo" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="conteúdo" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Conteúdo</h2>
-<p>&nbsp;</p>
+<p><font size="5px"> O uso de desagregação de séries temporais com o pacote tempdisagg em modelos econométricos </font></p>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
-<p><font size="5px"></font></p><font size="5px">
+<p><font size="4px"></font></p><font size="4px">
 <ul>
 <li class="fragment"><p>Quando podemos e usamos agregação de dados de séries temporais ?</p></li>
 <li class="fragment"><p>Distinções entre dividir e desagregar dados de séries temporais</p></li>
@@ -356,12 +356,12 @@
 <li class="fragment"><p>Esclarecimento de dúvidas</p></li>
 <li class="fragment"><p>Agradecimentos</p></li>
 </ul>
-</font><p><font size="5px"></font></p>
+</font><p><font size="4px"></font></p>
 </div>
 </div>
 </div>
 </section>
-<section id="agregando-dados-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="agregando-dados-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Agregando dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -381,7 +381,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="agregando-dados-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="agregando-dados-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Agregando dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -400,7 +400,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -417,7 +417,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="4px">
 </font><p><font size="4px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -435,7 +435,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais-2" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais-2" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -450,7 +450,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais-3" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais-3" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <p><font size="3px"></font></p><font size="3px">
 <center>
@@ -460,7 +460,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </center>
 </font><p><font size="3px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais-4" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais-4" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <p><font size="3px"></font></p><font size="3px">
 <center>
@@ -471,7 +471,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </center>
 </font><p><font size="3px"></font></p>
 </section>
-<section id="dividir-x-desagregar-dados-de-séries-temporais-5" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="dividir-x-desagregar-dados-de-séries-temporais-5" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Dividir x Desagregar dados de séries temporais</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -497,7 +497,7 @@ i_{\mbox{acumulada}} = \displaystyle \prod ^{n}_{t=1}(1+i)\cdot(1+i)
 </font></div><font size="4px">
 </font><p><font size="4px"></font></p>
 </section>
-<section id="desagregação-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="desagregação-de-séries-temporais" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Desagregação de séries temporais</h2>
 <p><font size="4px"></font></p><font size="4px">
 <p>O glorioso trabalho e contribuição de <a href="https://journal.r-project.org/archive/2013-2/sax-steiner.pdf">Sax &amp; Steiner (2013)</a> !!!</p>
@@ -507,7 +507,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </center>
 </font><p><font size="4px"></font></p>
 </section>
-<section id="desagregação-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="desagregação-de-séries-temporais-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Desagregação de séries temporais</h2>
 <p><font size="4px"></font></p><font size="4px">
 <ul>
@@ -520,7 +520,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 <li class="fragment"><img data-src="https://github.com/rhozon/Doutorado/blob/main/timeseriesdisagregation_us_exp.png?raw=true" style="width:80.0%"></li>
 </ul>
 </section>
-<section id="critérios-de-desagregação" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="critérios-de-desagregação" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Critérios de Desagregação</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -537,7 +537,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="critérios-de-desagregação-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="critérios-de-desagregação-1" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Critérios de Desagregação</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -549,7 +549,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="critérios-de-desagregação-2" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="critérios-de-desagregação-2" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Critérios de Desagregação</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -567,7 +567,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="um-exemplo-de-séries-desagregadas" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="um-exemplo-de-séries-desagregadas" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Um exemplo de séries desagregadas</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -582,7 +582,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="mostrando-mais-exemplos" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="mostrando-mais-exemplos" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Mostrando mais exemplos…</h2>
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
@@ -600,7 +600,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </font></div><font size="5px">
 </font><p><font size="5px"></font></p>
 </section>
-<section id="referências" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="referências" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Referências</h2>
 <div style="text-align: left;">
 <hr color="black" size="1" style="dashed; float: left; width: 70%;">
@@ -619,7 +619,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 <p>Sax, C. &amp; Steiner, P. <strong><em>Temporal Disaggregation of Time Series</em></strong>. <em>In</em> The R Journal Vol. 5/2, December 2013 ISSN 2073-4859.</p>
 </font><p><font size="4"></font></p>
 </section>
-<section id="obrigado" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" data-background-size="1500px" data-background-repeat="no-repeat">
+<section id="obrigado" class="slide level2" data-background-color="white" data-background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" data-background-size="1500px" data-background-repeat="no-repeat">
 <h2>Obrigado!</h2>
 <p>&nbsp;</p>
 <p><font size="6"></font></p><font size="6">
@@ -632,7 +632,8 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 <p><strong>Rodrigo Hermont Ozon</strong></p>
 </div>
 <div class="callout-content">
-<p><span class="math inline">\(\Rightarrow\)</span> Ao professor <a href="https://www.linkedin.com/in/matheus-dal-molin-ribeiro-8b581016a/">Matheus Dal Molin Ribeiro</a> pela oportunidade de contribuir com os novos pesquisadores;</p>
+<p><span class="math inline">\(\Rightarrow\)</span> A todo o comitê organizador do <a href="http://rday.leg.ufpr.br/#">4º R Day</a> e do <a href="http://1ss.leg.ufpr.br/">1th SouthStat Meeting</a></p>
+<p><span class="math inline">\(\Rightarrow\)</span> Ao professor <a href="https://www.linkedin.com/in/matheus-dal-molin-ribeiro-8b581016a/">Matheus Dal Molin Ribeiro</a> da UTFPR;</p>
 <p><span class="math inline">\(\Rightarrow\)</span> Agradecimentos aos pesquisadores do <a href="https://www.pucpr.br/escola-politecnica/mestrado-doutorado/engenharia-de-producao-e-sistemas/">PPGEPS/PUCPR</a>, aos ouvintes e em especial ao meu orientador, prof. Dr.&nbsp;Gilberto Reynoso Meza</p>
 <ul>
 <li class="fragment">Meu perfil no <a href="https://scholar.google.com/citations?user=hPcIR9oAAAAJ&amp;hl=en">Google Scholar</a></li>
@@ -644,7 +645,7 @@ Fonte: <a href="https://cran.r-project.org/web/packages/tempdisagg/index.html">C
 </div>
 </div>
 <div class="footer footer-default">
-<p><a href="http://www.utfpr.edu.br/cursos/coordenacoes/stricto-sensu/ppgeps"> – PPGEPS/UTFPR , Sep 21th 2023 – </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon – PhD Researcher at PPGEPS/PUCPR] </a></p>
+<p><a href="http://rday.leg.ufpr.br/#"> – 4th R Day , Dec 13th 2023 – </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon – PhD Researcher at PPGEPS/PUCPR] </a></p>
 </div>
 </font></section><font size="6">
     </font></div><font size="6">
