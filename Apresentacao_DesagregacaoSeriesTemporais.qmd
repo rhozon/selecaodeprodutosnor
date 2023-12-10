@@ -3,7 +3,7 @@ title: "Desagregação de Séries Temporais"
 subtitle: "***Uma abordagem introdutória***"
 author: <a href="https://rhozon.github.io/selecaodeprodutosnor/index.html">Rodrigo Hermont Ozon</a>
 title-slide-attributes:
-    data-background-image: "https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png"
+    data-background-image: "https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png"
     data-background-size: contain
     data-background-opacity: "number"
 format:
@@ -14,7 +14,7 @@ format:
       buttons: true
     preview-links: auto
     css: styles.css
-    footer: <a href="http://www.utfpr.edu.br/cursos/coordenacoes/stricto-sensu/ppgeps"> -- PPGEPS/UTFPR , Sep 21th 2023 -- </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon -- PhD Researcher at PPGEPS/PUCPR] </a>
+    footer: <a href="http://rday.leg.ufpr.br/#"> -- 4th R Day , Dec 13th 2023 -- </a> <a href="https://www.linkedin.com/in/rodrigohermontozon/"> [ Rodrigo Hermont Ozon -- PhD Researcher at PPGEPS/PUCPR] </a>
 ---
 
 ```{r setup, include=FALSE}
@@ -34,12 +34,15 @@ knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
 ```
 
 
-## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Conteúdo {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
-&nbsp;
+
+<font size = 5px>
+O uso de desagregação de séries temporais com o pacote tempdisagg em modelos econométricos
+</font>
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
-<font size = 5px>
+<font size = 4px>
 
  - Quando podemos e usamos agregação de dados de séries temporais ?
 
@@ -60,7 +63,7 @@ knitr::opts_chunk$set(message = FALSE) # Remove all messages # of R outputs
 :::
 
 
-## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -94,7 +97,7 @@ $$
 
 
 
-## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Agregando dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -122,7 +125,7 @@ $$
 </font>
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
 <font size = 4px>
@@ -144,7 +147,7 @@ Aqui a taxa SELIC mensal é dada por $\mbox{SELIC}_{\mbox{mês}} = (1+i)^{(q/t)}
 </font>
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -167,7 +170,7 @@ Fonte: [Brasil61](https://brasil61.com/n/safra-de-2023-esta-prevista-em-299-7-mi
 
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -186,7 +189,7 @@ Fonte: [Brasil61](https://brasil61.com/n/safra-de-2023-esta-prevista-em-299-7-mi
 
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 <font size = 3px>
@@ -213,7 +216,7 @@ Fonte: Bloomberg a partir de dados de FAS/USDA, dados de exportações mensais e
 
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 
@@ -238,7 +241,7 @@ Fonte: Bloomberg a partir de dados de FAS/USDA, dados de preços de fechamento d
 
 
 
-## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Dividir x Desagregar dados de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
 <font size = 4px>
@@ -271,7 +274,7 @@ Fonte: Bloomberg a partir de dados de FAS/USDA, dados de preços de fechamento d
 </font>
 
 
-## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 <font size = 4px>
@@ -289,7 +292,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 </font>
 
 
-## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Desagregação de séries temporais {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 <font size = 4px>
@@ -306,7 +309,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 
 - ![](https://github.com/rhozon/Doutorado/blob/main/timeseriesdisagregation_us_exp.png?raw=true){width=80%}
 
-## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -328,7 +331,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 </font>
 
 
-## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -345,7 +348,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 </font>
 
 
-## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Critérios de Desagregação {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -369,7 +372,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 
 
 
-## Um exemplo de séries desagregadas {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Um exemplo de séries desagregadas {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
@@ -386,7 +389,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 :::
 </font>
 
-## Mostrando mais exemplos... {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Mostrando mais exemplos... {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 ::: {.callout-note appearance="simple" icon=false style="width: 100px;"}
 <font size = 5px>
@@ -405,7 +408,7 @@ Fonte: [CRAN, 2023](https://cran.r-project.org/web/packages/tempdisagg/index.htm
 </font>
 
 
-## Referências {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Referências {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 <div style="text-align: left;">
 <hr color="black" size="1" style="dashed; float: left; width: 70%;">
@@ -440,7 +443,7 @@ Sax, C. & Steiner, P. ***Temporal Disaggregation of Time Series***. _In_ The R J
 
 
 
-## Obrigado! {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_UTFPRPUCPR.png" background-size="1500px" background-repeat="no-repeat"}
+## Obrigado! {background-color="white" background-image="https://raw.githubusercontent.com/rhozon/Doutorado/main/background_rday.png" background-size="1500px" background-repeat="no-repeat"}
 
 
 &nbsp;
@@ -450,7 +453,9 @@ Sax, C. & Steiner, P. ***Temporal Disaggregation of Time Series***. _In_ The R J
 ::: {.callout-note appearance="simple"}
 ## Rodrigo Hermont Ozon
 
-$\Rightarrow$ Ao professor [Matheus Dal Molin Ribeiro](https://www.linkedin.com/in/matheus-dal-molin-ribeiro-8b581016a/) pela oportunidade de contribuir com os novos pesquisadores;
+$\Rightarrow$ A todo o comitê organizador do [4º R Day](http://rday.leg.ufpr.br/#) e do [1th SouthStat Meeting](http://1ss.leg.ufpr.br/)
+
+$\Rightarrow$ Ao professor [Matheus Dal Molin Ribeiro](https://www.linkedin.com/in/matheus-dal-molin-ribeiro-8b581016a/) da UTFPR;
 
 $\Rightarrow$ Agradecimentos aos pesquisadores do [PPGEPS/PUCPR](https://www.pucpr.br/escola-politecnica/mestrado-doutorado/engenharia-de-producao-e-sistemas/), aos ouvintes e em especial ao meu orientador, prof. Dr. Gilberto Reynoso Meza 
 

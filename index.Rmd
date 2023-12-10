@@ -237,7 +237,9 @@ Tutoriais disponíveis:
 
 ### *Apresentação Desagregação de Séries Temporais*
 
-- [Veja a apresentação que utilizei pra demonstrar pros pesquisadores do PPGEPS/UTFPR sobre como desagregar séries temporais](https://rhozon.github.io/selecaodeprodutosnor/Apresentacao_DesagregacaoSeriesTemporais.html#/title-slide)
+- [Veja a apresentação que utilizei pra demonstrar pros participantes do 4º R Day sobre como desagregar séries temporais](https://rhozon.github.io/selecaodeprodutosnor/Apresentacao_DesagregacaoSeriesTemporais.html#/title-slide) 
+
+ - Visite o site do evento em [4º R Day](http://rday.leg.ufpr.br/#)
 
 ### *Apresentação sobre o algoritmo NSGAII*
 

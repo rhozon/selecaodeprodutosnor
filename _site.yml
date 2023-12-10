@@ -52,7 +52,7 @@ navbar:
           href: sparklyr.html           
         - text: "ETL com o R direto no Power BI"
           href: ETL_R_no_PowerBI.html            
-        - text: "Deagregação de Séries Temporais"
+        - text: "Deagregação de Séries Temporais -- 4th R Day"
           href: Apresentacao_DesagregacaoSeriesTemporais.html  
         - text: "Projeto Integrador de Ciência de Dados"
           href: projetointegrador.html 
