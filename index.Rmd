@@ -252,6 +252,14 @@ Tutoriais disponíveis:
 
 - [Acompanhe aqui o case explicativo](https://rhozon.github.io/selecaodeprodutosnor/AlgoGenxForcaBruta_modelselection.html)
 
+### *Lecture 02 -- Machine Learning class, exercise 02 -- PUCPR PhD at PPGEPS*
+
+- [Follow the link here]()
+
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
+
+
+
+
 
 

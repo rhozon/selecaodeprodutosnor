@@ -98,6 +98,8 @@ navbar:
           href: AlgoGenxForcaBruta_modelselection.html  
         - text: "Apresentação: Algoritmos Genéticos para seleção de modelos econométricos"
           href: AlgoGeneticos_selecaovariaveis_RegressaoEconometria.html 
+        - text: "Lecture 02 - Machine Learning Class, PPGEPS/PUCPR, Lesson 02"
+          href: Lesson02.html
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
