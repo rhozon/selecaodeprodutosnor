@@ -100,7 +100,7 @@ navbar:
           href: AlgoGeneticos_selecaovariaveis_RegressaoEconometria.html 
         - text: "Lecture 02 - Machine Learning Class, PPGEPS/PUCPR, Lesson 02"
           href: Lesson02.html
-        - text: "Lecture 03 - Machine Learning Class, PPGEPS/PUCPR, Lesson 02"
+        - text: "Lecture 03 - Machine Learning Class, PPGEPS/PUCPR, Lesson 03"
           href: Lesson03.html
   right:
     - icon: fa-question fa-lg
