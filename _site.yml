@@ -102,6 +102,8 @@ navbar:
           href: Lesson02.html
         - text: "Lecture 03 - Machine Learning Class, PPGEPS/PUCPR, Lesson 03"
           href: Lesson03.html
+        - text: "Lecture 04 - Machine Learning Class, PPGEPS/PUCPR, Lesson 04"
+          href: Lesson04.html
   right:
     - icon: fa-question fa-lg
       href: https://rhozon.github.io/PortfolioRodrigo.html
