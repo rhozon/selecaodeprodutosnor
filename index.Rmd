@@ -254,7 +254,7 @@ Tutoriais disponíveis:
 
 ### *Lecture 02 -- Machine Learning class, exercise 02 -- PUCPR PhD at PPGEPS*
 
-- [Follow the link here.]()
+- [Follow the link here.](https://rhozon.github.io/selecaodeprodutosnor/Lesson02.html)
 
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 
