@@ -260,6 +260,10 @@ Tutoriais disponíveis:
 
 - [Follow the link here for the Lesson 04](https://rhozon.github.io/selecaodeprodutosnor/Lesson04.html)
 
+- [Follow the link here for the Lesson 05](https://rhozon.github.io/selecaodeprodutosnor/Lesson05.html)
+
+- [Follow the link here for the Lesson 06](https://rhozon.github.io/selecaodeprodutosnor/Lesson06.html)
+
 ![](C:/Users/rodri/Desktop/AnaliseConjunta/selecaodeprodutosnor/econnerd.png){width="40%"}
 
 
